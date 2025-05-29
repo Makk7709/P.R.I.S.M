@@ -57,6 +57,18 @@ PRISM est une intelligence artificielle orchestratrice de pointe avec **système
 - Rapports d'analyse automatiques
 - Historique des interactions et décisions consensus
 
+### 🎯 Système de Stress Test & Validation
+
+- **Stress Test Driver** : Génération de 60 000 événements mixtes (1k CRITICAL/s, 3k HIGH/s, 6k NORMAL/s)
+- **Prometheus Integration** : Export métriques temps réel sur port 9090
+- **Grafana Dashboard** : Visualisation avancée sur port 3001
+- **Docker Orchestration** : Déploiement automatisé avec docker-compose
+- **Validation Pipeline** : Tests automatisés avec seuils de performance
+- **Control Prompt Generator** : Analyse et recommandations de déploiement
+- **Performance Targets** : Latence ≤40ms, Consensus ≥99.9%, Zero event loss
+
+📄 **Documentation** : [Guide Stress Test](README_STRESS_TEST.md) | [Documentation Complète](STRESS_TEST_README.md)
+
 ## 🏗️ Architecture Avancée
 
 PRISM v2.2 est construit sur une architecture modulaire robuste avec consensus intégré :
