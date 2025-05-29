@@ -1,0 +1,325 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PRISM Voice Interaction Tests</title>
+    <link rel="stylesheet" href="../../ui/prismUI.css">
+    <link rel="stylesheet" href="../../ui/AdaptiveCyclerWidget.css">
+    <link rel="stylesheet" href="../../ui/InsightCenter.css">
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+            margin: 0;
+            padding: 20px;
+            background: #1a1a1a;
+            color: #e0e0e0;
+        }
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        h1, h2 {
+            color: #4CAF50;
+        }
+        .test-panel {
+            background: #2a2a2a;
+            border-radius: 8px;
+            padding: 20px;
+            margin-bottom: 20px;
+        }
+        .test-button {
+            background: #4CAF50;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 4px;
+            cursor: pointer;
+            margin-right: 10px;
+            margin-bottom: 10px;
+        }
+        .test-button:hover {
+            background: #45a049;
+        }
+        .test-button:disabled {
+            background: #666;
+            cursor: not-allowed;
+        }
+        .results {
+            background: #333;
+            border-radius: 4px;
+            padding: 15px;
+            margin-top: 20px;
+            white-space: pre-wrap;
+            font-family: monospace;
+        }
+        .metric {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px;
+            border-bottom: 1px solid #444;
+        }
+        .metric:last-child {
+            border-bottom: none;
+        }
+        .metric-label {
+            font-weight: bold;
+            color: #4CAF50;
+        }
+        .metric-value {
+            font-family: monospace;
+        }
+        .error {
+            color: #f44336;
+            margin-top: 10px;
+            padding: 10px;
+            background: rgba(244, 67, 54, 0.1);
+            border-radius: 4px;
+        }
+        .success {
+            color: #4CAF50;
+            margin-top: 10px;
+            padding: 10px;
+            background: rgba(76, 175, 80, 0.1);
+            border-radius: 4px;
+        }
+        .initialization-status {
+            margin-bottom: 20px;
+            padding: 10px;
+            border-radius: 4px;
+            background: #333;
+        }
+        .initialization-status.initializing {
+            background: #ffa726;
+            color: #000;
+        }
+        .initialization-status.ready {
+            background: #4CAF50;
+            color: #fff;
+        }
+        .initialization-status.error {
+            background: #f44336;
+            color: #fff;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🎯 PRISM Voice Interaction Tests</h1>
+        
+        <div class="initialization-status" id="initStatus">
+            Initializing components...
+        </div>
+
+        <div class="test-panel">
+            <h2>Test Scenarios</h2>
+            <button class="test-button" id="test1" disabled onclick="runTest('adaptiveCycler')">
+                Test 1: AdaptiveCycler Audio
+            </button>
+            <button class="test-button" id="test2" disabled onclick="runTest('insightCenter')">
+                Test 2: InsightCenter Audio
+            </button>
+            <button class="test-button" id="test3" disabled onclick="runTest('keyboard')">
+                Test 3: Keyboard Navigation
+            </button>
+            <button class="test-button" id="test4" disabled onclick="runTest('fallback')">
+                Test 4: API Fallback
+            </button>
+            <button class="test-button" id="test5" disabled onclick="runTest('error')">
+                Test 5: Error Handling
+            </button>
+            <button class="test-button" id="testAll" disabled onclick="runAllTests()">
+                Run All Tests
+            </button>
+        </div>
+
+        <div class="test-panel">
+            <h2>Métriques en Temps Réel</h2>
+            <div class="metrics">
+                <div class="metric">
+                    <span class="metric-label">Temps de Réponse</span>
+                    <span class="metric-value" id="responseTime">-- ms</span>
+                </div>
+                <div class="metric">
+                    <span class="metric-label">Fluidité Interface</span>
+                    <span class="metric-value" id="interfaceFluidity">--/10</span>
+                </div>
+                <div class="metric">
+                    <span class="metric-label">Stabilité</span>
+                    <span class="metric-value" id="stability">--/10</span>
+                </div>
+                <div class="metric">
+                    <span class="metric-label">Pertinence Vocale</span>
+                    <span class="metric-value" id="voiceRelevance">--/10</span>
+                </div>
+                <div class="metric">
+                    <span class="metric-label">Accessibilité</span>
+                    <span class="metric-value" id="accessibility">--/10</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="test-panel">
+            <h2>Résultats des Tests</h2>
+            <div id="results" class="results">Les résultats des tests apparaîtront ici...</div>
+        </div>
+    </div>
+
+    <script type="module">
+        import { VoiceTestRunner } from './prismVoiceTests.js';
+        import { AdaptiveCyclerWidget } from '../../ui/AdaptiveCyclerWidget.js';
+        import { InsightCenter } from '../../ui/InsightCenter.js';
+        import { AudioManager } from '../../audio.js';
+
+        let testRunner;
+        let currentTest = null;
+
+        // Initialize test runner and components
+        async function initializeTestRunner() {
+            const initStatus = document.getElementById('initStatus');
+            initStatus.className = 'initialization-status initializing';
+            initStatus.textContent = 'Initializing components...';
+
+            try {
+                testRunner = new VoiceTestRunner();
+                await testRunner.initialize();
+                
+                initStatus.className = 'initialization-status ready';
+                initStatus.textContent = 'Components initialized successfully';
+                enableButtons();
+            } catch (error) {
+                initStatus.className = 'initialization-status error';
+                initStatus.textContent = `Initialization failed: ${error.message}`;
+                showError(`Initialization failed: ${error.message}`);
+            }
+        }
+
+        // Enable/disable test buttons
+        function enableButtons() {
+            const buttons = document.querySelectorAll('.test-button');
+            buttons.forEach(button => button.disabled = false);
+        }
+
+        function disableButtons(disabled = true) {
+            const buttons = document.querySelectorAll('.test-button');
+            buttons.forEach(button => button.disabled = disabled);
+        }
+
+        // Expose functions to global scope
+        window.runTest = async (testType) => {
+            if (currentTest) {
+                showError('A test is already running');
+                return;
+            }
+
+            if (!testRunner.isReady()) {
+                showError('Components are not fully initialized. Please wait...');
+                return;
+            }
+
+            currentTest = testType;
+            disableButtons(true);
+            clearResults();
+
+            try {
+                let result;
+                switch (testType) {
+                    case 'adaptiveCycler':
+                        result = await testRunner.testAdaptiveCyclerAudio();
+                        break;
+                    case 'insightCenter':
+                        result = await testRunner.testInsightCenterAudio();
+                        break;
+                    case 'keyboard':
+                        result = await testRunner.testKeyboardNavigation();
+                        break;
+                    case 'fallback':
+                        result = await testRunner.testAPIFallback();
+                        break;
+                    case 'error':
+                        result = await testRunner.testErrorHandling();
+                        break;
+                }
+
+                updateMetrics();
+                showResults(result);
+                showSuccess(`Test "${testType}" completed successfully`);
+            } catch (error) {
+                showError(`Test "${testType}" failed: ${error.message}`);
+            } finally {
+                currentTest = null;
+                disableButtons(false);
+            }
+        };
+
+        window.runAllTests = async () => {
+            if (currentTest) {
+                showError('A test is already running');
+                return;
+            }
+
+            if (!testRunner.isReady()) {
+                showError('Components are not fully initialized. Please wait...');
+                return;
+            }
+
+            currentTest = 'all';
+            disableButtons(true);
+            clearResults();
+
+            try {
+                const results = {
+                    adaptiveCycler: await testRunner.testAdaptiveCyclerAudio(),
+                    insightCenter: await testRunner.testInsightCenterAudio(),
+                    keyboard: await testRunner.testKeyboardNavigation(),
+                    fallback: await testRunner.testAPIFallback(),
+                    error: await testRunner.testErrorHandling()
+                };
+
+                updateMetrics();
+                showResults(results);
+                showSuccess('All tests completed successfully');
+            } catch (error) {
+                showError(`Test suite failed: ${error.message}`);
+            } finally {
+                currentTest = null;
+                disableButtons(false);
+            }
+        };
+
+        // Helper functions for UI updates
+        function showError(message) {
+            const results = document.getElementById('results');
+            results.innerHTML += `<div class="error">${message}</div>`;
+        }
+
+        function showSuccess(message) {
+            const results = document.getElementById('results');
+            results.innerHTML += `<div class="success">${message}</div>`;
+        }
+
+        function clearResults() {
+            const results = document.getElementById('results');
+            results.innerHTML = '';
+        }
+
+        function showResults(result) {
+            const results = document.getElementById('results');
+            results.innerHTML += `<pre>${JSON.stringify(result, null, 2)}</pre>`;
+        }
+
+        function updateMetrics() {
+            const metrics = testRunner.getAverageMetrics();
+            document.getElementById('responseTime').textContent = `${Math.round(metrics.responseTime)} ms`;
+            document.getElementById('interfaceFluidity').textContent = `${Math.round(metrics.interfaceFluidity)}/10`;
+            document.getElementById('stability').textContent = `${Math.round(metrics.stability)}/10`;
+            document.getElementById('voiceRelevance').textContent = `${Math.round(metrics.voiceRelevance)}/10`;
+            document.getElementById('accessibility').textContent = `${Math.round(metrics.accessibility)}/10`;
+        }
+
+        // Initialize on page load
+        document.addEventListener('DOMContentLoaded', initializeTestRunner);
+    </script>
+</body>
+</html> 

@@ -1,0 +1,120 @@
+.insight-center {
+  --timeline-success: #4ade80;
+  --timeline-failure: #f87171;
+  --efficiency-line: #60a5fa;
+  --efficiency-area: rgba(96, 165, 250, 0.2);
+  --heatmap-ok: #4ade80;
+  --heatmap-silent: #fbbf24;
+  --heatmap-degraded: #f87171;
+  --heatmap-critical: #ef4444;
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+}
+
+.insight-center canvas {
+  image-rendering: pixelated;
+}
+
+.timeline-section canvas {
+  background: rgba(0, 0, 0, 0.2);
+}
+
+.efficiency-section canvas {
+  background: rgba(0, 0, 0, 0.2);
+}
+
+.module-cell {
+  width: 40px;
+  height: 40px;
+  border-radius: 4px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.75rem;
+  transition: all 0.3s ease;
+}
+
+.module-cell.ok {
+  background-color: var(--heatmap-ok);
+  color: #000;
+}
+
+.module-cell.silent {
+  background-color: var(--heatmap-silent);
+  color: #000;
+}
+
+.module-cell.degraded {
+  background-color: var(--heatmap-degraded);
+  color: #fff;
+}
+
+.module-cell.critical {
+  background-color: var(--heatmap-critical);
+  color: #fff;
+  animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+  0% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.5;
+  }
+  100% {
+    opacity: 1;
+  }
+}
+
+.insight-center .section {
+  transition: all 0.3s ease;
+}
+
+.insight-center .audio-button {
+  position: relative;
+  overflow: hidden;
+  cursor: pointer;
+  user-select: none;
+  outline: none;
+}
+
+.insight-center .audio-button::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(45deg, transparent, rgba(255, 255, 255, 0.1), transparent);
+  transform: translateX(-100%);
+  transition: transform 0.3s ease;
+}
+
+.insight-center .audio-button:hover::after {
+  transform: translateX(100%);
+}
+
+.insight-center .audio-button.playing {
+  background-color: var(--green-400);
+  color: black;
+}
+
+.insight-center .audio-button.error {
+  background-color: var(--red-500);
+  color: white;
+}
+
+.insight-center .audio-button .icon {
+  font-size: 1.2em;
+  transition: transform 0.3s ease;
+}
+
+.insight-center .audio-button.playing .icon {
+  animation: pulse 1s infinite;
+}
+
+@keyframes pulse {
+  0% { transform: scale(1); }
+  50% { transform: scale(1.2); }
+  100% { transform: scale(1); }
+} 

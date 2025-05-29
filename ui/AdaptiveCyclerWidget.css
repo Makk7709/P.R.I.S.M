@@ -1,0 +1,144 @@
+.adaptive-cycler-widget {
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+}
+
+.adaptive-cycler-widget .section {
+  transition: all 0.3s ease;
+}
+
+.adaptive-cycler-widget .audio-button {
+  position: relative;
+  overflow: hidden;
+  cursor: pointer;
+  user-select: none;
+  outline: none;
+}
+
+.adaptive-cycler-widget .audio-button::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(45deg, transparent, rgba(255, 255, 255, 0.1), transparent);
+  transform: translateX(-100%);
+  transition: transform 0.3s ease;
+}
+
+.adaptive-cycler-widget .audio-button:hover::after {
+  transform: translateX(100%);
+}
+
+.adaptive-cycler-widget .audio-button.playing {
+  background-color: var(--green-400);
+  color: black;
+}
+
+.adaptive-cycler-widget .audio-button.error {
+  background-color: var(--red-500);
+  color: white;
+}
+
+.adaptive-cycler-widget .audio-button .icon {
+  font-size: 1.2em;
+  transition: transform 0.3s ease;
+}
+
+.adaptive-cycler-widget .audio-button.playing .icon {
+  animation: pulse 1s infinite;
+}
+
+@keyframes pulse {
+  0% { transform: scale(1); }
+  50% { transform: scale(1.2); }
+  100% { transform: scale(1); }
+}
+
+/* Voice Settings Modal */
+.voice-settings-modal {
+  backdrop-filter: blur(4px);
+  transition: opacity 0.3s ease;
+}
+
+.voice-settings-modal .close-modal {
+  padding: 0.5rem;
+  border-radius: 0.25rem;
+  transition: all 0.2s ease;
+}
+
+.voice-settings-modal .close-modal:hover {
+  background-color: rgba(255, 255, 255, 0.1);
+}
+
+.voice-settings-modal .voice-select {
+  appearance: none;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke='%234CAF50'%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M19 9l-7 7-7-7'%3E%3C/path%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 0.5rem center;
+  background-size: 1.5em 1.5em;
+  padding-right: 2.5rem;
+}
+
+.voice-settings-modal .speaking-rate {
+  -webkit-appearance: none;
+  appearance: none;
+  height: 4px;
+  background: rgba(76, 175, 80, 0.2);
+  border-radius: 2px;
+  outline: none;
+}
+
+.voice-settings-modal .speaking-rate::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 16px;
+  height: 16px;
+  background: #4CAF50;
+  border-radius: 50%;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.voice-settings-modal .speaking-rate::-webkit-slider-thumb:hover {
+  transform: scale(1.1);
+}
+
+.voice-settings-modal .speaking-rate::-moz-range-thumb {
+  width: 16px;
+  height: 16px;
+  background: #4CAF50;
+  border-radius: 50%;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  border: none;
+}
+
+.voice-settings-modal .speaking-rate::-moz-range-thumb:hover {
+  transform: scale(1.1);
+}
+
+/* Accessibility focus styles */
+.adaptive-cycler-widget .audio-button:focus,
+.adaptive-cycler-widget .voice-settings-button:focus {
+  outline: 2px solid var(--green-400);
+  outline-offset: 2px;
+}
+
+.adaptive-cycler-widget .audio-button:focus:not(:focus-visible),
+.adaptive-cycler-widget .voice-settings-button:focus:not(:focus-visible) {
+  outline: none;
+}
+
+/* Screen reader only text */
+.adaptive-cycler-widget .sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+} 

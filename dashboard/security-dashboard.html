@@ -1,0 +1,809 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PRISM Security Dashboard</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
+            color: #ffffff;
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .dashboard-container {
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .header h1 {
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+
+        .header .subtitle {
+            font-size: 1.2rem;
+            opacity: 0.8;
+        }
+
+        .security-status {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin-bottom: 30px;
+            gap: 20px;
+        }
+
+        .status-indicator {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 15px 25px;
+            background: rgba(255,255,255,0.1);
+            border-radius: 25px;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255,255,255,0.2);
+        }
+
+        .status-dot {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            animation: pulse 2s infinite;
+        }
+
+        .status-dot.secure { background: #4CAF50; }
+        .status-dot.warning { background: #FF9800; }
+        .status-dot.critical { background: #F44336; }
+
+        @keyframes pulse {
+            0% { opacity: 1; }
+            50% { opacity: 0.5; }
+            100% { opacity: 1; }
+        }
+
+        .metrics-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .metric-card {
+            background: rgba(255,255,255,0.1);
+            border-radius: 15px;
+            padding: 25px;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255,255,255,0.2);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .metric-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+        }
+
+        .metric-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+
+        .metric-title {
+            font-size: 1.1rem;
+            font-weight: 600;
+            opacity: 0.9;
+        }
+
+        .metric-icon {
+            font-size: 1.5rem;
+        }
+
+        .metric-value {
+            font-size: 2.5rem;
+            font-weight: bold;
+            margin-bottom: 10px;
+        }
+
+        .metric-description {
+            font-size: 0.9rem;
+            opacity: 0.7;
+        }
+
+        .charts-section {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .chart-container {
+            background: rgba(255,255,255,0.1);
+            border-radius: 15px;
+            padding: 25px;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255,255,255,0.2);
+        }
+
+        .chart-title {
+            font-size: 1.3rem;
+            font-weight: 600;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+
+        .pending-decisions {
+            background: rgba(255,255,255,0.1);
+            border-radius: 15px;
+            padding: 25px;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255,255,255,0.2);
+        }
+
+        .decisions-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .decision-item {
+            background: rgba(255,255,255,0.05);
+            border-radius: 10px;
+            padding: 15px;
+            margin-bottom: 10px;
+            border-left: 4px solid #FF9800;
+        }
+
+        .decision-meta {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 8px;
+        }
+
+        .decision-type {
+            font-weight: 600;
+            color: #FFD54F;
+        }
+
+        .decision-time {
+            font-size: 0.8rem;
+            opacity: 0.7;
+        }
+
+        .decision-summary {
+            font-size: 0.9rem;
+            opacity: 0.8;
+            margin-bottom: 10px;
+        }
+
+        .decision-actions {
+            display: flex;
+            gap: 10px;
+        }
+
+        .btn {
+            padding: 8px 16px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 0.8rem;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+
+        .btn-approve {
+            background: #4CAF50;
+            color: white;
+        }
+
+        .btn-reject {
+            background: #F44336;
+            color: white;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+        }
+
+        .approval-history {
+            background: rgba(255,255,255,0.1);
+            border-radius: 15px;
+            padding: 25px;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255,255,255,0.2);
+            margin-top: 20px;
+        }
+
+        .history-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px 0;
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+        }
+
+        .history-item:last-child {
+            border-bottom: none;
+        }
+
+        .history-status {
+            padding: 4px 12px;
+            border-radius: 12px;
+            font-size: 0.8rem;
+            font-weight: 600;
+        }
+
+        .status-approved { background: #4CAF50; color: white; }
+        .status-rejected { background: #F44336; color: white; }
+        .status-expired { background: #9E9E9E; color: white; }
+
+        .refresh-indicator {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: rgba(76, 175, 80, 0.9);
+            color: white;
+            padding: 10px 20px;
+            border-radius: 25px;
+            font-size: 0.9rem;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        .refresh-indicator.show {
+            opacity: 1;
+        }
+
+        @media (max-width: 768px) {
+            .charts-section {
+                grid-template-columns: 1fr;
+            }
+            
+            .header h1 {
+                font-size: 2rem;
+            }
+            
+            .security-status {
+                flex-direction: column;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="dashboard-container">
+        <div class="header">
+            <h1>🔒 PRISM Security Dashboard</h1>
+            <div class="subtitle">Surveillance en temps réel du système TrustContext</div>
+        </div>
+
+        <div class="security-status">
+            <div class="status-indicator">
+                <div class="status-dot secure" id="trustStatus"></div>
+                <span id="trustStatusText">Système Sécurisé</span>
+            </div>
+            <div class="status-indicator">
+                <div class="status-dot secure" id="approvalStatus"></div>
+                <span id="approvalStatusText">Approbations Normales</span>
+            </div>
+        </div>
+
+        <div class="metrics-grid">
+            <div class="metric-card">
+                <div class="metric-header">
+                    <span class="metric-title">Taux d'Approbation Humaine</span>
+                    <span class="metric-icon">👥</span>
+                </div>
+                <div class="metric-value" id="approvalRate">--</div>
+                <div class="metric-description">Pourcentage de décisions approuvées</div>
+            </div>
+
+            <div class="metric-card">
+                <div class="metric-header">
+                    <span class="metric-title">Décisions en Attente</span>
+                    <span class="metric-icon">⏳</span>
+                </div>
+                <div class="metric-value" id="pendingCount">--</div>
+                <div class="metric-description">Nécessitent une approbation humaine</div>
+            </div>
+
+            <div class="metric-card">
+                <div class="metric-header">
+                    <span class="metric-title">Niveau de Confiance</span>
+                    <span class="metric-icon">🛡️</span>
+                </div>
+                <div class="metric-value" id="trustLevel">--</div>
+                <div class="metric-description">Indice de sécurité du système</div>
+            </div>
+
+            <div class="metric-card">
+                <div class="metric-header">
+                    <span class="metric-title">Vérifications Sécurité</span>
+                    <span class="metric-icon">🔍</span>
+                </div>
+                <div class="metric-value" id="securityChecks">--</div>
+                <div class="metric-description">Contrôles effectués aujourd'hui</div>
+            </div>
+
+            <div class="metric-card">
+                <div class="metric-header">
+                    <span class="metric-title">Temps Moyen d'Approbation</span>
+                    <span class="metric-icon">⏱️</span>
+                </div>
+                <div class="metric-value" id="avgApprovalTime">--</div>
+                <div class="metric-description">Délai de traitement des demandes</div>
+            </div>
+
+            <div class="metric-card">
+                <div class="metric-header">
+                    <span class="metric-title">Événements Bloqués</span>
+                    <span class="metric-icon">🚫</span>
+                </div>
+                <div class="metric-value" id="blockedEvents">--</div>
+                <div class="metric-description">Actions critiques refusées</div>
+            </div>
+        </div>
+
+        <div class="charts-section">
+            <div class="chart-container">
+                <div class="chart-title">Évolution du Taux d'Approbation</div>
+                <canvas id="approvalChart"></canvas>
+            </div>
+            <div class="chart-container">
+                <div class="chart-title">Distribution des Décisions</div>
+                <canvas id="decisionsChart"></canvas>
+            </div>
+        </div>
+
+        <div class="pending-decisions">
+            <div class="decisions-header">
+                <h3>Décisions en Attente d'Approbation</h3>
+                <span id="pendingBadge" class="status-indicator">0 en attente</span>
+            </div>
+            <div id="pendingDecisionsList">
+                <div style="text-align: center; opacity: 0.7; padding: 20px;">
+                    Aucune décision en attente
+                </div>
+            </div>
+        </div>
+
+        <div class="approval-history">
+            <h3>Historique des Approbations</h3>
+            <div id="approvalHistoryList">
+                <div style="text-align: center; opacity: 0.7; padding: 20px;">
+                    Chargement de l'historique...
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="refresh-indicator" id="refreshIndicator">
+        Données mises à jour
+    </div>
+
+    <script>
+        class SecurityDashboard {
+            constructor() {
+                this.approvalChart = null;
+                this.decisionsChart = null;
+                this.approvalData = [];
+                this.lastUpdate = null;
+                
+                this.initCharts();
+                this.startDataRefresh();
+                this.setupEventListeners();
+            }
+
+            initCharts() {
+                // Graphique d'évolution du taux d'approbation
+                const approvalCtx = document.getElementById('approvalChart').getContext('2d');
+                this.approvalChart = new Chart(approvalCtx, {
+                    type: 'line',
+                    data: {
+                        labels: [],
+                        datasets: [{
+                            label: 'Taux d\'Approbation (%)',
+                            data: [],
+                            borderColor: '#4CAF50',
+                            backgroundColor: 'rgba(76, 175, 80, 0.1)',
+                            borderWidth: 3,
+                            fill: true,
+                            tension: 0.4
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        plugins: {
+                            legend: {
+                                labels: { color: '#ffffff' }
+                            }
+                        },
+                        scales: {
+                            x: {
+                                ticks: { color: '#ffffff' },
+                                grid: { color: 'rgba(255,255,255,0.1)' }
+                            },
+                            y: {
+                                ticks: { color: '#ffffff' },
+                                grid: { color: 'rgba(255,255,255,0.1)' },
+                                min: 0,
+                                max: 100
+                            }
+                        }
+                    }
+                });
+
+                // Graphique de distribution des décisions
+                const decisionsCtx = document.getElementById('decisionsChart').getContext('2d');
+                this.decisionsChart = new Chart(decisionsCtx, {
+                    type: 'doughnut',
+                    data: {
+                        labels: ['Approuvées', 'Rejetées', 'Expirées', 'En Attente'],
+                        datasets: [{
+                            data: [0, 0, 0, 0],
+                            backgroundColor: [
+                                '#4CAF50',
+                                '#F44336',
+                                '#9E9E9E',
+                                '#FF9800'
+                            ],
+                            borderWidth: 0
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        plugins: {
+                            legend: {
+                                labels: { color: '#ffffff' }
+                            }
+                        }
+                    }
+                });
+            }
+
+            async fetchSecurityMetrics() {
+                try {
+                    // Simuler l'appel API - remplacer par l'endpoint réel
+                    const response = await fetch('/api/security/metrics');
+                    if (response.ok) {
+                        return await response.json();
+                    }
+                } catch (error) {
+                    console.warn('Failed to fetch real metrics, using mock data');
+                }
+
+                // Données de démonstration
+                return this.generateMockData();
+            }
+
+            generateMockData() {
+                const now = Date.now();
+                const baseApprovalRate = 85 + Math.random() * 10;
+                
+                return {
+                    humanApprovalRate: baseApprovalRate / 100,
+                    pendingDecisions: Math.floor(Math.random() * 5),
+                    approvedDecisions: 45 + Math.floor(Math.random() * 10),
+                    rejectedDecisions: 3 + Math.floor(Math.random() * 3),
+                    expiredDecisions: 2 + Math.floor(Math.random() * 2),
+                    securityChecks: 1250 + Math.floor(Math.random() * 100),
+                    blockedEvents: Math.floor(Math.random() * 3),
+                    averageApprovalTime: 180000 + Math.random() * 120000, // 3-5 minutes
+                    trustLevel: Math.max(70, baseApprovalRate + Math.random() * 10),
+                    pendingDecisionsList: this.generateMockPendingDecisions(),
+                    approvalHistory: this.generateMockHistory(),
+                    timestamp: now
+                };
+            }
+
+            generateMockPendingDecisions() {
+                const decisions = [];
+                const types = ['self_improvement', 'model_change', 'security_update'];
+                const count = Math.floor(Math.random() * 3);
+
+                for (let i = 0; i < count; i++) {
+                    decisions.push({
+                        token: `token_${Date.now()}_${i}`,
+                        type: types[Math.floor(Math.random() * types.length)],
+                        criticality: 'CRITICAL',
+                        summary: `Décision critique ${i + 1} nécessitant une approbation`,
+                        timestamp: Date.now() - Math.random() * 300000,
+                        timeRemaining: 1800000 - Math.random() * 600000
+                    });
+                }
+
+                return decisions;
+            }
+
+            generateMockHistory() {
+                const history = [];
+                const types = ['self_improvement', 'model_change', 'security_update'];
+                const statuses = ['APPROVED', 'REJECTED'];
+
+                for (let i = 0; i < 10; i++) {
+                    history.push({
+                        type: types[Math.floor(Math.random() * types.length)],
+                        status: statuses[Math.floor(Math.random() * statuses.length)],
+                        timestamp: Date.now() - Math.random() * 86400000,
+                        approvedBy: `supervisor_${Math.floor(Math.random() * 3) + 1}`,
+                        processingTime: 60000 + Math.random() * 300000
+                    });
+                }
+
+                return history;
+            }
+
+            updateMetrics(data) {
+                // Mettre à jour les métriques principales
+                document.getElementById('approvalRate').textContent = 
+                    `${(data.humanApprovalRate * 100).toFixed(1)}%`;
+                
+                document.getElementById('pendingCount').textContent = data.pendingDecisions;
+                
+                document.getElementById('trustLevel').textContent = 
+                    `${data.trustLevel.toFixed(0)}%`;
+                
+                document.getElementById('securityChecks').textContent = 
+                    data.securityChecks.toLocaleString();
+                
+                document.getElementById('avgApprovalTime').textContent = 
+                    `${Math.round(data.averageApprovalTime / 60000)}min`;
+                
+                document.getElementById('blockedEvents').textContent = data.blockedEvents;
+
+                // Mettre à jour les indicateurs de statut
+                this.updateStatusIndicators(data);
+
+                // Mettre à jour les graphiques
+                this.updateCharts(data);
+
+                // Mettre à jour les listes
+                this.updatePendingDecisions(data.pendingDecisionsList);
+                this.updateApprovalHistory(data.approvalHistory);
+
+                // Afficher l'indicateur de mise à jour
+                this.showRefreshIndicator();
+            }
+
+            updateStatusIndicators(data) {
+                const trustStatus = document.getElementById('trustStatus');
+                const trustStatusText = document.getElementById('trustStatusText');
+                const approvalStatus = document.getElementById('approvalStatus');
+                const approvalStatusText = document.getElementById('approvalStatusText');
+
+                // Statut de confiance
+                if (data.trustLevel >= 80) {
+                    trustStatus.className = 'status-dot secure';
+                    trustStatusText.textContent = 'Système Sécurisé';
+                } else if (data.trustLevel >= 60) {
+                    trustStatus.className = 'status-dot warning';
+                    trustStatusText.textContent = 'Vigilance Requise';
+                } else {
+                    trustStatus.className = 'status-dot critical';
+                    trustStatusText.textContent = 'Alerte Sécurité';
+                }
+
+                // Statut des approbations
+                if (data.pendingDecisions === 0) {
+                    approvalStatus.className = 'status-dot secure';
+                    approvalStatusText.textContent = 'Aucune Attente';
+                } else if (data.pendingDecisions <= 3) {
+                    approvalStatus.className = 'status-dot warning';
+                    approvalStatusText.textContent = `${data.pendingDecisions} En Attente`;
+                } else {
+                    approvalStatus.className = 'status-dot critical';
+                    approvalStatusText.textContent = 'Surcharge Détectée';
+                }
+            }
+
+            updateCharts(data) {
+                // Mettre à jour le graphique d'évolution
+                const now = new Date();
+                const timeLabel = now.toLocaleTimeString();
+                
+                this.approvalData.push({
+                    time: timeLabel,
+                    rate: data.humanApprovalRate * 100
+                });
+
+                // Garder seulement les 20 derniers points
+                if (this.approvalData.length > 20) {
+                    this.approvalData.shift();
+                }
+
+                this.approvalChart.data.labels = this.approvalData.map(d => d.time);
+                this.approvalChart.data.datasets[0].data = this.approvalData.map(d => d.rate);
+                this.approvalChart.update('none');
+
+                // Mettre à jour le graphique de distribution
+                this.decisionsChart.data.datasets[0].data = [
+                    data.approvedDecisions,
+                    data.rejectedDecisions,
+                    data.expiredDecisions,
+                    data.pendingDecisions
+                ];
+                this.decisionsChart.update('none');
+            }
+
+            updatePendingDecisions(decisions) {
+                const container = document.getElementById('pendingDecisionsList');
+                const badge = document.getElementById('pendingBadge');
+                
+                badge.textContent = `${decisions.length} en attente`;
+
+                if (decisions.length === 0) {
+                    container.innerHTML = `
+                        <div style="text-align: center; opacity: 0.7; padding: 20px;">
+                            Aucune décision en attente
+                        </div>
+                    `;
+                    return;
+                }
+
+                container.innerHTML = decisions.map(decision => `
+                    <div class="decision-item">
+                        <div class="decision-meta">
+                            <span class="decision-type">${decision.type}</span>
+                            <span class="decision-time">
+                                ${this.formatTimeRemaining(decision.timeRemaining)}
+                            </span>
+                        </div>
+                        <div class="decision-summary">${decision.summary}</div>
+                        <div class="decision-actions">
+                            <button class="btn btn-approve" onclick="dashboard.approveDecision('${decision.token}')">
+                                ✅ Approuver
+                            </button>
+                            <button class="btn btn-reject" onclick="dashboard.rejectDecision('${decision.token}')">
+                                ❌ Rejeter
+                            </button>
+                        </div>
+                    </div>
+                `).join('');
+            }
+
+            updateApprovalHistory(history) {
+                const container = document.getElementById('approvalHistoryList');
+                
+                container.innerHTML = history.map(item => `
+                    <div class="history-item">
+                        <div>
+                            <strong>${item.type}</strong>
+                            <div style="font-size: 0.8rem; opacity: 0.7;">
+                                ${new Date(item.timestamp).toLocaleString()}
+                                ${item.approvedBy ? `par ${item.approvedBy}` : ''}
+                            </div>
+                        </div>
+                        <div>
+                            <span class="history-status status-${item.status.toLowerCase()}">
+                                ${item.status}
+                            </span>
+                        </div>
+                    </div>
+                `).join('');
+            }
+
+            formatTimeRemaining(ms) {
+                const minutes = Math.floor(ms / 60000);
+                const seconds = Math.floor((ms % 60000) / 1000);
+                
+                if (minutes > 0) {
+                    return `${minutes}min ${seconds}s restantes`;
+                } else {
+                    return `${seconds}s restantes`;
+                }
+            }
+
+            showRefreshIndicator() {
+                const indicator = document.getElementById('refreshIndicator');
+                indicator.classList.add('show');
+                setTimeout(() => {
+                    indicator.classList.remove('show');
+                }, 2000);
+            }
+
+            async approveDecision(token) {
+                try {
+                    const response = await fetch('/api/security/approve', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({
+                            token,
+                            supervisorId: 'dashboard_user',
+                            signature: 'dashboard_signature'
+                        })
+                    });
+
+                    if (response.ok) {
+                        console.log('Decision approved:', token);
+                        this.refreshData(); // Actualiser les données
+                    }
+                } catch (error) {
+                    console.error('Failed to approve decision:', error);
+                    alert('Erreur lors de l\'approbation de la décision');
+                }
+            }
+
+            async rejectDecision(token) {
+                const reason = prompt('Raison du rejet:');
+                if (!reason) return;
+
+                try {
+                    const response = await fetch('/api/security/reject', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({
+                            token,
+                            supervisorId: 'dashboard_user',
+                            signature: 'dashboard_signature',
+                            reason
+                        })
+                    });
+
+                    if (response.ok) {
+                        console.log('Decision rejected:', token);
+                        this.refreshData(); // Actualiser les données
+                    }
+                } catch (error) {
+                    console.error('Failed to reject decision:', error);
+                    alert('Erreur lors du rejet de la décision');
+                }
+            }
+
+            async refreshData() {
+                const data = await this.fetchSecurityMetrics();
+                this.updateMetrics(data);
+                this.lastUpdate = Date.now();
+            }
+
+            startDataRefresh() {
+                // Première mise à jour
+                this.refreshData();
+
+                // Mise à jour automatique toutes les 5 secondes
+                setInterval(() => {
+                    this.refreshData();
+                }, 5000);
+            }
+
+            setupEventListeners() {
+                // Actualisation manuelle avec F5 ou Ctrl+R
+                document.addEventListener('keydown', (e) => {
+                    if (e.key === 'F5' || (e.ctrlKey && e.key === 'r')) {
+                        e.preventDefault();
+                        this.refreshData();
+                    }
+                });
+
+                // Actualisation au clic sur le titre
+                document.querySelector('.header h1').addEventListener('click', () => {
+                    this.refreshData();
+                });
+            }
+        }
+
+        // Initialiser le dashboard
+        const dashboard = new SecurityDashboard();
+
+        // Exposer globalement pour les boutons
+        window.dashboard = dashboard;
+    </script>
+</body>
+</html> 

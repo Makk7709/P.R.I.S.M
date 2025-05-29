@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PRISM UI Tests Manuels</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+            margin: 0;
+            padding: 20px;
+            background: #1a1a1a;
+            color: #e0e0e0;
+        }
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        h1 {
+            color: #4CAF50;
+            margin-bottom: 30px;
+        }
+        .test-panel {
+            background: #2a2a2a;
+            border-radius: 8px;
+            padding: 20px;
+            margin-bottom: 20px;
+        }
+        .test-button {
+            background: #4CAF50;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 16px;
+            margin-right: 10px;
+        }
+        .test-button:hover {
+            background: #45a049;
+        }
+        .results {
+            background: #333;
+            border-radius: 4px;
+            padding: 15px;
+            margin-top: 20px;
+            white-space: pre-wrap;
+            font-family: monospace;
+        }
+        .status {
+            margin-top: 10px;
+            padding: 10px;
+            border-radius: 4px;
+        }
+        .status.success {
+            background: #4CAF50;
+            color: white;
+        }
+        .status.warning {
+            background: #ff9800;
+            color: white;
+        }
+        .status.error {
+            background: #f44336;
+            color: white;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🧪 Tests Manuels PRISM UI</h1>
+        
+        <div class="test-panel">
+            <h2>Tests Disponibles</h2>
+            <button class="test-button" onclick="runTest('compression')">Test Compression</button>
+            <button class="test-button" onclick="runTest('purge')">Test Purge</button>
+            <button class="test-button" onclick="runTest('tooltips')">Test Tooltips</button>
+            <button class="test-button" onclick="runTest('filtering')">Test Filtrage</button>
+            <button class="test-button" onclick="runTest('performance')">Test Performance</button>
+            <button class="test-button" onclick="runTest('thresholds')">Test Seuils</button>
+            <button class="test-button" onclick="runAllTests()">Tous les Tests</button>
+            
+            <div id="status" class="status"></div>
+            <div id="results" class="results"></div>
+        </div>
+    </div>
+
+    <script type="module">
+        import { PrismManualTestRunner } from './prismManualTests.js';
+        
+        window.testRunner = new PrismManualTestRunner();
+        
+        window.runTest = async (testName) => {
+            const status = document.getElementById('status');
+            const results = document.getElementById('results');
+            
+            status.className = 'status';
+            status.textContent = `Exécution du test: ${testName}...`;
+            
+            try {
+                const result = await window.testRunner[`test${testName.charAt(0).toUpperCase() + testName.slice(1)}`]();
+                status.className = 'status success';
+                status.textContent = `✅ Test ${testName} terminé avec succès`;
+                results.textContent = JSON.stringify(result, null, 2);
+            } catch (error) {
+                status.className = 'status error';
+                status.textContent = `❌ Erreur pendant le test ${testName}: ${error.message}`;
+                results.textContent = error.stack;
+            }
+        };
+        
+        window.runAllTests = async () => {
+            const status = document.getElementById('status');
+            const results = document.getElementById('results');
+            
+            status.className = 'status';
+            status.textContent = 'Exécution de tous les tests...';
+            
+            try {
+                await window.testRunner.runAllTests();
+                status.className = 'status success';
+                status.textContent = '✅ Tous les tests terminés avec succès';
+                results.textContent = '';
+                window.testRunner.printResults();
+            } catch (error) {
+                status.className = 'status error';
+                status.textContent = `❌ Erreur pendant les tests: ${error.message}`;
+                results.textContent = error.stack;
+            }
+        };
+    </script>
+</body>
+</html> 

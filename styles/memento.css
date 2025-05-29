@@ -1,0 +1,139 @@
+.memento-container {
+  position: fixed;
+  bottom: 24px;
+  right: 24px;
+  width: 320px;
+  max-width: 90vw;
+  background: rgba(30, 41, 59, 0.55); /* glassmorphism */
+  border: 1.5px solid rgba(80, 200, 255, 0.25);
+  border-radius: 18px;
+  padding: 22px 18px 18px 18px;
+  box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.18);
+  backdrop-filter: blur(12px) saturate(1.2);
+  -webkit-backdrop-filter: blur(12px) saturate(1.2);
+  z-index: 1000;
+  transition: all 0.3s cubic-bezier(.4,2,.6,1);
+}
+
+.memento-container:hover {
+  transform: translateY(-4px) scale(1.02);
+  box-shadow: 0 12px 32px 0 rgba(31, 38, 135, 0.22);
+}
+
+.memento-snapshot {
+  background: linear-gradient(120deg, rgba(80,200,255,0.10) 0%, rgba(0,212,255,0.08) 100%);
+  border-radius: 14px;
+  padding: 18px 14px 14px 14px;
+  box-shadow: 0 2px 8px rgba(80,200,255,0.07);
+}
+
+.memento-header {
+  display: flex;
+  align-items: center;
+  margin-bottom: 14px;
+  color: #50c8ff;
+  font-family: 'Orbitron', 'Segoe UI', Arial, sans-serif;
+  letter-spacing: 0.04em;
+}
+
+.memento-icon {
+  font-size: 1.5em;
+  margin-right: 10px;
+  filter: drop-shadow(0 1px 2px #50c8ff44);
+}
+
+.memento-title {
+  font-family: 'Orbitron', 'Segoe UI', Arial, sans-serif;
+  font-weight: 700;
+  font-size: 1.1em;
+  color: #e0f7fa;
+}
+
+.memento-content {
+  color: #e0f7fa;
+}
+
+.memento-narrative {
+  font-size: 1em;
+  line-height: 1.5;
+  margin-bottom: 16px;
+  color: #e0f7fa;
+  opacity: 0.92;
+  font-family: 'Inter', 'Segoe UI', Arial, sans-serif;
+}
+
+.memento-stats {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-top: 12px;
+  justify-content: space-between;
+}
+
+.stat-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  min-width: 70px;
+  flex: 1 1 40%;
+  padding: 10px 0 8px 0;
+  background: rgba(80,200,255,0.13);
+  border-radius: 12px;
+  box-shadow: 0 1px 4px rgba(80,200,255,0.08);
+  transition: background 0.2s;
+}
+
+.stat-item:hover {
+  background: rgba(80,200,255,0.22);
+}
+
+.stat-label {
+  font-size: 0.85em;
+  color: #b2ebf2;
+  opacity: 0.8;
+  font-family: 'Inter', 'Segoe UI', Arial, sans-serif;
+  margin-bottom: 2px;
+}
+
+.stat-value {
+  font-family: 'Orbitron', 'Segoe UI', Arial, sans-serif;
+  font-size: 1.25em;
+  color: #00eaff;
+  margin-top: 2px;
+  text-shadow: 0 1px 2px #50c8ff44;
+}
+
+@media (max-width: 600px) {
+  .memento-container {
+    right: 0;
+    left: 0;
+    bottom: 0;
+    width: 100vw;
+    border-radius: 0;
+    padding: 10px 2vw 8px 2vw;
+  }
+  .memento-snapshot {
+    border-radius: 8px;
+    padding: 10px 4px 8px 4px;
+  }
+  .stat-item {
+    min-width: 40%;
+    font-size: 0.95em;
+  }
+}
+
+@keyframes mementoUpdate {
+  0% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.04);
+  }
+  100% {
+    transform: scale(1);
+  }
+}
+
+.memento-snapshot.updating {
+  animation: mementoUpdate 0.3s cubic-bezier(.4,2,.6,1);
+} 

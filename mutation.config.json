@@ -1,0 +1,39 @@
+{
+  "mutators": [
+    { "find": "\\>", "replace": "<" },
+    { "find": "\\<", "replace": ">" },
+    { "find": "====", "replace": "!==" },
+    { "find": "!==", "replace": "====" },
+    { "find": "\\+\\s1", "replace": "- 1" },
+    { "find": "-\\s1", "replace": "+ 1" },
+    { "find": "\\btrue\\b", "replace": "false" },
+    { "find": "\\bfalse\\b", "replace": "true" },
+    { "find": "\\bconst\\b", "replace": "let" },
+    { "find": "\\blet\\b", "replace": "const" },
+    { "find": "&&", "replace": "||" },
+    { "find": "\\|\\|", "replace": "&&" }
+  ],
+  "targetModules": [
+    {
+      "path": "regulation/prismStrategicLayer.js",
+      "targetFunctions": ["generateCompositeDirectives"],
+      "maxMutations": 20,
+      "minMutants": 10
+    },
+    {
+      "path": "regulation/prismAdaptiveCycler.js",
+      "targetFunctions": ["_updateEfficiency"],
+      "maxMutations": 20,
+      "minMutants": 10
+    },
+    {
+      "path": "memory/prismCodexAnalyzer.js",
+      "targetFunctions": ["_detectEmergentPatterns"],
+      "maxMutations": 20,
+      "minMutants": 10
+    }
+  ],
+  "killThreshold": 90,
+  "timeout": 60000,
+  "debug": true
+} 

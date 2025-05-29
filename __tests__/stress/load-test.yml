@@ -1,0 +1,143 @@
+config:
+  target: "http://localhost:3000"
+  phases:
+    - duration: 60
+      arrivalRate: 1
+      rampTo: 100
+      name: "Warm up"
+    - duration: 300
+      arrivalRate: 100
+      rampTo: 1000
+      name: "Ramp up load"
+    - duration: 600
+      arrivalRate: 1000
+      name: "Sustained high load"
+    - duration: 300
+      arrivalRate: 1000
+      rampTo: 100
+      name: "Ramp down"
+  plugins:
+    metrics-by-endpoint: {}
+    expect: {}
+    apdex: {}
+  apdex:
+    threshold: 100
+  defaults:
+    headers:
+      Content-Type: "application/json"
+      Accept: "application/json"
+
+scenarios:
+  - name: "PRISM Core Load Test"
+    flow:
+      - post:
+          url: "/api/prism/process"
+          json:
+            input: "Test input for load testing"
+          expect:
+            - statusCode: 200
+            - contentType: json
+            - hasProperty: "response"
+          capture:
+            - json: "$.requestId"
+              as: "requestId"
+      
+      - think: 1
+
+      - get:
+          url: "/api/prism/status/{{ requestId }}"
+          expect:
+            - statusCode: 200
+            - contentType: json
+            - hasProperty: "status"
+      
+      - think: 2
+
+      - post:
+          url: "/api/prism/analyze"
+          json:
+            data: "Complex analysis request"
+            options:
+              depth: 3
+              timeout: 5000
+          expect:
+            - statusCode: 200
+            - contentType: json
+            - hasProperty: "analysis"
+      
+      - think: 1
+
+      - get:
+          url: "/api/prism/metrics"
+          expect:
+            - statusCode: 200
+            - contentType: json
+            - hasProperty: "metrics"
+            - hasProperty: "metrics.latency"
+            - hasProperty: "metrics.throughput"
+            - hasProperty: "metrics.errorRate"
+
+  - name: "PRISM Core Stress Test"
+    weight: 2
+    flow:
+      - post:
+          url: "/api/prism/process-batch"
+          json:
+            inputs:
+              - "Batch processing test 1"
+              - "Batch processing test 2"
+              - "Batch processing test 3"
+            options:
+              parallel: true
+              priority: "high"
+          expect:
+            - statusCode: 200
+            - contentType: json
+            - hasProperty: "results"
+            - hasProperty: "timing"
+      
+      - think: 2
+
+      - post:
+          url: "/api/prism/optimize"
+          json:
+            target: "performance"
+            constraints:
+              maxLatency: 100
+              maxMemory: 80
+              maxCpu: 70
+          expect:
+            - statusCode: 200
+            - contentType: json
+            - hasProperty: "optimization"
+            - hasProperty: "optimization.recommendations"
+      
+      - think: 1
+
+      - get:
+          url: "/api/prism/health"
+          expect:
+            - statusCode: 200
+            - contentType: json
+            - hasProperty: "status"
+            - hasProperty: "metrics"
+            - hasProperty: "resources"
+
+before:
+  flow:
+    - log: "Starting load test for PRISM Core v1.0.0"
+    - get:
+        url: "/api/prism/health"
+        expect:
+          - statusCode: 200
+          - contentType: json
+
+after:
+  flow:
+    - log: "Load test completed"
+    - get:
+        url: "/api/prism/metrics/summary"
+        capture:
+          - json: "$"
+            as: "finalMetrics"
+    - log: "Final metrics captured: {{ finalMetrics }}" 
