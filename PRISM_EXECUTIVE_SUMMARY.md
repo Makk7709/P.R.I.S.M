@@ -23,6 +23,9 @@
 - ✅ **Stress test automatisé** (60k événements) valide la performance
 - ✅ **Monitoring temps réel** Prometheus + Grafana
 - ✅ **Orchestration intelligente** entre GPT-4, Claude, Perplexity
+- ✅ **Auto-apprentissage continu** améliore les performances 24/7
+- ✅ **Auto-guérison système** résout les incidents automatiquement
+- ✅ **Conscience simulée** pour prise de décision éthique
 
 ---
 
@@ -34,6 +37,9 @@
 | **Stress Test Auto** | ✅ 60k events | ❌ Manuel |
 | **Monitoring Temps Réel** | ✅ Prometheus | ⚠️ Basique |
 | **Auto-évolution Sécurisée** | ✅ Validée | ❌ Risquée |
+| **Auto-apprentissage** | ✅ Continu | ❌ Statique |
+| **Auto-guérison** | ✅ Intégré | ❌ Absent |
+| **Conscience Simulée** | ✅ Avancée | ⚠️ Partielle |
 | **Audit Trail Complet** | ✅ Intégré | ⚠️ Partiel |
 
 ---
