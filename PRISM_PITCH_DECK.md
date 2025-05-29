@@ -175,13 +175,13 @@ $1k-$5k/jour consulting
 
 | Année | Clients | ARR | Croissance |
 |-------|---------|-----|------------|
-| **2024** | 10 | $500k | - |
-| **2025** | 50 | $2.5M | **400%** |
-| **2026** | 150 | $7.5M | **200%** |
-| **2027** | 300 | $15M | **100%** |
-| **2028** | 500 | $25M | **67%** |
+| **2025** | 25 | $1.2M | - |
+| **2026** | 100 | $5M | **317%** |
+| **2027** | 250 | $12.5M | **150%** |
+| **2028** | 450 | $22.5M | **80%** |
+| **2029** | 700 | $35M | **56%** |
 
-### **Path to $25M ARR en 5 ans**
+### **Path to $35M ARR en 5 ans**
 
 ---
 
@@ -225,18 +225,18 @@ $1k-$5k/jour consulting
 
 # 🚀 Roadmap Produit
 
-### **Q1 2024**
+### **Q3 2025**
 - 🎯 Déploiement pilotes early adopters
 - ⚡ Optimisation performance (<10ms)
 - 🛡️ Certifications sécurité (SOC2)
 
-### **Q2-Q4 2024**
+### **Q4 2025-Q2 2026**
 - 🖥️ Interface web supervision
 - ☁️ Version SaaS multi-tenant
 - 🤝 Partenariats cloud providers
 - 🌍 Expansion internationale
 
-### **2025+**
+### **2026+**
 - 📱 Mobile app monitoring
 - 🤖 AI marketplace intégrations
 - 🏭 Edge computing & IoT
@@ -320,4 +320,4 @@ Négociation conditions investissement
 
 **Merci pour votre attention**
 
-*Document confidentiel - © 2024 PRISM Team* 
+*Document confidentiel - © 2025 PRISM Team* 
