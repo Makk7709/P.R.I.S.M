@@ -97,9 +97,9 @@
 ### **Série A : $5M - $10M**
 
 #### **Utilisation**
-- **40% R&D** : Équipe technique (8-12 devs)
-- **30% Sales** : Go-to-market enterprise
-- **20% Ops** : Infrastructure scaling
+- **50% Team Building** : CTO + équipe technique (6-10 devs)
+- **25% Sales** : VP Sales + go-to-market enterprise
+- **15% Ops** : Infrastructure scaling + DevOps
 - **10% Legal** : Brevets et IP
 
 #### **Objectifs 18 mois**
@@ -123,13 +123,19 @@
 
 ---
 
-## 👥 Équipe
+## 👤 Fondateur
 
-### **Expertise Clé**
-- **10+ années** expérience IA collective
-- **Systèmes distribués** et consensus
-- **Enterprise sales** secteurs critiques
-- **DevOps** et monitoring production
+### **Expertise Technique Complète**
+- 🧠 **2+ années R&D** IA consensus et auto-évolution
+- 🏗️ **Systèmes distribués** et monitoring production
+- 🔒 **Sécurité** et DevOps Docker/Kubernetes
+- 💻 **Full-stack** : 14 composants développés solo
+
+### **Plan de Recrutement**
+- 🤝 **CTO/Co-fondateur** (Priorité #1)
+- 👥 **6-10 développeurs** seniors
+- 📈 **VP Sales** enterprise
+- 🎯 **Product Manager**
 
 ---
 

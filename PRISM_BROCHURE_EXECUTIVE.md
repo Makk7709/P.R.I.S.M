@@ -98,10 +98,17 @@
 - ✅ **Disponibilité** : 99.9% uptime
 - ✅ **Stress Test** : 60k événements validés
 
-### **Développement**
-- 🔧 **14 composants** production-ready
+### **Développement Solo**
+- 🔧 **14 composants** production-ready développés
 - 📊 **2,829+ lignes** de code validé
 - 🧪 **95%+ couverture** de tests
+- 🧠 **Architecture complète** conçue et implémentée
+
+### **Fondateur & Vision**
+- 💻 **Développeur Full-Stack** : IA, systèmes distribués, DevOps
+- 🏗️ **Architecte Système** : Consensus, monitoring, sécurité
+- 🎯 **Product Vision** : 2+ années R&D sur consensus IA
+- 📈 **Execution** : v1.0 → v2.3 avec stress test intégré
 
 ---
 
@@ -110,10 +117,16 @@
 ### **Série A : $5M-$10M**
 
 #### **Utilisation des Fonds**
-- **40% R&D** : Équipe technique (8-12 devs)
-- **30% Sales** : Go-to-market enterprise
-- **20% Ops** : Infrastructure scaling
-- **10% Legal** : Brevets et IP
+- **50% Team Building** : Recrutement équipe technique (CTO, 6-10 devs)
+- **25% Sales & Marketing** : Go-to-market enterprise + VP Sales
+- **15% Operations** : Infrastructure scaling + DevOps
+- **10% Legal & IP** : Brevets et protection
+
+#### **Plan de Recrutement (Priorité)**
+1. **CTO/Co-fondateur** : Leadership technique et scaling
+2. **Senior Developers** : Backend, Frontend, DevOps (4-6)
+3. **VP Sales** : Go-to-market enterprise
+4. **Product Manager** : Roadmap et features clients
 
 #### **Objectifs 18 mois**
 - 📈 **100+ clients** enterprise

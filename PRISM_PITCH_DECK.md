@@ -185,20 +185,24 @@ $1k-$5k/jour consulting
 
 ---
 
-## Slide 11: Équipe
+## Slide 11: Fondateur
 
-# 👥 Équipe Fondatrice
+# 👤 Fondateur Solo - Expertise Complète
 
-### **Expertise Technique**
-- 🧠 **10+ années** expérience IA collective
-- 🏗️ **Systèmes distribués** et consensus
-- 🔒 **Sécurité** et monitoring production
-- ⚡ **DevOps** Docker/Kubernetes
+### **Compétences Techniques Maîtrisées**
+- 🧠 **IA & Consensus** : 2+ années R&D, innovation brevetable
+- 🏗️ **Systèmes distribués** : Architecture scalable, monitoring
+- 🔒 **Sécurité & DevOps** : Docker/Kubernetes, production-ready
+- 💻 **Full-Stack** : 14 composants développés, 2,829+ lignes
 
-### **Business**
-- 💼 **Enterprise sales** secteurs critiques
-- 🌐 **Réseau** investisseurs et partenaires
-- 📈 **Vision** produit et go-to-market
+### **Réalisations Démontrées**
+- 🎯 **PRISM v1.0 → v2.3** : Évolution complète solo
+- 📊 **95%+ couverture tests** : Qualité enterprise
+- 🚀 **Premier consensus IA** : Innovation unique marché
+
+### **Plan de Recrutement Post-Financement**
+- 🤝 **CTO/Co-fondateur** (Priorité #1)
+- 👥 **6-10 développeurs** seniors
 
 ---
 
@@ -209,9 +213,9 @@ $1k-$5k/jour consulting
 ## **$5M - $10M Recherchés**
 
 ### **Utilisation des Fonds**
-- **40% R&D** : Équipe technique (8-12 devs)
-- **30% Sales & Marketing** : Go-to-market enterprise  
-- **20% Operations** : Infrastructure scaling
+- **50% Team Building** : CTO + équipe technique (6-10 devs)
+- **25% Sales & Marketing** : VP Sales + go-to-market enterprise  
+- **15% Operations** : Infrastructure scaling + DevOps
 - **10% Legal & IP** : Brevets et protection
 
 ### **Objectifs 18 mois**
