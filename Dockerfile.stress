@@ -1,0 +1,31 @@
+# Dockerfile pour les tests de stress PRISM
+FROM node:18-alpine
+
+# Installer curl pour les health checks
+RUN apk add --no-cache curl
+
+# Créer le répertoire de l'application
+WORKDIR /app
+
+# Copier les fichiers de configuration
+COPY package*.json ./
+
+# Installer les dépendances
+RUN npm ci --only=production && npm cache clean --force
+
+# Copier le code source
+COPY . .
+
+# Créer les répertoires nécessaires
+RUN mkdir -p /app/reports /app/logs /app/monitoring
+
+# Exposer les ports
+EXPOSE 3000 9090
+
+# Variables d'environnement par défaut
+ENV NODE_ENV=stress-test
+ENV PROMETHEUS_PORT=9090
+ENV LOG_LEVEL=info
+
+# Commande par défaut pour démarrer PRISM avec monitoring
+CMD ["node", "prismVitals.js"] 

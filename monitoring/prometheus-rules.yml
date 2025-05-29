@@ -1,0 +1,70 @@
+groups:
+  - name: prism-stress-test-alerts
+    rules:
+      # Alerte sur latence élevée
+      - alert: PrismHighLatency
+        expr: prism_latency_seconds > 0.04
+        for: 10s
+        labels:
+          severity: warning
+        annotations:
+          summary: "PRISM latency is high"
+          description: "PRISM average latency is {{ $value }}s, which exceeds the 40ms threshold"
+
+      # Alerte sur taux de consensus faible
+      - alert: PrismLowConsensusRate
+        expr: prism_consensus_success_rate < 0.999
+        for: 5s
+        labels:
+          severity: critical
+        annotations:
+          summary: "PRISM consensus success rate is low"
+          description: "Consensus success rate is {{ $value }}, below the 99.9% threshold"
+
+      # Alerte sur événements échoués
+      - alert: PrismFailedEvents
+        expr: increase(prism_events_failed_total[1m]) > 0
+        for: 0s
+        labels:
+          severity: warning
+        annotations:
+          summary: "PRISM has failed events"
+          description: "{{ $value }} events failed in the last minute"
+
+      # Alerte sur utilisation mémoire élevée
+      - alert: PrismHighMemoryUsage
+        expr: prism_memory_usage_bytes > 2000000000  # 2GB
+        for: 30s
+        labels:
+          severity: warning
+        annotations:
+          summary: "PRISM memory usage is high"
+          description: "Memory usage is {{ $value | humanize1024 }}B, approaching the 2GB limit"
+
+      # Alerte sur taille de queue élevée
+      - alert: PrismHighQueueSize
+        expr: prism_queue_size > 1000
+        for: 15s
+        labels:
+          severity: warning
+        annotations:
+          summary: "PRISM event queue is large"
+          description: "Event queue size is {{ $value }}, indicating potential processing bottleneck"
+
+  - name: prism-stress-test-recording-rules
+    rules:
+      # Règle pour calculer le taux d'événements par seconde
+      - record: prism:events_per_second
+        expr: rate(prism_events_total[1m])
+
+      # Règle pour calculer le taux d'erreur
+      - record: prism:error_rate
+        expr: rate(prism_events_failed_total[1m]) / rate(prism_events_total[1m])
+
+      # Règle pour calculer la latence P95
+      - record: prism:latency_p95
+        expr: histogram_quantile(0.95, rate(prism_latency_seconds[5m]))
+
+      # Règle pour calculer la latence P99
+      - record: prism:latency_p99
+        expr: histogram_quantile(0.99, rate(prism_latency_seconds[5m])) 

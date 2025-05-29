@@ -4,6 +4,7 @@
  */
 
 import prismBus from './prismBus.js';
+import http from 'http';
 
 // Configuration sécurisée par défaut
 const SECURITY_CONFIG = {
@@ -134,11 +135,27 @@ export default class PrismVitals {
       improvementHistory: [],
       lastImprovementUpdate: null
     };
+
+    // Prometheus metrics
+    this.prometheusMetrics = {
+      prism_events_total: 0,
+      prism_events_failed_total: 0,
+      prism_latency_seconds: 0,
+      prism_consensus_success_rate: 1.0,
+      prism_memory_usage_bytes: 0,
+      prism_queue_size: 0,
+      prism_cpu_usage_percent: 0
+    };
+
+    // Prometheus server
+    this.prometheusServer = null;
+    this.prometheusPort = process.env.PROMETHEUS_PORT || 9090;
     
     // Bind des méthodes
     this.updateSecurityMetrics = this.updateSecurityMetrics.bind(this);
     this.updateConsensusMetrics = this.updateConsensusMetrics.bind(this);
     this.recordSelfImprovement = this.recordSelfImprovement.bind(this);
+    this.updatePrometheusMetrics = this.updatePrometheusMetrics.bind(this);
     
     // Initialisation synchrone pour éviter les problèmes
     this.initializeSync();
@@ -151,6 +168,7 @@ export default class PrismVitals {
     try {
       this.initializeVitals();
       this.initializeConsensusMonitoring();
+      this.initializePrometheusExporter();
       
       this.isInitialized = true;
       console.log('✅ PrismVitals: Initialization complete (safe mode)');
@@ -164,6 +182,192 @@ export default class PrismVitals {
     } catch (error) {
       console.error('❌ PrismVitals: Initialization failed:', error);
       this.isInitialized = false;
+    }
+  }
+
+  /**
+   * Initialise l'exporter Prometheus
+   */
+  initializePrometheusExporter() {
+    try {
+      this.prometheusServer = http.createServer((req, res) => {
+        if (req.url === '/metrics' && req.method === 'GET') {
+          this.handleMetricsRequest(req, res);
+        } else if (req.url === '/health' && req.method === 'GET') {
+          this.handleHealthRequest(req, res);
+        } else {
+          res.writeHead(404, { 'Content-Type': 'text/plain' });
+          res.end('Not Found');
+        }
+      });
+
+      this.prometheusServer.listen(this.prometheusPort, () => {
+        console.log(`📊 Prometheus metrics server listening on port ${this.prometheusPort}`);
+        console.log(`📊 Metrics available at: http://localhost:${this.prometheusPort}/metrics`);
+      });
+
+      // Mettre à jour les métriques Prometheus périodiquement
+      setInterval(() => {
+        this.updatePrometheusMetrics();
+      }, 5000); // Toutes les 5 secondes
+
+    } catch (error) {
+      console.warn('⚠️ Failed to initialize Prometheus exporter:', error.message);
+    }
+  }
+
+  /**
+   * Gère les requêtes /metrics pour Prometheus
+   */
+  handleMetricsRequest(req, res) {
+    try {
+      const metrics = this.generatePrometheusMetrics();
+      
+      res.writeHead(200, {
+        'Content-Type': 'text/plain; version=0.0.4; charset=utf-8'
+      });
+      res.end(metrics);
+    } catch (error) {
+      console.error('Error generating Prometheus metrics:', error);
+      res.writeHead(500, { 'Content-Type': 'text/plain' });
+      res.end('Internal Server Error');
+    }
+  }
+
+  /**
+   * Gère les requêtes /health
+   */
+  handleHealthRequest(req, res) {
+    const health = {
+      status: this.isInitialized ? 'healthy' : 'unhealthy',
+      timestamp: new Date().toISOString(),
+      uptime: process.uptime(),
+      version: '1.0.0-safe'
+    };
+
+    res.writeHead(200, { 'Content-Type': 'application/json' });
+    res.end(JSON.stringify(health, null, 2));
+  }
+
+  /**
+   * Met à jour les métriques Prometheus
+   */
+  updatePrometheusMetrics() {
+    try {
+      // Récupérer les métriques du système
+      const vitals = this.getVitalsReport();
+      const consensus = this.getConsensusMetrics();
+      
+      // Mettre à jour les métriques Prometheus
+      this.prometheusMetrics.prism_consensus_success_rate = consensus.consensus_success_rate;
+      this.prometheusMetrics.prism_latency_seconds = vitals.averageLatency / 1000; // Convertir en secondes
+      
+      // Métriques de mémoire
+      if (process.memoryUsage) {
+        const memUsage = process.memoryUsage();
+        this.prometheusMetrics.prism_memory_usage_bytes = memUsage.heapUsed;
+      }
+
+      // CPU usage (approximation basée sur la charge)
+      if (process.cpuUsage) {
+        const cpuUsage = process.cpuUsage();
+        this.prometheusMetrics.prism_cpu_usage_percent = 
+          (cpuUsage.user + cpuUsage.system) / 1000000; // Convertir en pourcentage approximatif
+      }
+
+    } catch (error) {
+      console.warn('Warning: Failed to update Prometheus metrics:', error.message);
+    }
+  }
+
+  /**
+   * Génère les métriques au format Prometheus
+   */
+  generatePrometheusMetrics() {
+    const timestamp = Date.now();
+    
+    return `# HELP prism_events_total Total number of events processed
+# TYPE prism_events_total counter
+prism_events_total ${this.prometheusMetrics.prism_events_total} ${timestamp}
+
+# HELP prism_events_failed_total Total number of failed events
+# TYPE prism_events_failed_total counter
+prism_events_failed_total ${this.prometheusMetrics.prism_events_failed_total} ${timestamp}
+
+# HELP prism_latency_seconds Average event processing latency in seconds
+# TYPE prism_latency_seconds gauge
+prism_latency_seconds ${this.prometheusMetrics.prism_latency_seconds} ${timestamp}
+
+# HELP prism_consensus_success_rate Consensus success rate (0-1)
+# TYPE prism_consensus_success_rate gauge
+prism_consensus_success_rate ${this.prometheusMetrics.prism_consensus_success_rate} ${timestamp}
+
+# HELP prism_memory_usage_bytes Memory usage in bytes
+# TYPE prism_memory_usage_bytes gauge
+prism_memory_usage_bytes ${this.prometheusMetrics.prism_memory_usage_bytes} ${timestamp}
+
+# HELP prism_queue_size Current event queue size
+# TYPE prism_queue_size gauge
+prism_queue_size ${this.prometheusMetrics.prism_queue_size} ${timestamp}
+
+# HELP prism_cpu_usage_percent CPU usage percentage
+# TYPE prism_cpu_usage_percent gauge
+prism_cpu_usage_percent ${this.prometheusMetrics.prism_cpu_usage_percent} ${timestamp}
+
+# HELP prism_consensus_requests_total Total consensus requests
+# TYPE prism_consensus_requests_total counter
+prism_consensus_requests_total ${this.consensusMetrics.totalConsensusRequests} ${timestamp}
+
+# HELP prism_consensus_approved_total Total approved consensus decisions
+# TYPE prism_consensus_approved_total counter
+prism_consensus_approved_total ${this.consensusMetrics.approvedConsensus} ${timestamp}
+
+# HELP prism_consensus_rejected_total Total rejected consensus decisions
+# TYPE prism_consensus_rejected_total counter
+prism_consensus_rejected_total ${this.consensusMetrics.rejectedConsensus} ${timestamp}
+
+# HELP prism_consensus_timeout_total Total consensus timeouts
+# TYPE prism_consensus_timeout_total counter
+prism_consensus_timeout_total ${this.consensusMetrics.timeoutConsensus} ${timestamp}
+
+# HELP prism_uptime_seconds System uptime in seconds
+# TYPE prism_uptime_seconds gauge
+prism_uptime_seconds ${process.uptime()} ${timestamp}
+`;
+  }
+
+  /**
+   * Met à jour les métriques d'événements
+   */
+  recordEvent(success = true) {
+    this.prometheusMetrics.prism_events_total++;
+    if (!success) {
+      this.prometheusMetrics.prism_events_failed_total++;
+    }
+  }
+
+  /**
+   * Met à jour la latence
+   */
+  recordLatency(latencyMs) {
+    this.prometheusMetrics.prism_latency_seconds = latencyMs / 1000;
+  }
+
+  /**
+   * Met à jour la taille de la queue
+   */
+  recordQueueSize(size) {
+    this.prometheusMetrics.prism_queue_size = size;
+  }
+
+  /**
+   * Nettoie les ressources
+   */
+  cleanup() {
+    if (this.prometheusServer) {
+      this.prometheusServer.close(() => {
+        console.log('📊 Prometheus server closed');
+      });
     }
   }
 
