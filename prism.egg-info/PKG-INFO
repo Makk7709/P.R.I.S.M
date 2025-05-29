@@ -1,0 +1,8 @@
+Metadata-Version: 2.4
+Name: prism
+Version: 0.1.0
+License-File: LICENSE
+Requires-Dist: requests>=2.32.3
+Requires-Dist: pytest>=8.3.5
+Dynamic: license-file
+Dynamic: requires-dist

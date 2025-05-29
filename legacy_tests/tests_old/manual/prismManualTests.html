@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PRISM Core - Tests Manuels</title>
+    <style>
+        body {
+            font-family: system-ui, -apple-system, sans-serif;
+            line-height: 1.6;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 2rem;
+            color: #333;
+        }
+        .test-scenario {
+            background: #f8f9fa;
+            border-radius: 8px;
+            padding: 1.5rem;
+            margin-bottom: 1.5rem;
+            border: 1px solid #e9ecef;
+        }
+        .test-scenario h3 {
+            color: #2c3e50;
+            margin-top: 0;
+        }
+        .test-steps {
+            list-style-type: none;
+            padding-left: 0;
+        }
+        .test-steps li {
+            margin-bottom: 0.5rem;
+            padding-left: 1.5rem;
+            position: relative;
+        }
+        .test-steps li:before {
+            content: "→";
+            position: absolute;
+            left: 0;
+            color: #6c757d;
+        }
+        .expected-result {
+            background: #e3f2fd;
+            padding: 1rem;
+            border-radius: 4px;
+            margin-top: 1rem;
+        }
+    </style>
+</head>
+<body>
+    <h1>PRISM Core - Tests Manuels</h1>
+    <p>Ce document contient les scénarios de tests manuels pour valider les fonctionnalités de PRISM Core.</p>
+
+    <div class="test-scenario">
+        <h3>Scénario 1: Compression Automatique</h3>
+        <ul class="test-steps">
+            <li>Lancer PRISM Core avec un historique de données volumineux</li>
+            <li>Observer le comportement de PrismCompression</li>
+            <li>Vérifier la réduction de l'empreinte mémoire</li>
+        </ul>
+        <div class="expected-result">
+            <strong>Résultat attendu:</strong> Compression réussie avec réduction significative de l'empreinte mémoire
+        </div>
+    </div>
+
+    <div class="test-scenario">
+        <h3>Scénario 2: Purge Intelligente</h3>
+        <ul class="test-steps">
+            <li>Configurer différentes stratégies de purge dans PrismPurgeScheduler</li>
+            <li>Simuler différentes conditions de charge</li>
+            <li>Observer l'application des stratégies</li>
+        </ul>
+        <div class="expected-result">
+            <strong>Résultat attendu:</strong> Application correcte des stratégies de purge selon les conditions
+        </div>
+    </div>
+
+    <div class="test-scenario">
+        <h3>Scénario 3: Performance UI</h3>
+        <ul class="test-steps">
+            <li>Charger l'interface utilisateur avec de nombreuses données</li>
+            <li>Effectuer des interactions rapides</li>
+            <li>Mesurer les temps de réponse</li>
+        </ul>
+        <div class="expected-result">
+            <strong>Résultat attendu:</strong> Latence < 100ms pour toutes les interactions
+        </div>
+    </div>
+
+    <div class="test-scenario">
+        <h3>Scénario 4: Résilience Système</h3>
+        <ul class="test-steps">
+            <li>Simuler des défaillances système</li>
+            <li>Observer le comportement de self-healing</li>
+            <li>Vérifier la récupération automatique</li>
+        </ul>
+        <div class="expected-result">
+            <strong>Résultat attendu:</strong> Récupération automatique en < 2 minutes
+        </div>
+    </div>
+
+    <div class="test-scenario">
+        <h3>Scénario 5: Monitoring Avancé</h3>
+        <ul class="test-steps">
+            <li>Activer tous les systèmes de monitoring</li>
+            <li>Générer des métriques système</li>
+            <li>Vérifier la collecte et l'affichage des données</li>
+        </ul>
+        <div class="expected-result">
+            <strong>Résultat attendu:</strong> Collecte et affichage corrects des métriques en temps réel
+        </div>
+    </div>
+
+    <div class="test-scenario">
+        <h3>Scénario 6: Intégration Modules</h3>
+        <ul class="test-steps">
+            <li>Charger tous les modules PRISM</li>
+            <li>Vérifier les interactions entre modules</li>
+            <li>Observer la synchronisation globale</li>
+        </ul>
+        <div class="expected-result">
+            <strong>Résultat attendu:</strong> Intégration fluide et synchronisation correcte de tous les modules
+        </div>
+    </div>
+</body>
+</html> 

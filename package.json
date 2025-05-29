@@ -1,0 +1,27 @@
+{
+  "name": "prism",
+  "version": "2.0.0",
+  "description": "PRISM v2 - Advanced AI Orchestration System",
+  "main": "infrastructure/informationManagementLayer.js",
+  "type": "module",
+  "scripts": {
+    "test": "jest",
+    "test:security": "jest --config=jest.config.simple.js --coverage --verbose",
+    "start": "node infrastructure/informationManagementLayer.js"
+  },
+  "dependencies": {
+    "@supabase/supabase-js": "^2.49.4",
+    "express": "^4.18.2",
+    "natural": "^8.0.1",
+    "openai": "^4.96.0",
+    "three": "^0.176.0",
+    "winston": "^3.11.0"
+  },
+  "devDependencies": {
+    "jest": "^29.7.0",
+    "jest-junit": "^16.0.0"
+  },
+  "engines": {
+    "node": ">=16.0.0"
+  }
+}

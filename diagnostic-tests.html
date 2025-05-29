@@ -1,0 +1,311 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PRISM - Diagnostic des Tests</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            margin: 0;
+            padding: 20px;
+            background: #1a1a1a;
+            color: #e0e0e0;
+        }
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+        }
+        h1 {
+            color: #4CAF50;
+            text-align: center;
+        }
+        .diagnostic-panel {
+            background: #2a2a2a;
+            border-radius: 8px;
+            padding: 20px;
+            margin-bottom: 20px;
+        }
+        .status {
+            padding: 10px;
+            border-radius: 4px;
+            margin: 5px 0;
+        }
+        .status.ok {
+            background: rgba(76, 175, 80, 0.2);
+            border-left: 4px solid #4CAF50;
+        }
+        .status.warning {
+            background: rgba(255, 152, 0, 0.2);
+            border-left: 4px solid #ff9800;
+        }
+        .status.error {
+            background: rgba(244, 67, 54, 0.2);
+            border-left: 4px solid #f44336;
+        }
+        .button {
+            background: #4CAF50;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 4px;
+            cursor: pointer;
+            margin: 5px;
+        }
+        .button:hover {
+            background: #45a049;
+        }
+        .results {
+            background: #333;
+            border-radius: 4px;
+            padding: 15px;
+            margin-top: 20px;
+            white-space: pre-wrap;
+            font-family: monospace;
+            max-height: 300px;
+            overflow-y: auto;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🔍 PRISM - Diagnostic des Tests</h1>
+        
+        <div class="diagnostic-panel">
+            <h2>État du Système</h2>
+            <div id="systemStatus">Vérification en cours...</div>
+        </div>
+
+        <div class="diagnostic-panel">
+            <h2>Actions de Diagnostic</h2>
+            <button class="button" onclick="runFullDiagnostic()">Diagnostic Complet</button>
+            <button class="button" onclick="testAudioCapabilities()">Test Audio</button>
+            <button class="button" onclick="testNetworkConnectivity()">Test Réseau</button>
+            <button class="button" onclick="clearCache()">Vider le Cache</button>
+        </div>
+
+        <div class="diagnostic-panel">
+            <h2>Résultats du Diagnostic</h2>
+            <div id="results" class="results">Prêt pour le diagnostic...</div>
+        </div>
+    </div>
+
+    <script>
+        function log(message, type = 'info') {
+            const results = document.getElementById('results');
+            const timestamp = new Date().toLocaleTimeString();
+            const icon = type === 'error' ? '❌' : type === 'warning' ? '⚠️' : '✅';
+            results.innerHTML += `[${timestamp}] ${icon} ${message}\n`;
+            results.scrollTop = results.scrollHeight;
+        }
+
+        function updateSystemStatus() {
+            const statusDiv = document.getElementById('systemStatus');
+            const checks = [
+                {
+                    name: 'Web Audio API',
+                    test: () => !!(window.AudioContext || window.webkitAudioContext),
+                    critical: true
+                },
+                {
+                    name: 'Speech Synthesis',
+                    test: () => !!window.speechSynthesis,
+                    critical: false
+                },
+                {
+                    name: 'Media Devices',
+                    test: () => !!(navigator.mediaDevices && navigator.mediaDevices.getUserMedia),
+                    critical: true
+                },
+                {
+                    name: 'Local Storage',
+                    test: () => !!window.localStorage,
+                    critical: false
+                },
+                {
+                    name: 'Fetch API',
+                    test: () => !!window.fetch,
+                    critical: true
+                },
+                {
+                    name: 'Service Worker',
+                    test: () => 'serviceWorker' in navigator,
+                    critical: false
+                }
+            ];
+
+            let html = '';
+            let hasErrors = false;
+
+            checks.forEach(check => {
+                const passed = check.test();
+                const className = passed ? 'ok' : (check.critical ? 'error' : 'warning');
+                const icon = passed ? '✅' : (check.critical ? '❌' : '⚠️');
+                
+                if (!passed && check.critical) hasErrors = true;
+                
+                html += `<div class="status ${className}">${icon} ${check.name}: ${passed ? 'Disponible' : 'Non disponible'}</div>`;
+            });
+
+            if (hasErrors) {
+                html += '<div class="status error">⚠️ Des composants critiques sont manquants. Les tests peuvent ne pas fonctionner correctement.</div>';
+            } else {
+                html += '<div class="status ok">✅ Tous les composants critiques sont disponibles.</div>';
+            }
+
+            statusDiv.innerHTML = html;
+        }
+
+        async function runFullDiagnostic() {
+            log('🚀 Démarrage du diagnostic complet...');
+            
+            // Test 1: Browser capabilities
+            log('🔍 Vérification des capacités du navigateur...');
+            updateSystemStatus();
+            
+            // Test 2: Audio context
+            try {
+                if (window.AudioContext || window.webkitAudioContext) {
+                    const AudioContext = window.AudioContext || window.webkitAudioContext;
+                    const audioContext = new AudioContext();
+                    log(`🔊 Audio Context créé: ${audioContext.state}`);
+                    
+                    if (audioContext.state === 'suspended') {
+                        await audioContext.resume();
+                        log('🔊 Audio Context repris');
+                    }
+                } else {
+                    log('❌ Web Audio API non supporté', 'error');
+                }
+            } catch (error) {
+                log(`❌ Erreur Audio Context: ${error.message}`, 'error');
+            }
+            
+            // Test 3: Network connectivity
+            await testNetworkConnectivity();
+            
+            // Test 4: Local storage
+            try {
+                localStorage.setItem('prism-test', 'test');
+                localStorage.removeItem('prism-test');
+                log('✅ Local Storage fonctionnel');
+            } catch (error) {
+                log(`❌ Local Storage: ${error.message}`, 'error');
+            }
+            
+            // Test 5: Console errors
+            const originalError = console.error;
+            let errorCount = 0;
+            console.error = function(...args) {
+                errorCount++;
+                originalError.apply(console, args);
+            };
+            
+            setTimeout(() => {
+                console.error = originalError;
+                if (errorCount > 0) {
+                    log(`⚠️ ${errorCount} erreurs détectées dans la console`, 'warning');
+                } else {
+                    log('✅ Aucune erreur console détectée');
+                }
+            }, 2000);
+            
+            log('✅ Diagnostic complet terminé');
+        }
+
+        async function testAudioCapabilities() {
+            log('🎵 Test des capacités audio...');
+            
+            try {
+                // Test Web Audio API
+                if (window.AudioContext || window.webkitAudioContext) {
+                    const AudioContext = window.AudioContext || window.webkitAudioContext;
+                    const audioContext = new AudioContext();
+                    
+                    // Create a simple oscillator test
+                    const oscillator = audioContext.createOscillator();
+                    const gainNode = audioContext.createGain();
+                    
+                    oscillator.connect(gainNode);
+                    gainNode.connect(audioContext.destination);
+                    
+                    gainNode.gain.setValueAtTime(0.1, audioContext.currentTime);
+                    oscillator.frequency.setValueAtTime(440, audioContext.currentTime);
+                    
+                    oscillator.start(audioContext.currentTime);
+                    oscillator.stop(audioContext.currentTime + 0.1);
+                    
+                    log('✅ Test oscillateur réussi');
+                } else {
+                    log('❌ Web Audio API non disponible', 'error');
+                }
+                
+                // Test Speech Synthesis
+                if (window.speechSynthesis) {
+                    const voices = speechSynthesis.getVoices();
+                    log(`✅ Speech Synthesis: ${voices.length} voix disponibles`);
+                } else {
+                    log('❌ Speech Synthesis non disponible', 'error');
+                }
+                
+            } catch (error) {
+                log(`❌ Erreur test audio: ${error.message}`, 'error');
+            }
+        }
+
+        async function testNetworkConnectivity() {
+            log('🌐 Test de connectivité réseau...');
+            
+            try {
+                // Test server connectivity
+                const response = await fetch('/', { method: 'HEAD' });
+                if (response.ok) {
+                    log('✅ Serveur accessible');
+                } else {
+                    log(`⚠️ Serveur répond avec status: ${response.status}`, 'warning');
+                }
+            } catch (error) {
+                log(`❌ Erreur réseau: ${error.message}`, 'error');
+            }
+            
+            try {
+                // Test if we can load test files
+                const testResponse = await fetch('/tests/manual/prismVoiceTests-fixed.html', { method: 'HEAD' });
+                if (testResponse.ok) {
+                    log('✅ Fichiers de test accessibles');
+                } else {
+                    log('⚠️ Fichiers de test non accessibles', 'warning');
+                }
+            } catch (error) {
+                log(`⚠️ Erreur accès fichiers test: ${error.message}`, 'warning');
+            }
+        }
+
+        function clearCache() {
+            log('🧹 Nettoyage du cache...');
+            
+            try {
+                // Clear localStorage
+                localStorage.clear();
+                log('✅ LocalStorage vidé');
+                
+                // Clear sessionStorage
+                sessionStorage.clear();
+                log('✅ SessionStorage vidé');
+                
+                // Suggest browser cache clear
+                log('💡 Pour vider le cache navigateur: Ctrl+Shift+R (ou Cmd+Shift+R sur Mac)');
+                
+            } catch (error) {
+                log(`❌ Erreur nettoyage: ${error.message}`, 'error');
+            }
+        }
+
+        // Initialize on load
+        document.addEventListener('DOMContentLoaded', () => {
+            log('🔍 Diagnostic PRISM initialisé');
+            updateSystemStatus();
+        });
+    </script>
+</body>
+</html> 

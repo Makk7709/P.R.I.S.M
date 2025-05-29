@@ -1,0 +1,40 @@
+{
+  "name": "prism-dashboard",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
+    "lint": "next lint"
+  },
+  "dependencies": {
+    "@heroicons/react": "^2.1.1",
+    "autoprefixer": "^10.4.17",
+    "chart.js": "^4.4.1",
+    "date-fns": "^3.3.1",
+    "next": "14.1.0",
+    "postcss": "^8.4.35",
+    "react": "^18.2.0",
+    "react-chartjs-2": "^5.2.0",
+    "react-dom": "^18.2.0",
+    "socket.io-client": "^4.7.4",
+    "tailwindcss": "^3.4.1"
+  },
+  "devDependencies": {
+    "@types/chart.js": "^2.9.41",
+    "@types/date-fns": "^2.5.3",
+    "@types/node": "^20.11.19",
+    "@types/react": "^18.3.20",
+    "@types/react-dom": "^18.3.6",
+    "@types/socket.io-client": "^1.4.36",
+    "eslint": "^8.56.0",
+    "eslint-config-next": "14.1.0",
+    "postcss-import": "^16.1.0",
+    "postcss-nested": "^7.0.2",
+    "stylelint": "^16.19.1",
+    "stylelint-config-recommended": "^16.0.0",
+    "stylelint-config-standard": "^38.0.0",
+    "typescript": "^5.3.3"
+  }
+}

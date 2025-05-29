@@ -1,0 +1,52 @@
+[
+  {
+    "prompt": "Test basic system response",
+    "type": "basic",
+    "expectedResponse": "success"
+  },
+  {
+    "prompt": "Test error handling",
+    "type": "error",
+    "expectedResponse": "error"
+  },
+  {
+    "prompt": "Test long-running operation",
+    "type": "performance",
+    "expectedResponse": "success"
+  },
+  {
+    "prompt": "Test memory usage",
+    "type": "resource",
+    "expectedResponse": "success"
+  },
+  {
+    "prompt": "Test concurrent operations",
+    "type": "concurrency",
+    "expectedResponse": "success"
+  },
+  {
+    "prompt": "Test system boundaries",
+    "type": "boundary",
+    "expectedResponse": "success"
+  },
+  {
+    "prompt": "Test recovery mechanisms",
+    "type": "recovery",
+    "expectedResponse": "success"
+  },
+  {
+    "prompt": "Test data persistence",
+    "type": "persistence",
+    "expectedResponse": "success"
+  },
+  {
+    "prompt": "Test security measures",
+    "type": "security",
+    "expectedResponse": "success"
+  },
+  {
+    "prompt": "Test integration points",
+    "type": "integration",
+    "expectedResponse": "success"
+  }
+] 

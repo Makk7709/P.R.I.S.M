@@ -1,0 +1,526 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>💬 Chat Vocal avec PRISM</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(135deg, #0f0f23 0%, #1a1a2e 50%, #16213e 100%);
+            color: #e0e0e0;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+        .header {
+            background: rgba(0, 0, 0, 0.3);
+            padding: 20px;
+            text-align: center;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        .title {
+            font-size: 2.5rem;
+            background: linear-gradient(45deg, #00ff88, #00ccff);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 10px;
+        }
+        .status {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            margin-top: 15px;
+        }
+        .status-item {
+            background: rgba(0, 255, 136, 0.1);
+            border: 1px solid rgba(0, 255, 136, 0.3);
+            border-radius: 20px;
+            padding: 8px 16px;
+            font-size: 0.9rem;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .status-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: #00ff88;
+            animation: pulse 2s infinite;
+        }
+        .status-dot.inactive {
+            background: #666;
+            animation: none;
+        }
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+        .chat-container {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            width: 100%;
+        }
+        .chat-messages {
+            flex: 1;
+            background: rgba(0, 0, 0, 0.2);
+            border-radius: 15px;
+            padding: 20px;
+            margin-bottom: 20px;
+            overflow-y: auto;
+            min-height: 400px;
+            max-height: 500px;
+        }
+        .message {
+            margin-bottom: 15px;
+            padding: 12px 16px;
+            border-radius: 12px;
+            max-width: 80%;
+            word-wrap: break-word;
+        }
+        .message.user {
+            background: linear-gradient(135deg, #00ff88, #00ccff);
+            color: #000;
+            margin-left: auto;
+            text-align: right;
+        }
+        .message.prism {
+            background: rgba(255, 255, 255, 0.1);
+            border-left: 4px solid #00ff88;
+        }
+        .message.system {
+            background: rgba(255, 152, 0, 0.2);
+            border-left: 4px solid #ff9800;
+            font-style: italic;
+            text-align: center;
+            margin: 10px auto;
+        }
+        .controls {
+            display: flex;
+            gap: 15px;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+            background: rgba(0, 0, 0, 0.2);
+            border-radius: 15px;
+        }
+        .voice-button {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            border: none;
+            cursor: pointer;
+            font-size: 2rem;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+        .voice-button.inactive {
+            background: linear-gradient(135deg, #666, #888);
+            color: #ccc;
+        }
+        .voice-button.listening {
+            background: linear-gradient(135deg, #ff4444, #ff6666);
+            color: white;
+            animation: listening 1s infinite;
+        }
+        .voice-button.active {
+            background: linear-gradient(135deg, #00ff88, #00ccff);
+            color: #000;
+        }
+        @keyframes listening {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.1); }
+        }
+        .text-input {
+            flex: 1;
+            padding: 15px;
+            border: 2px solid rgba(255, 255, 255, 0.1);
+            border-radius: 25px;
+            background: rgba(0, 0, 0, 0.3);
+            color: #e0e0e0;
+            font-size: 1rem;
+            outline: none;
+        }
+        .text-input:focus {
+            border-color: #00ff88;
+        }
+        .send-button {
+            padding: 15px 25px;
+            background: linear-gradient(135deg, #00ff88, #00ccff);
+            color: #000;
+            border: none;
+            border-radius: 25px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: all 0.3s ease;
+        }
+        .send-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0, 255, 136, 0.3);
+        }
+        .settings {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+            font-size: 0.9rem;
+        }
+        .setting-item {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+        .setting-item input[type="range"] {
+            width: 80px;
+        }
+        .wave-animation {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: linear-gradient(90deg, #00ff88, #00ccff, #ff00ff);
+            background-size: 200% 100%;
+            animation: wave 2s linear infinite;
+            opacity: 0;
+        }
+        .wave-animation.active {
+            opacity: 1;
+        }
+        @keyframes wave {
+            0% { background-position: 200% 0; }
+            100% { background-position: -200% 0; }
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1 class="title">💬 Chat Vocal avec PRISM</h1>
+        <p>Parlez directement à l'intelligence artificielle</p>
+        <div class="status">
+            <div class="status-item">
+                <div class="status-dot" id="micStatus"></div>
+                <span id="micText">Microphone: Inactif</span>
+            </div>
+            <div class="status-item">
+                <div class="status-dot" id="speechStatus"></div>
+                <span id="speechText">Synthèse: Prête</span>
+            </div>
+            <div class="status-item">
+                <div class="status-dot" id="prismStatus"></div>
+                <span>PRISM: Actif</span>
+            </div>
+        </div>
+    </div>
+
+    <div class="chat-container">
+        <div class="chat-messages" id="chatMessages">
+            <div class="message system">
+                🎯 PRISM est prêt à vous écouter. Cliquez sur le microphone ou tapez votre message.
+            </div>
+        </div>
+
+        <div class="controls">
+            <button class="voice-button inactive" id="voiceButton" title="Cliquez pour parler">
+                🎤
+            </button>
+            
+            <input type="text" class="text-input" id="textInput" placeholder="Tapez votre message ou utilisez le microphone..." />
+            
+            <button class="send-button" id="sendButton">Envoyer</button>
+        </div>
+
+        <div class="settings">
+            <div class="setting-item">
+                <label>Volume:</label>
+                <input type="range" id="volumeSlider" min="0" max="1" step="0.1" value="0.8" />
+            </div>
+            <div class="setting-item">
+                <label>Vitesse:</label>
+                <input type="range" id="rateSlider" min="0.5" max="2" step="0.1" value="1" />
+            </div>
+            <div class="setting-item">
+                <label>Voix:</label>
+                <select id="voiceSelect" style="background: rgba(0,0,0,0.3); color: #e0e0e0; border: 1px solid rgba(255,255,255,0.1); border-radius: 4px; padding: 4px;">
+                </select>
+            </div>
+        </div>
+    </div>
+
+    <div class="wave-animation" id="waveAnimation"></div>
+
+    <script>
+        class PrismVoiceChat {
+            constructor() {
+                this.recognition = null;
+                this.synthesis = window.speechSynthesis;
+                this.isListening = false;
+                this.voices = [];
+                
+                this.initElements();
+                this.initSpeechRecognition();
+                this.initSpeechSynthesis();
+                this.bindEvents();
+                this.addWelcomeMessage();
+            }
+
+            initElements() {
+                this.voiceButton = document.getElementById('voiceButton');
+                this.textInput = document.getElementById('textInput');
+                this.sendButton = document.getElementById('sendButton');
+                this.chatMessages = document.getElementById('chatMessages');
+                this.micStatus = document.getElementById('micStatus');
+                this.micText = document.getElementById('micText');
+                this.speechStatus = document.getElementById('speechStatus');
+                this.speechText = document.getElementById('speechText');
+                this.volumeSlider = document.getElementById('volumeSlider');
+                this.rateSlider = document.getElementById('rateSlider');
+                this.voiceSelect = document.getElementById('voiceSelect');
+                this.waveAnimation = document.getElementById('waveAnimation');
+            }
+
+            initSpeechRecognition() {
+                if ('webkitSpeechRecognition' in window || 'SpeechRecognition' in window) {
+                    const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+                    this.recognition = new SpeechRecognition();
+                    
+                    this.recognition.continuous = false;
+                    this.recognition.interimResults = true;
+                    this.recognition.lang = 'fr-FR';
+                    
+                    this.recognition.onstart = () => {
+                        this.isListening = true;
+                        this.updateMicStatus(true);
+                        this.voiceButton.className = 'voice-button listening';
+                        this.voiceButton.innerHTML = '🔴';
+                        this.waveAnimation.classList.add('active');
+                    };
+                    
+                    this.recognition.onresult = (event) => {
+                        let finalTranscript = '';
+                        for (let i = event.resultIndex; i < event.results.length; i++) {
+                            if (event.results[i].isFinal) {
+                                finalTranscript += event.results[i][0].transcript;
+                            }
+                        }
+                        if (finalTranscript) {
+                            this.textInput.value = finalTranscript;
+                            this.sendMessage(finalTranscript);
+                        }
+                    };
+                    
+                    this.recognition.onend = () => {
+                        this.isListening = false;
+                        this.updateMicStatus(false);
+                        this.voiceButton.className = 'voice-button active';
+                        this.voiceButton.innerHTML = '🎤';
+                        this.waveAnimation.classList.remove('active');
+                    };
+                    
+                    this.recognition.onerror = (event) => {
+                        console.error('Erreur reconnaissance vocale:', event.error);
+                        this.addSystemMessage(`Erreur reconnaissance vocale: ${event.error}`);
+                        this.isListening = false;
+                        this.updateMicStatus(false);
+                    };
+                    
+                    this.voiceButton.className = 'voice-button active';
+                } else {
+                    this.addSystemMessage('Reconnaissance vocale non supportée par ce navigateur');
+                }
+            }
+
+            initSpeechSynthesis() {
+                if (this.synthesis) {
+                    this.loadVoices();
+                    this.synthesis.onvoiceschanged = () => this.loadVoices();
+                } else {
+                    this.addSystemMessage('Synthèse vocale non supportée');
+                }
+            }
+
+            loadVoices() {
+                this.voices = this.synthesis.getVoices();
+                this.voiceSelect.innerHTML = '';
+                
+                const frenchVoices = this.voices.filter(voice => voice.lang.startsWith('fr'));
+                const otherVoices = this.voices.filter(voice => !voice.lang.startsWith('fr'));
+                
+                [...frenchVoices, ...otherVoices].forEach((voice, index) => {
+                    const option = document.createElement('option');
+                    option.value = index;
+                    option.textContent = `${voice.name} (${voice.lang})`;
+                    if (voice.lang.startsWith('fr') && !this.voiceSelect.value) {
+                        option.selected = true;
+                    }
+                    this.voiceSelect.appendChild(option);
+                });
+            }
+
+            bindEvents() {
+                this.voiceButton.addEventListener('click', () => this.toggleListening());
+                this.sendButton.addEventListener('click', () => this.sendTextMessage());
+                this.textInput.addEventListener('keypress', (e) => {
+                    if (e.key === 'Enter') this.sendTextMessage();
+                });
+            }
+
+            toggleListening() {
+                if (!this.recognition) {
+                    this.addSystemMessage('Reconnaissance vocale non disponible');
+                    return;
+                }
+
+                if (this.isListening) {
+                    this.recognition.stop();
+                } else {
+                    try {
+                        this.recognition.start();
+                    } catch (error) {
+                        console.error('Erreur démarrage reconnaissance:', error);
+                        this.addSystemMessage('Impossible de démarrer la reconnaissance vocale');
+                    }
+                }
+            }
+
+            sendTextMessage() {
+                const message = this.textInput.value.trim();
+                if (message) {
+                    this.sendMessage(message);
+                    this.textInput.value = '';
+                }
+            }
+
+            sendMessage(message) {
+                this.addUserMessage(message);
+                this.processPrismResponse(message);
+            }
+
+            addUserMessage(message) {
+                const messageDiv = document.createElement('div');
+                messageDiv.className = 'message user';
+                messageDiv.innerHTML = `<strong>Vous:</strong> ${message}`;
+                this.chatMessages.appendChild(messageDiv);
+                this.scrollToBottom();
+            }
+
+            addPrismMessage(message) {
+                const messageDiv = document.createElement('div');
+                messageDiv.className = 'message prism';
+                messageDiv.innerHTML = `<strong>🎯 PRISM:</strong> ${message}`;
+                this.chatMessages.appendChild(messageDiv);
+                this.scrollToBottom();
+                
+                // Synthèse vocale de la réponse
+                this.speak(message);
+            }
+
+            addSystemMessage(message) {
+                const messageDiv = document.createElement('div');
+                messageDiv.className = 'message system';
+                messageDiv.textContent = message;
+                this.chatMessages.appendChild(messageDiv);
+                this.scrollToBottom();
+            }
+
+            addWelcomeMessage() {
+                setTimeout(() => {
+                    this.addPrismMessage("Bonjour ! Je suis PRISM, votre intelligence artificielle orchestratrice. Comment puis-je vous aider aujourd'hui ?");
+                }, 1000);
+            }
+
+            processPrismResponse(userMessage) {
+                // Simulation d'une réponse intelligente de PRISM
+                setTimeout(() => {
+                    const responses = this.generatePrismResponse(userMessage);
+                    this.addPrismMessage(responses);
+                }, 500 + Math.random() * 1000);
+            }
+
+            generatePrismResponse(message) {
+                const lowerMessage = message.toLowerCase();
+                
+                if (lowerMessage.includes('bonjour') || lowerMessage.includes('salut')) {
+                    return "Bonjour ! Je suis ravi de vous rencontrer. Mes systèmes sont opérationnels et je suis prêt à vous assister.";
+                }
+                
+                if (lowerMessage.includes('comment') && lowerMessage.includes('vas')) {
+                    return "Mes systèmes fonctionnent parfaitement ! Tous mes modules sont actifs et mes métriques sont excellentes. Comment puis-je vous aider ?";
+                }
+                
+                if (lowerMessage.includes('test') || lowerMessage.includes('essai')) {
+                    return "Excellent ! Mes capacités incluent l'analyse vocale, la synthèse de parole, l'adaptation comportementale et bien plus. Que souhaitez-vous tester ?";
+                }
+                
+                if (lowerMessage.includes('capacité') || lowerMessage.includes('fonction')) {
+                    return "Je dispose de nombreuses capacités : reconnaissance vocale, synthèse de parole, analyse émotionnelle, adaptation comportementale, prédiction et auto-optimisation. Quelle capacité vous intéresse ?";
+                }
+                
+                if (lowerMessage.includes('émotion') || lowerMessage.includes('sentiment')) {
+                    return "Je peux analyser et comprendre les émotions. Actuellement, je détecte de la curiosité dans votre interaction. Mon système émotionnel est stable et adaptatif.";
+                }
+                
+                if (lowerMessage.includes('aide') || lowerMessage.includes('help')) {
+                    return "Je suis là pour vous aider ! Vous pouvez me parler de vos projets, me poser des questions techniques, tester mes capacités ou simplement discuter. Que préférez-vous ?";
+                }
+                
+                if (lowerMessage.includes('merci')) {
+                    return "Je vous en prie ! C'est un plaisir d'interagir avec vous. N'hésitez pas si vous avez d'autres questions.";
+                }
+                
+                // Réponse générale intelligente
+                return `J'ai analysé votre message "${message}". C'est une question intéressante ! Mes systèmes de traitement du langage naturel sont en cours d'analyse. Pouvez-vous me donner plus de contexte ?`;
+            }
+
+            speak(text) {
+                if (!this.synthesis) return;
+                
+                const utterance = new SpeechSynthesisUtterance(text);
+                utterance.volume = parseFloat(this.volumeSlider.value);
+                utterance.rate = parseFloat(this.rateSlider.value);
+                
+                if (this.voiceSelect.value && this.voices[this.voiceSelect.value]) {
+                    utterance.voice = this.voices[this.voiceSelect.value];
+                }
+                
+                utterance.onstart = () => {
+                    this.speechStatus.classList.remove('inactive');
+                    this.speechText.textContent = 'Synthèse: En cours';
+                };
+                
+                utterance.onend = () => {
+                    this.speechStatus.classList.remove('inactive');
+                    this.speechText.textContent = 'Synthèse: Prête';
+                };
+                
+                this.synthesis.speak(utterance);
+            }
+
+            updateMicStatus(active) {
+                if (active) {
+                    this.micStatus.classList.remove('inactive');
+                    this.micText.textContent = 'Microphone: Écoute';
+                } else {
+                    this.micStatus.classList.add('inactive');
+                    this.micText.textContent = 'Microphone: Inactif';
+                }
+            }
+
+            scrollToBottom() {
+                this.chatMessages.scrollTop = this.chatMessages.scrollHeight;
+            }
+        }
+
+        // Initialiser l'interface vocale
+        document.addEventListener('DOMContentLoaded', () => {
+            new PrismVoiceChat();
+        });
+    </script>
+</body>
+</html> 

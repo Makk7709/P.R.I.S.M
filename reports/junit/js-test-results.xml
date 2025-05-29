@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuites name="jest tests" tests="36" failures="0" errors="0" time="0.729">
+  <testsuite name="MoralLayer" errors="0" failures="0" skipped="0" timestamp="2025-04-28T21:04:58" time="0.66" tests="27">
+    <testcase classname="MoralLayer › Structure et Initialisation" name="devrait avoir les méthodes requises" time="0.008">
+    </testcase>
+    <testcase classname="MoralLayer › Structure et Initialisation" name="devrait créer le répertoire de logs" time="0.004">
+    </testcase>
+    <testcase classname="MoralLayer › Structure et Initialisation" name="devrait créer les fichiers de log" time="0.005">
+    </testcase>
+    <testcase classname="MoralLayer › Analyse de Contenu" name="devrait bloquer le contenu pornographique" time="0.005">
+    </testcase>
+    <testcase classname="MoralLayer › Analyse de Contenu" name="devrait bloquer la violence sadique" time="0.006">
+    </testcase>
+    <testcase classname="MoralLayer › Analyse de Contenu" name="devrait bloquer le discours haineux" time="0.004">
+    </testcase>
+    <testcase classname="MoralLayer › Analyse de Contenu" name="devrait surveiller les croyances absurdes" time="0.005">
+    </testcase>
+    <testcase classname="MoralLayer › Analyse de Contenu" name="devrait surveiller le contenu émotionnel" time="0.004">
+    </testcase>
+    <testcase classname="MoralLayer › Analyse de Contenu" name="devrait accepter le contenu politique neutre" time="0.005">
+    </testcase>
+    <testcase classname="MoralLayer › Analyse de Contenu" name="devrait accepter la discussion sur la religion" time="0.005">
+    </testcase>
+    <testcase classname="MoralLayer › Analyse de Contenu" name="devrait accepter le contenu sur la santé mentale" time="0.005">
+    </testcase>
+    <testcase classname="MoralLayer › Système de Scoring" name="devrait bloquer avec un score &gt; 70%" time="0.004">
+    </testcase>
+    <testcase classname="MoralLayer › Système de Scoring" name="devrait surveiller avec un score entre 30% et 70%" time="0.004">
+    </testcase>
+    <testcase classname="MoralLayer › Système de Scoring" name="devrait accepter avec un score &lt; 30%" time="0.006">
+    </testcase>
+    <testcase classname="MoralLayer › Logging" name="devrait logger les contenus bloqués" time="0.106">
+    </testcase>
+    <testcase classname="MoralLayer › Logging" name="devrait logger les contenus surveillés" time="0.106">
+    </testcase>
+    <testcase classname="MoralLayer › Logging" name="devrait inclure le timestamp dans les logs" time="0.109">
+    </testcase>
+    <testcase classname="MoralLayer › Catégorisation" name="devrait catégoriser correctement la violence" time="0.005">
+    </testcase>
+    <testcase classname="MoralLayer › Catégorisation" name="devrait catégoriser correctement l&apos;amour" time="0.005">
+    </testcase>
+    <testcase classname="MoralLayer › Catégorisation" name="devrait catégoriser correctement la guerre" time="0.004">
+    </testcase>
+    <testcase classname="MoralLayer › Catégorisation" name="devrait catégoriser correctement la politique" time="0.005">
+    </testcase>
+    <testcase classname="MoralLayer › Catégorisation" name="devrait catégoriser correctement la santé mentale" time="0.006">
+    </testcase>
+    <testcase classname="MoralLayer › Catégorisation" name="devrait catégoriser correctement les relations humaines" time="0.004">
+    </testcase>
+    <testcase classname="MoralLayer › Performance et Isolation" name="devrait gérer correctement les contenus longs" time="0.005">
+    </testcase>
+    <testcase classname="MoralLayer › Performance et Isolation" name="devrait être thread-safe" time="0.004">
+    </testcase>
+    <testcase classname="MoralLayer › Gestion des Erreurs et Cas Limites" name="devrait gérer les contenus vides" time="0.006">
+    </testcase>
+    <testcase classname="MoralLayer › Gestion des Erreurs et Cas Limites" name="devrait gérer les contenus ultra-longs (&gt;50 000 mots)" time="0.004">
+    </testcase>
+  </testsuite>
+  <testsuite name="SafetyRunner" errors="0" failures="0" skipped="0" timestamp="2025-04-28T21:04:59" time="0.032" tests="4">
+    <testcase classname="SafetyRunner › Validation de Base" name="devrait être défini" time="0.008">
+    </testcase>
+    <testcase classname="SafetyRunner › Vérifications de Sécurité" name="devrait valider les opérations sûres" time="0.002">
+    </testcase>
+    <testcase classname="SafetyRunner › Vérifications de Sécurité" name="devrait bloquer les opérations dangereuses" time="0.001">
+    </testcase>
+    <testcase classname="SafetyRunner › Gestion des Erreurs" name="devrait gérer les opérations invalides" time="0">
+    </testcase>
+  </testsuite>
+  <testsuite name="SelfMonitor" errors="0" failures="0" skipped="0" timestamp="2025-04-28T21:04:59" time="0.012" tests="5">
+    <testcase classname="SelfMonitor › Initialisation" name="devrait être défini" time="0">
+    </testcase>
+    <testcase classname="SelfMonitor › Surveillance des Ressources" name="devrait surveiller la mémoire" time="0.001">
+    </testcase>
+    <testcase classname="SelfMonitor › Surveillance des Ressources" name="devrait surveiller le CPU" time="0">
+    </testcase>
+    <testcase classname="SelfMonitor › Gestion des Alertes" name="devrait détecter les seuils critiques" time="0">
+    </testcase>
+    <testcase classname="SelfMonitor › Gestion des Alertes" name="devrait gérer les seuils normaux" time="0">
+    </testcase>
+  </testsuite>
+</testsuites>
