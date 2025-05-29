@@ -179,20 +179,27 @@ $1k-$5k/jour consulting
 
 ---
 
-## 📋 Page 11 : Équipe & Expertise
+## 📋 Page 11 : Fondateur & Plan Équipe
 
-### 👥 Compétences Clés
+### 👤 Fondateur Solo - Expertise Complète
 
-#### **Technique**
-- 🧠 **10+ années** expérience IA collective
-- 🏗️ **Systèmes distribués** et consensus
-- 🔒 **Sécurité** et monitoring production
-- ⚡ **DevOps** Docker/Kubernetes
+#### **Compétences Techniques Maîtrisées**
+- 🧠 **Intelligence Artificielle** : Consensus, orchestration, auto-évolution
+- 🏗️ **Systèmes Distribués** : Architecture scalable, monitoring
+- 🔒 **Sécurité & DevOps** : Docker, Kubernetes, Prometheus
+- ⚡ **Full-Stack Development** : Backend, Frontend, Infrastructure
 
-#### **Business**
-- 💼 **Enterprise sales** secteurs critiques
-- 🌐 **Réseau** investisseurs et partenaires
-- 📈 **Vision** produit et go-to-market
+#### **Réalisations Démontrées**
+- 💻 **2+ années R&D** : Conception et développement PRISM v1.0 → v2.3
+- 🔧 **14 composants** production-ready développés solo
+- 📊 **2,829+ lignes** de code validé avec 95%+ couverture tests
+- 🎯 **Innovation brevetable** : Premier consensus IA intégré
+
+#### **Plan de Recrutement Post-Financement**
+- 🤝 **CTO/Co-fondateur** : Leadership technique et scaling (Priorité #1)
+- 👥 **Équipe Dev** : 6-10 développeurs seniors (Backend, Frontend, DevOps)
+- 📈 **VP Sales** : Go-to-market enterprise et partenariats
+- 🎯 **Product Manager** : Roadmap produit et features clients
 
 ---
 
@@ -201,9 +208,9 @@ $1k-$5k/jour consulting
 ### 💰 $5M - $10M Recherchés
 
 #### **Utilisation des Fonds**
-- **40% R&D** : Équipe technique (8-12 devs)
-- **30% Sales & Marketing** : Go-to-market enterprise  
-- **20% Operations** : Infrastructure scaling
+- **50% Team Building** : Recrutement équipe technique (CTO, 6-10 devs)
+- **25% Sales & Marketing** : Go-to-market enterprise + VP Sales  
+- **15% Operations** : Infrastructure scaling + DevOps
 - **10% Legal & IP** : Brevets et protection
 
 #### **Objectifs 18 mois**
@@ -303,10 +310,10 @@ Négociation conditions investissement
 
 ---
 
-### 🎯 PRISM
+### 🎯 KOREV AI
 ## L'IA Enterprise Sécurisée de Demain
 
 **Merci pour votre attention**
 
-*Document confidentiel - © 2025 PRISM Team*
+*Document confidentiel - © 2025 KOREV AI *
 *Version 2.3.0 - Mai 2025* 
