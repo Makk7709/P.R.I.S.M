@@ -71,6 +71,12 @@ PRISM est une intelligence artificielle orchestratrice de pointe avec **système
 
 📄 **Documentation** : [Guide Stress Test](README_STRESS_TEST.md) | [Documentation Complète](STRESS_TEST_README.md)
 
+### 📊 Documentation Investisseurs
+
+- **[Présentation Complète](PRISM_INVESTOR_PRESENTATION.md)** - Architecture, marché, business model détaillé
+- **[Résumé Exécutif](PRISM_EXECUTIVE_SUMMARY.md)** - Vue d'ensemble concise pour investisseurs
+- **[Pitch Deck](PRISM_PITCH_DECK.md)** - Présentation structurée 16 slides
+
 ## 🏗️ Architecture Avancée
 
 PRISM v2.2 est construit sur une architecture modulaire robuste avec consensus intégré :
