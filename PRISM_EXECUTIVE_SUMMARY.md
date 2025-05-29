@@ -69,11 +69,11 @@
 ### **Projections (5 ans)**
 | Année | Clients | ARR | Croissance |
 |-------|---------|-----|------------|
-| 2024 | 10 | $500k | - |
-| 2025 | 50 | $2.5M | 400% |
-| 2026 | 150 | $7.5M | 200% |
-| 2027 | 300 | $15M | 100% |
-| 2028 | 500 | $25M | 67% |
+| 2025 | 25 | $1.2M | - |
+| 2026 | 100 | $5M | 317% |
+| 2027 | 250 | $12.5M | 150% |
+| 2028 | 450 | $22.5M | 80% |
+| 2029 | 700 | $35M | 56% |
 
 ---
 
@@ -135,12 +135,12 @@
 
 ## 📅 Roadmap
 
-### **Q1 2024**
+### **Q3 2025**
 - Déploiement pilotes early adopters
 - Optimisation performance (<10ms)
 - Certifications sécurité (SOC2)
 
-### **Q2-Q4 2024**
+### **Q4 2025-Q2 2026**
 - Interface web supervision
 - Version SaaS multi-tenant
 - Partenariats cloud providers
@@ -165,4 +165,4 @@
 
 **🎯 PRISM : L'IA Enterprise Sécurisée de Demain**
 
-*Document confidentiel - © 2024 PRISM Team* 
+*Document confidentiel - © 2025 PRISM Team* 
