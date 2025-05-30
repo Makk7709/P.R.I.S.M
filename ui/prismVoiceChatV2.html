@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>🎯 PRISM Voice Chat V2 - API Integration</title>
+    <title>🎯 Prism Voice Chat V2 - API Integration</title>
     <style>
         * {
             margin: 0;
@@ -49,6 +49,22 @@
             color: #4CAF50;
             margin-bottom: 5px;
             font-size: 1.8em;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 15px;
+        }
+        
+        .header-logo {
+            width: 40px;
+            height: 40px;
+            filter: drop-shadow(0 0 8px rgba(255, 215, 0, 0.6));
+            transition: all 0.3s ease;
+        }
+        
+        .header-logo:hover {
+            transform: scale(1.1);
+            filter: drop-shadow(0 0 15px rgba(255, 215, 0, 0.8));
         }
 
         .api-status {
@@ -313,8 +329,11 @@
     <div class="container">
         <div class="chat-panel">
             <div class="chat-header">
-                <h1>🎯 PRISM Voice Chat V2</h1>
-                <div class="api-status">API Tri-Modèles Intégrée • Phase 2</div>
+                <h1>
+                    <img src="/assets/prism_logo.svg" alt="PRISM Logo" class="header-logo" />
+                    Prism Voice Chat V2
+                </h1>
+                <div class="api-status">Assistant Intelligent • Phase 2</div>
             </div>
             
             <div class="chat-messages" id="chatMessages">
@@ -322,7 +341,7 @@
             </div>
 
             <div class="processing-indicator" id="processingIndicator">
-                🤖 PRISM traite votre demande...
+                🤖 Prism traite votre demande...
             </div>
             
             <div class="chat-input-area">
@@ -367,6 +386,12 @@
                 <h3>🔧 Paramètres Vocaux</h3>
                 
                 <div class="control-group">
+                    <button class="send-button" id="testSpeechButton" style="width: 100%; margin-bottom: 15px;">
+                        🔊 Test Audio
+                    </button>
+                </div>
+                
+                <div class="control-group">
                     <label for="voiceSelect">Voix:</label>
                     <select class="select-control" id="voiceSelect">
                         <!-- Voices will be populated dynamically -->
@@ -396,8 +421,8 @@
                         <div class="metric-label">Appels API</div>
                     </div>
                     <div class="metric-card">
-                        <div class="metric-value" id="modelUsage">-</div>
-                        <div class="metric-label">Modèle Actuel</div>
+                        <div class="metric-value" id="systemStatus">🟢 ACTIF</div>
+                        <div class="metric-label">État Système</div>
                     </div>
                     <div class="metric-card">
                         <div class="metric-value" id="successRate">100%</div>
@@ -420,6 +445,7 @@
                 // API Configuration
                 this.apiEndpoint = '/api/chat';
                 this.isProcessing = false;
+                this.speechEnabled = false; // Désactivé par défaut jusqu'à première interaction
                 
                 console.log('[PRISM V2] Interface vocale initialisée avec API réelle');
             }
@@ -443,11 +469,12 @@
                 this.rateSlider = document.getElementById('rateSlider');
                 this.volumeValue = document.getElementById('volumeValue');
                 this.rateValue = document.getElementById('rateValue');
+                this.testSpeechButton = document.getElementById('testSpeechButton');
                 
                 // Metrics elements
                 this.responseTimeEl = document.getElementById('responseTime');
                 this.apiCallsEl = document.getElementById('apiCalls');
-                this.modelUsageEl = document.getElementById('modelUsage');
+                this.systemStatusEl = document.getElementById('systemStatus');
                 this.successRateEl = document.getElementById('successRate');
             }
 
@@ -499,6 +526,9 @@
                 if (this.synthesis) {
                     this.loadVoices();
                     this.synthesis.onvoiceschanged = () => this.loadVoices();
+                    
+                    // Pré-initialiser la synthèse vocale pour éviter les retards
+                    this.preinitializeSpeech();
                 } else {
                     this.addSystemMessage('Synthèse vocale non supportée');
                 }
@@ -544,6 +574,7 @@
             bindEvents() {
                 this.voiceButton.addEventListener('click', () => this.toggleListening());
                 this.sendButton.addEventListener('click', () => this.sendTextMessage());
+                this.testSpeechButton.addEventListener('click', () => this.testSpeech());
                 this.textInput.addEventListener('keypress', (e) => {
                     if (e.key === 'Enter' && !this.isProcessing) this.sendTextMessage();
                 });
@@ -576,6 +607,12 @@
             }
 
             async sendMessage(message) {
+                // Activer la synthèse vocale après la première interaction
+                if (!this.speechEnabled) {
+                    this.speechEnabled = true;
+                    this.addSystemMessage('🔊 Synthèse vocale activée');
+                }
+                
                 if (this.isProcessing) {
                     this.addSystemMessage('⏳ Traitement en cours, veuillez patienter...');
                     return;
@@ -690,11 +727,9 @@
                         this.metrics.responseTimes.reduce((a, b) => a + b, 0) / this.metrics.responseTimes.length
                     );
                     this.responseTimeEl.textContent = responseTime;
-                }
-                
-                if (model) {
-                    this.metrics.lastModel = model;
-                    this.modelUsageEl.textContent = model.toUpperCase();
+                    this.systemStatusEl.textContent = '🟢 ACTIF';
+                } else {
+                    this.systemStatusEl.textContent = '🔴 ERREUR';
                 }
                 
                 this.apiCallsEl.textContent = this.metrics.apiCalls;
@@ -713,22 +748,25 @@
                 const messageDiv = document.createElement('div');
                 messageDiv.className = 'message prism';
                 
-                let modelBadge = '';
-                if (metadata?.model) {
-                    const modelName = metadata.model.toUpperCase();
-                    const fallbackText = metadata.fallback ? ' (Fallback)' : '';
-                    modelBadge = `<span class="model-badge">${modelName}${fallbackText}</span>`;
-                }
+                // 🎯 BADGE MODÈLE SUPPRIMÉ - Plus d'affichage du modèle pour les utilisateurs
+                // let modelBadge = '';
+                // if (metadata?.model) {
+                //     const modelName = metadata.model.toUpperCase();
+                //     const fallbackText = metadata.fallback ? ' (Fallback)' : '';
+                //     modelBadge = `<span class="model-badge">${modelName}${fallbackText}</span>`;
+                // }
                 
                 // 🎯 CORRECTION: Préserver le formatage PRISM (émojis, structure)
                 // Remplacer escapeHtml par formatPrismContent pour garder le formatage
                 const formattedMessage = this.formatPrismContent(message);
-                messageDiv.innerHTML = `<strong>🎯 PRISM:</strong> ${formattedMessage}${modelBadge}`;
+                messageDiv.innerHTML = `<strong>🎯 Prism:</strong> ${formattedMessage}`;
                 this.chatMessages.appendChild(messageDiv);
                 this.scrollToBottom();
                 
-                // Synthèse vocale de la réponse (nettoyer pour la voix)
-                this.speak(this.cleanTextForSpeech(message));
+                // Synthèse vocale seulement si activée
+                if (this.speechEnabled) {
+                    this.speak(this.cleanTextForSpeech(message));
+                }
             }
 
             // 🎯 NOUVELLE FONCTION: Formatage PRISM intelligent
@@ -776,8 +814,7 @@
             addWelcomeMessage() {
                 setTimeout(() => {
                     this.addPrismMessage(
-                        "Bonjour ! Je suis PRISM V2 avec intégration API tri-modèles. " +
-                        "Mes capacités incluent OpenAI, Claude et Perplexity selon le contexte. " +
+                        "Bonjour ! Je suis Prism, votre assistant intelligent. " +
                         "Comment puis-je vous aider aujourd'hui ?",
                         { model: 'system' }
                     );
@@ -795,25 +832,49 @@
             speak(text) {
                 if (!this.synthesis) return;
                 
-                const utterance = new SpeechSynthesisUtterance(text);
-                utterance.volume = parseFloat(this.volumeSlider.value);
-                utterance.rate = parseFloat(this.rateSlider.value);
+                // Arrêter toute synthèse en cours pour éviter les conflits
+                this.synthesis.cancel();
                 
-                if (this.voiceSelect.value && this.voices[this.voiceSelect.value]) {
-                    utterance.voice = this.voices[this.voiceSelect.value];
-                }
-                
-                utterance.onstart = () => {
-                    this.speechStatus.classList.remove('inactive');
-                    this.speechText.textContent = 'Synthèse: En cours';
-                };
-                
-                utterance.onend = () => {
-                    this.speechStatus.classList.add('inactive');
-                    this.speechText.textContent = 'Synthèse: Prête';
-                };
-                
-                this.synthesis.speak(utterance);
+                // Attendre un petit moment pour que cancel() prenne effet
+                setTimeout(() => {
+                    const utterance = new SpeechSynthesisUtterance(text);
+                    utterance.volume = parseFloat(this.volumeSlider.value);
+                    utterance.rate = parseFloat(this.rateSlider.value);
+                    
+                    if (this.voiceSelect.value && this.voices[this.voiceSelect.value]) {
+                        utterance.voice = this.voices[this.voiceSelect.value];
+                    }
+                    
+                    utterance.onstart = () => {
+                        this.speechStatus.classList.remove('inactive');
+                        this.speechText.textContent = 'Synthèse: En cours';
+                        console.log('[Speech] Synthèse démarrée:', text.substring(0, 50) + '...');
+                    };
+                    
+                    utterance.onend = () => {
+                        this.speechStatus.classList.add('inactive');
+                        this.speechText.textContent = 'Synthèse: Prête';
+                        console.log('[Speech] Synthèse terminée');
+                    };
+                    
+                    utterance.onerror = (event) => {
+                        console.error('[Speech] Erreur synthèse:', event.error);
+                        this.speechStatus.classList.add('inactive');
+                        this.speechText.textContent = 'Synthèse: Erreur';
+                    };
+                    
+                    // Forcer le démarrage immédiat
+                    console.log('[Speech] Lancement synthèse:', text.substring(0, 50) + '...');
+                    this.synthesis.speak(utterance);
+                    
+                    // Vérification de sécurité au cas où la synthèse ne démarre pas
+                    setTimeout(() => {
+                        if (!this.synthesis.speaking && !this.synthesis.pending) {
+                            console.warn('[Speech] Synthèse ne démarre pas, nouvelle tentative...');
+                            this.synthesis.speak(utterance);
+                        }
+                    }, 100);
+                }, 10);
             }
 
             updateMicStatus(active) {
@@ -834,6 +895,21 @@
 
             scrollToBottom() {
                 this.chatMessages.scrollTop = this.chatMessages.scrollHeight;
+            }
+
+            testSpeech() {
+                this.speechEnabled = true;
+                this.speak("Test audio : Prism fonctionne parfaitement !");
+                this.addSystemMessage('🔊 Test audio lancé');
+            }
+
+            preinitializeSpeech() {
+                // Créer un utterance silencieux pour initialiser le moteur de synthèse
+                const initUtterance = new SpeechSynthesisUtterance('');
+                initUtterance.volume = 0;
+                initUtterance.rate = 1;
+                this.synthesis.speak(initUtterance);
+                console.log('[Speech] Synthèse vocale pré-initialisée');
             }
         }
 

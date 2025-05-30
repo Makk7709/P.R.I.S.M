@@ -1,0 +1,89 @@
+/* Styles pour le logo PRISM - Compatible dark/light mode */
+.prism-logo {
+    width: 40px;
+    height: 40px;
+    transition: all 0.3s ease;
+    filter: drop-shadow(0 0 8px rgba(255, 215, 0, 0.6));
+}
+
+.prism-logo:hover {
+    transform: scale(1.1);
+    filter: drop-shadow(0 0 15px rgba(255, 215, 0, 0.8));
+}
+
+/* Adaptations pour le mode clair */
+@media (prefers-color-scheme: light) {
+    .prism-logo {
+        filter: drop-shadow(0 0 8px rgba(255, 165, 0, 0.8)) contrast(1.1);
+    }
+    
+    .prism-logo:hover {
+        filter: drop-shadow(0 0 15px rgba(255, 165, 0, 1)) contrast(1.2);
+    }
+}
+
+/* Adaptations pour écrans haute résolution */
+@media (-webkit-min-device-pixel-ratio: 2), (min-resolution: 192dpi) {
+    .prism-logo {
+        image-rendering: -webkit-optimize-contrast;
+        image-rendering: crisp-edges;
+    }
+}
+
+/* Styles pour le header du dashboard */
+.logo-icon {
+    width: 50px;
+    height: 50px;
+    filter: drop-shadow(0 0 10px rgba(255, 215, 0, 0.6));
+    transition: all 0.3s ease;
+    flex-shrink: 0;
+}
+
+.logo-icon:hover {
+    transform: scale(1.1);
+    filter: drop-shadow(0 0 20px rgba(255, 215, 0, 0.8));
+}
+
+/* Styles pour les headers des chats */
+.header-logo {
+    width: 40px;
+    height: 40px;
+    filter: drop-shadow(0 0 8px rgba(255, 215, 0, 0.6));
+    transition: all 0.3s ease;
+    flex-shrink: 0;
+}
+
+.header-logo:hover {
+    transform: scale(1.1);
+    filter: drop-shadow(0 0 15px rgba(255, 215, 0, 0.8));
+}
+
+/* Animation d'apparition du logo */
+@keyframes logoFadeIn {
+    from {
+        opacity: 0;
+        transform: scale(0.8);
+    }
+    to {
+        opacity: 1;
+        transform: scale(1);
+    }
+}
+
+.logo-icon, .header-logo, .prism-logo {
+    animation: logoFadeIn 0.6s ease-out;
+}
+
+/* Effet de pulsation subtile pour le logo principal */
+@keyframes logoPulse {
+    0%, 100% {
+        filter: drop-shadow(0 0 10px rgba(255, 215, 0, 0.6));
+    }
+    50% {
+        filter: drop-shadow(0 0 15px rgba(255, 215, 0, 0.8));
+    }
+}
+
+.logo-icon:not(:hover) {
+    animation: logoPulse 3s infinite ease-in-out;
+} 
