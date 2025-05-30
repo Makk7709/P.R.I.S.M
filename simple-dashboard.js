@@ -43,16 +43,39 @@ app.post('/api/chat', async (req, res) => {
     // Appel à l'orchestrateur existant
     const orchestratorResponse = await handleUserInstruction(message, taskType);
     
+    // Extraction du contenu selon le modèle
+    let responseContent;
+    let actualModel = orchestratorResponse.metadata?.model || 'unknown';
+    
+    if (actualModel === 'openai') {
+      responseContent = orchestratorResponse.data?.choices?.[0]?.message?.content || 
+                      orchestratorResponse.data?.message?.content ||
+                      JSON.stringify(orchestratorResponse.data);
+    } else if (actualModel === 'claude') {
+      responseContent = orchestratorResponse.data?.content?.[0]?.text ||
+                      orchestratorResponse.data?.content ||
+                      JSON.stringify(orchestratorResponse.data);
+    } else if (actualModel === 'perplexity') {
+      responseContent = orchestratorResponse.data?.choices?.[0]?.message?.content ||
+                      orchestratorResponse.data?.message?.content ||
+                      JSON.stringify(orchestratorResponse.data);
+    } else {
+      responseContent = JSON.stringify(orchestratorResponse.data);
+    }
+    
     // Calcul du temps de traitement
     const processingTime = Date.now() - startTime;
     
     // Réponse structurée
     res.json({
       success: true,
-      response: orchestratorResponse,
+      response: orchestratorResponse.data, // Réponse brute pour compatibilité
+      content: responseContent, // Contenu extrait
       metadata: {
         taskType: taskType || 'general',
-        model: model || 'auto-select',
+        model: actualModel,
+        fallback: orchestratorResponse.metadata?.fallback || false,
+        originalModel: orchestratorResponse.metadata?.originalModel,
         timestamp: new Date().toISOString(),
         processingTime
       }

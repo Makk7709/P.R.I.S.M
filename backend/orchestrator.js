@@ -81,8 +81,150 @@ async function callOpenAI(userInput) {
     ]
   });
   
+  // Traitement des function calls
+  const choice = response.choices[0];
+  if (choice?.message?.function_call) {
+    const functionName = choice.message.function_call.name;
+    const args = JSON.parse(choice.message.function_call.arguments || '{}');
+    
+    console.log(`[PRISM] 🎯 Function call détecté: ${functionName}`);
+    
+    let functionResult;
+    switch (functionName) {
+      case 'generateMarketingCampaign':
+        functionResult = generateMarketingCampaign(args.product, args.targetAudience);
+        break;
+      case 'analyzeFinancialStatus':
+        functionResult = analyzeFinancialStatus(args.revenue, args.expenses);
+        break;
+      case 'composeClientEmail':
+        functionResult = composeClientEmail(args.clientName, args.product);
+        break;
+      default:
+        functionResult = `Fonction ${functionName} non implémentée`;
+    }
+    
+    // Créer une réponse modifiée avec le résultat de la fonction
+    const modifiedResponse = {
+      ...response,
+      choices: [{
+        ...choice,
+        message: {
+          ...choice.message,
+          content: functionResult,
+          function_call: undefined // Retirer le function_call pour éviter la confusion
+        }
+      }]
+    };
+    
+    console.log(`[PRISM] ✅ Réponse OpenAI avec fonction exécutée: ${functionResult.substring(0, 100)}...`);
+    return modifiedResponse;
+  }
+  
   console.log(`[PRISM] ✅ Réponse OpenAI reçue: ${response.choices[0]?.message?.content?.substring(0, 100)}...`);
   return response;
+}
+
+// Fonctions d'exécution
+function generateMarketingCampaign(product, targetAudience) {
+  return `# 🎯 Stratégie Marketing pour ${product}
+
+## 🎭 Public Cible
+${targetAudience}
+
+## 📢 Campagne Multi-Canal
+
+### 1. 🌐 Marketing Digital
+- **LinkedIn** : Posts éducatifs sur l'IA conversationnelle
+- **Twitter** : Threads techniques et cas d'usage
+- **Blog** : Articles de fond sur l'innovation IA
+
+### 2. 🎤 Événements & Relations
+- **Participation aux conférences IA/Tech**
+- **Webinaires démo** en direct
+- **Partenariats** avec influenceurs tech
+
+### 3. 💼 Sales Enablement
+- **Démos personnalisées** par secteur
+- **ROI Calculator** interactif
+- **Case studies** de clients pilotes
+
+### 4. 📊 Métriques Clés
+- **CTR** sur les contenus éducatifs
+- **Taux de conversion** demo → trial
+- **NPS** des utilisateurs précoces
+
+*Durée recommandée: 6 mois*
+*Budget estimé: €50k - €150k selon l'ambition*`;
+}
+
+function analyzeFinancialStatus(revenue, expenses) {
+  const burn = expenses - revenue;
+  const runwayMonths = revenue > 0 ? Math.floor(revenue / (burn / 12)) : 0;
+  const burnRate = burn / 12;
+  
+  return `# 📊 Analyse Financière
+
+## 💰 Situation Actuelle
+- **Revenus**: €${revenue.toLocaleString()}
+- **Dépenses**: €${expenses.toLocaleString()}
+- **Burn Rate**: €${Math.abs(burnRate).toLocaleString()}/mois
+- **Runway**: ${runwayMonths} mois
+
+## 🚨 Diagnostic
+${burn > 0 ? 
+  `⚠️ **BURN NÉGATIF** - Vous brûlez €${Math.abs(burnRate).toLocaleString()}/mois
+  
+### Actions Prioritaires:
+1. **Accélérer les revenus** - Focus commercial
+2. **Optimiser les coûts R&D** - Prioriser les features
+3. **Lever des fonds** - Runway de ${runwayMonths} mois critique
+4. **Metrics tracking** - Surveiller l'ARR mensuel` :
+  
+  `✅ **SITUATION POSITIVE** - Rentabilité atteinte
+  
+### Recommandations:
+1. **Réinvestir** dans la croissance
+2. **Constitution de réserves** (6 mois d'opex)
+3. **Scaling** de l'équipe commerciale
+4. **R&D avancée** pour maintenir l'avantage`}
+
+## 📈 Projections 6 Mois
+- **Objectif revenus**: €${Math.round(revenue * 1.5).toLocaleString()}
+- **Croissance visée**: +50% ARR
+- **Break-even**: ${burn > 0 ? 'Dans 6-12 mois' : 'Maintenir'}`;
+}
+
+function composeClientEmail(clientName, product) {
+  return `Objet: ${product} - Innovation IA conversationnelle pour ${clientName}
+
+Bonjour,
+
+En tant que leader dans votre secteur, ${clientName} est probablement confronté aux défis de l'automatisation intelligente et de l'expérience client à l'ère de l'IA.
+
+**${product}** révolutionne l'IA conversationnelle grâce à:
+
+🎯 **Tri-modèles intelligents** - Sélection automatique OpenAI/Claude/Perplexity selon le contexte
+🛡️ **Consensus IA intégré** - Validation par vote majoritaire pour la fiabilité
+⚡ **Performance** - <50ms de latence, 99.9% de disponibilité
+🔄 **Auto-évolution** - Apprentissage continu sécurisé
+
+**Impact pour ${clientName}:**
+- Réduction de 60% du temps de traitement client
+- Augmentation de 40% de la satisfaction utilisateur  
+- ROI positif dès le 3ème mois
+
+Seriez-vous disponible pour une **démo personnalisée de 30 minutes** cette semaine ? Je peux vous montrer comment ${product} s'intègre spécifiquement dans votre environnement.
+
+Créneaux proposés:
+- Mardi 15h-15h30
+- Mercredi 10h-10h30  
+- Jeudi 14h-14h30
+
+Au plaisir de vous présenter cette innovation,
+
+[Signature]
+P.S: Cette démo inclut un POC gratuit de 2 semaines pour évaluer l'impact réel.`;
 }
 
 async function callClaude(userInput) {
@@ -192,15 +334,29 @@ export async function handleUserInstruction(userInput, taskType = "general") {
   logModelChoice(modelChoice, taskType);
 
   try {
+    let response;
+    let actualModel = modelChoice;
+    
     if (modelChoice === "openai") {
-      return await callOpenAI(userInput);
+      response = await callOpenAI(userInput);
     } else if (modelChoice === "claude") {
-      return await callClaude(userInput);
+      response = await callClaude(userInput);
     } else if (modelChoice === "perplexity") {
-      return await callPerplexity(userInput);
+      response = await callPerplexity(userInput);
     } else {
       throw new Error(`[PRISM] Modèle inconnu sélectionné: ${modelChoice}`);
     }
+    
+    // Retourner la réponse avec métadonnées
+    return {
+      data: response,
+      metadata: {
+        model: actualModel,
+        taskType: taskType,
+        success: true
+      }
+    };
+    
   } catch (error) {
     console.error(`[PRISM] Erreur lors de l'appel au modèle ${modelChoice}:`, error);
     
@@ -208,7 +364,17 @@ export async function handleUserInstruction(userInput, taskType = "general") {
     if (modelChoice !== "openai") {
       console.log(`[PRISM] 🔄 Fallback vers OpenAI...`);
       try {
-        return await callOpenAI(userInput);
+        const fallbackResponse = await callOpenAI(userInput);
+        return {
+          data: fallbackResponse,
+          metadata: {
+            model: "openai",
+            taskType: taskType,
+            success: true,
+            fallback: true,
+            originalModel: modelChoice
+          }
+        };
       } catch (fallbackError) {
         console.error(`[PRISM] Erreur fallback OpenAI:`, fallbackError);
         throw error; // Relancer l'erreur originale
