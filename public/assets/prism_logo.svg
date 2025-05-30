@@ -1,0 +1,99 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200" width="200" height="200">
+  <defs>
+    <!-- Gradient doré pour le logo -->
+    <linearGradient id="goldGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#FFD700;stop-opacity:1" />
+      <stop offset="50%" style="stop-color:#FFA500;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#FF8C00;stop-opacity:1" />
+    </linearGradient>
+    
+    <!-- Gradient pour l'effet de profondeur -->
+    <linearGradient id="shadowGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#B8860B;stop-opacity:0.8" />
+      <stop offset="100%" style="stop-color:#8B7355;stop-opacity:0.6" />
+    </linearGradient>
+    
+    <!-- Effet de lueur -->
+    <filter id="glow">
+      <feGaussianBlur stdDeviation="3" result="coloredBlur"/>
+      <feMerge> 
+        <feMergeNode in="coloredBlur"/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+    
+    <!-- Effet de lueur externe -->
+    <filter id="outerGlow" x="-50%" y="-50%" width="200%" height="200%">
+      <feGaussianBlur stdDeviation="5" result="glow"/>
+      <feColorMatrix result="glowColor" in="glow" type="matrix" 
+                     values="1 0.8 0 0 0  1 0.6 0 0 0  0 0 0 0 0  0 0 0 0.6 0"/>
+      <feMerge> 
+        <feMergeNode in="glowColor"/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+  </defs>
+  
+  <!-- Cercle extérieur avec bordure dorée -->
+  <circle cx="100" cy="100" r="95" fill="none" stroke="url(#goldGradient)" stroke-width="4" filter="url(#outerGlow)"/>
+  
+  <!-- Structure tétraèdre/pyramide principale -->
+  <!-- Face avant du tétraèdre -->
+  <polygon points="100,30 60,130 140,130" 
+           fill="url(#goldGradient)" 
+           stroke="url(#goldGradient)" 
+           stroke-width="2"
+           filter="url(#glow)"/>
+  
+  <!-- Face gauche du tétraèdre (avec ombre) -->
+  <polygon points="100,30 60,130 85,85" 
+           fill="url(#shadowGradient)" 
+           stroke="url(#goldGradient)" 
+           stroke-width="1.5"/>
+  
+  <!-- Face droite du tétraèdre (avec ombre) -->
+  <polygon points="100,30 140,130 115,85" 
+           fill="url(#shadowGradient)" 
+           stroke="url(#goldGradient)" 
+           stroke-width="1.5"/>
+  
+  <!-- Losange/diamant central -->
+  <polygon points="100,50 80,100 100,150 120,100" 
+           fill="url(#goldGradient)" 
+           stroke="url(#goldGradient)" 
+           stroke-width="2"
+           opacity="0.9"/>
+  
+  <!-- Points de convergence énergie (style matrice) -->
+  <!-- Centre énergétique -->
+  <circle cx="100" cy="100" r="8" fill="url(#goldGradient)" filter="url(#glow)"/>
+  
+  <!-- Points matriciels autour du centre -->
+  <circle cx="88" cy="88" r="2" fill="#FFD700" opacity="0.8"/>
+  <circle cx="112" cy="88" r="2" fill="#FFD700" opacity="0.8"/>
+  <circle cx="88" cy="112" r="2" fill="#FFD700" opacity="0.8"/>
+  <circle cx="112" cy="112" r="2" fill="#FFD700" opacity="0.8"/>
+  
+  <!-- Points plus petits pour effet de dispersion -->
+  <circle cx="94" cy="82" r="1.5" fill="#FFA500" opacity="0.6"/>
+  <circle cx="106" cy="82" r="1.5" fill="#FFA500" opacity="0.6"/>
+  <circle cx="82" cy="94" r="1.5" fill="#FFA500" opacity="0.6"/>
+  <circle cx="118" cy="94" r="1.5" fill="#FFA500" opacity="0.6"/>
+  <circle cx="82" cy="106" r="1.5" fill="#FFA500" opacity="0.6"/>
+  <circle cx="118" cy="106" r="1.5" fill="#FFA500" opacity="0.6"/>
+  <circle cx="94" cy="118" r="1.5" fill="#FFA500" opacity="0.6"/>
+  <circle cx="106" cy="118" r="1.5" fill="#FFA500" opacity="0.6"/>
+  
+  <!-- Rayons énergétiques -->
+  <line x1="100" y1="70" x2="100" y2="60" stroke="#FFD700" stroke-width="1.5" opacity="0.7"/>
+  <line x1="100" y1="130" x2="100" y2="140" stroke="#FFD700" stroke-width="1.5" opacity="0.7"/>
+  <line x1="70" y1="100" x2="60" y2="100" stroke="#FFD700" stroke-width="1.5" opacity="0.7"/>
+  <line x1="130" y1="100" x2="140" y2="100" stroke="#FFD700" stroke-width="1.5" opacity="0.7"/>
+  
+  <!-- Rayons diagonaux -->
+  <line x1="78" y1="78" x2="72" y2="72" stroke="#FFA500" stroke-width="1" opacity="0.5"/>
+  <line x1="122" y1="78" x2="128" y2="72" stroke="#FFA500" stroke-width="1" opacity="0.5"/>
+  <line x1="78" y1="122" x2="72" y2="128" stroke="#FFA500" stroke-width="1" opacity="0.5"/>
+  <line x1="122" y1="122" x2="128" y2="128" stroke="#FFA500" stroke-width="1" opacity="0.5"/>
+</svg> 

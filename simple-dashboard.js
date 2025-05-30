@@ -20,6 +20,7 @@ app.use('/ui', express.static(path.join(__dirname, 'ui')));
 app.use('/tests', express.static(path.join(__dirname, 'tests')));
 app.use('/dashboard', express.static(path.join(__dirname, 'dashboard')));
 app.use('/demo', express.static(path.join(__dirname, 'demo')));
+app.use('/assets', express.static(path.join(__dirname, 'public/assets')));
 
 // 🎯 NOUVELLE ROUTE API CHAT - Phase 1
 app.post('/api/chat', async (req, res) => {
@@ -143,13 +144,26 @@ app.get('/', (req, res) => {
             }
             
             .logo {
-                font-size: 4em;
-                background: linear-gradient(45deg, #4CAF50, #8BC34A, #CDDC39);
-                -webkit-background-clip: text;
-                -webkit-text-fill-color: transparent;
-                background-clip: text;
-                margin-bottom: 10px;
-                text-shadow: 0 0 30px rgba(76, 175, 80, 0.5);
+                font-size: 2.5em;
+                font-weight: bold;
+                color: #4CAF50;
+                text-shadow: 0 0 20px rgba(76, 175, 80, 0.6);
+                letter-spacing: 3px;
+                display: flex;
+                align-items: center;
+                gap: 15px;
+            }
+            
+            .logo-icon {
+                width: 50px;
+                height: 50px;
+                filter: drop-shadow(0 0 10px rgba(255, 215, 0, 0.6));
+                transition: all 0.3s ease;
+            }
+            
+            .logo-icon:hover {
+                transform: scale(1.1);
+                filter: drop-shadow(0 0 20px rgba(255, 215, 0, 0.8));
             }
             
             .version {
@@ -301,7 +315,10 @@ app.get('/', (req, res) => {
     <body>
         <div class="container">
             <div class="header">
-                <div class="logo">🎯 PRISM</div>
+                <div class="logo">
+                    <img src="/assets/prism_logo.svg" alt="PRISM Logo" class="logo-icon" />
+                    PRISM
+                </div>
                 <div class="version">v2.3 - Intelligence Artificielle Superintelligente</div>
                 <div class="status">
                     ✅ SYSTÈME OPÉRATIONNEL

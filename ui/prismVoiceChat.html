@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>🎯 PRISM Voice Chat - API Integration</title>
+    <title>🎯 Prism Voice Chat - API Integration</title>
     <style>
         * {
             margin: 0;
@@ -49,6 +49,22 @@
             color: #4CAF50;
             margin-bottom: 5px;
             font-size: 1.8em;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 15px;
+        }
+
+        .header-logo {
+            width: 40px;
+            height: 40px;
+            filter: drop-shadow(0 0 8px rgba(255, 215, 0, 0.6));
+            transition: all 0.3s ease;
+        }
+        
+        .header-logo:hover {
+            transform: scale(1.1);
+            filter: drop-shadow(0 0 15px rgba(255, 215, 0, 0.8));
         }
 
         .api-status {
@@ -313,8 +329,11 @@
     <div class="container">
         <div class="chat-panel">
             <div class="chat-header">
-                <h1>🎯 PRISM Voice Chat</h1>
-                <div class="api-status">API Tri-Modèles Intégrée • Phase 2</div>
+                <h1>
+                    <img src="/assets/prism_logo.svg" alt="PRISM Logo" class="header-logo" />
+                    Prism Voice Chat
+                </h1>
+                <div class="api-status">Assistant Intelligent • Phase 2</div>
             </div>
             
             <div class="chat-messages" id="chatMessages">
@@ -322,7 +341,7 @@
             </div>
 
             <div class="processing-indicator" id="processingIndicator">
-                🤖 PRISM traite votre demande...
+                🤖 Prism traite votre demande...
             </div>
             
             <div class="chat-input-area">
@@ -723,7 +742,7 @@
                 // 🎯 CORRECTION: Préserver le formatage PRISM (émojis, structure)
                 // Remplacer escapeHtml par formatPrismContent pour garder le formatage
                 const formattedMessage = this.formatPrismContent(message);
-                messageDiv.innerHTML = `<strong>🎯 PRISM:</strong> ${formattedMessage}${modelBadge}`;
+                messageDiv.innerHTML = `<strong>🎯 Prism:</strong> ${formattedMessage}${modelBadge}`;
                 this.chatMessages.appendChild(messageDiv);
                 this.scrollToBottom();
                 
@@ -776,8 +795,7 @@
             addWelcomeMessage() {
                 setTimeout(() => {
                     this.addPrismMessage(
-                        "Bonjour ! Je suis PRISM avec intégration API tri-modèles. " +
-                        "Mes capacités incluent OpenAI, Claude et Perplexity selon le contexte. " +
+                        "Bonjour ! Je suis Prism, votre assistant intelligent. " +
                         "Comment puis-je vous aider aujourd'hui ?",
                         { model: 'system' }
                     );
