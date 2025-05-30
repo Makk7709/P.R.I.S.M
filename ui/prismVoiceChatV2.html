@@ -310,7 +310,37 @@
 
         .metric-label {
             font-size: 0.8em;
-            color: #BDBDBD;
+            color: #A5D6A7;
+            margin-top: 5px;
+        }
+
+        .voice-health {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 8px;
+            padding: 15px;
+            margin-top: 10px;
+        }
+        
+        .health-indicator {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 8px 0;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        .health-indicator:last-child {
+            border-bottom: none;
+        }
+        
+        .health-label {
+            font-size: 0.9em;
+            color: #C8E6C9;
+        }
+        
+        .health-status {
+            font-size: 0.9em;
+            font-weight: 600;
         }
 
         @media (max-width: 768px) {
@@ -428,6 +458,36 @@
                         <div class="metric-value" id="successRate">100%</div>
                         <div class="metric-label">Taux Succès</div>
                     </div>
+                    <div class="metric-card">
+                        <div class="metric-value" id="elevenLabsStatus">🔄 TEST</div>
+                        <div class="metric-label">ElevenLabs</div>
+                    </div>
+                    <div class="metric-card">
+                        <div class="metric-value" id="voiceMode">FRIENDLY</div>
+                        <div class="metric-label">Mode Vocal</div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="controls-section">
+                <h3>🔊 Santé Vocale</h3>
+                <div class="voice-health">
+                    <div class="health-indicator">
+                        <span class="health-label">ElevenLabs:</span>
+                        <span class="health-status" id="elevenLabsHealth">⏳ Vérification...</span>
+                    </div>
+                    <div class="health-indicator">
+                        <span class="health-label">TTS Navigateur:</span>
+                        <span class="health-status" id="ttsHealth">✅ Disponible</span>
+                    </div>
+                    <div class="health-indicator">
+                        <span class="health-label">Reconnaissance:</span>
+                        <span class="health-status" id="speechRecognitionHealth">✅ Disponible</span>
+                    </div>
+                    <div class="health-indicator">
+                        <span class="health-label">Crédits estimés:</span>
+                        <span class="health-status" id="creditsEstimate">~41,809</span>
+                    </div>
                 </div>
             </div>
         </div>
@@ -446,6 +506,13 @@
                 this.apiEndpoint = '/api/chat';
                 this.isProcessing = false;
                 this.speechEnabled = false; // Désactivé par défaut jusqu'à première interaction
+                
+                // ✨ CORRECTION: Initialiser les variables de contrôle
+                this.elevenLabsCheckInProgress = false;
+                this.lastUserInteraction = Date.now();
+                
+                // ✨ CORRECTION: Ajouter le nettoyage à la fermeture
+                window.addEventListener('beforeunload', () => this.cleanup());
                 
                 console.log('[PRISM V2] Interface vocale initialisée avec API réelle');
             }
@@ -524,8 +591,18 @@
                 this.voices = [];
                 
                 if (this.synthesis) {
-                    this.loadVoices();
-                    this.synthesis.onvoiceschanged = () => this.loadVoices();
+                    // Charger les voix de façon asynchrone
+                    this.loadVoices().catch(error => {
+                        console.error('[Init] Erreur chargement voix:', error);
+                        this.addSystemMessage('⚠️ Erreur chargement des voix');
+                    });
+                    
+                    // Recharger les voix si elles changent (navigateur)
+                    this.synthesis.onvoiceschanged = () => {
+                        if (this.voiceSelect.innerHTML.includes('[Navigateur]')) {
+                            this.loadBrowserVoices();
+                        }
+                    };
                     
                     // Pré-initialiser la synthèse vocale pour éviter les retards
                     this.preinitializeSpeech();
@@ -540,7 +617,10 @@
                     successfulCalls: 0,
                     averageResponseTime: 0,
                     responseTimes: [],
-                    lastModel: null
+                    lastModel: null,
+                    elevenLabsErrors: 0,
+                    elevenLabsSuccess: 0,
+                    currentVoiceMode: 'FRIENDLY'
                 };
                 
                 // Update sliders display
@@ -551,9 +631,162 @@
                 this.rateSlider.addEventListener('input', () => {
                     this.rateValue.textContent = this.rateSlider.value;
                 });
+                
+                // Initialiser le monitoring vocal
+                this.initializeVoiceHealthMonitoring();
+            }
+            
+            initializeVoiceHealthMonitoring() {
+                // Vérifier le statut des fonctionnalités vocales
+                this.checkSpeechRecognitionHealth();
+                this.checkTTSHealth();
+                
+                // ✨ CORRECTION: Faire un seul test initial au lieu d'un monitoring en boucle
+                this.checkElevenLabsHealth();
+                
+                // ✨ CORRECTION: Monitoring périodique moins agressif (toutes les 5 minutes au lieu de 30 secondes)
+                // et seulement si l'utilisateur interagit
+                this.healthCheckInterval = setInterval(() => {
+                    // Vérifier seulement si l'utilisateur a utilisé l'interface récemment
+                    if (this.lastUserInteraction && (Date.now() - this.lastUserInteraction) < 300000) { // 5 minutes
+                        this.checkElevenLabsHealth();
+                    }
+                }, 300000); // 5 minutes au lieu de 30 secondes
+                
+                // Tracker les interactions utilisateur
+                this.lastUserInteraction = Date.now();
+            }
+            
+            checkSpeechRecognitionHealth() {
+                const healthEl = document.getElementById('speechRecognitionHealth');
+                if (this.recognition) {
+                    healthEl.textContent = '✅ Disponible';
+                    healthEl.style.color = '#4CAF50';
+                } else {
+                    healthEl.textContent = '❌ Non supporté';
+                    healthEl.style.color = '#F44336';
+                }
+            }
+            
+            checkTTSHealth() {
+                const healthEl = document.getElementById('ttsHealth');
+                if (this.synthesis && this.voices.length > 0) {
+                    healthEl.textContent = `✅ ${this.voices.filter(v => v.lang.startsWith('fr')).length} voix FR`;
+                    healthEl.style.color = '#4CAF50';
+                } else {
+                    healthEl.textContent = '❌ Non disponible';
+                    healthEl.style.color = '#F44336';
+                }
+            }
+            
+            async checkElevenLabsHealth() {
+                // ✨ CORRECTION: Throttling pour éviter les appels multiples
+                if (this.elevenLabsCheckInProgress) {
+                    console.log('[ElevenLabs] ⏳ Test déjà en cours, skip...');
+                    return;
+                }
+                
+                this.elevenLabsCheckInProgress = true;
+                
+                const statusEl = document.getElementById('elevenLabsStatus');
+                const healthEl = document.getElementById('elevenLabsHealth');
+                
+                try {
+                    statusEl.textContent = '🔄 TEST';
+                    statusEl.style.color = '#FF9800';
+                    
+                    console.log('[ElevenLabs] 🧪 Test de santé démarré...');
+                    const response = await fetch('/api/test-voice');
+                    const data = await response.json();
+                    
+                    if (data.success && data.audioUrl) {
+                        statusEl.textContent = '🎤 ACTIF';
+                        statusEl.style.color = '#4CAF50';
+                        healthEl.textContent = '✅ Opérationnel (Jean)';
+                        healthEl.style.color = '#4CAF50';
+                        console.log('[ElevenLabs] ✅ Test de santé réussi');
+                    } else {
+                        throw new Error(data.error || 'Test failed');
+                    }
+                } catch (error) {
+                    statusEl.textContent = '🔇 FALLBACK';
+                    statusEl.style.color = '#FF9800';
+                    healthEl.textContent = '⚠️ TTS navigateur utilisé';
+                    healthEl.style.color = '#FF9800';
+                    
+                    console.log('[ElevenLabs] ⚠️ Test de santé échoué:', error.message);
+                } finally {
+                    // ✨ CORRECTION: Libérer le verrou après un délai
+                    setTimeout(() => {
+                        this.elevenLabsCheckInProgress = false;
+                    }, 2000); // 2 secondes de délai minimum entre les tests
+                }
             }
 
-            loadVoices() {
+            async loadVoices() {
+                // Réinitialiser le sélecteur
+                this.voiceSelect.innerHTML = '<option value="">⏳ Chargement des voix...</option>';
+                
+                try {
+                    // Charger les voix ElevenLabs depuis l'API
+                    const response = await fetch('/api/voices');
+                    const data = await response.json();
+                    
+                    this.voiceSelect.innerHTML = '';
+                    
+                    if (data.success && data.voices.length > 0) {
+                        console.log('[Voices] 🎤 Voix ElevenLabs chargées:', data.voices.length);
+                        
+                        // Ajouter les voix ElevenLabs
+                        data.voices.forEach(voice => {
+                            const option = document.createElement('option');
+                            option.value = voice.id;
+                            option.dataset.provider = 'elevenlabs';
+                            
+                            // Formatage du nom avec indicateurs
+                            let displayName = voice.name;
+                            if (voice.language === 'fr') {
+                                displayName += ' 🇫🇷';
+                            }
+                            if (voice.gender) {
+                                displayName += ` (${voice.gender})`;
+                            }
+                            if (voice.accent && voice.accent !== 'standard') {
+                                displayName += ` [${voice.accent}]`;
+                            }
+                            
+                            option.textContent = displayName;
+                            
+                            // Sélectionner Jean par défaut s'il est disponible
+                            if (voice.name.toLowerCase().includes('jean') || voice.id === 'm5SBIR8kR76fbA5dP2rU') {
+                                option.selected = true;
+                                console.log('[Voices] 🎯 Jean sélectionné par défaut');
+                            }
+                            
+                            this.voiceSelect.appendChild(option);
+                        });
+                        
+                        // Si Jean n'est pas trouvé, sélectionner la première voix française
+                        if (!this.voiceSelect.value) {
+                            const frenchVoice = Array.from(this.voiceSelect.options).find(opt => 
+                                opt.textContent.includes('🇫🇷'));
+                            if (frenchVoice) {
+                                frenchVoice.selected = true;
+                                console.log('[Voices] 🇫🇷 Première voix française sélectionnée');
+                            }
+                        }
+                    } else {
+                        console.log('[Voices] ⚠️ ElevenLabs non disponible, fallback TTS navigateur');
+                        this.loadBrowserVoices();
+                    }
+                } catch (error) {
+                    console.error('[Voices] ❌ Erreur chargement ElevenLabs:', error);
+                    console.log('[Voices] 🔄 Fallback vers voix navigateur...');
+                    this.loadBrowserVoices();
+                }
+            }
+            
+            loadBrowserVoices() {
                 this.voices = this.synthesis.getVoices();
                 this.voiceSelect.innerHTML = '';
                 
@@ -563,7 +796,8 @@
                 [...frenchVoices, ...otherVoices].forEach((voice, index) => {
                     const option = document.createElement('option');
                     option.value = index;
-                    option.textContent = `${voice.name} (${voice.lang})`;
+                    option.dataset.provider = 'browser';
+                    option.textContent = `${voice.name} (${voice.lang}) [Navigateur]`;
                     if (voice.lang.startsWith('fr') && !this.voiceSelect.value) {
                         option.selected = true;
                     }
@@ -607,6 +841,9 @@
             }
 
             async sendMessage(message) {
+                // ✨ CORRECTION: Tracker l'interaction utilisateur
+                this.lastUserInteraction = Date.now();
+                
                 // Activer la synthèse vocale après la première interaction
                 if (!this.speechEnabled) {
                     this.speechEnabled = true;
@@ -635,12 +872,25 @@
                     const endTime = Date.now();
                     const responseTime = endTime - startTime;
                     
-                    this.updateMetrics(responseTime, response.metadata?.model, true);
-                    this.addPrismMessage(response.content, response.metadata);
+                    // ✨ CORRECTION: Enrichir les métadonnées avec l'audioUrl pour addPrismMessage
+                    const enrichedMetadata = {
+                        ...response.metadata,
+                        audioUrl: response.audioUrl // Passer l'audioUrl de la racine vers metadata
+                    };
+                    
+                    console.log('[PRISM V2] 📊 Réponse reçue:', {
+                        hasAudioUrl: !!response.audioUrl,
+                        audioUrlPreview: response.audioUrl?.substring(0, 50) + '...',
+                        fallbackToTTS: response.fallbackToTTS,
+                        metadata: enrichedMetadata
+                    });
+                    
+                    this.updateMetrics(response);
+                    this.addPrismMessage(response.content, enrichedMetadata);
                     
                 } catch (error) {
                     console.error('[PRISM V2] Erreur API:', error);
-                    this.updateMetrics(0, null, false);
+                    this.updateMetrics({ success: false });
                     this.addErrorMessage(`Erreur de communication avec PRISM: ${error.message}`);
                 } finally {
                     this.isProcessing = false;
@@ -655,10 +905,19 @@
             }
 
             async callPrismAPI(message, taskType) {
+                // Récupérer la voix sélectionnée
+                const selectedOption = this.voiceSelect.selectedOptions[0];
+                const voiceConfig = selectedOption ? {
+                    id: selectedOption.value,
+                    provider: selectedOption.dataset.provider || 'browser',
+                    name: selectedOption.textContent
+                } : null;
+                
                 const requestBody = {
                     message: message,
                     taskType: taskType === 'auto' ? this.detectTaskType(message) : taskType,
-                    model: 'auto-select'
+                    model: 'auto-select',
+                    voiceConfig: voiceConfig
                 };
 
                 console.log('[PRISM V2] Appel API:', requestBody);
@@ -718,22 +977,58 @@
                 return 'general';
             }
 
-            updateMetrics(responseTime, model, success) {
+            updateMetrics(responseData) {
                 this.metrics.apiCalls++;
-                if (success) {
+                this.metrics.responseTimes.push(responseData.responseTime || 0);
+                
+                if (responseData.success) {
                     this.metrics.successfulCalls++;
-                    this.metrics.responseTimes.push(responseTime);
-                    this.metrics.averageResponseTime = Math.round(
-                        this.metrics.responseTimes.reduce((a, b) => a + b, 0) / this.metrics.responseTimes.length
-                    );
-                    this.responseTimeEl.textContent = responseTime;
-                    this.systemStatusEl.textContent = '🟢 ACTIF';
-                } else {
-                    this.systemStatusEl.textContent = '🔴 ERREUR';
                 }
                 
+                // Tracking spécifique ElevenLabs
+                if (responseData.audioUrl) {
+                    this.metrics.elevenLabsSuccess++;
+                } else if (responseData.metadata?.elevenLabsError) {
+                    this.metrics.elevenLabsErrors++;
+                }
+                
+                // Mise à jour du mode vocal
+                if (responseData.metadata?.voiceMode) {
+                    this.metrics.currentVoiceMode = responseData.metadata.voiceMode;
+                    document.getElementById('voiceMode').textContent = responseData.metadata.voiceMode;
+                }
+                
+                // Calcul moyenne temps de réponse
+                if (this.metrics.responseTimes.length > 10) {
+                    this.metrics.responseTimes = this.metrics.responseTimes.slice(-10);
+                }
+                this.metrics.averageResponseTime = Math.round(
+                    this.metrics.responseTimes.reduce((a, b) => a + b, 0) / this.metrics.responseTimes.length
+                );
+                
+                // Mise à jour de l'interface
+                this.responseTimeEl.textContent = `${responseData.responseTime || 0}ms`;
                 this.apiCallsEl.textContent = this.metrics.apiCalls;
-                this.successRateEl.textContent = Math.round((this.metrics.successfulCalls / this.metrics.apiCalls) * 100) + '%';
+                
+                const successRate = Math.round((this.metrics.successfulCalls / this.metrics.apiCalls) * 100);
+                this.successRateEl.textContent = `${successRate}%`;
+                this.successRateEl.style.color = successRate >= 90 ? '#4CAF50' : successRate >= 70 ? '#FF9800' : '#F44336';
+                
+                // Mise à jour statut ElevenLabs basé sur les métriques
+                const elevenLabsSuccessRate = this.metrics.elevenLabsSuccess / (this.metrics.elevenLabsSuccess + this.metrics.elevenLabsErrors);
+                if (elevenLabsSuccessRate > 0.8) {
+                    document.getElementById('elevenLabsStatus').textContent = '🎤 EXCELLENT';
+                    document.getElementById('elevenLabsStatus').style.color = '#4CAF50';
+                } else if (elevenLabsSuccessRate > 0.5) {
+                    document.getElementById('elevenLabsStatus').textContent = '🔇 INSTABLE';
+                    document.getElementById('elevenLabsStatus').style.color = '#FF9800';
+                } else if (this.metrics.elevenLabsErrors > 0) {
+                    document.getElementById('elevenLabsStatus').textContent = '🔇 FALLBACK';
+                    document.getElementById('elevenLabsStatus').style.color = '#F44336';
+                }
+                
+                this.systemStatusEl.textContent = successRate >= 90 ? '🟢 OPTIMAL' : 
+                                                 successRate >= 70 ? '🟡 STABLE' : '🔴 DÉGRADÉ';
             }
 
             addUserMessage(message) {
@@ -763,9 +1058,72 @@
                 this.chatMessages.appendChild(messageDiv);
                 this.scrollToBottom();
                 
-                // Synthèse vocale seulement si activée
+                // 🎤 SYNTHÈSE VOCALE AMÉLIORÉE - ElevenLabs si disponible
                 if (this.speechEnabled) {
-                    this.speak(this.cleanTextForSpeech(message));
+                    console.log('[Speech] 🎤 Synthèse activée, vérification audio...');
+                    console.log('[Speech] 📊 Metadata:', metadata);
+                    
+                    // ✨ CORRECTION: Vérifier audioUrl à la racine ET dans metadata
+                    const audioUrl = metadata?.audioUrl;
+                    
+                    if (audioUrl) {
+                        console.log('[Speech] 🎤 Audio ElevenLabs trouvé:', audioUrl.substring(0, 50) + '...');
+                        this.playElevenLabsAudio(audioUrl, message);
+                    } else {
+                        console.log('[Speech] 🔊 Pas d\'audio ElevenLabs, fallback TTS navigateur');
+                        // Fallback sur TTS navigateur
+                        this.speak(this.cleanTextForSpeech(message));
+                    }
+                }
+            }
+
+            // 🎤 NOUVELLE FONCTION: Lecture audio ElevenLabs
+            playElevenLabsAudio(audioUrl, originalText) {
+                try {
+                    console.log('[ElevenLabs] 🎤 Lecture audio ElevenLabs...');
+                    
+                    // Créer un élément audio pour la lecture
+                    const audio = new Audio(audioUrl);
+                    
+                    audio.onloadstart = () => {
+                        this.speechStatus.classList.remove('inactive');
+                        this.speechText.textContent = 'ElevenLabs: Chargement...';
+                        console.log('[ElevenLabs] Chargement audio...');
+                    };
+                    
+                    audio.onplay = () => {
+                        this.speechStatus.classList.remove('inactive');
+                        this.speechText.textContent = 'ElevenLabs: En cours';
+                        console.log('[ElevenLabs] Lecture démarrée');
+                    };
+                    
+                    audio.onended = () => {
+                        this.speechStatus.classList.add('inactive');
+                        this.speechText.textContent = 'ElevenLabs: Prête';
+                        console.log('[ElevenLabs] Lecture terminée');
+                    };
+                    
+                    audio.onerror = (error) => {
+                        console.error('[ElevenLabs] Erreur lecture audio:', error);
+                        this.speechStatus.classList.add('inactive');
+                        this.speechText.textContent = 'ElevenLabs: Erreur';
+                        
+                        // Fallback sur TTS navigateur en cas d'erreur
+                        console.log('[ElevenLabs] Fallback vers TTS navigateur...');
+                        this.speak(this.cleanTextForSpeech(originalText));
+                    };
+                    
+                    // Démarrer la lecture
+                    audio.play().catch(error => {
+                        console.error('[ElevenLabs] Erreur démarrage audio:', error);
+                        // Fallback sur TTS navigateur
+                        this.speak(this.cleanTextForSpeech(originalText));
+                    });
+                    
+                } catch (error) {
+                    console.error('[ElevenLabs] Erreur playback:', error);
+                    // Fallback sur TTS navigateur
+                    this.speak(this.cleanTextForSpeech(originalText));
                 }
             }
 
@@ -897,10 +1255,38 @@
                 this.chatMessages.scrollTop = this.chatMessages.scrollHeight;
             }
 
-            testSpeech() {
+            async testSpeech() {
                 this.speechEnabled = true;
-                this.speak("Test audio : Prism fonctionne parfaitement !");
                 this.addSystemMessage('🔊 Test audio lancé');
+                
+                // Récupérer la voix sélectionnée
+                const selectedOption = this.voiceSelect.selectedOptions[0];
+                
+                if (selectedOption && selectedOption.dataset.provider === 'elevenlabs') {
+                    // Test avec ElevenLabs
+                    try {
+                        console.log(`[Test] 🎤 Test ElevenLabs avec ${selectedOption.textContent}`);
+                        
+                        const response = await fetch(`/api/test-voice?voiceId=${encodeURIComponent(selectedOption.value)}&voiceName=${encodeURIComponent(selectedOption.textContent)}`);
+                        const data = await response.json();
+                        
+                        if (data.success && data.audioUrl) {
+                            this.playElevenLabsAudio(data.audioUrl, "Test de la synthèse vocale");
+                            this.addSystemMessage(`✅ Test ElevenLabs réussi avec ${data.voiceUsed}`);
+                        } else {
+                            throw new Error(data.error || 'Test ElevenLabs échoué');
+                        }
+                    } catch (error) {
+                        console.error('[Test] ❌ Erreur ElevenLabs:', error);
+                        this.addSystemMessage(`⚠️ ElevenLabs indisponible, fallback TTS navigateur`);
+                        this.speak("Test audio : Prism fonctionne avec le TTS du navigateur !");
+                    }
+                } else {
+                    // Test avec TTS navigateur
+                    console.log(`[Test] 🔊 Test TTS navigateur avec ${selectedOption?.textContent || 'voix par défaut'}`);
+                    this.speak("Test audio : Prism fonctionne parfaitement avec le TTS du navigateur !");
+                    this.addSystemMessage(`✅ Test TTS navigateur réussi`);
+                }
             }
 
             preinitializeSpeech() {
@@ -910,6 +1296,21 @@
                 initUtterance.rate = 1;
                 this.synthesis.speak(initUtterance);
                 console.log('[Speech] Synthèse vocale pré-initialisée');
+            }
+
+            // ✨ NOUVELLE FONCTION: Nettoyage des ressources
+            cleanup() {
+                if (this.healthCheckInterval) {
+                    clearInterval(this.healthCheckInterval);
+                    this.healthCheckInterval = null;
+                }
+                if (this.recognition) {
+                    this.recognition.stop();
+                }
+                if (this.synthesis) {
+                    this.synthesis.cancel();
+                }
+                console.log('[PRISM V2] 🧹 Ressources nettoyées');
             }
         }
 

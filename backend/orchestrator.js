@@ -1,9 +1,13 @@
 import { OpenAI } from "openai";
 import { loadContextSnapshots, formatContextForPrompt } from './contextMemory.js';
+import { VoicePersonalityEnhancer } from './voicePersonalityEnhancer.js';
 import dotenv from 'dotenv';
 
 // Charger les variables d'environnement
 dotenv.config();
+
+// ✨ Initialiser l'amélioration vocale pour plus d'expressivité
+const voiceEnhancer = new VoicePersonalityEnhancer();
 
 // Vérifier les clés API
 if (!process.env.OPENAI_API_KEY || process.env.OPENAI_API_KEY === 'test_openai_key_placeholder') {
@@ -108,19 +112,11 @@ async function callOpenAI(userInput, skipContext = false) {
   
   console.log(`[PRISM] 🚀 Appel OpenAI avec modèle: ${process.env.OPENAI_MODEL || 'gpt-4.1'}`);
   
-  // 🎯 PROMPT PRISM OPENAI OPTIMISÉ (Version courte pour la vitesse)
+  // ✨ PROMPT PRISM OPENAI ENRICHI POUR PLUS D'EXPRESSIVITÉ
+  const enhancedPrompts = voiceEnhancer.enhanceSystemPrompts();
   const basePrompt = skipContext ? 
-    `Tu es PRISM, une IA avancée. Réponds de manière concise et professionnelle.` :
-    `🎯 Tu es PRISM-OpenAI, le module principal du système d'intelligence conversationnelle PRISM.
-
-## 🧠 TON RÔLE
-- **Mission** : Excellence opérationnelle et réponses structurées
-- **Spécialités** : Marketing, finance, emails, function calling
-- **Style** : Efficace, précis, orienté résultats
-
-${contextSummary ? `## 📊 CONTEXTE RÉCENT\n${contextSummary}` : ''}
-
-Réponds en tant que PRISM-OpenAI, avec professionnalisme et efficacité.`;
+    `Tu es PRISM, une IA avancée. Réponds de manière concise et professionnelle avec personnalité.` :
+    enhancedPrompts.openai + (contextSummary ? `\n\n## 📊 CONTEXTE RÉCENT\n${contextSummary}` : '');
 
   const completion = await openai.chat.completions.create({
     model: process.env.OPENAI_MODEL || 'gpt-4.1',
@@ -258,19 +254,11 @@ async function callClaude(userInput, skipContext = false) {
   
   console.log(`[PRISM] 🚀 Appel Claude avec modèle: ${process.env.ANTHROPIC_MODEL || 'claude-3-5-sonnet-20241022'}`);
   
-  // 🎯 PROMPT CLAUDE OPTIMISÉ (Version courte)
+  // ✨ PROMPT CLAUDE ENRICHI POUR PLUS D'EXPRESSIVITÉ
+  const enhancedPrompts = voiceEnhancer.enhanceSystemPrompts();
   const prismClaudePrompt = skipContext ?
-    `Tu es PRISM-Claude, spécialisé en analyse stratégique. Réponds de manière structurée et nuancée.` :
-    `🎯 Tu es PRISM-Claude, module de réflexion stratégique de PRISM.
-
-## 🧠 TON RÔLE SPÉCIALISÉ
-- **Expertise** : Stratégie, éthique, analyse approfondie
-- **Style** : Réflexion structurée, perspectives multiples
-- **Émojis** : 🎯⚖️🔍💡📊
-
-${contextSummary ? `## 📊 CONTEXTE RÉCENT\n${contextSummary}` : ''}
-
-Réponds en tant que PRISM-Claude avec profondeur et nuance.`;
+    `Tu es PRISM-Claude, spécialisé en analyse stratégique avec personnalité expressive.` :
+    enhancedPrompts.claude + (contextSummary ? `\n\n## 📊 CONTEXTE RÉCENT\n${contextSummary}` : '');
 
   const response = await fetch("https://api.anthropic.com/v1/messages", {
     method: "POST",
@@ -310,9 +298,11 @@ async function callPerplexity(userInput, skipContext = false) {
   
   console.log(`[PRISM] 🚀 Appel Perplexity avec modèle: llama-3.1-sonar-large-128k-online`);
   
+  // ✨ PROMPT PERPLEXITY ENRICHI POUR PLUS D'EXPRESSIVITÉ
+  const enhancedPrompts = voiceEnhancer.enhanceSystemPrompts();
   const systemPrompt = skipContext ?
-    'Tu es un assistant de recherche rapide pour PRISM.' :
-    `Tu es un assistant de recherche avancé pour PRISM. ${contextSummary ? `Contexte récent :\n${contextSummary}` : ''}`;
+    'Tu es un assistant de recherche rapide pour PRISM avec personnalité engageante.' :
+    enhancedPrompts.perplexity + (contextSummary ? `\n\n## 📊 CONTEXTE RÉCENT\n${contextSummary}` : '');
   
   const response = await fetch("https://api.perplexity.ai/chat/completions", {
     method: "POST",
@@ -430,26 +420,44 @@ export async function handleUserInstruction(userInput, taskType = "general") {
       throw new Error(`[PRISM] Modèle inconnu sélectionné: ${modelChoice}`);
     }
     
-    // 🚀 ÉTAPE 4: Mise en cache de la réponse
-    const responseContent = extractResponseContent(response, actualModel);
+    // 🚀 ÉTAPE 4: Enrichissement vocal automatique
+    const rawResponseContent = extractResponseContent(response, actualModel);
+    
+    // ✨ APPLICATION DE L'ENRICHISSEMENT VOCAL POUR PLUS D'EXPRESSIVITÉ
+    const voiceEnrichment = voiceEnhancer.analyzeContextForVoice(rawResponseContent, taskType, { 
+      model: actualModel,
+      userInput: userInput 
+    });
+    const { text: enhancedContent, voiceSettings } = voiceEnhancer.adaptContentForEmotion(
+      rawResponseContent, 
+      voiceEnrichment
+    );
+    
+    // 🚀 ÉTAPE 5: Mise en cache de la réponse enrichie
     const responseTime = Date.now() - startTime;
     
     prismCache.set(cacheKey, {
-      content: responseContent,
+      content: enhancedContent,
       model: actualModel,
       timestamp: Date.now()
     });
     
-    console.log(`[PRISM] ✅ Réponse ${actualModel} générée en ${responseTime}ms`);
+    console.log(`[PRISM] ✅ Réponse ${actualModel} enrichie vocalement en ${responseTime}ms`);
     
-    // Retourner la réponse avec métadonnées optimisées
+    // Retourner la réponse avec métadonnées optimisées + paramètres vocaux
     return {
-      data: response,
+      data: { 
+        ...response,
+        enhancedContent, // Contenu enrichi pour la voix
+        voiceSettings    // Paramètres ElevenLabs adaptés
+      },
       metadata: {
         model: actualModel,
         taskType: taskType,
         success: true,
-        responseTime
+        responseTime,
+        voiceMode: voiceEnrichment.mode,
+        voiceEmotion: voiceEnrichment.emotion
       }
     };
     

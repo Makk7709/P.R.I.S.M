@@ -79,20 +79,37 @@ export const config = {
 
     // Configuration ElevenLabs
     ELEVENLABS: {
-      API_KEY: 'ta_clef_api_ici', // Valeur temporaire pour les tests
-      VOICE_ID: '21m00Tcm4TlvDq8ikWAM',
-      AGENT_ID: 'default-agent',
-      MODEL_ID: 'eleven_monolingual_v1',
-      STABILITY: 0.5,
-      SIMILARITY_BOOST: 0.75,
-      STYLE: 0.0,
+      API_KEY: process.env.ELEVENLABS_API_KEY || 'ta_clef_api_ici', // ✨ Utilise la vraie clé d'environnement
+      VOICE_ID: 'm5SBIR8kR76fbA5dP2rU', // Jean - Voix masculine française (fonctionne)
+      AGENT_ID: 'PH3zu8YoKkawQT5H3tB8', // ID de votre agent vocal
+      MODEL_ID: 'eleven_multilingual_v2', // ✨ CORRECTION: Revenir au modèle original
+      STABILITY: 0.35, // ✨ CORRECTION: Paramètres originaux pour Jean
+      SIMILARITY_BOOST: 0.85, // ✨ CORRECTION: Paramètres originaux
+      STYLE: 0.0, // ✨ Désactivé pour éviter les erreurs 500
       USE_SPEAKER_BOOST: true,
-      SPEAKING_RATE: 1.0,
-      PITCH: 0.0,
+      SPEAKING_RATE: 1.0, // ✨ Vitesse normale pour Jean
+      PITCH: 0.0, // ✨ Pitch normal
       RETRY_ATTEMPTS: 3,
-      TIMEOUT: 8000,
-      MAX_TEXT_LENGTH: 5000,
+      TIMEOUT: 8000, // ✨ CORRECTION: Revenir au timeout original
+      MAX_TEXT_LENGTH: 1000, // ✨ GARDER: Limite augmentée pour texte complet
       FALLBACK_TO_TTS: true,
+      // ✨ Vraies voix ElevenLabs disponibles dans notre tier (premade)
+      VOICES: {
+        BILL: 'pqHfZKP75CvOlQylNhV4',       // Voix masculine principale (multilingue)
+        BRIAN: 'nPczCjzI2devNBz1zQrb',      // Voix masculine alternative
+        ARIA: '9BWtsMINqrJLrRacOk9x',       // Féminine multilingue
+        SARAH: 'EXAVITQu4vr4xnSDxMaL',      // Féminine professionnelle
+        CHARLOTTE: 'XB0fDUnXU5powFXDhCwa',  // Féminine énergique
+        ALICE: 'Xb7hH8MSUJpSbSDYk0k2',      // Féminine britannique
+        DANIEL: 'onwK4e9ZLuTAKqWW03F9',     // Masculine britannique
+        CHRIS: 'iP95p4xoKVk53GoZ742B'       // Masculine décontractée
+      },
+      // ✨ Paramètres adaptatifs selon le contexte
+      ADAPTIVE_SETTINGS: {
+        ENERGETIC: { STABILITY: 0.25, STYLE: 0.85, SPEAKING_RATE: 1.25 },
+        CONTEMPLATIVE: { STABILITY: 0.45, STYLE: 0.45, SPEAKING_RATE: 0.95 },
+        URGENT: { STABILITY: 0.20, STYLE: 0.90, SPEAKING_RATE: 1.35 }
+      },
       ERROR_HANDLING: {
         MAX_RETRIES: 3,
         RETRY_DELAY: 1000,
