@@ -2,7 +2,7 @@ import dotenv from 'dotenv';
 dotenv.config({ path: '.env.local' });
 
 export const OPENAI_API_KEY = process.env.OPENAI_API_KEY;
-export const OPENAI_MODEL = process.env.OPENAI_MODEL || 'gpt-4-turbo';
+export const OPENAI_MODEL = process.env.OPENAI_MODEL || 'gpt-4.1';
 
 export const ANTHROPIC_API_KEY = process.env.ANTHROPIC_API_KEY;
 export const ANTHROPIC_MODEL = process.env.ANTHROPIC_MODEL || 'claude-3-sonnet-20240229';
