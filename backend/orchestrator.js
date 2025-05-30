@@ -106,7 +106,7 @@ async function callOpenAI(userInput, skipContext = false) {
     contextSummary = formatContextForPrompt(snapshots);
   }
   
-  console.log(`[PRISM] 🚀 Appel OpenAI avec modèle: ${process.env.OPENAI_MODEL || 'gpt-4-turbo'}`);
+  console.log(`[PRISM] 🚀 Appel OpenAI avec modèle: ${process.env.OPENAI_MODEL || 'gpt-4.1'}`);
   
   // 🎯 PROMPT PRISM OPENAI OPTIMISÉ (Version courte pour la vitesse)
   const basePrompt = skipContext ? 
@@ -123,7 +123,7 @@ ${contextSummary ? `## 📊 CONTEXTE RÉCENT\n${contextSummary}` : ''}
 Réponds en tant que PRISM-OpenAI, avec professionnalisme et efficacité.`;
 
   const completion = await openai.chat.completions.create({
-    model: process.env.OPENAI_MODEL || 'gpt-4-turbo',
+    model: process.env.OPENAI_MODEL || 'gpt-4.1',
     messages: [
       { 
         role: "system", 
@@ -136,7 +136,7 @@ Réponds en tant que PRISM-OpenAI, avec professionnalisme et efficacité.`;
     ],
     max_tokens: skipContext ? 500 : 1000, // Réduction des tokens pour la vitesse
     temperature: 0.3, // Réduction pour plus de cohérence et vitesse
-    functions: skipContext ? undefined : functions // Skip functions en mode rapide
+    // functions: skipContext ? undefined : functions // Skip functions en mode rapide - Variable non définie, commentée
   });
 
   console.log(`[PRISM] ✅ Réponse OpenAI reçue: ${completion.choices[0].message.content?.substring(0, 100)}...`);

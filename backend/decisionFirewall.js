@@ -72,7 +72,7 @@ IMPORTANT :
     `.trim();
 
     const response = await openaiInstance.chat.completions.create({
-      model: process.env.OPENAI_MODEL || 'gpt-4-turbo-preview',
+      model: process.env.OPENAI_MODEL || 'gpt-4.1',
       messages: [{ role: "user", content: evaluationPrompt }],
       temperature: 0,
       max_tokens: 150

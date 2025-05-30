@@ -59,7 +59,7 @@ export const config = {
     MODELS: {
       OPENAI: {
         API_KEY: process.env.OPENAI_API_KEY,
-        MODEL: 'gpt-4-turbo',
+        MODEL: 'gpt-4.1',
         TIMEOUT: 30000,
         MAX_RETRIES: 3
       },

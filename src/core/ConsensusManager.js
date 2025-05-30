@@ -33,7 +33,7 @@ export const ConsensusStatus = {
  * Fournisseurs d'IA participants au consensus
  */
 export const AIProvider = {
-  GPT4: 'gpt-4',
+  GPT4: 'gpt-4.1',
   CLAUDE3: 'claude-3',
   PERPLEXITY: 'perplexity'
 };
