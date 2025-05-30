@@ -1,9 +1,13 @@
-const express = require('express');
-const path = require('path');
-const { createServer } = require('http');
-const { Server } = require('socket.io');
-const winston = require('winston');
-const { AgentRouter } = require('../orchestration/agentRouter');
+import express from 'express';
+import path from 'path';
+import { createServer } from 'http';
+import { Server } from 'socket.io';
+import winston from 'winston';
+import { fileURLToPath } from 'url';
+import { dirname } from 'path';
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = dirname(__filename);
 
 // Configure logging
 const logger = winston.createLogger({
@@ -19,11 +23,11 @@ const logger = winston.createLogger({
 });
 
 class Dashboard {
-  constructor(config) {
+  constructor(config = {}) {
     this.app = express();
     this.server = createServer(this.app);
     this.io = new Server(this.server);
-    this.agentRouter = new AgentRouter(config);
+    this.config = config;
     this.metrics = {
       prompts: [],
       models: {},
@@ -34,7 +38,6 @@ class Dashboard {
     
     this.setupRoutes();
     this.setupWebSocket();
-    this.setupEventListeners();
   }
 
   setupRoutes() {
@@ -45,7 +48,10 @@ class Dashboard {
     });
     
     this.app.get('/api/provider-metrics', (req, res) => {
-      res.json(this.agentRouter.getProviderMetrics());
+      res.json({
+        providers: this.config.providers || {},
+        status: 'operational'
+      });
     });
   }
 
@@ -56,13 +62,6 @@ class Dashboard {
       socket.on('disconnect', () => {
         logger.info('Client disconnected from dashboard');
       });
-    });
-  }
-
-  setupEventListeners() {
-    this.agentRouter.on('providerResponse', (data) => {
-      this.updateMetrics(data);
-      this.io.emit('metricsUpdate', this.metrics);
     });
   }
 
@@ -160,4 +159,4 @@ class Dashboard {
   }
 }
 
-module.exports = Dashboard; 
+export default Dashboard; 

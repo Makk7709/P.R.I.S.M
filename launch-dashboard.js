@@ -1,6 +1,11 @@
-const Dashboard = require('./dashboard/dashboard.js');
-const express = require('express');
-const path = require('path');
+import Dashboard from './dashboard/dashboard.js';
+import express from 'express';
+import path from 'path';
+import { fileURLToPath } from 'url';
+import { dirname } from 'path';
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = dirname(__filename);
 
 // Configuration du dashboard
 const config = {
