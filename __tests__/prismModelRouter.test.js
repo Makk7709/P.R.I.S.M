@@ -15,7 +15,7 @@ jest.mock('../config.js', () => ({
     MODELS: {
       OPENAI: {
         API_KEY: 'test-key',
-        MODEL: 'gpt-4-turbo',
+        MODEL: 'gpt-4.1',
         TIMEOUT: 30000
       },
       ANTHROPIC: {
