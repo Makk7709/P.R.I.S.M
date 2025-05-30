@@ -334,8 +334,13 @@ app.get('/', (req, res) => {
                 </a>
                 
                 <a href="/ui/prismVoiceChat.html" class="nav-card">
-                    <h3>🎤 Interface Vocale</h3>
-                    <p>Chat vocal interactif avec synthèse et reconnaissance vocale intégrées. Testez les capacités conversationnelles avancées de PRISM.</p>
+                    <h3>🎤 Interface Vocale (Mock)</h3>
+                    <p>Chat vocal interactif avec synthèse et reconnaissance vocale intégrées. Version de démonstration avec réponses simulées.</p>
+                </a>
+                
+                <a href="/ui/prismVoiceChatV2.html" class="nav-card">
+                    <h3>🎯 Interface Vocale V2 (API)</h3>
+                    <p>🚀 PHASE 2 : Interface vocale intégrée avec API tri-modèles réelle (OpenAI/Claude/Perplexity). Métriques en temps réel.</p>
                 </a>
                 
                 <a href="/dashboard/security-dashboard.html" class="nav-card">

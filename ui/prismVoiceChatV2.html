@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>🎯 PRISM Voice Chat - API Integration</title>
+    <title>🎯 PRISM Voice Chat V2 - API Integration</title>
     <style>
         * {
             margin: 0;
@@ -313,7 +313,7 @@
     <div class="container">
         <div class="chat-panel">
             <div class="chat-header">
-                <h1>🎯 PRISM Voice Chat</h1>
+                <h1>🎯 PRISM Voice Chat V2</h1>
                 <div class="api-status">API Tri-Modèles Intégrée • Phase 2</div>
             </div>
             
@@ -409,7 +409,7 @@
     </div>
 
     <script>
-        class PrismVoiceChat {
+        class PrismVoiceChatV2 {
             constructor() {
                 this.initializeElements();
                 this.initializeAudio();
@@ -776,7 +776,7 @@
             addWelcomeMessage() {
                 setTimeout(() => {
                     this.addPrismMessage(
-                        "Bonjour ! Je suis PRISM avec intégration API tri-modèles. " +
+                        "Bonjour ! Je suis PRISM V2 avec intégration API tri-modèles. " +
                         "Mes capacités incluent OpenAI, Claude et Perplexity selon le contexte. " +
                         "Comment puis-je vous aider aujourd'hui ?",
                         { model: 'system' }
@@ -837,9 +837,9 @@
             }
         }
 
-        // Initialiser l'interface vocale
+        // Initialiser l'interface vocale V2
         document.addEventListener('DOMContentLoaded', () => {
-            new PrismVoiceChat();
+            new PrismVoiceChatV2();
         });
     </script>
 </body>
