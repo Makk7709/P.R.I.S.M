@@ -250,3 +250,80 @@ reports/
 
 # Telemetry
 telemetry/
+
+# === PYTHON TEMPORARY FILES ===
+__pycache__/
+*.py[cod]
+*$py.class
+
+# === VIRTUAL ENVIRONMENTS ===
+.venv/
+venv/
+env/
+ENV/
+
+# === PYTHON DISTRIBUTION / PACKAGING ===
+.Python
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+
+# === PYTEST ===
+.pytest_cache/
+.coverage
+htmlcov/
+
+# === IDE FILES ===
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# === OS FILES ===
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+
+# === NODE.JS ===
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# === ENVIRONMENT VARIABLES ===
+.env
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+
+# === LOGS ===
+logs
+*.log
+
+# === TEMPORARY FILES ===
+*.tmp
+*.temp
+*.backup
+*.bak
+
+# === PRISM SPECIFIC ===
+*.backup-*
+test-results-*.log
