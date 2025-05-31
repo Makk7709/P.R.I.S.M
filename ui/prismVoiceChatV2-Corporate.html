@@ -1,0 +1,2234 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PRISM Professional Chat V2 - Intelligence Assistant</title>
+    
+    <!-- Nouveau thème PRISM Corporate -->
+    <link rel="stylesheet" href="../styles/prism-corporate-theme.css">
+    
+    <style>
+        /* === NEURAL NETWORK BACKGROUND === */
+        .neural-network-bg {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            z-index: -2;
+            background: 
+                radial-gradient(ellipse at 20% 50%, rgba(15, 21, 28, 0.9) 0%, transparent 50%),
+                radial-gradient(ellipse at 80% 20%, rgba(10, 16, 24, 0.8) 0%, transparent 50%),
+                radial-gradient(ellipse at 40% 80%, rgba(5, 11, 20, 0.9) 0%, transparent 50%),
+                linear-gradient(135deg, #030609 0%, #050B14 20%, #0A1018 50%, #0F151C 80%, #141A22 100%);
+            overflow: hidden;
+        }
+
+        .neural-particles {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+        }
+
+        .neural-node {
+            position: absolute;
+            width: 4px;
+            height: 4px;
+            background: rgba(255, 215, 0, 0.8);
+            border-radius: 50%;
+            box-shadow: 
+                0 0 10px rgba(255, 215, 0, 0.6),
+                0 0 20px rgba(255, 215, 0, 0.4),
+                0 0 30px rgba(255, 215, 0, 0.2);
+            animation: nodePulse 3s ease-in-out infinite;
+        }
+
+        .neural-node.large {
+            width: 6px;
+            height: 6px;
+            background: rgba(255, 215, 0, 1);
+            box-shadow: 
+                0 0 15px rgba(255, 215, 0, 0.8),
+                0 0 30px rgba(255, 215, 0, 0.6),
+                0 0 45px rgba(255, 215, 0, 0.4);
+        }
+
+        .neural-connection {
+            position: absolute;
+            height: 1px;
+            background: linear-gradient(90deg, 
+                transparent 0%, 
+                rgba(255, 215, 0, 0.1) 20%, 
+                rgba(255, 215, 0, 0.3) 50%, 
+                rgba(255, 215, 0, 0.1) 80%, 
+                transparent 100%);
+            transform-origin: left center;
+            animation: connectionPulse 4s ease-in-out infinite;
+        }
+
+        .neural-brain {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 200px;
+            height: 200px;
+            opacity: 0.1;
+            background: 
+                radial-gradient(ellipse at 30% 40%, rgba(255, 215, 0, 0.2) 0%, transparent 50%),
+                radial-gradient(ellipse at 70% 60%, rgba(255, 215, 0, 0.15) 0%, transparent 50%);
+            border-radius: 50% 50% 50% 50% / 60% 60% 40% 40%;
+            animation: brainPulse 6s ease-in-out infinite;
+        }
+
+        @keyframes nodePulse {
+            0%, 100% { 
+                opacity: 0.8;
+                transform: scale(1);
+            }
+            50% { 
+                opacity: 1;
+                transform: scale(1.2);
+            }
+        }
+
+        @keyframes connectionPulse {
+            0%, 100% { 
+                opacity: 0.2;
+            }
+            50% { 
+                opacity: 0.6;
+            }
+        }
+
+        @keyframes brainPulse {
+            0%, 100% { 
+                opacity: 0.05;
+                transform: translate(-50%, -50%) scale(1);
+            }
+            50% { 
+                opacity: 0.15;
+                transform: translate(-50%, -50%) scale(1.05);
+            }
+        }
+
+        /* === SILICON VALLEY CORPORATE DESIGN SYSTEM === */
+        :root {
+            /* NOIR BLEUTÉ PROFOND - Ultra Dark */
+            --prism-deep-navy: #050B14;        /* Noir bleuté ultra-profond */
+            --prism-space-blue: #0A1018;       /* Noir spatial */
+            --prism-steel-blue: #0F151C;       /* Noir acier */
+            --prism-quantum-blue: #141A22;     /* Noir quantique */
+            --prism-midnight-primary: #050B14;
+            --prism-midnight-secondary: #0A1018;
+            --prism-midnight-tertiary: #0F151C;
+            --prism-midnight-soft: #141A22;
+            
+            /* DORÉ PREMIUM - Accents */
+            --prism-gold-primary: #FFD700;     /* Or pur - highlights */
+            --prism-gold-elegant: #B8860B;     /* Or élégant - borders */
+            --prism-gold-secondary: #DAA520;   /* Or secondaire */
+            --prism-gold-muted: #B8860B;       /* Or sourd */
+            --prism-champagne: #F7E7CE;        /* Champagne - textes */
+            --prism-bronze: #8B7355;           /* Bronze - subtil */
+            
+            /* TEXTES CORPORATE */
+            --prism-text-primary: #F8F9FA;     /* Blanc nacré */
+            --prism-text-secondary: #E5E7EB;   /* Gris perle */
+            --prism-text-muted: #9CA3AF;       /* Gris clair */
+            --prism-text-accent: var(--prism-champagne);
+            
+            /* ÉTATS SYSTEM */
+            --prism-success: #10B981;          /* Vert émeraude */
+            --prism-warning: #F59E0B;          /* Ambre */
+            --prism-error: #EF4444;            /* Rouge corail */
+            --prism-info: #3B82F6;             /* Bleu info */
+            
+            /* EFFETS HOLOGRAPHIQUES RENFORCÉS */
+            --prism-glass-1: rgba(255, 255, 255, 0.04);
+            --prism-glass-2: rgba(255, 255, 255, 0.08);
+            --prism-glass-3: rgba(255, 255, 255, 0.12);
+            --prism-neural-glow: rgba(255, 215, 0, 0.15);  /* Plus visible */
+            --prism-quantum-shimmer: rgba(255, 215, 0, 0.25); /* Plus visible */
+            --prism-overlay-light: rgba(255, 215, 0, 0.1);
+            --prism-overlay-medium: rgba(255, 215, 0, 0.2);
+            
+            /* BORDERS ET SHADOWS */
+            --prism-border-subtle: rgba(185, 134, 11, 0.2);
+            --prism-border-medium: rgba(185, 134, 11, 0.4);
+            --prism-border-strong: rgba(185, 134, 11, 0.6);
+            
+            --prism-shadow-light: rgba(5, 11, 20, 0.3);
+            --prism-shadow-medium: rgba(5, 11, 20, 0.5);
+            --prism-shadow-strong: rgba(5, 11, 20, 0.7);
+            
+            /* GRADIENTS SILICON VALLEY ULTRA DARK */
+            --prism-gradient-primary: linear-gradient(135deg, var(--prism-deep-navy) 0%, var(--prism-space-blue) 50%, var(--prism-steel-blue) 100%);
+            --prism-gradient-gold: linear-gradient(45deg, var(--prism-gold-elegant), var(--prism-gold-primary));
+            --prism-gradient-glass: linear-gradient(145deg, var(--prism-glass-1), var(--prism-glass-2));
+            --prism-gradient-neural: linear-gradient(90deg, var(--prism-space-blue), var(--prism-bronze));
+            --prism-gradient-accent: linear-gradient(45deg, var(--prism-gold-primary), var(--prism-gold-elegant));
+            
+            /* ANIMATIONS */
+            --prism-transition-fast: 0.15s cubic-bezier(0.4, 0, 0.2, 1);
+            --prism-transition-medium: 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            --prism-transition-slow: 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+            
+            /* SPACING ET RADIUS */
+            --prism-radius-small: 8px;
+            --prism-radius-medium: 12px;
+            --prism-radius-large: 20px;
+            --prism-radius-xl: 30px;
+        }
+
+        /* === BODY AVEC NEURAL BACKGROUND === */
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: transparent;
+            color: var(--prism-text-primary);
+            overflow-x: hidden;
+        }
+
+        /* === CONTAINERS ET LAYOUT === */
+        .prism-container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 20px;
+            display: grid;
+            grid-template-columns: 2fr 400px;
+            gap: 24px;
+            height: 95vh;
+            position: relative;
+            z-index: 1;
+        }
+
+        /* Layout ultra-responsive avec adaptation dynamique */
+        @media (max-width: 1024px) {
+            .prism-container {
+                grid-template-columns: 1fr;
+                height: auto;
+                min-height: 100vh;
+                gap: 20px;
+                padding: 16px;
+            }
+            
+            .prism-sidebar-panel {
+                order: -1;
+                max-height: 400px;
+            }
+        }
+
+        @media (min-width: 1400px) {
+            .prism-container {
+                max-width: 1600px;
+                grid-template-columns: 3fr 450px;
+                gap: 32px;
+                padding: 32px;
+            }
+        }
+
+        @media (min-width: 1800px) {
+            .prism-container {
+                max-width: 1800px;
+                grid-template-columns: 4fr 500px;
+                gap: 40px;
+                padding: 40px;
+            }
+        }
+
+        .prism-panel {
+            background: var(--prism-gradient-glass);
+            backdrop-filter: blur(20px);
+            border: 1px solid var(--prism-border-subtle);
+            border-radius: var(--prism-radius-large);
+            overflow: hidden;
+            box-shadow: 
+                0 10px 40px var(--prism-shadow-medium),
+                inset 0 1px 0 var(--prism-glass-2);
+            transition: all var(--prism-transition-medium);
+        }
+
+        .prism-panel:hover {
+            border-color: var(--prism-border-medium);
+            box-shadow: 
+                0 20px 60px var(--prism-shadow-strong),
+                inset 0 1px 0 var(--prism-glass-3);
+        }
+
+        /* === STYLES SPÉCIFIQUES DASHBOARD === */
+        
+        /* Sidebar Panel Styling */
+        .prism-sidebar-panel {
+            display: flex;
+            flex-direction: column;
+            gap: 25px;
+            height: fit-content;
+        }
+
+        .prism-control-section {
+            background: var(--prism-midnight-tertiary);
+            border-radius: var(--prism-radius-medium);
+            padding: 20px;
+            border: 1px solid var(--prism-border-subtle);
+            transition: all var(--prism-transition-medium);
+        }
+
+        .prism-control-section:hover {
+            border-color: var(--prism-border-medium);
+            box-shadow: 0 8px 20px var(--prism-shadow-light);
+        }
+
+        .prism-control-section h3 {
+            color: var(--prism-gold-primary);
+            margin-bottom: 15px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .prism-control-section h3::before {
+            content: "⚙️";
+            font-size: 1rem;
+        }
+
+        .prism-control-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 12px;
+        }
+
+        .prism-control-row:last-child {
+            margin-bottom: 0;
+        }
+
+        .prism-control-label {
+            color: var(--prism-text-secondary);
+            font-size: 0.9rem;
+            font-weight: 500;
+        }
+
+        .prism-control-input, .prism-voice-select, .prism-task-select {
+            background: var(--prism-midnight-primary);
+            border: 1px solid var(--prism-border-subtle);
+            border-radius: var(--prism-radius-small);
+            padding: 10px 12px;
+            color: var(--prism-text-primary);
+            font-size: 14px;
+            transition: all var(--prism-transition-fast);
+        }
+
+        .prism-control-input {
+            width: 100px;
+        }
+
+        .prism-voice-select, .prism-task-select {
+            width: 100%;
+            margin-top: 8px;
+        }
+
+        .prism-control-input:focus, 
+        .prism-voice-select:focus, 
+        .prism-task-select:focus {
+            outline: none;
+            border-color: var(--prism-gold-primary);
+            box-shadow: 0 0 0 2px var(--prism-overlay-light);
+        }
+
+        /* Status Indicators */
+        .prism-status-indicator {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 12px 16px;
+            background: var(--prism-midnight-soft);
+            border: 1px solid var(--prism-border-subtle);
+            border-radius: var(--prism-radius-small);
+            margin-top: 15px;
+            transition: all var(--prism-transition-fast);
+        }
+
+        .prism-status-indicator.active {
+            border-color: var(--prism-border-medium);
+            background: var(--prism-overlay-light);
+        }
+
+        .prism-status-dot {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            background: var(--prism-success);
+            animation: prismStatusPulse 2s infinite;
+        }
+
+        .prism-status-dot.inactive {
+            background: var(--prism-text-muted);
+            animation: none;
+        }
+
+        .prism-status-text {
+            color: var(--prism-text-secondary);
+            font-size: 0.9rem;
+            font-weight: 500;
+        }
+
+        /* Performance Metrics */
+        .prism-performance-metrics {
+            background: var(--prism-midnight-tertiary);
+            border: 1px solid var(--prism-border-subtle);
+            border-radius: var(--prism-radius-small);
+            padding: 16px;
+            margin-top: 15px;
+        }
+
+        .prism-performance-metrics h4 {
+            color: var(--prism-gold-secondary);
+            font-size: 1rem;
+            margin-bottom: 12px;
+            font-weight: 600;
+        }
+
+        .prism-metric-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 8px;
+        }
+
+        .prism-metric-row:last-child {
+            margin-bottom: 0;
+        }
+
+        .prism-metric-label {
+            color: var(--prism-text-secondary);
+            font-size: 0.85rem;
+            font-weight: 500;
+        }
+
+        .prism-metric-value {
+            color: var(--prism-text-accent);
+            font-weight: 600;
+            font-size: 0.9rem;
+        }
+
+        .prism-metric-value.good {
+            color: var(--prism-success);
+        }
+
+        .prism-metric-value.warning {
+            color: var(--prism-warning);
+        }
+
+        .prism-metric-value.critical {
+            color: var(--prism-error);
+        }
+
+        /* Style pour le bouton Voice - Thème PRISM Doré - FORCE */
+        .prism-voice-button {
+            background: var(--prism-gradient-gold) !important;
+            color: var(--prism-deep-navy) !important;
+            border: 2px solid var(--prism-border-medium) !important;
+            border-radius: var(--prism-radius-medium) !important;
+            min-width: 140px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            box-shadow: 
+                0 4px 15px rgba(255, 215, 0, 0.2),
+                inset 0 1px 0 rgba(255, 255, 255, 0.3) !important;
+        }
+
+        .prism-voice-button:hover {
+            background: linear-gradient(45deg, var(--prism-gold-primary), #FFF700) !important;
+            border-color: var(--prism-border-strong) !important;
+            color: var(--prism-deep-navy) !important;
+            box-shadow: 
+                0 8px 25px rgba(255, 215, 0, 0.4),
+                0 4px 15px var(--prism-shadow-medium),
+                inset 0 1px 0 rgba(255, 255, 255, 0.5) !important;
+            transform: translateY(-2px);
+        }
+
+        /* Force pour le bouton Voice spécifique par ID */
+        #voiceButton {
+            background: var(--prism-gradient-gold) !important;
+            color: var(--prism-deep-navy) !important;
+            border: 2px solid var(--prism-border-medium) !important;
+        }
+
+        #voiceButton:hover {
+            background: linear-gradient(45deg, var(--prism-gold-primary), #FFF700) !important;
+            color: var(--prism-deep-navy) !important;
+        }
+
+        /* Animation spéciale pour le bouton voice actif - Doré */
+        .prism-voice-button.active {
+            animation: voicePulseGold 1.5s infinite;
+            background: linear-gradient(45deg, var(--prism-gold-primary), var(--prism-gold-secondary));
+        }
+
+        @keyframes voicePulseGold {
+            0%, 100% { 
+                transform: scale(1);
+                box-shadow: 
+                    0 4px 15px rgba(255, 215, 0, 0.3),
+                    0 0 0 0 rgba(255, 215, 0, 0.4);
+            }
+            50% { 
+                transform: scale(1.05);
+                box-shadow: 
+                    0 8px 25px rgba(255, 215, 0, 0.5),
+                    0 0 0 10px rgba(255, 215, 0, 0.2);
+            }
+        }
+
+        /* Clear Button Special Styling */
+        .prism-clear-button {
+            background: var(--prism-midnight-soft);
+            border: 1px solid var(--prism-border-medium);
+            color: var(--prism-text-secondary);
+        }
+
+        .prism-clear-button:hover {
+            background: var(--prism-midnight-tertiary);
+            border-color: var(--prism-error);
+            color: var(--prism-error);
+        }
+
+        /* Model Badge Enhanced */
+        .prism-model-badge {
+            display: inline-block;
+            background: var(--prism-midnight-tertiary);
+            border: 1px solid var(--prism-border-medium);
+            border-radius: var(--prism-radius-medium);
+            padding: 4px 10px;
+            font-size: 0.8rem;
+            margin-left: 10px;
+            color: var(--prism-text-accent);
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .prism-model-badge.openai {
+            border-color: var(--prism-success);
+            color: var(--prism-success);
+        }
+
+        .prism-model-badge.anthropic {
+            border-color: var(--prism-info);
+            color: var(--prism-info);
+        }
+
+        .prism-model-badge.gemini {
+            border-color: var(--prism-warning);
+            color: var(--prism-warning);
+        }
+
+        /* Processing Indicator Enhanced */
+        .prism-processing-indicator {
+            display: none;
+            background: var(--prism-midnight-tertiary);
+            border: 1px solid var(--prism-border-medium);
+            border-radius: var(--prism-radius-medium);
+            padding: 16px 20px;
+            align-self: flex-start;
+            color: var(--prism-text-accent);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .prism-processing-indicator.active {
+            display: block;
+            animation: prismProcessingGlow 2s ease-in-out infinite;
+        }
+
+        @keyframes prismProcessingGlow {
+            0%, 100% { 
+                box-shadow: 0 4px 15px var(--prism-shadow-light);
+                border-color: var(--prism-border-medium);
+            }
+            50% { 
+                box-shadow: 0 8px 25px var(--prism-overlay-medium);
+                border-color: var(--prism-gold-primary);
+            }
+        }
+
+        .prism-processing-indicator::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: var(--prism-gradient-gold);
+            opacity: 0.1;
+            animation: prismProcessingShine 1.5s infinite;
+        }
+
+        @keyframes prismProcessingShine {
+            0% { left: -100%; }
+            100% { left: 100%; }
+        }
+
+        /* Chat Panel */
+        .prism-chat-panel {
+            display: flex;
+            flex-direction: column;
+            height: 100%;
+        }
+
+        .prism-chat-header {
+            padding: 20px 24px;
+            border-bottom: 1px solid var(--prism-border-subtle);
+            background: var(--prism-gradient-glass);
+        }
+
+        .prism-chat-header h1 {
+            margin: 0;
+            color: var(--prism-text-primary);
+            font-size: 1.8rem;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .prism-header-logo {
+            width: 48px;
+            height: 48px;
+            transition: all var(--prism-transition-medium);
+            filter: drop-shadow(0 0 15px rgba(255, 215, 0, 0.5));
+            /* Animation de rotation 3D continue */
+            animation: pyramidRotate 8s linear infinite;
+            transform-style: preserve-3d;
+        }
+
+        .prism-header-logo:hover {
+            transform: scale(1.15) rotateY(45deg);
+            filter: drop-shadow(0 0 25px rgba(255, 215, 0, 0.9));
+            /* Accélération au survol */
+            animation: pyramidRotateFast 3s linear infinite;
+        }
+
+        /* Animation de rotation 3D normale */
+        @keyframes pyramidRotate {
+            0% { 
+                transform: rotateY(0deg) rotateX(0deg);
+                filter: drop-shadow(0 0 15px rgba(255, 215, 0, 0.5));
+            }
+            25% { 
+                transform: rotateY(90deg) rotateX(5deg);
+                filter: drop-shadow(0 0 18px rgba(255, 215, 0, 0.6));
+            }
+            50% { 
+                transform: rotateY(180deg) rotateX(0deg);
+                filter: drop-shadow(0 0 20px rgba(255, 215, 0, 0.7));
+            }
+            75% { 
+                transform: rotateY(270deg) rotateX(-5deg);
+                filter: drop-shadow(0 0 18px rgba(255, 215, 0, 0.6));
+            }
+            100% { 
+                transform: rotateY(360deg) rotateX(0deg);
+                filter: drop-shadow(0 0 15px rgba(255, 215, 0, 0.5));
+            }
+        }
+
+        /* Animation accélérée au survol */
+        @keyframes pyramidRotateFast {
+            0% { 
+                transform: scale(1.15) rotateY(0deg) rotateX(10deg) rotateZ(0deg);
+                filter: drop-shadow(0 0 25px rgba(255, 215, 0, 0.9));
+            }
+            33% { 
+                transform: scale(1.15) rotateY(120deg) rotateX(15deg) rotateZ(5deg);
+                filter: drop-shadow(0 0 30px rgba(255, 215, 0, 1));
+            }
+            66% { 
+                transform: scale(1.15) rotateY(240deg) rotateX(10deg) rotateZ(-5deg);
+                filter: drop-shadow(0 0 35px rgba(255, 215, 0, 1));
+            }
+            100% { 
+                transform: scale(1.15) rotateY(360deg) rotateX(10deg) rotateZ(0deg);
+                filter: drop-shadow(0 0 25px rgba(255, 215, 0, 0.9));
+            }
+        }
+
+        /* Animation de rotation de la pyramide au survol du header */
+        .prism-chat-header:hover .prism-header-logo {
+            animation: pyramidGlow 2s ease-in-out infinite;
+        }
+
+        @keyframes pyramidGlow {
+            0%, 100% { 
+                filter: drop-shadow(0 0 15px rgba(255, 215, 0, 0.5));
+                transform: scale(1) rotateZ(0deg);
+            }
+            50% { 
+                filter: drop-shadow(0 0 30px rgba(255, 215, 0, 1));
+                transform: scale(1.1) rotateZ(2deg);
+            }
+        }
+
+        .prism-api-status {
+            color: var(--prism-text-secondary);
+            font-size: 0.9rem;
+            margin-top: 4px;
+            opacity: 0.8;
+        }
+
+        /* Messages Area */
+        .prism-messages {
+            flex: 1;
+            padding: 20px 24px;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+            background: transparent;
+        }
+
+        .prism-message {
+            max-width: 85%;
+            padding: 16px 20px;
+            border-radius: var(--prism-radius-medium);
+            line-height: 1.6;
+            font-size: 0.95rem;
+            position: relative;
+            animation: messageSlideIn 0.3s ease-out;
+        }
+
+        @keyframes messageSlideIn {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .prism-message.user {
+            align-self: flex-end;
+            background: var(--prism-gradient-gold);
+            color: var(--prism-deep-navy);
+            border: 1px solid var(--prism-border-medium);
+        }
+
+        .prism-message.prism {
+            align-self: flex-start;
+            background: var(--prism-gradient-glass);
+            color: var(--prism-text-primary);
+            border: 1px solid var(--prism-border-subtle);
+            backdrop-filter: blur(10px);
+        }
+
+        .prism-message.system {
+            align-self: center;
+            background: var(--prism-gradient-neural);
+            color: var(--prism-text-secondary);
+            border: 1px solid var(--prism-border-subtle);
+            font-style: italic;
+            max-width: 70%;
+        }
+
+        .prism-message.error {
+            align-self: center;
+            background: rgba(239, 68, 68, 0.1);
+            color: var(--prism-error);
+            border: 1px solid var(--prism-error);
+            max-width: 70%;
+        }
+
+        /* Input Area */
+        .prism-input-area {
+            padding: 28px 24px;
+            border-top: 1px solid var(--prism-border-subtle);
+            background: var(--prism-gradient-glass);
+            backdrop-filter: blur(20px);
+            min-height: 120px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            gap: 16px;
+            /* Effet de glow subtil */
+            box-shadow: 
+                0 -4px 20px rgba(255, 215, 0, 0.05),
+                inset 0 1px 0 var(--prism-glass-2);
+            border-radius: 0 0 var(--prism-radius-large) var(--prism-radius-large);
+            position: relative;
+            overflow: hidden;
+        }
+
+        /* Effet de particules dans la barre de chat */
+        .prism-input-area::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: 
+                radial-gradient(circle at 20% 50%, rgba(255, 215, 0, 0.02) 0%, transparent 50%),
+                radial-gradient(circle at 80% 50%, rgba(255, 215, 0, 0.03) 0%, transparent 50%);
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        .prism-input-row {
+            display: flex;
+            gap: 16px;
+            align-items: center;
+            margin-bottom: 0;
+            position: relative;
+            z-index: 1;
+        }
+
+        .prism-input-row:last-child {
+            margin-bottom: 0;
+        }
+
+        /* Zone de texte DOMINANTE - Simple et efficace */
+        .prism-text-input {
+            flex: 1; /* Prend tout l'espace disponible dans sa ligne */
+            background: var(--prism-steel-blue);
+            border: 2px solid var(--prism-border-subtle);
+            border-radius: var(--prism-radius-medium);
+            padding: 18px 24px;
+            color: var(--prism-text-primary);
+            font-size: 1.1rem;
+            line-height: 1.5;
+            transition: all var(--prism-transition-medium);
+            resize: none;
+            min-height: 60px;
+            /* Effet glassmorphism */
+            backdrop-filter: blur(10px);
+            box-shadow: 
+                0 4px 15px rgba(5, 11, 20, 0.3),
+                inset 0 1px 0 rgba(255, 255, 255, 0.1);
+        }
+
+        .prism-text-input::placeholder {
+            color: var(--prism-text-muted);
+            font-style: italic;
+        }
+
+        .prism-text-input:focus {
+            outline: none;
+            border-color: var(--prism-gold-primary);
+            box-shadow: 
+                0 0 0 4px var(--prism-overlay-light),
+                0 8px 25px rgba(255, 215, 0, 0.15),
+                inset 0 1px 0 rgba(255, 255, 255, 0.2);
+            transform: translateY(-2px);
+        }
+
+        /* Nouvelles lignes spécialisées */
+        .prism-domain-row {
+            justify-content: flex-start;
+            margin-bottom: 12px;
+            padding: 8px 12px;
+            background: rgba(255, 215, 0, 0.02);
+            border-radius: var(--prism-radius-small);
+            border: 1px solid var(--prism-border-subtle);
+            max-width: 280px;
+            align-self: flex-start;
+        }
+
+        .prism-main-chat-row {
+            gap: 20px;
+            margin-bottom: 16px;
+        }
+
+        .prism-voice-row {
+            justify-content: center;
+            margin-bottom: 0;
+        }
+
+        /* Label pour le sélecteur de domaine */
+        .prism-domain-label {
+            color: var(--prism-text-secondary);
+            font-size: 0.85rem;
+            font-weight: 500;
+            margin-right: 8px;
+            white-space: nowrap;
+            align-self: center;
+        }
+
+        /* Sélecteur de tâche - Plus compact et mieux proportionné */
+        .prism-task-select {
+            background: var(--prism-midnight-tertiary);
+            border: 2px solid var(--prism-border-subtle);
+            border-radius: var(--prism-radius-small);
+            padding: 8px 12px;
+            color: var(--prism-text-primary);
+            font-size: 0.85rem;
+            min-width: 120px;
+            max-width: 160px;
+            transition: all var(--prism-transition-medium);
+            backdrop-filter: blur(10px);
+            flex-shrink: 0;
+        }
+
+        .prism-task-select:focus {
+            outline: none;
+            border-color: var(--prism-gold-primary);
+            box-shadow: 0 0 0 2px var(--prism-overlay-light);
+        }
+
+        /* Textarea responsive */
+        @media (min-width: 768px) {
+            .prism-text-input {
+                min-height: 80px;
+                font-size: 1.2rem;
+                padding: 22px 28px;
+            }
+            
+            .prism-input-area {
+                min-height: 140px;
+                padding: 40px 32px;
+            }
+        }
+
+        @media (min-width: 1200px) {
+            .prism-text-input {
+                min-height: 100px;
+                font-size: 1.3rem;
+                padding: 26px 32px;
+            }
+            
+            .prism-input-area {
+                min-height: 160px;
+                padding: 48px 40px;
+            }
+        }
+
+        /* Bouton Send - Style de base */
+        .prism-button {
+            background: var(--prism-gradient-gold);
+            border: 2px solid var(--prism-border-medium);
+            border-radius: var(--prism-radius-medium);
+            padding: 18px 28px;
+            color: var(--prism-deep-navy);
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all var(--prism-transition-medium);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            min-height: 60px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            white-space: nowrap;
+            box-shadow: 
+                0 4px 15px rgba(255, 215, 0, 0.2),
+                inset 0 1px 0 rgba(255, 255, 255, 0.3);
+            flex-shrink: 0;
+            min-width: 100px;
+        }
+
+        .prism-button:hover {
+            background: linear-gradient(45deg, var(--prism-gold-primary), #FFF700);
+            border-color: var(--prism-border-strong);
+            box-shadow: 
+                0 8px 25px rgba(255, 215, 0, 0.4),
+                0 4px 15px var(--prism-shadow-medium),
+                inset 0 1px 0 rgba(255, 255, 255, 0.5);
+            transform: translateY(-3px);
+        }
+
+        /* Boutons secondaires */
+        .prism-button.secondary {
+            background: var(--prism-steel-blue);
+            color: var(--prism-text-primary);
+            border: 2px solid var(--prism-border-subtle);
+            box-shadow: 
+                0 4px 15px rgba(5, 11, 20, 0.3),
+                inset 0 1px 0 rgba(255, 255, 255, 0.1);
+        }
+
+        .prism-button.secondary:hover {
+            background: var(--prism-quantum-blue);
+            border-color: var(--prism-border-medium);
+            box-shadow: 
+                0 8px 20px rgba(5, 11, 20, 0.4),
+                inset 0 1px 0 rgba(255, 255, 255, 0.2);
+            transform: translateY(-2px);
+        }
+
+        /* Style pour le bouton Voice - ANCIEN STYLE BLEU SUPPRIMÉ */
+        /* .prism-voice-button {
+            background: linear-gradient(135deg, var(--prism-info), #4F46E5);
+            color: white;
+            border: 2px solid var(--prism-info);
+            border-radius: var(--prism-radius-medium);
+            min-width: 140px;
+        }
+
+        .prism-voice-button:hover {
+            background: linear-gradient(135deg, #4F46E5, var(--prism-info));
+            box-shadow: 
+                0 8px 25px rgba(59, 130, 246, 0.4),
+                0 4px 15px var(--prism-shadow-medium);
+        } */
+
+        /* Mobile responsive simple */
+        @media (max-width: 768px) {
+            .prism-input-row {
+                flex-direction: column;
+                gap: 12px;
+            }
+            
+            .prism-task-select,
+            .prism-text-input,
+            .prism-button {
+                width: 100%;
+                min-width: unset;
+            }
+            
+            .prism-input-area {
+                min-height: 200px;
+                padding: 24px 20px;
+            }
+        }
+
+        /* Status animations */
+        @keyframes prismStatusPulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+
+        /* Responsive Updates */
+        @media (max-width: 768px) {
+            .prism-container {
+                grid-template-columns: 1fr;
+                gap: 20px;
+                height: auto;
+            }
+            
+            .prism-sidebar-panel {
+                order: -1;
+            }
+
+            .prism-control-row {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 8px;
+            }
+
+            .prism-control-input {
+                width: 100%;
+            }
+        }
+
+        /* Scrollbar Customization */
+        .prism-messages::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        .prism-messages::-webkit-scrollbar-track {
+            background: var(--prism-midnight-primary);
+            border-radius: var(--prism-radius-small);
+        }
+
+        .prism-messages::-webkit-scrollbar-thumb {
+            background: var(--prism-gold-muted);
+            border-radius: var(--prism-radius-small);
+            transition: background var(--prism-transition-fast);
+        }
+
+        .prism-messages::-webkit-scrollbar-thumb:hover {
+            background: var(--prism-gold-secondary);
+        }
+
+        /* Animations et effets pour la barre de chat */
+        .prism-input-area:hover {
+            box-shadow: 
+                0 -6px 25px rgba(255, 215, 0, 0.08),
+                inset 0 1px 0 var(--prism-glass-3);
+            border-top-color: var(--prism-border-medium);
+        }
+
+        /* Animation au focus de l'input */
+        .prism-text-input:focus + .prism-task-select,
+        .prism-text-input:focus ~ .prism-button {
+            border-color: var(--prism-border-medium);
+            box-shadow: 0 0 0 2px var(--prism-overlay-light);
+        }
+
+        /* Animation d'entrée pour la barre de chat */
+        .prism-input-area {
+            animation: inputAreaSlideUp 0.6s ease-out;
+        }
+
+        @keyframes inputAreaSlideUp {
+            from {
+                transform: translateY(20px);
+                opacity: 0;
+            }
+            to {
+                transform: translateY(0);
+                opacity: 1;
+            }
+        }
+
+        /* Effet de brillance au survol des boutons */
+        .prism-button::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
+            transition: left 0.5s ease;
+            pointer-events: none;
+        }
+
+        .prism-button:hover::before {
+            left: 100%;
+        }
+
+        /* Indicateur visuel de taille de texte */
+        .prism-text-input {
+            position: relative;
+        }
+
+        .prism-text-input:focus::after {
+            content: attr(maxlength);
+            position: absolute;
+            bottom: -25px;
+            right: 0;
+            font-size: 0.75rem;
+            color: var(--prism-text-muted);
+            opacity: 0.7;
+        }
+
+        /* Amélioration de l'état disabled */
+        .prism-button:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            transform: none !important;
+            box-shadow: none !important;
+        }
+
+        .prism-text-input:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+        }
+
+        /* Effet de typing indicator */
+        .prism-input-area.typing .prism-text-input {
+            border-color: var(--prism-gold-primary);
+            box-shadow: 
+                0 0 0 2px var(--prism-overlay-light),
+                0 4px 15px rgba(255, 215, 0, 0.1);
+        }
+
+        /* Animation de pulsation pour le bouton voice actif */
+        .prism-voice-button.active {
+            animation: voicePulseGold 1.5s infinite;
+            background: linear-gradient(45deg, var(--prism-gold-primary), var(--prism-gold-secondary));
+        }
+
+        @keyframes voicePulseGold {
+            0%, 100% { 
+                transform: scale(1);
+                box-shadow: 
+                    0 4px 15px rgba(255, 215, 0, 0.3),
+                    0 0 0 0 rgba(255, 215, 0, 0.4);
+            }
+            50% { 
+                transform: scale(1.05);
+                box-shadow: 
+                    0 8px 25px rgba(255, 215, 0, 0.5),
+                    0 0 0 10px rgba(255, 215, 0, 0.2);
+            }
+        }
+
+        /* Mobile responsive amélioré */
+        @media (max-width: 768px) {
+            .prism-input-row {
+                flex-direction: column;
+                gap: 12px;
+            }
+            
+            .prism-domain-row {
+                flex-direction: row;
+                align-items: center;
+                padding: 6px 10px;
+                margin-bottom: 10px;
+                max-width: 100%;
+                align-self: stretch;
+            }
+            
+            .prism-main-chat-row {
+                flex-direction: column;
+                gap: 14px;
+                margin-bottom: 12px;
+            }
+            
+            .prism-task-select,
+            .prism-text-input,
+            .prism-button {
+                width: 100%;
+                min-width: unset;
+            }
+            
+            .prism-task-select {
+                min-width: unset;
+                max-width: 180px;
+                padding: 6px 10px;
+                font-size: 0.8rem;
+            }
+            
+            .prism-input-area {
+                min-height: 220px;
+                padding: 16px 14px;
+            }
+            
+            .prism-domain-label {
+                font-size: 0.8rem;
+                margin-right: 6px;
+            }
+        }
+
+        /* Tablet responsive */
+        @media (min-width: 769px) and (max-width: 1024px) {
+            .prism-domain-row {
+                padding: 6px 10px;
+                max-width: 260px;
+            }
+            
+            .prism-main-chat-row {
+                gap: 16px;
+            }
+            
+            .prism-text-input {
+                min-height: 70px;
+                font-size: 1.15rem;
+            }
+            
+            .prism-task-select {
+                min-width: 110px;
+                max-width: 150px;
+                font-size: 0.8rem;
+            }
+        }
+
+        /* Desktop amélioré */
+        @media (min-width: 1200px) {
+            .prism-text-input {
+                min-height: 90px;
+                font-size: 1.25rem;
+                padding: 24px 30px;
+            }
+            
+            .prism-input-area {
+                min-height: 180px;
+                padding: 40px 36px;
+            }
+            
+            .prism-domain-row {
+                padding: 10px 14px;
+                margin-bottom: 16px;
+                max-width: 300px;
+            }
+            
+            .prism-main-chat-row {
+                gap: 24px;
+                margin-bottom: 20px;
+            }
+            
+            .prism-task-select {
+                min-width: 130px;
+                max-width: 170px;
+                font-size: 0.9rem;
+                padding: 10px 14px;
+            }
+        }
+
+        /* Animation de pulsation pour le bouton voice actif */
+        .prism-voice-button.recording {
+            animation: voicePulseGold 1.5s infinite;
+        }
+    </style>
+</head>
+<body class="prism-corporate">
+    <!-- === NEURAL NETWORK BACKGROUND === -->
+    <div class="neural-network-bg">
+        <div class="neural-particles" id="neuralParticles"></div>
+        <div class="neural-brain"></div>
+    </div>
+
+    <div class="prism-container">
+        <div class="prism-panel prism-chat-panel">
+            <div class="prism-chat-header">
+                <h1>
+                    <svg class="prism-header-logo" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+                        <defs>
+                            <!-- Gradient pour le cercle externe -->
+                            <linearGradient id="circleGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+                                <stop offset="0%" style="stop-color:#FFD700;stop-opacity:1" />
+                                <stop offset="50%" style="stop-color:#FFC107;stop-opacity:0.9" />
+                                <stop offset="100%" style="stop-color:#B8860B;stop-opacity:0.8" />
+                            </linearGradient>
+                            
+                            <!-- Gradient pour le point central -->
+                            <radialGradient id="centralCore" cx="50%" cy="50%" r="50%">
+                                <stop offset="0%" style="stop-color:#FFFFFF;stop-opacity:1" />
+                                <stop offset="30%" style="stop-color:#FFD700;stop-opacity:0.9" />
+                                <stop offset="70%" style="stop-color:#FFC107;stop-opacity:0.6" />
+                                <stop offset="100%" style="stop-color:#B8860B;stop-opacity:0.2" />
+                            </radialGradient>
+                            
+                            <!-- Effet de glow pour les particules -->
+                            <filter id="particleGlow" x="-50%" y="-50%" width="200%" height="200%">
+                                <feGaussianBlur stdDeviation="1.5" result="coloredBlur"/>
+                                <feMerge> 
+                                    <feMergeNode in="coloredBlur"/>
+                                    <feMergeNode in="SourceGraphic"/>
+                                </feMerge>
+                            </filter>
+                            
+                            <!-- Effet de glow pour le point central -->
+                            <filter id="coreGlow" x="-100%" y="-100%" width="300%" height="300%">
+                                <feGaussianBlur stdDeviation="2" result="coloredBlur"/>
+                                <feMerge> 
+                                    <feMergeNode in="coloredBlur"/>
+                                    <feMergeNode in="SourceGraphic"/>
+                                </feMerge>
+                            </filter>
+                        </defs>
+                        
+                        <!-- Cercle externe doré -->
+                        <circle cx="50" cy="50" r="45" fill="none" stroke="url(#circleGradient)" stroke-width="2" opacity="0.8"/>
+                        
+                        <!-- Pyramide en outline (tétraèdre vue de face) -->
+                        <!-- Face avant gauche -->
+                        <line x1="50" y1="25" x2="30" y2="65" stroke="#FFD700" stroke-width="1.5" opacity="0.9"/>
+                        <!-- Face avant droite -->
+                        <line x1="50" y1="25" x2="70" y2="65" stroke="#FFD700" stroke-width="1.5" opacity="0.9"/>
+                        <!-- Base avant -->
+                        <line x1="30" y1="65" x2="70" y2="65" stroke="#FFD700" stroke-width="1.5" opacity="0.9"/>
+                        <!-- Face arrière gauche (perspective) -->
+                        <line x1="50" y1="25" x2="40" y2="55" stroke="#DAA520" stroke-width="1" opacity="0.6"/>
+                        <!-- Face arrière droite (perspective) -->
+                        <line x1="50" y1="25" x2="60" y2="55" stroke="#DAA520" stroke-width="1" opacity="0.6"/>
+                        <!-- Base arrière (perspective) -->
+                        <line x1="40" y1="55" x2="60" y2="55" stroke="#DAA520" stroke-width="1" opacity="0.6"/>
+                        <!-- Connexions perspective -->
+                        <line x1="30" y1="65" x2="40" y2="55" stroke="#B8860B" stroke-width="0.8" opacity="0.4"/>
+                        <line x1="70" y1="65" x2="60" y2="55" stroke="#B8860B" stroke-width="0.8" opacity="0.4"/>
+                        
+                        <!-- Point central lumineux -->
+                        <circle cx="50" cy="50" r="3" fill="url(#centralCore)" filter="url(#coreGlow)">
+                            <animate attributeName="r" values="2.5;4;2.5" dur="2s" repeatCount="indefinite"/>
+                            <animate attributeName="opacity" values="0.8;1;0.8" dur="2s" repeatCount="indefinite"/>
+                        </circle>
+                        
+                        <!-- Particules qui s'échappent du centre -->
+                        <!-- Particule 1 (haut) -->
+                        <rect x="49" y="35" width="2" height="2" fill="#FFD700" opacity="0.8" filter="url(#particleGlow)">
+                            <animate attributeName="y" values="48;30;48" dur="3s" repeatCount="indefinite"/>
+                            <animate attributeName="opacity" values="0;0.8;0" dur="3s" repeatCount="indefinite"/>
+                        </rect>
+                        
+                        <!-- Particule 2 (haut-droite) -->
+                        <rect x="57" y="37" width="1.5" height="1.5" fill="#FFC107" opacity="0.6" filter="url(#particleGlow)">
+                            <animate attributeName="x" values="50;62;50" dur="2.5s" repeatCount="indefinite"/>
+                            <animate attributeName="y" values="50;32;50" dur="2.5s" repeatCount="indefinite"/>
+                            <animate attributeName="opacity" values="0;0.6;0" dur="2.5s" repeatCount="indefinite"/>
+                        </rect>
+                        
+                        <!-- Particule 3 (droite) -->
+                        <rect x="62" y="49" width="2" height="2" fill="#DAA520" opacity="0.7" filter="url(#particleGlow)">
+                            <animate attributeName="x" values="50;68;50" dur="4s" repeatCount="indefinite"/>
+                            <animate attributeName="opacity" values="0;0.7;0" dur="4s" repeatCount="indefinite"/>
+                        </rect>
+                        
+                        <!-- Particule 4 (bas-droite) -->
+                        <rect x="57" y="62" width="1.5" height="1.5" fill="#B8860B" opacity="0.5" filter="url(#particleGlow)">
+                            <animate attributeName="x" values="50;62;50" dur="3.5s" repeatCount="indefinite"/>
+                            <animate attributeName="y" values="50;68;50" dur="3.5s" repeatCount="indefinite"/>
+                            <animate attributeName="opacity" values="0;0.5;0" dur="3.5s" repeatCount="indefinite"/>
+                        </rect>
+                        
+                        <!-- Particule 5 (bas) -->
+                        <rect x="49" y="65" width="2" height="2" fill="#FFD700" opacity="0.6" filter="url(#particleGlow)">
+                            <animate attributeName="y" values="50;70;50" dur="2.8s" repeatCount="indefinite"/>
+                            <animate attributeName="opacity" values="0;0.6;0" dur="2.8s" repeatCount="indefinite"/>
+                        </rect>
+                        
+                        <!-- Particule 6 (bas-gauche) -->
+                        <rect x="42" y="62" width="1.5" height="1.5" fill="#FFC107" opacity="0.4" filter="url(#particleGlow)">
+                            <animate attributeName="x" values="50;38;50" dur="3.2s" repeatCount="indefinite"/>
+                            <animate attributeName="y" values="50;68;50" dur="3.2s" repeatCount="indefinite"/>
+                            <animate attributeName="opacity" values="0;0.4;0" dur="3.2s" repeatCount="indefinite"/>
+                        </rect>
+                        
+                        <!-- Particule 7 (gauche) -->
+                        <rect x="35" y="49" width="2" height="2" fill="#DAA520" opacity="0.5" filter="url(#particleGlow)">
+                            <animate attributeName="x" values="50;30;50" dur="3.8s" repeatCount="indefinite"/>
+                            <animate attributeName="opacity" values="0;0.5;0" dur="3.8s" repeatCount="indefinite"/>
+                        </rect>
+                        
+                        <!-- Particule 8 (haut-gauche) -->
+                        <rect x="42" y="37" width="1.5" height="1.5" fill="#B8860B" opacity="0.6" filter="url(#particleGlow)">
+                            <animate attributeName="x" values="50;38;50" dur="2.2s" repeatCount="indefinite"/>
+                            <animate attributeName="y" values="50;32;50" dur="2.2s" repeatCount="indefinite"/>
+                            <animate attributeName="opacity" values="0;0.6;0" dur="2.2s" repeatCount="indefinite"/>
+                        </rect>
+                        
+                        <!-- Particules micro qui flottent -->
+                        <circle cx="45" cy="42" r="0.8" fill="#FFD700" opacity="0.3">
+                            <animate attributeName="cx" values="50;45;50" dur="5s" repeatCount="indefinite"/>
+                            <animate attributeName="cy" values="50;42;50" dur="5s" repeatCount="indefinite"/>
+                            <animate attributeName="opacity" values="0;0.3;0" dur="5s" repeatCount="indefinite"/>
+                        </circle>
+                        <circle cx="55" cy="58" r="0.6" fill="#FFC107" opacity="0.4">
+                            <animate attributeName="cx" values="50;55;50" dur="4.5s" repeatCount="indefinite"/>
+                            <animate attributeName="cy" values="50;58;50" dur="4.5s" repeatCount="indefinite"/>
+                            <animate attributeName="opacity" values="0;0.4;0" dur="4.5s" repeatCount="indefinite"/>
+                        </circle>
+                        <circle cx="52" cy="40" r="0.5" fill="#DAA520" opacity="0.2">
+                            <animate attributeName="cx" values="50;52;50" dur="6s" repeatCount="indefinite"/>
+                            <animate attributeName="cy" values="50;40;50" dur="6s" repeatCount="indefinite"/>
+                            <animate attributeName="opacity" values="0;0.2;0" dur="6s" repeatCount="indefinite"/>
+                        </circle>
+                    </svg>
+                    P.R.I.S.M
+                </h1>
+                <div class="prism-api-status">Advanced AI Orchestration Platform</div>
+            </div>
+            
+            <div class="prism-messages" id="chatMessages">
+                <!-- Messages will be added here dynamically -->
+            </div>
+            
+            <div class="prism-processing-indicator" id="processingIndicator">
+                <span>🔮 Processing your request...</span>
+            </div>
+            
+            <div class="prism-input-area">
+                <!-- Ligne du sélecteur de domaine - Séparée pour moins d'encombrement -->
+                <div class="prism-input-row prism-domain-row">
+                    <label class="prism-domain-label">Task Type:</label>
+                    <select class="prism-task-select" id="taskTypeSelect">
+                        <option value="general">General</option>
+                        <option value="finance">Finance</option>
+                        <option value="recherche">Research</option>
+                        <option value="strategie">Strategy</option>
+                        <option value="marketing">Marketing</option>
+                        <option value="analyse">Analysis</option>
+                    </select>
+                </div>
+                
+                <!-- Ligne principale du chat - Plus d'espace pour le texte -->
+                <div class="prism-input-row prism-main-chat-row">
+                    <input type="text" 
+                           class="prism-text-input" 
+                           id="messageInput" 
+                           placeholder="Enter your message here..."
+                           maxlength="1000">
+                    <button class="prism-button" id="sendButton">Send</button>
+                </div>
+                
+                <!-- Ligne des commandes vocales -->
+                <div class="prism-input-row prism-voice-row">
+                    <button class="prism-button prism-voice-button" id="voiceButton">Voice Input</button>
+                </div>
+            </div>
+        </div>
+        
+        <div class="prism-panel prism-sidebar-panel">
+            <div class="prism-control-section">
+                <h3>Voice Configuration</h3>
+                
+                <div class="prism-control-row">
+                    <span class="prism-control-label">Speech</span>
+                    <label class="prism-control-label">
+                        <input type="checkbox" id="speechToggle" checked> Enabled
+                    </label>
+                </div>
+                
+                <div class="prism-control-row">
+                    <span class="prism-control-label">Volume</span>
+                    <input type="range" 
+                           class="prism-control-input" 
+                           id="volumeSlider" 
+                           min="0" 
+                           max="1" 
+                           step="0.1" 
+                           value="0.8"
+                           style="width: 100px;">
+                </div>
+                
+                <div class="prism-control-row">
+                    <span class="prism-control-label">Speed</span>
+                    <input type="range" 
+                           class="prism-control-input" 
+                           id="rateSlider" 
+                           min="0.5" 
+                           max="2" 
+                           step="0.1" 
+                           value="1"
+                           style="width: 100px;">
+                </div>
+                
+                <select class="prism-voice-select" id="voiceSelect">
+                    <option value="">Loading voices...</option>
+                </select>
+            </div>
+            
+            <div class="prism-control-section">
+                <h3>System Status</h3>
+                
+                <div class="prism-status-indicator active">
+                    <div class="prism-status-dot" id="speechStatus"></div>
+                    <span class="prism-status-text" id="speechText">Speech: Ready</span>
+                </div>
+                
+                <div class="prism-status-indicator">
+                    <div class="prism-status-dot" id="micStatus"></div>
+                    <span class="prism-status-text" id="micText">Microphone: Ready</span>
+                </div>
+                
+                <div class="prism-performance-metrics">
+                    <h4>Performance Metrics</h4>
+                    <div class="prism-metric-row">
+                        <span class="prism-metric-label">Response Time</span>
+                        <span class="prism-metric-value" id="responseTime">-</span>
+                    </div>
+                    <div class="prism-metric-row">
+                        <span class="prism-metric-label">Model Selected</span>
+                        <span class="prism-metric-value" id="modelUsed">-</span>
+                    </div>
+                    <div class="prism-metric-row">
+                        <span class="prism-metric-label">Voice Provider</span>
+                        <span class="prism-metric-value" id="voiceProvider">ElevenLabs</span>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="prism-control-section">
+                <h3>Actions</h3>
+                <button class="prism-button secondary" onclick="location.reload()" style="width: 100%; margin-bottom: 10px;">
+                    🔄 Restart Session
+                </button>
+                <button class="prism-button prism-clear-button" onclick="prismChat.clearChat()" style="width: 100%;">
+                    🗑️ Clear History
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        class PrismChatProfessional {
+            constructor() {
+                this.initializeElements();
+                this.initializeEventListeners();
+                this.initializeSpeech();
+                this.initializeVoiceRecognition();
+                this.addWelcomeMessage();
+                
+                // Performance tracking
+                this.metrics = {
+                    totalRequests: 0,
+                    totalResponseTime: 0,
+                    lastModel: null
+                };
+
+                // Test ElevenLabs connection
+                this.testElevenLabsConnection();
+            }
+
+            initializeElements() {
+                this.chatMessages = document.getElementById('chatMessages');
+                this.messageInput = document.getElementById('messageInput');
+                this.sendButton = document.getElementById('sendButton');
+                this.voiceButton = document.getElementById('voiceButton');
+                this.taskTypeSelect = document.getElementById('taskTypeSelect');
+                this.processingIndicator = document.getElementById('processingIndicator');
+                
+                // Voice controls
+                this.speechToggle = document.getElementById('speechToggle');
+                this.volumeSlider = document.getElementById('volumeSlider');
+                this.rateSlider = document.getElementById('rateSlider');
+                this.voiceSelect = document.getElementById('voiceSelect');
+                
+                // Status indicators
+                this.speechStatus = document.getElementById('speechStatus');
+                this.speechText = document.getElementById('speechText');
+                this.micStatus = document.getElementById('micStatus');
+                this.micText = document.getElementById('micText');
+                
+                // Metrics
+                this.responseTime = document.getElementById('responseTime');
+                this.modelUsed = document.getElementById('modelUsed');
+                this.voiceProvider = document.getElementById('voiceProvider');
+            }
+
+            initializeEventListeners() {
+                this.sendButton.addEventListener('click', () => this.sendMessage());
+                this.voiceButton.addEventListener('click', () => this.toggleVoiceRecognition());
+                
+                this.messageInput.addEventListener('keypress', (e) => {
+                    if (e.key === 'Enter' && !e.shiftKey) {
+                        e.preventDefault();
+                        this.sendMessage();
+                    }
+                });
+
+                this.speechToggle.addEventListener('change', () => {
+                    this.speechEnabled = this.speechToggle.checked;
+                    console.log('[Speech] Speech synthesis:', this.speechEnabled ? 'enabled' : 'disabled');
+                });
+
+                this.volumeSlider.addEventListener('input', () => {
+                    console.log('[Speech] Volume set to:', this.volumeSlider.value);
+                });
+
+                this.rateSlider.addEventListener('input', () => {
+                    console.log('[Speech] Speech rate set to:', this.rateSlider.value);
+                });
+            }
+
+            initializeSpeech() {
+                this.speechEnabled = true;
+                this.synthesis = window.speechSynthesis;
+                this.voices = {};
+                
+                if (this.synthesis) {
+                    const loadVoices = () => {
+                        const availableVoices = this.synthesis.getVoices();
+                        console.log('[Voices] Available voices:', availableVoices.length);
+                        
+                        this.voiceSelect.innerHTML = '';
+                        
+                        // ElevenLabs voices (if available)
+                        const elevenLabsVoices = [
+                            { id: 'pNInz6obpgDQGcFmaJgB', name: 'Adam (ElevenLabs)', provider: 'elevenlabs' },
+                            { id: 'ErXwobaYiN019PkySvjV', name: 'Antoni (ElevenLabs)', provider: 'elevenlabs' },
+                            { id: 'VR6AewLTigWG4xSOukaG', name: 'Arnold (ElevenLabs)', provider: 'elevenlabs' },
+                            { id: 'm5SBIR8kR76fbA5dP2rU', name: 'Jean (ElevenLabs)', provider: 'elevenlabs' }
+                        ];
+                        
+                        // Add ElevenLabs section
+                        const elevenGroup = document.createElement('optgroup');
+                        elevenGroup.label = 'ElevenLabs Premium Voices';
+                        elevenLabsVoices.forEach(voice => {
+                            const option = document.createElement('option');
+                            option.value = JSON.stringify(voice);
+                            option.textContent = voice.name;
+                            elevenGroup.appendChild(option);
+                        });
+                        this.voiceSelect.appendChild(elevenGroup);
+                        
+                        // Add browser voices
+                        if (availableVoices.length > 0) {
+                            const browserGroup = document.createElement('optgroup');
+                            browserGroup.label = 'Browser Voices';
+                            
+                            availableVoices.forEach((voice, index) => {
+                                this.voices[index] = voice;
+                                const option = document.createElement('option');
+                                option.value = index;
+                                option.textContent = `${voice.name} (${voice.lang})`;
+                                browserGroup.appendChild(option);
+                            });
+                            this.voiceSelect.appendChild(browserGroup);
+                        }
+                        
+                        // Select Jean by default
+                        const jeanOption = Array.from(this.voiceSelect.options).find(option => 
+                            option.textContent.includes('Jean')
+                        );
+                        if (jeanOption) {
+                            jeanOption.selected = true;
+                            console.log('[Voices] Jean selected by default');
+                        }
+                    };
+
+                    if (this.synthesis.getVoices().length > 0) {
+                        loadVoices();
+                    } else {
+                        this.synthesis.onvoiceschanged = loadVoices;
+                    }
+                } else {
+                    console.warn('[Speech] Speech synthesis not supported');
+                    this.speechToggle.disabled = true;
+                }
+            }
+
+            initializeVoiceRecognition() {
+                this.recognition = null;
+                this.isRecording = false;
+
+                if ('webkitSpeechRecognition' in window || 'SpeechRecognition' in window) {
+                    const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+                    this.recognition = new SpeechRecognition();
+                    
+                    this.recognition.continuous = false;
+                    this.recognition.interimResults = false;
+                    this.recognition.lang = 'fr-FR';
+
+                    this.recognition.onstart = () => {
+                        this.isRecording = true;
+                        this.updateMicStatus(true);
+                        this.voiceButton.textContent = 'Recording... (Will Auto-Send)';
+                        this.voiceButton.classList.add('recording');
+                        console.log('[Voice] Recognition started');
+                    };
+
+                    this.recognition.onresult = (event) => {
+                        const result = event.results[0][0].transcript;
+                        console.log('[Voice] Recognition result:', result);
+                        this.messageInput.value = result;
+                        
+                        // Auto-send after voice recognition (corporate UX improvement)
+                        setTimeout(() => {
+                            if (result.trim().length > 0) {
+                                console.log('[Voice] Auto-sending voice message...');
+                                this.sendMessage();
+                            }
+                        }, 500); // Small delay to let user see the text
+                    };
+
+                    this.recognition.onerror = (event) => {
+                        console.error('[Voice] Recognition error:', event.error);
+                        this.updateMicStatus(false);
+                    };
+
+                    this.recognition.onend = () => {
+                        this.isRecording = false;
+                        this.updateMicStatus(false);
+                        this.voiceButton.textContent = 'Voice Input (Auto-Send)';
+                        this.voiceButton.classList.remove('recording');
+                        console.log('[Voice] Recognition ended');
+                    };
+                } else {
+                    console.warn('[Voice] Speech recognition not supported');
+                    this.voiceButton.disabled = true;
+                }
+            }
+
+            toggleVoiceRecognition() {
+                if (!this.recognition) return;
+
+                if (this.isRecording) {
+                    this.recognition.stop();
+                } else {
+                    this.recognition.start();
+                }
+            }
+
+            async sendMessage() {
+                const message = this.messageInput.value.trim();
+                if (!message) return;
+
+                const taskType = this.taskTypeSelect.value;
+                console.log('[Chat] Sending message:', { message, taskType });
+
+                // Add user message with new PRISM styling
+                this.addUserMessage(message);
+                this.messageInput.value = '';
+
+                this.showProcessingIndicator();
+                
+                const startTime = Date.now();
+
+                try {
+                    const response = await fetch('/api/chat', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                        },
+                        body: JSON.stringify({
+                            message: message,
+                            taskType: taskType,
+                            voiceEnabled: this.speechEnabled,
+                            voiceId: 'm5SBIR8kR76fbA5dP2rU', // Jean voice
+                            voiceName: 'Jean (ElevenLabs)'
+                        })
+                    });
+
+                    const data = await response.json();
+                    const responseTime = Date.now() - startTime;
+                    
+                    console.log('[API] Response received:', data);
+
+                    if (data.success) {
+                        // Add PRISM response with metadata
+                        this.addPrismMessage(data.response, {
+                            model: data.model || 'unknown',
+                            audioUrl: data.audioUrl,
+                            responseTime: responseTime
+                        });
+
+                        // Update metrics with enhanced info
+                        this.updateMetrics(responseTime, data.model);
+                        
+                        // Update voice provider status based on audio availability
+                        if (data.audioUrl) {
+                            this.voiceProvider.textContent = 'ElevenLabs Active';
+                        } else {
+                            this.voiceProvider.textContent = 'Browser TTS';
+                        }
+                    } else {
+                        console.error('[API] Error response:', data.error);
+                        this.addErrorMessage(data.error || 'An error occurred while processing your request.');
+                    }
+                } catch (error) {
+                    console.error('[API] Network error:', error);
+                    this.addErrorMessage('Network error. Please check your connection and try again.');
+                } finally {
+                    this.hideProcessingIndicator();
+                }
+            }
+
+            addUserMessage(message) {
+                const messageDiv = document.createElement('div');
+                messageDiv.className = 'prism-message user';
+                messageDiv.textContent = message;
+                this.chatMessages.appendChild(messageDiv);
+                this.scrollToBottom();
+                console.log('[Chat] User message added:', message);
+            }
+
+            addPrismMessage(message, options = {}) {
+                const messageDiv = document.createElement('div');
+                messageDiv.className = 'prism-message prism';
+                
+                // Format content professionally
+                const formattedMessage = this.formatProfessionalContent(message);
+                messageDiv.innerHTML = formattedMessage;
+                
+                // Add model badge if provided
+                if (options.model && options.model !== 'system') {
+                    const badge = document.createElement('span');
+                    badge.className = `prism-model-badge ${options.model.toLowerCase()}`;
+                    badge.textContent = options.model.toUpperCase();
+                    messageDiv.appendChild(badge);
+                }
+                
+                this.chatMessages.appendChild(messageDiv);
+                this.scrollToBottom();
+                console.log('[Chat] PRISM message added:', message.substring(0, 50) + '...');
+                
+                // Trigger speech synthesis if enabled
+                if (this.speechEnabled) {
+                    console.log('[Speech] Attempting to synthesize response...');
+                    
+                    // Check for ElevenLabs audio in response
+                    let audioUrl = null;
+                    if (options.audioUrl) {
+                        audioUrl = options.audioUrl;
+                    }
+                    
+                    if (audioUrl) {
+                        console.log('[Speech] ElevenLabs audio found');
+                        this.playElevenLabsAudio(audioUrl, message);
+                    } else {
+                        console.log('[Speech] No ElevenLabs audio, using browser TTS');
+                        this.speak(this.cleanTextForSpeech(message));
+                    }
+                }
+            }
+
+            playElevenLabsAudio(audioUrl, originalText) {
+                try {
+                    console.log('[ElevenLabs] Playing audio...');
+                    
+                    const audio = new Audio(audioUrl);
+                    
+                    audio.onloadstart = () => {
+                        this.speechStatus.classList.remove('inactive');
+                        this.speechText.textContent = 'ElevenLabs: Loading...';
+                        console.log('[ElevenLabs] Loading audio...');
+                    };
+                    
+                    audio.onplay = () => {
+                        this.speechStatus.classList.remove('inactive');
+                        this.speechText.textContent = 'ElevenLabs: Playing';
+                        console.log('[ElevenLabs] Playback started');
+                    };
+                    
+                    audio.onended = () => {
+                        this.speechStatus.classList.add('inactive');
+                        this.speechText.textContent = 'ElevenLabs: Ready';
+                        console.log('[ElevenLabs] Playback ended');
+                    };
+                    
+                    audio.onerror = (error) => {
+                        console.error('[ElevenLabs] Audio error:', error);
+                        this.speechStatus.classList.add('inactive');
+                        this.speechText.textContent = 'ElevenLabs: Error';
+                        
+                        // Fallback to browser TTS
+                        console.log('[ElevenLabs] Fallback to browser TTS...');
+                        this.speak(this.cleanTextForSpeech(originalText));
+                    };
+                    
+                    audio.play().catch(error => {
+                        console.error('[ElevenLabs] Play error:', error);
+                        this.speak(this.cleanTextForSpeech(originalText));
+                    });
+                    
+                } catch (error) {
+                    console.error('[ElevenLabs] Error:', error);
+                    this.speak(this.cleanTextForSpeech(originalText));
+                }
+            }
+
+            // Professional formatting without emojis
+            formatProfessionalContent(message) {
+                return message
+                    .replace(/<script\b[^<]*(?:(?!<\/script>)<[^<]*)*<\/script>/gi, '')
+                    .replace(/javascript:/gi, '')
+                    .replace(/on\w+\s*=/gi, '')
+                    // Remove all emojis for professional appearance
+                    .replace(/[\u{1F600}-\u{1F64F}]|[\u{1F300}-\u{1F5FF}]|[\u{1F680}-\u{1F6FF}]|[\u{1F1E0}-\u{1F1FF}]|[\u{2600}-\u{26FF}]|[\u{2700}-\u{27BF}]/gu, '')
+                    // Convert line breaks
+                    .replace(/\n/g, '<br>')
+                    // Professional markdown formatting with PRISM colors
+                    .replace(/###\s*(.+?)(?=\n|$)/g, '<h4 style="color: var(--prism-gold-primary); margin: 10px 0 5px 0; font-weight: 600;">$1</h4>')
+                    .replace(/##\s*(.+?)(?=\n|$)/g, '<h3 style="color: var(--prism-gold-primary); margin: 15px 0 8px 0; font-weight: 600;">$1</h3>')
+                    .replace(/\*\*(.+?)\*\*/g, '<strong style="color: var(--prism-text-accent); font-weight: 600;">$1</strong>')
+                    .replace(/\*(.+?)\*/g, '<em style="color: var(--prism-text-secondary);">$1</em>');
+            }
+
+            cleanTextForSpeech(message) {
+                return message
+                    .replace(/[\u{1F600}-\u{1F64F}]|[\u{1F300}-\u{1F5FF}]|[\u{1F680}-\u{1F6FF}]|[\u{1F1E0}-\u{1F1FF}]|[\u{2600}-\u{26FF}]|[\u{2700}-\u{27BF}]/gu, '')
+                    .replace(/###\s*|##\s*|\*\*|\*/g, '')
+                    .replace(/\n+/g, '. ')
+                    .replace(/\s+/g, ' ')
+                    .trim();
+            }
+
+            addSystemMessage(message) {
+                const messageDiv = document.createElement('div');
+                messageDiv.className = 'prism-message system';
+                messageDiv.textContent = message;
+                this.chatMessages.appendChild(messageDiv);
+                this.scrollToBottom();
+                console.log('[Chat] System message added:', message);
+            }
+
+            addErrorMessage(message) {
+                const messageDiv = document.createElement('div');
+                messageDiv.className = 'prism-message error';
+                messageDiv.innerHTML = `<strong>Error:</strong> ${this.escapeHtml(message)}`;
+                this.chatMessages.appendChild(messageDiv);
+                this.scrollToBottom();
+                console.log('[Chat] Error message added:', message);
+            }
+
+            addWelcomeMessage() {
+                setTimeout(() => {
+                    this.addPrismMessage(
+                        "Welcome! I am PRISM, your professional AI assistant. " +
+                        "How may I assist you with your business needs today?",
+                        { model: 'system' }
+                    );
+                }, 1000);
+            }
+
+            updateMetrics(responseTime, model) {
+                this.metrics.totalRequests++;
+                this.metrics.totalResponseTime += responseTime;
+                this.metrics.lastModel = model;
+                
+                this.responseTime.textContent = `${responseTime}ms`;
+                this.modelUsed.textContent = model || 'Unknown';
+                
+                console.log('[Metrics] Updated:', {
+                    responseTime: responseTime,
+                    model: model,
+                    avgResponseTime: Math.round(this.metrics.totalResponseTime / this.metrics.totalRequests)
+                });
+            }
+
+            showProcessingIndicator() {
+                this.processingIndicator.classList.add('active');
+            }
+
+            hideProcessingIndicator() {
+                this.processingIndicator.classList.remove('active');
+            }
+
+            speak(text) {
+                if (!this.synthesis || !this.speechEnabled) return;
+                
+                this.synthesis.cancel();
+                
+                setTimeout(() => {
+                    const utterance = new SpeechSynthesisUtterance(text);
+                    utterance.volume = parseFloat(this.volumeSlider.value);
+                    utterance.rate = parseFloat(this.rateSlider.value);
+                    
+                    if (this.voiceSelect.value && this.voices[this.voiceSelect.value]) {
+                        utterance.voice = this.voices[this.voiceSelect.value];
+                    }
+                    
+                    utterance.onstart = () => {
+                        this.speechStatus.classList.remove('inactive');
+                        this.speechText.textContent = 'Speech: Playing';
+                        console.log('[Speech] Started:', text.substring(0, 50) + '...');
+                    };
+                    
+                    utterance.onend = () => {
+                        this.speechStatus.classList.add('inactive');
+                        this.speechText.textContent = 'Speech: Ready';
+                        console.log('[Speech] Ended');
+                    };
+                    
+                    utterance.onerror = (event) => {
+                        console.error('[Speech] Error:', event.error);
+                        this.speechStatus.classList.add('inactive');
+                        this.speechText.textContent = 'Speech: Error';
+                    };
+                    
+                    console.log('[Speech] Speaking:', text.substring(0, 50) + '...');
+                    this.synthesis.speak(utterance);
+                    
+                    setTimeout(() => {
+                        if (!this.synthesis.speaking && !this.synthesis.pending) {
+                            console.warn('[Speech] Not starting, retrying...');
+                            this.synthesis.speak(utterance);
+                        }
+                    }, 100);
+                }, 10);
+            }
+
+            updateMicStatus(active) {
+                if (active) {
+                    this.micStatus.classList.remove('inactive');
+                    this.micText.textContent = 'Microphone: Recording';
+                } else {
+                    this.micStatus.classList.add('inactive');
+                    this.micText.textContent = 'Microphone: Ready';
+                }
+            }
+
+            clearChat() {
+                this.chatMessages.innerHTML = '';
+                this.addWelcomeMessage();
+                console.log('[Chat] History cleared');
+            }
+
+            scrollToBottom() {
+                this.chatMessages.scrollTop = this.chatMessages.scrollHeight;
+            }
+
+            escapeHtml(text) {
+                const div = document.createElement('div');
+                div.textContent = text;
+                return div.innerHTML;
+            }
+
+            // Test ElevenLabs connection on startup
+            async testElevenLabsConnection() {
+                try {
+                    console.log('[ElevenLabs] Testing connection...');
+                    const response = await fetch('/api/test-voice?voiceId=m5SBIR8kR76fbA5dP2rU&voiceName=Jean');
+                    const data = await response.json();
+                    
+                    if (data.success) {
+                        console.log('[ElevenLabs] Connection successful - Premium voices available');
+                        this.voiceProvider.textContent = 'ElevenLabs Ready';
+                        return true;
+                    } else {
+                        console.warn('[ElevenLabs] Connection failed:', data.error);
+                        this.voiceProvider.textContent = 'Browser TTS Only';
+                        return false;
+                    }
+                } catch (error) {
+                    console.error('[ElevenLabs] Test failed:', error);
+                    this.voiceProvider.textContent = 'Browser TTS Only';
+                    return false;
+                }
+            }
+        }
+
+        // Initialize the chat when the page loads
+        document.addEventListener('DOMContentLoaded', () => {
+            window.prismChat = new PrismChatProfessional();
+            console.log('[PRISM] Professional Chat Interface Loaded');
+            console.log('[PRISM] System operational and ready for business use');
+            
+            // Initialize Neural Network Background
+            initializeNeuralNetwork();
+        });
+
+        // === NEURAL NETWORK ANIMATION SYSTEM === 
+        function initializeNeuralNetwork() {
+            const container = document.getElementById('neuralParticles');
+            const nodes = [];
+            const connections = [];
+            const nodeCount = 40; // Nombre de nœuds
+            const maxConnections = 3; // Connexions max par nœud
+            
+            console.log('[Neural] Initializing neural network animation...');
+            
+            // Créer les nœuds neuraux
+            for (let i = 0; i < nodeCount; i++) {
+                const node = createNeuralNode();
+                container.appendChild(node);
+                nodes.push({
+                    element: node,
+                    x: Math.random() * window.innerWidth,
+                    y: Math.random() * window.innerHeight,
+                    vx: (Math.random() - 0.5) * 0.5,
+                    vy: (Math.random() - 0.5) * 0.5,
+                    connections: []
+                });
+            }
+            
+            // Créer les connexions entre nœuds proches
+            createNeuralConnections(nodes, container);
+            
+            // Animation continue
+            function animateNetwork() {
+                updateNodePositions(nodes);
+                updateConnections(nodes);
+                requestAnimationFrame(animateNetwork);
+            }
+            
+            animateNetwork();
+            
+            // Redimensionnement responsive
+            window.addEventListener('resize', () => {
+                updateNodesOnResize(nodes);
+            });
+            
+            console.log('[Neural] Neural network initialized with', nodeCount, 'nodes');
+        }
+        
+        function createNeuralNode() {
+            const node = document.createElement('div');
+            node.className = Math.random() > 0.8 ? 'neural-node large' : 'neural-node';
+            
+            // Position aléatoire
+            node.style.left = Math.random() * window.innerWidth + 'px';
+            node.style.top = Math.random() * window.innerHeight + 'px';
+            
+            // Délai d'animation aléatoire pour plus de naturel
+            node.style.animationDelay = Math.random() * 3 + 's';
+            
+            return node;
+        }
+        
+        function createNeuralConnections(nodes, container) {
+            const maxDistance = 200; // Distance max pour connexion
+            
+            nodes.forEach((nodeA, indexA) => {
+                let connectionCount = 0;
+                
+                nodes.forEach((nodeB, indexB) => {
+                    if (indexA !== indexB && connectionCount < 3) {
+                        const distance = Math.sqrt(
+                            Math.pow(nodeA.x - nodeB.x, 2) + 
+                            Math.pow(nodeA.y - nodeB.y, 2)
+                        );
+                        
+                        if (distance < maxDistance && Math.random() > 0.7) {
+                            const connection = createConnection(nodeA, nodeB);
+                            container.appendChild(connection);
+                            nodeA.connections.push({ target: nodeB, element: connection });
+                            connectionCount++;
+                        }
+                    }
+                });
+            });
+        }
+        
+        function createConnection(nodeA, nodeB) {
+            const connection = document.createElement('div');
+            connection.className = 'neural-connection';
+            
+            // Calculer position et angle
+            const deltaX = nodeB.x - nodeA.x;
+            const deltaY = nodeB.y - nodeA.y;
+            const distance = Math.sqrt(deltaX * deltaX + deltaY * deltaY);
+            const angle = Math.atan2(deltaY, deltaX) * 180 / Math.PI;
+            
+            connection.style.left = nodeA.x + 'px';
+            connection.style.top = nodeA.y + 'px';
+            connection.style.width = distance + 'px';
+            connection.style.transform = `rotate(${angle}deg)`;
+            connection.style.animationDelay = Math.random() * 4 + 's';
+            
+            return connection;
+        }
+        
+        function updateNodePositions(nodes) {
+            nodes.forEach(node => {
+                // Mouvement très lent et fluide
+                node.x += node.vx;
+                node.y += node.vy;
+                
+                // Rebond sur les bords avec une marge
+                if (node.x < 0 || node.x > window.innerWidth) {
+                    node.vx *= -1;
+                    node.x = Math.max(0, Math.min(window.innerWidth, node.x));
+                }
+                if (node.y < 0 || node.y > window.innerHeight) {
+                    node.vy *= -1;
+                    node.y = Math.max(0, Math.min(window.innerHeight, node.y));
+                }
+                
+                // Appliquer la nouvelle position
+                node.element.style.left = node.x + 'px';
+                node.element.style.top = node.y + 'px';
+            });
+        }
+        
+        function updateConnections(nodes) {
+            nodes.forEach(nodeA => {
+                nodeA.connections.forEach(conn => {
+                    const nodeB = conn.target;
+                    const deltaX = nodeB.x - nodeA.x;
+                    const deltaY = nodeB.y - nodeA.y;
+                    const distance = Math.sqrt(deltaX * deltaX + deltaY * deltaY);
+                    const angle = Math.atan2(deltaY, deltaX) * 180 / Math.PI;
+                    
+                    conn.element.style.left = nodeA.x + 'px';
+                    conn.element.style.top = nodeA.y + 'px';
+                    conn.element.style.width = distance + 'px';
+                    conn.element.style.transform = `rotate(${angle}deg)`;
+                    
+                    // Fade la connexion si trop loin
+                    const opacity = Math.max(0.1, 1 - distance / 300);
+                    conn.element.style.opacity = opacity;
+                });
+            });
+        }
+        
+        function updateNodesOnResize(nodes) {
+            const newWidth = window.innerWidth;
+            const newHeight = window.innerHeight;
+            
+            nodes.forEach(node => {
+                // Ajuster les positions proportionnellement
+                node.x = Math.min(node.x, newWidth - 10);
+                node.y = Math.min(node.y, newHeight - 10);
+                
+                node.element.style.left = node.x + 'px';
+                node.element.style.top = node.y + 'px';
+            });
+        }
+    </script>
+</body>
+</html> 
