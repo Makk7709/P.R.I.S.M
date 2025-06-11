@@ -502,6 +502,35 @@
             color: var(--prism-error);
         }
 
+        /* Stop Button Special Styling */
+        .prism-stop-button {
+            background: var(--prism-midnight-soft) !important;
+            border: 2px solid var(--prism-error) !important;
+            color: var(--prism-error) !important;
+            min-width: 120px;
+            font-weight: 600;
+            animation: stopButtonPulse 2s infinite;
+        }
+
+        .prism-stop-button:hover {
+            background: var(--prism-error) !important;
+            border-color: var(--prism-error) !important;
+            color: var(--prism-text-primary) !important;
+            transform: translateY(-2px);
+            animation: none;
+        }
+
+        @keyframes stopButtonPulse {
+            0%, 100% { 
+                border-color: var(--prism-error);
+                box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.4);
+            }
+            50% { 
+                border-color: #ff6b6b;
+                box-shadow: 0 0 0 6px rgba(239, 68, 68, 0.2);
+            }
+        }
+
         /* Model Badge Enhanced */
         .prism-model-badge {
             display: inline-block;
@@ -532,50 +561,74 @@
             color: var(--prism-warning);
         }
 
-        /* Processing Indicator Enhanced */
+        /* Processing Indicator Enhanced - VERSION DISCRÈTE */
         .prism-processing-indicator {
-            display: none;
-            background: var(--prism-midnight-tertiary);
-            border: 1px solid var(--prism-border-medium);
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background: rgba(5, 11, 20, 0.9);
+            color: var(--prism-gold-primary);
+            padding: 12px 20px;
             border-radius: var(--prism-radius-medium);
-            padding: 16px 20px;
-            align-self: flex-start;
-            color: var(--prism-text-accent);
-            position: relative;
-            overflow: hidden;
+            border: 1px solid var(--prism-border-subtle);
+            backdrop-filter: blur(10px);
+            font-size: 0.9rem;
+            font-weight: 500;
+            display: none;
+            align-items: center;
+            gap: 10px;
+            z-index: 1000;
+            opacity: 0;
+            transform: translateY(20px);
+            transition: all 0.3s ease;
+            box-shadow: 
+                0 8px 32px rgba(5, 11, 20, 0.4),
+                0 0 20px rgba(255, 215, 0, 0.1);
+            max-width: 280px;
         }
 
         .prism-processing-indicator.active {
-            display: block;
-            animation: prismProcessingGlow 2s ease-in-out infinite;
-        }
-
-        @keyframes prismProcessingGlow {
-            0%, 100% { 
-                box-shadow: 0 4px 15px var(--prism-shadow-light);
-                border-color: var(--prism-border-medium);
-            }
-            50% { 
-                box-shadow: 0 8px 25px var(--prism-overlay-medium);
-                border-color: var(--prism-gold-primary);
-            }
+            opacity: 1;
+            transform: translateY(0);
         }
 
         .prism-processing-indicator::before {
             content: '';
-            position: absolute;
-            top: 0;
-            left: -100%;
-            width: 100%;
-            height: 100%;
-            background: var(--prism-gradient-gold);
-            opacity: 0.1;
-            animation: prismProcessingShine 1.5s infinite;
+            width: 16px;
+            height: 16px;
+            border: 2px solid var(--prism-gold-primary);
+            border-top: 2px solid transparent;
+            border-radius: 50%;
+            animation: processingSpinner 1s linear infinite;
         }
 
-        @keyframes prismProcessingShine {
-            0% { left: -100%; }
-            100% { left: 100%; }
+        /* Animation de particules pour l'indicateur */
+        @keyframes processingSpinner {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .prism-processing-indicator::after {
+            content: '';
+            position: absolute;
+            top: -5px;
+            right: -5px;
+            width: 8px;
+            height: 8px;
+            background: var(--prism-gold-primary);
+            border-radius: 50%;
+            animation: processingPulse 1.5s ease-in-out infinite;
+        }
+
+        @keyframes processingPulse {
+            0%, 100% { 
+                opacity: 0.3;
+                transform: scale(0.8);
+            }
+            50% { 
+                opacity: 1;
+                transform: scale(1.2);
+            }
         }
 
         /* Chat Panel */
@@ -751,15 +804,15 @@
 
         /* Input Area */
         .prism-input-area {
-            padding: 28px 24px;
+            padding: 8px 16px;
             border-top: 1px solid var(--prism-border-subtle);
             background: var(--prism-gradient-glass);
             backdrop-filter: blur(20px);
-            min-height: 120px;
+            min-height: 50px;
             display: flex;
             flex-direction: column;
             justify-content: center;
-            gap: 16px;
+            gap: 6px;
             /* Effet de glow subtil */
             box-shadow: 
                 0 -4px 20px rgba(255, 215, 0, 0.05),
@@ -803,13 +856,13 @@
             background: var(--prism-steel-blue);
             border: 2px solid var(--prism-border-subtle);
             border-radius: var(--prism-radius-medium);
-            padding: 18px 24px;
+            padding: 14px 20px;
             color: var(--prism-text-primary);
-            font-size: 1.1rem;
-            line-height: 1.5;
+            font-size: 1rem;
+            line-height: 1.4;
             transition: all var(--prism-transition-medium);
             resize: none;
-            min-height: 60px;
+            min-height: 45px;
             /* Effet glassmorphism */
             backdrop-filter: blur(10px);
             box-shadow: 
@@ -888,27 +941,27 @@
         /* Textarea responsive */
         @media (min-width: 768px) {
             .prism-text-input {
-                min-height: 80px;
-                font-size: 1.2rem;
-                padding: 22px 28px;
+                min-height: 50px;
+                font-size: 1.1rem;
+                padding: 16px 24px;
             }
             
             .prism-input-area {
-                min-height: 140px;
-                padding: 40px 32px;
+                min-height: 60px;
+                padding: 12px 20px;
             }
         }
 
         @media (min-width: 1200px) {
             .prism-text-input {
-                min-height: 100px;
-                font-size: 1.3rem;
-                padding: 26px 32px;
+                min-height: 60px;
+                font-size: 1.2rem;
+                padding: 18px 28px;
             }
             
             .prism-input-area {
-                min-height: 160px;
-                padding: 48px 40px;
+                min-height: 70px;
+                padding: 16px 24px;
             }
         }
 
@@ -966,22 +1019,6 @@
             transform: translateY(-2px);
         }
 
-        /* Style pour le bouton Voice - ANCIEN STYLE BLEU SUPPRIMÉ */
-        /* .prism-voice-button {
-            background: linear-gradient(135deg, var(--prism-info), #4F46E5);
-            color: white;
-            border: 2px solid var(--prism-info);
-            border-radius: var(--prism-radius-medium);
-            min-width: 140px;
-        }
-
-        .prism-voice-button:hover {
-            background: linear-gradient(135deg, #4F46E5, var(--prism-info));
-            box-shadow: 
-                0 8px 25px rgba(59, 130, 246, 0.4),
-                0 4px 15px var(--prism-shadow-medium);
-        } */
-
         /* Mobile responsive simple */
         @media (max-width: 768px) {
             .prism-input-row {
@@ -996,9 +1033,21 @@
                 min-width: unset;
             }
             
+            .prism-voice-row {
+                flex-direction: row;
+                gap: 12px;
+                justify-content: space-between;
+            }
+            
+            .prism-voice-button,
+            .prism-stop-button {
+                flex: 1;
+                min-width: 120px;
+            }
+            
             .prism-input-area {
-                min-height: 200px;
-                padding: 24px 20px;
+                min-height: 80px;
+                padding: 10px 16px;
             }
         }
 
@@ -1262,6 +1311,178 @@
         .prism-voice-button.recording {
             animation: voicePulseGold 1.5s infinite;
         }
+
+        /* Boutons de démonstration investisseur */
+        .prism-demo-buttons {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            margin-top: 12px;
+        }
+
+        .prism-demo-btn {
+            background: var(--prism-gradient-gold) !important;
+            color: var(--prism-deep-navy) !important;
+            border: 2px solid var(--prism-gold-elegant) !important;
+            padding: 10px 16px !important;
+            font-size: 0.9rem !important;
+            font-weight: 600 !important;
+            transition: all var(--prism-transition-fast) !important;
+            text-align: left !important;
+        }
+
+        .prism-demo-btn:hover {
+            background: var(--prism-gold-primary) !important;
+            transform: translateY(-2px) !important;
+            box-shadow: 
+                0 6px 20px rgba(255, 215, 0, 0.3),
+                0 0 15px rgba(255, 215, 0, 0.2) !important;
+        }
+
+        .prism-demo-btn:active {
+            transform: translateY(0) !important;
+            box-shadow: 0 2px 8px rgba(255, 215, 0, 0.2) !important;
+        }
+
+        /* Voice selector enhancements */
+        .prism-voice-select {
+            width: 100%;
+            margin-bottom: 10px;
+        }
+
+        .prism-voice-preview {
+            display: flex;
+            justify-content: center;
+            margin-top: 8px;
+        }
+
+        .prism-voice-test-btn {
+            padding: 6px 12px !important;
+            font-size: 0.85rem !important;
+            background: var(--prism-gradient-neural) !important;
+            border: 1px solid var(--prism-border-medium) !important;
+            color: var(--prism-text-secondary) !important;
+        }
+
+        .prism-voice-test-btn:hover {
+            background: var(--prism-overlay-medium) !important;
+            color: var(--prism-text-primary) !important;
+        }
+
+        /* Améliorations des sections de contrôle */
+        .prism-control-section h3 {
+            color: var(--prism-gold-primary);
+            margin-bottom: 16px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            border-bottom: 1px solid var(--prism-border-subtle);
+            padding-bottom: 8px;
+        }
+
+        .prism-control-row {
+            margin-bottom: 12px;
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+
+        .prism-control-label {
+            color: var(--prism-text-secondary);
+            font-size: 0.9rem;
+            font-weight: 500;
+            margin-bottom: 4px;
+        }
+
+        /* Améliorations visuelles pour la reconnaissance vocale */
+        .prism-text-input.voice-listening {
+            border-color: var(--prism-gold-primary) !important;
+            box-shadow: 
+                0 0 0 4px var(--prism-overlay-light),
+                0 8px 25px rgba(255, 215, 0, 0.15) !important;
+            background: 
+                var(--prism-steel-blue),
+                linear-gradient(90deg, 
+                    rgba(255, 215, 0, 0.05) 0%, 
+                    rgba(255, 215, 0, 0.1) 50%, 
+                    rgba(255, 215, 0, 0.05) 100%) !important;
+            animation: voiceListening 2s ease-in-out infinite;
+        }
+
+        @keyframes voiceListening {
+            0%, 100% { 
+                transform: translateY(0);
+                box-shadow: 
+                    0 0 0 4px var(--prism-overlay-light),
+                    0 8px 25px rgba(255, 215, 0, 0.15);
+            }
+            50% { 
+                transform: translateY(-1px);
+                box-shadow: 
+                    0 0 0 6px var(--prism-overlay-medium),
+                    0 12px 30px rgba(255, 215, 0, 0.25);
+            }
+        }
+
+        /* Style pour l'auto-send toggle */
+        #autoSendToggle {
+            accent-color: var(--prism-gold-primary);
+        }
+
+        /* Indicateur visuel d'auto-envoi */
+        .prism-auto-send-indicator {
+            display: none;
+            position: absolute;
+            top: -35px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: var(--prism-gradient-gold);
+            color: var(--prism-deep-navy);
+            padding: 6px 12px;
+            border-radius: var(--prism-radius-small);
+            font-size: 0.8rem;
+            font-weight: 600;
+            z-index: 100;
+            animation: autoSendFadeIn 0.3s ease-out;
+        }
+
+        .prism-auto-send-indicator.active {
+            display: block;
+        }
+
+        @keyframes autoSendFadeIn {
+            from {
+                opacity: 0;
+                transform: translateX(-50%) translateY(-10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateX(-50%) translateY(0);
+            }
+        }
+
+        /* Animation du bouton vocal en mode recording */
+        .prism-voice-button.recording {
+            animation: voicePulseGold 1s infinite !important;
+            background: linear-gradient(45deg, var(--prism-gold-primary), #ff6b35) !important;
+            color: var(--prism-deep-navy) !important;
+            border-color: var(--prism-gold-primary) !important;
+        }
+
+        /* Amélioration de l'animation voicePulseGold */
+        @keyframes voicePulseGold {
+            0%, 100% { 
+                transform: scale(1);
+                box-shadow: 
+                    0 4px 15px rgba(255, 215, 0, 0.4),
+                    0 0 0 0 rgba(255, 215, 0, 0.6);
+            }
+            50% { 
+                transform: scale(1.03);
+                box-shadow: 
+                    0 8px 25px rgba(255, 215, 0, 0.6),
+                    0 0 0 8px rgba(255, 215, 0, 0.3);
+            }
+        }
     </style>
 </head>
 <body class="prism-corporate">
@@ -1417,7 +1638,7 @@
             </div>
             
             <div class="prism-processing-indicator" id="processingIndicator">
-                <span>🔮 Processing your request...</span>
+                <span>⚡ Traitement...</span>
             </div>
             
             <div class="prism-input-area">
@@ -1447,6 +1668,7 @@
                 <!-- Ligne des commandes vocales -->
                 <div class="prism-input-row prism-voice-row">
                     <button class="prism-button prism-voice-button" id="voiceButton">Voice Input</button>
+                    <button class="prism-button secondary prism-stop-button" id="stopButton" style="display: none;">🔇 Stop Audio</button>
                 </div>
             </div>
         </div>
@@ -1486,9 +1708,28 @@
                            style="width: 100px;">
                 </div>
                 
-                <select class="prism-voice-select" id="voiceSelect">
-                    <option value="">Loading voices...</option>
-                </select>
+                <div class="prism-control-row">
+                    <span class="prism-control-label">Voice Selection</span>
+                    <select class="prism-voice-select" id="voiceSelect">
+                        <optgroup label="🎭 ElevenLabs Professional">
+                            <option value="m5SBIR8kR76fbA5dP2rU" data-provider="elevenlabs" selected>Jean (French Professional)</option>
+                            <option value="pqHfZKP75CvOlQylNhV4" data-provider="elevenlabs">Bill (Multilingual)</option>
+                            <option value="nPczCjzI2devNBz1zQrb" data-provider="elevenlabs">Brian (Alternative)</option>
+                            <option value="9BWtsMINqrJLrRacOk9x" data-provider="elevenlabs">Aria (Female Multilingual)</option>
+                            <option value="EXAVITQu4vr4xnSDxMaL" data-provider="elevenlabs">Sarah (Professional Female)</option>
+                            <option value="XB0fDUnXU5powFXDhCwa" data-provider="elevenlabs">Charlotte (Energetic Female)</option>
+                            <option value="Xb7hH8MSUJpSbSDYk0k2" data-provider="elevenlabs">Alice (British Female)</option>
+                            <option value="onwK4e9ZLuTAKqWW03F9" data-provider="elevenlabs">Daniel (British Male)</option>
+                            <option value="iP95p4xoKVk53GoZ742B" data-provider="elevenlabs">Chris (Casual Male)</option>
+                        </optgroup>
+                        <optgroup label="🌐 Browser TTS (Fallback)">
+                            <option value="browser-default" data-provider="browser">System Default</option>
+                        </optgroup>
+                    </select>
+                    <div class="prism-voice-preview">
+                        <button class="prism-button prism-voice-test-btn" id="testVoiceBtn">🎧 Test Voice</button>
+                    </div>
+                </div>
             </div>
             
             <div class="prism-control-section">
@@ -1518,6 +1759,47 @@
                         <span class="prism-metric-label">Voice Provider</span>
                         <span class="prism-metric-value" id="voiceProvider">ElevenLabs</span>
                     </div>
+                    <div class="prism-metric-row">
+                        <span class="prism-metric-label">Total Requests</span>
+                        <span class="prism-metric-value" id="totalRequests">0</span>
+                    </div>
+                    <div class="prism-metric-row">
+                        <span class="prism-metric-label">Avg Response</span>
+                        <span class="prism-metric-value" id="avgResponse">-</span>
+                    </div>
+                    <div class="prism-metric-row">
+                        <span class="prism-metric-label">Voice Mode</span>
+                        <span class="prism-metric-value" id="voiceMode">FRIENDLY</span>
+                    </div>
+                    <div class="prism-metric-row">
+                        <span class="prism-metric-label">AI Emotion</span>
+                        <span class="prism-metric-value" id="aiEmotion">neutral</span>
+                    </div>
+                    <div class="prism-metric-row">
+                        <span class="prism-metric-label">Success Rate</span>
+                        <span class="prism-metric-value prism-success-rate" id="successRate">100%</span>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="prism-control-section">
+                <h3>🚀 Investor Demo</h3>
+                <div class="prism-demo-buttons">
+                    <button class="prism-button prism-demo-btn" onclick="prismChat.runDemo('marketing')">
+                        📈 Marketing Campaign
+                    </button>
+                    <button class="prism-button prism-demo-btn" onclick="prismChat.runDemo('financial')">
+                        💰 Financial Analysis
+                    </button>
+                    <button class="prism-button prism-demo-btn" onclick="prismChat.runDemo('strategy')">
+                        🎯 Business Strategy
+                    </button>
+                    <button class="prism-button prism-demo-btn" onclick="prismChat.runDemo('voice')">
+                        🎤 Voice Capabilities
+                    </button>
+                    <button class="prism-button prism-demo-btn" onclick="prismChat.runDemo('orchestration')">
+                        🧠 AI Orchestration
+                    </button>
                 </div>
             </div>
             
@@ -1558,6 +1840,7 @@
                 this.messageInput = document.getElementById('messageInput');
                 this.sendButton = document.getElementById('sendButton');
                 this.voiceButton = document.getElementById('voiceButton');
+                this.stopButton = document.getElementById('stopButton');
                 this.taskTypeSelect = document.getElementById('taskTypeSelect');
                 this.processingIndicator = document.getElementById('processingIndicator');
                 
@@ -1577,31 +1860,109 @@
                 this.responseTime = document.getElementById('responseTime');
                 this.modelUsed = document.getElementById('modelUsed');
                 this.voiceProvider = document.getElementById('voiceProvider');
+
+                // Audio control
+                this.currentAudio = null;
             }
 
             initializeEventListeners() {
-                this.sendButton.addEventListener('click', () => this.sendMessage());
-                this.voiceButton.addEventListener('click', () => this.toggleVoiceRecognition());
-                
+                // Send button
+                this.sendButton.addEventListener('click', () => {
+                    // Utiliser la nouvelle version qui prend automatiquement le contenu de l'input
+                    this.sendMessage();
+                });
+
+                // Enter key on message input
                 this.messageInput.addEventListener('keypress', (e) => {
                     if (e.key === 'Enter' && !e.shiftKey) {
                         e.preventDefault();
+                        // Utiliser la nouvelle version qui prend automatiquement le contenu de l'input
                         this.sendMessage();
                     }
                 });
 
-                this.speechToggle.addEventListener('change', () => {
-                    this.speechEnabled = this.speechToggle.checked;
-                    console.log('[Speech] Speech synthesis:', this.speechEnabled ? 'enabled' : 'disabled');
+                // Voice controls
+                this.speechToggle.addEventListener('change', (e) => {
+                    this.speechEnabled = e.target.checked;
+                    console.log('[Speech] Toggled:', this.speechEnabled);
                 });
 
-                this.volumeSlider.addEventListener('input', () => {
-                    console.log('[Speech] Volume set to:', this.volumeSlider.value);
+                this.voiceButton.addEventListener('click', () => {
+                    this.toggleVoiceRecognition();
                 });
 
-                this.rateSlider.addEventListener('input', () => {
-                    console.log('[Speech] Speech rate set to:', this.rateSlider.value);
+                this.stopButton.addEventListener('click', () => {
+                    this.stopAudio();
                 });
+                
+                // Voice test button
+                const testVoiceBtn = document.getElementById('testVoiceBtn');
+                if (testVoiceBtn) {
+                    testVoiceBtn.addEventListener('click', () => {
+                        this.testSelectedVoice();
+                    });
+                }
+
+                // Voice selection change
+                this.voiceSelect.addEventListener('change', () => {
+                    const selectedVoice = this.getSelectedVoice();
+                    console.log('[Voice] Voice changed to:', selectedVoice.name);
+                    
+                    // Mettre à jour l'indicateur du provider
+                    if (selectedVoice.provider === 'elevenlabs') {
+                        this.voiceProvider.textContent = 'ElevenLabs';
+                    } else {
+                        this.voiceProvider.textContent = 'Browser TTS';
+                    }
+                });
+            }
+            
+            // Test de la voix sélectionnée
+            async testSelectedVoice() {
+                const selectedVoice = this.getSelectedVoice();
+                const testMessage = "Hello! This is a voice test for PRISM. How does this sound?";
+                
+                console.log('[Voice Test] Testing voice:', selectedVoice.name);
+                
+                try {
+                    if (selectedVoice.provider === 'elevenlabs') {
+                        // Test ElevenLabs via API
+                        const response = await fetch('/api/chat', {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/json'
+                            },
+                            body: JSON.stringify({
+                                message: testMessage,
+                                taskType: 'general',
+                                voiceConfig: selectedVoice,
+                                testMode: true
+                            })
+                        });
+                        
+                        const data = await response.json();
+                        
+                        if (data.success && data.audioUrl) {
+                            console.log('[Voice Test] Playing ElevenLabs test audio...');
+                            await this.playElevenLabsAudio(data.audioUrl);
+                        } else {
+                            throw new Error('ElevenLabs test failed: ' + (data.error || 'Unknown error'));
+                        }
+                        
+                    } else {
+                        // Test Browser TTS
+                        console.log('[Voice Test] Testing browser TTS...');
+                        this.speak(testMessage);
+                    }
+                    
+                } catch (error) {
+                    console.error('[Voice Test] Error:', error);
+                    this.addSystemMessage(`Voice test failed: ${error.message}`);
+                    
+                    // Fallback to browser TTS
+                    console.log('[Voice Test] Falling back to browser TTS...');
+                    this.speak(testMessage);
+                }
             }
 
             initializeSpeech() {
@@ -1674,52 +2035,258 @@
             initializeVoiceRecognition() {
                 this.recognition = null;
                 this.isRecording = false;
+                this.autoSendEnabled = true; // Nouvelle option pour l'auto-envoi
+
+                // ✅ NOUVEAU: Variables de gestion des timeouts intelligents
+                this.voiceTimeout = null;
+                this.silenceThreshold = 3000;    // 3s silence = fin présumée
+                this.maxRecordingTime = 30000;   // 30s maximum
+                this.lastSpeechTime = Date.now();
+                this.recordingStartTime = null;
 
                 if ('webkitSpeechRecognition' in window || 'SpeechRecognition' in window) {
                     const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
                     this.recognition = new SpeechRecognition();
                     
-                    this.recognition.continuous = false;
-                    this.recognition.interimResults = false;
+                    // ✅ CHANGEMENT CRITIQUE: Activation reconnaissance continue
+                    this.recognition.continuous = true;        // ✅ ACTIVATION CONTINUE
+                    this.recognition.interimResults = true;    // Activé pour voir le texte en temps réel
                     this.recognition.lang = 'fr-FR';
+                    this.recognition.maxAlternatives = 3;      // ✅ AMÉLIORATION PRÉCISION
 
                     this.recognition.onstart = () => {
                         this.isRecording = true;
+                        this.recordingStartTime = Date.now();  // ✅ TRACK DÉBUT
+                        this.lastSpeechTime = Date.now();
                         this.updateMicStatus(true);
-                        this.voiceButton.textContent = 'Recording... (Will Auto-Send)';
+                        this.voiceButton.textContent = '🎤 Listening... (Auto-Send)';
                         this.voiceButton.classList.add('recording');
-                        console.log('[Voice] Recognition started');
+                        
+                        // Indication visuelle que l'enregistrement a commencé
+                        this.messageInput.placeholder = "🎤 Listening... Speak now!";
+                        this.messageInput.style.borderColor = 'var(--prism-gold-primary)';
+                        this.messageInput.style.boxShadow = '0 0 0 4px var(--prism-overlay-light)';
+                        
+                        // ✅ NOUVEAU: Timeout de sécurité maximum
+                        this.setMaxRecordingTimeout();
+                        
+                        console.log('[Voice] Recognition started - Auto-send enabled - Continuous mode');
                     };
 
                     this.recognition.onresult = (event) => {
-                        const result = event.results[0][0].transcript;
-                        console.log('[Voice] Recognition result:', result);
-                        this.messageInput.value = result;
+                        this.lastSpeechTime = Date.now(); // ✅ TRACK DERNIÈRE PAROLE
                         
-                        // Auto-send after voice recognition (corporate UX improvement)
-                        setTimeout(() => {
-                            if (result.trim().length > 0) {
-                                console.log('[Voice] Auto-sending voice message...');
-                                this.sendMessage();
+                        let finalTranscript = '';
+                        let interimTranscript = '';
+
+                        for (let i = event.resultIndex; i < event.results.length; i++) {
+                            const transcript = event.results[i][0].transcript;
+                            
+                            if (event.results[i].isFinal) {
+                                finalTranscript += transcript;
+                            } else {
+                                interimTranscript += transcript;
                             }
-                        }, 500); // Small delay to let user see the text
+                        }
+
+                        // Afficher le texte en temps réel dans l'input
+                        this.messageInput.value = finalTranscript + interimTranscript;
+                        
+                        // ✅ NOUVEAU: Détection fin naturelle et gestion intelligente
+                        if (finalTranscript.trim().length > 0) {
+                            console.log('[Voice] Final transcript:', finalTranscript);
+                            this.messageInput.value = finalTranscript.trim();
+                            
+                            // ✅ NOUVEAU: Vérifier fin naturelle de phrase
+                            if (this.checkForNaturalEnd(finalTranscript.trim())) {
+                                console.log('[Voice] Natural end detected, stopping recognition');
+                                this.recognition.stop();
+                                return;
+                            }
+                        }
+                        
+                        // ✅ NOUVEAU: Reset timeout silence
+                        this.resetSilenceTimeout();
                     };
 
                     this.recognition.onerror = (event) => {
                         console.error('[Voice] Recognition error:', event.error);
+                        this.clearAllTimeouts(); // ✅ NOUVEAU: Cleanup timeouts
                         this.updateMicStatus(false);
+                        this.resetVoiceUI();
+                        
+                        // Messages d'erreur spécifiques
+                        let errorMessage = 'Erreur de reconnaissance vocale';
+                        switch(event.error) {
+                            case 'no-speech':
+                                errorMessage = 'Aucune parole détectée. Réessayez.';
+                                break;
+                            case 'audio-capture':
+                                errorMessage = 'Microphone non accessible. Vérifiez les permissions.';
+                                break;
+                            case 'not-allowed':
+                                errorMessage = 'Permission microphone refusée. Activez-la dans les paramètres.';
+                                break;
+                            case 'network':
+                                errorMessage = 'Erreur réseau. Vérifiez votre connexion.';
+                                break;
+                        }
+                        
+                        this.addSystemMessage(`🎤 ${errorMessage}`);
                     };
 
                     this.recognition.onend = () => {
                         this.isRecording = false;
+                        this.clearAllTimeouts(); // ✅ NOUVEAU: Cleanup timeouts
                         this.updateMicStatus(false);
-                        this.voiceButton.textContent = 'Voice Input (Auto-Send)';
-                        this.voiceButton.classList.remove('recording');
+                        
+                        // ✅ NOUVEAU: Auto-envoi intelligent si du texte existe
+                        const currentText = this.messageInput.value.trim();
+                        if (currentText.length > 0 && this.autoSendEnabled) {
+                            console.log('[Voice] Auto-sending message on end:', currentText);
+                            setTimeout(() => {
+                                this.autoSendVoiceMessage(currentText);
+                            }, 500); // Délai réduit pour meilleure UX
+                        }
+                        
+                        this.resetVoiceUI();
                         console.log('[Voice] Recognition ended');
                     };
+
+                    // Ajouter bouton pour activer/désactiver l'auto-envoi
+                    this.addAutoSendToggle();
+                    
                 } else {
                     console.warn('[Voice] Speech recognition not supported');
                     this.voiceButton.disabled = true;
+                    this.voiceButton.textContent = 'Voice Not Supported';
+                }
+            }
+
+            // ✅ NOUVELLE FONCTION: Détection fin naturelle de phrase
+            checkForNaturalEnd(transcript) {
+                const text = transcript.trim();
+                
+                // Patterns de fin naturelle
+                const endPatterns = [
+                    /[.!?]\s*$/,           // Fin par ponctuation
+                    /\bmerci\b\.?\s*$/i,   // "merci" à la fin
+                    /\bc'est tout\b\.?\s*$/i, // "c'est tout"
+                    /\bvoilà\b\.?\s*$/i,   // "voilà"
+                    /\bd'accord\b\.?\s*$/i // "d'accord"
+                ];
+                
+                // Longueur minimum pour considérer une fin naturelle
+                if (text.length < 10) return false;
+                
+                // Vérifier les patterns
+                for (const pattern of endPatterns) {
+                    if (pattern.test(text)) {
+                        console.log('[Voice] Natural end pattern matched:', pattern);
+                        return true;
+                    }
+                }
+                
+                // Fin naturelle si texte long (>100 chars) et pause
+                if (text.length > 100) {
+                    const timeSinceStart = Date.now() - this.recordingStartTime;
+                    if (timeSinceStart > 10000) { // 10s minimum pour textes longs
+                        console.log('[Voice] Natural end for long text detected');
+                        return true;
+                    }
+                }
+                
+                return false;
+            }
+
+            // ✅ NOUVELLE FONCTION: Reset timeout silence
+            resetSilenceTimeout() {
+                if (this.voiceTimeout) {
+                    clearTimeout(this.voiceTimeout);
+                }
+                
+                this.voiceTimeout = setTimeout(() => {
+                    if (this.isRecording) {
+                        console.log('[Voice] Silence timeout reached, stopping recognition');
+                        this.recognition.stop();
+                    }
+                }, this.silenceThreshold);
+            }
+
+            // ✅ NOUVELLE FONCTION: Timeout maximum de sécurité
+            setMaxRecordingTimeout() {
+                setTimeout(() => {
+                    if (this.isRecording) {
+                        console.log('[Voice] Maximum recording time reached, stopping');
+                        this.recognition.stop();
+                    }
+                }, this.maxRecordingTime);
+            }
+
+            // ✅ NOUVELLE FONCTION: Cleanup tous les timeouts
+            clearAllTimeouts() {
+                if (this.voiceTimeout) {
+                    clearTimeout(this.voiceTimeout);
+                    this.voiceTimeout = null;
+                }
+            }
+            
+            // Nouvelle fonction pour l'auto-envoi vocal
+            async autoSendVoiceMessage(transcript) {
+                try {
+                    console.log('[Voice] Auto-sending message:', transcript);
+                    
+                    // Indication visuelle d'envoi automatique
+                    this.addSystemMessage(`🎤 Auto-sending: "${transcript}"`);
+                    
+                    // Envoyer le message
+                    await this.sendMessage(transcript, this.taskTypeSelect.value);
+                    
+                    // Vider l'input après envoi
+                    this.messageInput.value = '';
+                    
+                } catch (error) {
+                    console.error('[Voice] Auto-send error:', error);
+                    this.addErrorMessage('Erreur lors de l\'envoi automatique. Message conservé dans l\'input.');
+                }
+            }
+            
+            // Réinitialiser l'interface vocale
+            resetVoiceUI() {
+                this.voiceButton.textContent = this.autoSendEnabled ? 
+                    '🎤 Voice Input (Auto-Send)' : 
+                    '🎤 Voice Input (Manual)';
+                this.voiceButton.classList.remove('recording');
+                this.messageInput.placeholder = "Enter your message here...";
+                this.messageInput.style.borderColor = '';
+                this.messageInput.style.boxShadow = '';
+            }
+            
+            // Ajouter un toggle pour l'auto-envoi
+            addAutoSendToggle() {
+                const autoSendToggle = document.createElement('div');
+                autoSendToggle.className = 'prism-control-row';
+                autoSendToggle.innerHTML = `
+                    <span class="prism-control-label">Auto-Send Voice</span>
+                    <label class="prism-control-label">
+                        <input type="checkbox" id="autoSendToggle" checked> Enabled
+                    </label>
+                `;
+                
+                // Insérer après la ligne du speech toggle
+                const speechRow = this.speechToggle.closest('.prism-control-row');
+                if (speechRow && speechRow.parentNode) {
+                    speechRow.parentNode.insertBefore(autoSendToggle, speechRow.nextSibling);
+                    
+                    // Event listener pour le toggle
+                    const autoSendCheckbox = document.getElementById('autoSendToggle');
+                    if (autoSendCheckbox) {
+                        autoSendCheckbox.addEventListener('change', (e) => {
+                            this.autoSendEnabled = e.target.checked;
+                            this.resetVoiceUI();
+                            console.log('[Voice] Auto-send:', this.autoSendEnabled ? 'enabled' : 'disabled');
+                        });
+                    }
                 }
             }
 
@@ -1733,67 +2300,321 @@
                 }
             }
 
-            async sendMessage() {
-                const message = this.messageInput.value.trim();
-                if (!message) return;
-
-                const taskType = this.taskTypeSelect.value;
-                console.log('[Chat] Sending message:', { message, taskType });
-
-                // Add user message with new PRISM styling
-                this.addUserMessage(message);
-                this.messageInput.value = '';
-
-                this.showProcessingIndicator();
+            // Envoyer un message - VERSION COMPLÈTE CONNECTÉE AU BACKEND (Améliorée)
+            async sendMessage(message = null, taskType = null) {
+                // Si aucun message n'est fourni, utiliser le contenu de l'input
+                if (!message) {
+                    message = this.messageInput.value.trim();
+                    if (!message) {
+                        console.log('[Chat] No message to send');
+                        return;
+                    }
+                    // Vider l'input si on l'utilise
+                    this.messageInput.value = '';
+                }
+                
+                // Si aucun type de tâche n'est fourni, utiliser celui sélectionné
+                if (!taskType) {
+                    taskType = this.taskTypeSelect.value || 'general';
+                }
                 
                 const startTime = Date.now();
-
+                
                 try {
+                    console.log('[Chat] Sending message:', message.substring(0, 50) + '...');
+                    this.showProcessingIndicator();
+                    
+                    // Ajouter le message utilisateur à l'interface
+                    this.addUserMessage(message);
+                    
+                    // Déterminer le type de tâche automatiquement
+                    const detectedTaskType = this.detectTaskType(message);
+                    const finalTaskType = taskType !== 'general' ? taskType : detectedTaskType;
+                    
+                    console.log('[Chat] Task type detected:', finalTaskType);
+                    
+                    // Obtenir la voix sélectionnée
+                    const selectedVoice = this.getSelectedVoice();
+                    
+                    // ✅ NOUVEAU : Créer AbortController pour pouvoir interrompre la requête
+                    const abortController = new AbortController();
+                    this.currentApiRequest = abortController;
+                    
+                    // Appel API vers le backend PRISM
                     const response = await fetch('/api/chat', {
                         method: 'POST',
                         headers: {
-                            'Content-Type': 'application/json',
+                            'Content-Type': 'application/json'
                         },
                         body: JSON.stringify({
                             message: message,
-                            taskType: taskType,
-                            voiceEnabled: this.speechEnabled,
-                            voiceId: 'm5SBIR8kR76fbA5dP2rU', // Jean voice
-                            voiceName: 'Jean (ElevenLabs)'
-                        })
+                            taskType: finalTaskType,
+                            model: 'auto-select', // Laisser l'orchestrateur choisir
+                            voiceConfig: selectedVoice
+                        }),
+                        signal: abortController.signal  // ✅ NOUVEAU : Signal d'interruption
                     });
-
+                    
+                    if (!response.ok) {
+                        throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+                    }
+                    
                     const data = await response.json();
                     const responseTime = Date.now() - startTime;
                     
-                    console.log('[API] Response received:', data);
-
+                    console.log('[Chat] Response received:', {
+                        success: data.success,
+                        model: data.model,
+                        responseTime: responseTime,
+                        voiceMode: data.metadata?.voiceMode,
+                        hasAudio: !!data.audioUrl
+                    });
+                    
                     if (data.success) {
-                        // Add PRISM response with metadata
-                        this.addPrismMessage(data.response, {
-                            model: data.model || 'unknown',
+                        // Ajouter la réponse PRISM à l'interface
+                        this.addPrismMessage(data.content, {
+                            model: data.model,
+                            voiceConfig: data.voiceConfig,
                             audioUrl: data.audioUrl,
-                            responseTime: responseTime
+                            fallbackToTTS: data.fallbackToTTS,
+                            voiceMode: data.metadata?.voiceMode,
+                            emotion: data.metadata?.emotion
                         });
-
-                        // Update metrics with enhanced info
-                        this.updateMetrics(responseTime, data.model);
                         
-                        // Update voice provider status based on audio availability
-                        if (data.audioUrl) {
-                            this.voiceProvider.textContent = 'ElevenLabs Active';
-                        } else {
-                            this.voiceProvider.textContent = 'Browser TTS';
+                        // Mettre à jour les métriques
+                        this.updateMetrics(
+                            responseTime, 
+                            data.model,
+                            data.metadata?.voiceMode,
+                            data.metadata?.emotion
+                        );
+                        
+                        // Lecture vocale automatique si activée
+                        if (this.speechEnabled) {
+                            if (data.audioUrl) {
+                                console.log('[Audio] Playing ElevenLabs audio...');
+                                await this.playElevenLabsAudio(data.audioUrl, data.content);
+                            } else if (data.fallbackToTTS) {
+                                console.log('[Audio] Using browser TTS fallback...');
+                                this.speak(this.cleanTextForSpeech(data.content));
+                            }
                         }
+                        
                     } else {
-                        console.error('[API] Error response:', data.error);
-                        this.addErrorMessage(data.error || 'An error occurred while processing your request.');
+                        throw new Error(data.error || 'Erreur inconnue du serveur');
                     }
+                    
                 } catch (error) {
-                    console.error('[API] Network error:', error);
-                    this.addErrorMessage('Network error. Please check your connection and try again.');
+                    console.error('[Chat] Error:', error);
+                    const responseTime = Date.now() - startTime;
+                    
+                    this.addErrorMessage(`Erreur de connexion: ${error.message}`);
+                    this.updateMetrics(responseTime, 'error');
+                    
+                    // Fallback local en cas d'erreur
+                    this.addPrismMessage(
+                        "Je rencontre un problème technique temporaire. Veuillez réessayer dans un moment.",
+                        { model: 'fallback' }
+                    );
+                    
                 } finally {
                     this.hideProcessingIndicator();
+                    // ✅ NOUVEAU : Nettoyer la référence API
+                    this.currentApiRequest = null;
+                }
+            }
+            
+            // Détection automatique du type de tâche
+            detectTaskType(message) {
+                const lowerMsg = message.toLowerCase();
+                
+                if (lowerMsg.includes('marketing') || lowerMsg.includes('campagne') || lowerMsg.includes('promotion')) {
+                    return 'marketing';
+                }
+                if (lowerMsg.includes('finance') || lowerMsg.includes('budget') || lowerMsg.includes('revenus')) {
+                    return 'financial';
+                }
+                if (lowerMsg.includes('email') || lowerMsg.includes('mail') || lowerMsg.includes('courrier')) {
+                    return 'communication';
+                }
+                if (lowerMsg.includes('analyse') || lowerMsg.includes('données') || lowerMsg.includes('rapport')) {
+                    return 'analytics';
+                }
+                if (lowerMsg.includes('urgence') || lowerMsg.includes('urgent') || lowerMsg.includes('critique')) {
+                    return 'urgent';
+                }
+                
+                return 'general';
+            }
+            
+            // Obtenir la voix sélectionnée
+            getSelectedVoice() {
+                const voiceSelect = document.getElementById('voiceSelect');
+                if (voiceSelect && voiceSelect.value) {
+                    const selectedOption = voiceSelect.options[voiceSelect.selectedIndex];
+                    return {
+                        id: voiceSelect.value,
+                        name: selectedOption.text,
+                        provider: selectedOption.dataset.provider || 'browser'
+                    };
+                }
+                
+                // Voix par défaut (Jean ElevenLabs)
+                return {
+                    id: 'm5SBIR8kR76fbA5dP2rU',
+                    name: 'Jean (Professional)',
+                    provider: 'elevenlabs'
+                };
+            }
+            
+            // Lecture audio ElevenLabs - VERSION UNIFIÉE ET CORRIGÉE
+            async playElevenLabsAudio(audioUrl, originalText = null) {
+                try {
+                    console.log('[ElevenLabs] Playing audio...');
+                    
+                    const audio = new Audio(audioUrl);
+                    this.currentAudio = audio; // IMPORTANT: Stocker la référence pour le bouton stop
+                    
+                    // Return a promise for async/await compatibility
+                    return new Promise((resolve, reject) => {
+                        audio.onloadstart = () => {
+                            this.speechStatus.classList.remove('inactive');
+                            this.speechText.textContent = 'ElevenLabs: Loading...';
+                            this.showStopButton();
+                            console.log('[ElevenLabs] Loading audio...');
+                        };
+                        
+                        audio.onplay = () => {
+                            this.speechStatus.classList.remove('inactive');
+                            this.speechText.textContent = 'ElevenLabs: Playing';
+                            this.showStopButton();
+                            console.log('[ElevenLabs] Playback started');
+                        };
+                        
+                        audio.onended = () => {
+                            this.speechStatus.classList.add('inactive');
+                            this.speechText.textContent = 'ElevenLabs: Ready';
+                            this.hideStopButton();
+                            this.currentAudio = null;
+                            console.log('[ElevenLabs] Playback ended');
+                            
+                            // ✅ NOUVEAU: Si texte original fourni et plus long que probable, proposer TTS complet
+                            if (originalText && originalText.length > 1000) {
+                                console.log('[ElevenLabs] Texte long détecté, proposer TTS complet...');
+                                this.offerCompleteTTSPlayback(originalText);
+                            }
+                            
+                            resolve();
+                        };
+                        
+                        audio.onerror = (error) => {
+                            console.error('[ElevenLabs] Audio error:', error);
+                            this.speechStatus.classList.add('inactive');
+                            this.speechText.textContent = 'ElevenLabs: Error';
+                            this.hideStopButton();
+                            this.currentAudio = null;
+                            
+                            // ✅ AMÉLIORATION: Fallback automatique et intelligent
+                            if (originalText) {
+                                console.log('[ElevenLabs] Fallback automatique vers TTS navigateur...');
+                                this.addSystemMessage(`🔊 ElevenLabs indisponible - Basculement vers synthèse vocale du navigateur`);
+                                
+                                // Délai court pour que l'utilisateur voit le message
+                                setTimeout(() => {
+                                    this.speak(this.cleanTextForSpeech(originalText));
+                                }, 1000);
+                            }
+                            reject(error);
+                        };
+                        
+                        audio.volume = parseFloat(this.volumeSlider?.value || 0.8);
+                        
+                        audio.play().catch(error => {
+                            console.error('[ElevenLabs] Play error:', error);
+                            this.hideStopButton();
+                            this.currentAudio = null;
+                            
+                            // ✅ AMÉLIORATION: Fallback en cas d'erreur de lecture
+                            if (originalText) {
+                                console.log('[ElevenLabs] Erreur lecture - Fallback TTS navigateur...');
+                                this.addSystemMessage(`🔊 Problème audio ElevenLabs - Utilisation synthèse vocale système`);
+                                
+                                setTimeout(() => {
+                                    this.speak(this.cleanTextForSpeech(originalText));
+                                }, 800);
+                            }
+                            reject(error);
+                        });
+                    });
+                    
+                } catch (error) {
+                    console.error('[ElevenLabs] Error:', error);
+                    this.hideStopButton();
+                    this.currentAudio = null;
+                    
+                    // ✅ AMÉLIORATION: Fallback global en cas d'erreur générale
+                    if (originalText) {
+                        console.log('[ElevenLabs] Erreur générale - Fallback TTS navigateur...');
+                        this.addSystemMessage(`🔊 ElevenLabs temporairement indisponible - Synthèse vocale alternative`);
+                        
+                        setTimeout(() => {
+                            this.speak(this.cleanTextForSpeech(originalText));
+                        }, 500);
+                    }
+                    throw error;
+                }
+            }
+
+            // ✅ NOUVELLE FONCTION: Proposer lecture TTS complète pour textes longs
+            offerCompleteTTSPlayback(fullText) {
+                const cleanFullText = this.cleanTextForSpeech(fullText);
+                
+                // Créer un bouton temporaire pour lecture complète
+                const completeButton = document.createElement('button');
+                completeButton.className = 'prism-button secondary';
+                completeButton.style.cssText = `
+                    margin: 10px auto;
+                    display: block;
+                    font-size: 0.9rem;
+                    padding: 8px 16px;
+                    background: var(--prism-gradient-neural);
+                    border: 1px solid var(--prism-border-medium);
+                    animation: completeTTSPulse 2s ease-in-out infinite;
+                `;
+                completeButton.innerHTML = '🔊 Écouter la réponse complète (TTS)';
+                
+                // Ajouter l'animation CSS si elle n'existe pas
+                if (!document.querySelector('#completeTTSStyle')) {
+                    const style = document.createElement('style');
+                    style.id = 'completeTTSStyle';
+                    style.textContent = `
+                        @keyframes completeTTSPulse {
+                            0%, 100% { opacity: 0.8; transform: scale(1); }
+                            50% { opacity: 1; transform: scale(1.02); }
+                        }
+                    `;
+                    document.head.appendChild(style);
+                }
+                
+                completeButton.onclick = () => {
+                    console.log('[TTS] Playing complete text via browser TTS...');
+                    this.speak(cleanFullText);
+                    completeButton.remove();
+                };
+                
+                // Auto-suppression après 15 secondes
+                setTimeout(() => {
+                    if (completeButton.parentNode) {
+                        completeButton.style.animation = 'none';
+                        completeButton.style.opacity = '0';
+                        setTimeout(() => completeButton.remove(), 300);
+                    }
+                }, 15000);
+                
+                // Ajouter au dernier message PRISM
+                const lastPrismMessage = Array.from(this.chatMessages.querySelectorAll('.prism-message.prism')).pop();
+                if (lastPrismMessage) {
+                    lastPrismMessage.appendChild(completeButton);
                 }
             }
 
@@ -1814,13 +2635,15 @@
                 const formattedMessage = this.formatProfessionalContent(message);
                 messageDiv.innerHTML = formattedMessage;
                 
-                // Add model badge if provided
+                // Add model badge if provided - DISABLED FOR USER PRIVACY
+                /*
                 if (options.model && options.model !== 'system') {
                     const badge = document.createElement('span');
                     badge.className = `prism-model-badge ${options.model.toLowerCase()}`;
                     badge.textContent = options.model.toUpperCase();
                     messageDiv.appendChild(badge);
                 }
+                */
                 
                 this.chatMessages.appendChild(messageDiv);
                 this.scrollToBottom();
@@ -1846,49 +2669,61 @@
                 }
             }
 
-            playElevenLabsAudio(audioUrl, originalText) {
-                try {
-                    console.log('[ElevenLabs] Playing audio...');
-                    
-                    const audio = new Audio(audioUrl);
-                    
-                    audio.onloadstart = () => {
-                        this.speechStatus.classList.remove('inactive');
-                        this.speechText.textContent = 'ElevenLabs: Loading...';
-                        console.log('[ElevenLabs] Loading audio...');
-                    };
-                    
-                    audio.onplay = () => {
-                        this.speechStatus.classList.remove('inactive');
-                        this.speechText.textContent = 'ElevenLabs: Playing';
-                        console.log('[ElevenLabs] Playback started');
-                    };
-                    
-                    audio.onended = () => {
-                        this.speechStatus.classList.add('inactive');
-                        this.speechText.textContent = 'ElevenLabs: Ready';
-                        console.log('[ElevenLabs] Playback ended');
-                    };
-                    
-                    audio.onerror = (error) => {
-                        console.error('[ElevenLabs] Audio error:', error);
-                        this.speechStatus.classList.add('inactive');
-                        this.speechText.textContent = 'ElevenLabs: Error';
-                        
-                        // Fallback to browser TTS
-                        console.log('[ElevenLabs] Fallback to browser TTS...');
-                        this.speak(this.cleanTextForSpeech(originalText));
-                    };
-                    
-                    audio.play().catch(error => {
-                        console.error('[ElevenLabs] Play error:', error);
-                        this.speak(this.cleanTextForSpeech(originalText));
-                    });
-                    
-                } catch (error) {
-                    console.error('[ElevenLabs] Error:', error);
-                    this.speak(this.cleanTextForSpeech(originalText));
+            stopAudio() {
+                console.log('[Audio] Stop button clicked');
+                
+                // ✅ NOUVEAU : Arrêter les requêtes API en cours
+                if (this.currentApiRequest) {
+                    this.currentApiRequest.abort();
+                    this.currentApiRequest = null;
+                    console.log('[API] Request aborted by user');
                 }
+                
+                // Arrêter ElevenLabs audio
+                if (this.currentAudio) {
+                    this.currentAudio.pause();
+                    this.currentAudio.currentTime = 0;
+                    this.currentAudio = null;
+                    console.log('[Audio] ElevenLabs audio stopped');
+                }
+                
+                // Arrêter la synthèse vocale du navigateur
+                if (this.synthesis) {
+                    this.synthesis.cancel();
+                    console.log('[Audio] Browser TTS stopped');
+                }
+                
+                // Arrêter la reconnaissance vocale si elle est active
+                if (this.recognition && this.isRecording) {
+                    this.recognition.stop();
+                    console.log('[Audio] Voice recognition stopped');
+                }
+                
+                // ✅ NOUVEAU : Masquer l'indicateur de traitement
+                this.hideProcessingIndicator();
+                
+                // Réinitialiser l'interface
+                this.speechStatus.classList.add('inactive');
+                this.speechText.textContent = 'Speech: Stopped';
+                this.hideStopButton();
+                
+                // Réinitialiser l'interface vocale
+                this.resetVoiceUI();
+                this.updateMicStatus(false);
+                
+                setTimeout(() => {
+                    this.speechText.textContent = 'Speech: Ready';
+                }, 2000);
+            }
+
+            showStopButton() {
+                this.stopButton.style.display = 'inline-flex';
+                console.log('[UI] Stop button shown');
+            }
+
+            hideStopButton() {
+                this.stopButton.style.display = 'none';
+                console.log('[UI] Stop button hidden');
             }
 
             // Professional formatting without emojis
@@ -1909,11 +2744,71 @@
             }
 
             cleanTextForSpeech(message) {
+                if (!message) return '';
+                
                 return message
+                    // Supprimer les éléments HTML et scripts
+                    .replace(/<script\b[^<]*(?:(?!<\/script>)<[^<]*)*<\/script>/gi, '')
+                    .replace(/<[^>]*>/g, '')
+                    
+                    // ✅ AMÉLIORATION ÉTAPE 4: Nettoyage avancé pour ElevenLabs
+                    // Gérer les acronymes et abréviations
+                    .replace(/\bP\.R\.I\.S\.M\b/g, 'PRISM')
+                    .replace(/\bI\.A\./g, 'Intelligence Artificielle')
+                    .replace(/\bAPI\b/g, 'A P I')
+                    .replace(/\bURL\b/g, 'U R L')
+                    .replace(/\bJSON\b/g, 'J-S-O-N')
+                    .replace(/\bHTTP\b/g, 'H-T-T-P')
+                    .replace(/\bCSS\b/g, 'C-S-S')
+                    .replace(/\bHTML\b/g, 'H-T-M-L')
+                    .replace(/\bJS\b/g, 'JavaScript')
+                    
+                    // Gérer les caractères spéciaux et ponctuation
+                    .replace(/[•‣▪▫]/g, '. ')
+                    .replace(/\*\*(.*?)\*\*/g, '$1')  // Supprimer bold markdown
+                    .replace(/\*(.*?)\*/g, '$1')     // Supprimer italic markdown
+                    .replace(/#{1,6}\s*/g, '')       // Supprimer headers markdown
+                    .replace(/\[([^\]]+)\]\([^)]+\)/g, '$1') // Convertir liens markdown
+                    .replace(/`([^`]+)`/g, '$1')     // Supprimer code inline
+                    
+                    // Améliorer la prononciation des chiffres et symboles
+                    .replace(/(\d+)%/g, '$1 pour cent')
+                    .replace(/€(\d+)/g, '$1 euros')
+                    .replace(/\$(\d+)/g, '$1 dollars')
+                    .replace(/(\d+)\s*°C/g, '$1 degrés Celsius')
+                    .replace(/(\d+)\s*km/g, '$1 kilomètres')
+                    .replace(/(\d+)\s*kg/g, '$1 kilogrammes')
+                    .replace(/(\d+)\s*m²/g, '$1 mètres carrés')
+                    .replace(/(\d+)\s*cm/g, '$1 centimètres')
+                    
+                    // Gérer les accents et caractères spéciaux pour meilleure prononciation
+                    .replace(/œ/g, 'oe')
+                    .replace(/æ/g, 'ae')
+                    .replace(/&/g, ' et ')
+                    .replace(/@/g, ' arobase ')
+                    
+                    // Normaliser la ponctuation pour des pauses naturelles
+                    .replace(/\s*([.!?])\s*/g, '$1 ')
+                    .replace(/\s*([,;:])\s*/g, '$1 ')
+                    .replace(/\s*-\s*/g, ' - ')
+                    .replace(/\s*\.\.\.\s*/g, '... ')
+                    
+                    // Gérer les émojis (les supprimer pour ElevenLabs)
                     .replace(/[\u{1F600}-\u{1F64F}]|[\u{1F300}-\u{1F5FF}]|[\u{1F680}-\u{1F6FF}]|[\u{1F1E0}-\u{1F1FF}]|[\u{2600}-\u{26FF}]|[\u{2700}-\u{27BF}]/gu, '')
-                    .replace(/###\s*|##\s*|\*\*|\*/g, '')
-                    .replace(/\n+/g, '. ')
+                    
+                    // Améliorer les abréviations françaises courantes
+                    .replace(/\bM\./g, 'Monsieur')
+                    .replace(/\bMme\./g, 'Madame')
+                    .replace(/\bMlle\./g, 'Mademoiselle')
+                    .replace(/\bDr\./g, 'Docteur')
+                    .replace(/\bProf\./g, 'Professeur')
+                    .replace(/\betc\./g, 'et cetera')
+                    .replace(/\bc-à-d\./g, 'c\'est-à-dire')
+                    .replace(/\bp\.ex\./g, 'par exemple')
+                    
+                    // Nettoyer les espaces multiples et trim
                     .replace(/\s+/g, ' ')
+                    .replace(/\n+/g, '. ')
                     .trim();
             }
 
@@ -1938,34 +2833,142 @@
             addWelcomeMessage() {
                 setTimeout(() => {
                     this.addPrismMessage(
-                        "Welcome! I am PRISM, your professional AI assistant. " +
-                        "How may I assist you with your business needs today?",
+                        "Bienvenue ! Je suis PRISM, votre assistant IA professionnel. " +
+                        "Comment puis-je vous aider avec vos besoins métier aujourd'hui ?",
                         { model: 'system' }
                     );
                 }, 1000);
             }
 
-            updateMetrics(responseTime, model) {
+            updateMetrics(responseTime, model, voiceMode = null, emotion = null) {
                 this.metrics.totalRequests++;
                 this.metrics.totalResponseTime += responseTime;
                 this.metrics.lastModel = model;
                 
+                // Si c'est une erreur, compter dans les échecs
+                if (model === 'error') {
+                    this.metrics.failures = (this.metrics.failures || 0) + 1;
+                } else {
+                    this.metrics.successes = (this.metrics.successes || 0) + 1;
+                }
+                
+                // Métriques de base
                 this.responseTime.textContent = `${responseTime}ms`;
                 this.modelUsed.textContent = model || 'Unknown';
+                
+                // Nouvelles métriques détaillées
+                const totalRequests = document.getElementById('totalRequests');
+                const avgResponse = document.getElementById('avgResponse');
+                const voiceModeEl = document.getElementById('voiceMode');
+                const aiEmotionEl = document.getElementById('aiEmotion');
+                const successRateEl = document.getElementById('successRate');
+                
+                if (totalRequests) {
+                    totalRequests.textContent = this.metrics.totalRequests;
+                }
+                
+                if (avgResponse && this.metrics.totalRequests > 0) {
+                    const avg = Math.round(this.metrics.totalResponseTime / this.metrics.totalRequests);
+                    avgResponse.textContent = `${avg}ms`;
+                    
+                    // Couleur selon la performance
+                    if (avg < 1000) {
+                        avgResponse.style.color = 'var(--prism-success)';
+                    } else if (avg < 3000) {
+                        avgResponse.style.color = 'var(--prism-warning)';
+                    } else {
+                        avgResponse.style.color = 'var(--prism-error)';
+                    }
+                }
+                
+                if (voiceModeEl && voiceMode) {
+                    voiceModeEl.textContent = voiceMode;
+                    // Couleur selon le mode
+                    const modeColors = {
+                        'FRIENDLY': 'var(--prism-success)',
+                        'ENERGETIC': 'var(--prism-warning)',
+                        'CONTEMPLATIVE': 'var(--prism-info)',
+                        'URGENT': 'var(--prism-error)',
+                        'TECHNICAL': 'var(--prism-text-secondary)'
+                    };
+                    voiceModeEl.style.color = modeColors[voiceMode] || 'var(--prism-text-primary)';
+                }
+                
+                if (aiEmotionEl && emotion) {
+                    aiEmotionEl.textContent = emotion;
+                    // Couleur selon l'émotion
+                    const emotionColors = {
+                        'excited': 'var(--prism-warning)',
+                        'confident': 'var(--prism-success)',
+                        'concerned': 'var(--prism-error)',
+                        'neutral': 'var(--prism-text-secondary)'
+                    };
+                    aiEmotionEl.style.color = emotionColors[emotion] || 'var(--prism-text-primary)';
+                }
+                
+                if (successRateEl) {
+                    const successes = this.metrics.successes || 0;
+                    const failures = this.metrics.failures || 0;
+                    const total = successes + failures;
+                    
+                    if (total > 0) {
+                        const rate = Math.round((successes / total) * 100);
+                        successRateEl.textContent = `${rate}%`;
+                        
+                        // Couleur selon le taux de succès
+                        if (rate >= 95) {
+                            successRateEl.style.color = 'var(--prism-success)';
+                        } else if (rate >= 80) {
+                            successRateEl.style.color = 'var(--prism-warning)';
+                        } else {
+                            successRateEl.style.color = 'var(--prism-error)';
+                        }
+                    }
+                }
                 
                 console.log('[Metrics] Updated:', {
                     responseTime: responseTime,
                     model: model,
+                    voiceMode: voiceMode,
+                    emotion: emotion,
+                    totalRequests: this.metrics.totalRequests,
                     avgResponseTime: Math.round(this.metrics.totalResponseTime / this.metrics.totalRequests)
                 });
             }
 
             showProcessingIndicator() {
-                this.processingIndicator.classList.add('active');
+                if (this.processingIndicator) {
+                    this.processingIndicator.style.display = 'flex';
+                    this.processingIndicator.style.opacity = '1';
+                    this.processingIndicator.classList.add('active');
+                    console.log('[UI] Processing indicator shown');
+                    
+                    // ✅ SÉCURITÉ: Timeout automatique après 30 secondes
+                    this.processingTimeout = setTimeout(() => {
+                        console.warn('[UI] Processing indicator timeout - auto-hiding');
+                        this.hideProcessingIndicator();
+                        this.addSystemMessage('⚠️ Délai de traitement dépassé - Veuillez réessayer');
+                    }, 30000);
+                }
             }
 
             hideProcessingIndicator() {
-                this.processingIndicator.classList.remove('active');
+                if (this.processingIndicator) {
+                    this.processingIndicator.style.opacity = '0';
+                    this.processingIndicator.classList.remove('active');
+                    setTimeout(() => {
+                        if (this.processingIndicator) {
+                            this.processingIndicator.style.display = 'none';
+                        }
+                    }, 300);
+                    console.log('[UI] Processing indicator hidden');
+                    
+                    // ✅ SÉCURITÉ: Clear timeout si défini
+                    if (this.processingTimeout) {
+                        clearTimeout(this.processingTimeout);
+                        this.processingTimeout = null;
+                    }
+                }
             }
 
             speak(text) {
@@ -1985,12 +2988,14 @@
                     utterance.onstart = () => {
                         this.speechStatus.classList.remove('inactive');
                         this.speechText.textContent = 'Speech: Playing';
+                        this.showStopButton();
                         console.log('[Speech] Started:', text.substring(0, 50) + '...');
                     };
                     
                     utterance.onend = () => {
                         this.speechStatus.classList.add('inactive');
                         this.speechText.textContent = 'Speech: Ready';
+                        this.hideStopButton();
                         console.log('[Speech] Ended');
                     };
                     
@@ -1998,6 +3003,7 @@
                         console.error('[Speech] Error:', event.error);
                         this.speechStatus.classList.add('inactive');
                         this.speechText.textContent = 'Speech: Error';
+                        this.hideStopButton();
                     };
                     
                     console.log('[Speech] Speaking:', text.substring(0, 50) + '...');
@@ -2042,23 +3048,128 @@
             async testElevenLabsConnection() {
                 try {
                     console.log('[ElevenLabs] Testing connection...');
-                    const response = await fetch('/api/test-voice?voiceId=m5SBIR8kR76fbA5dP2rU&voiceName=Jean');
-                    const data = await response.json();
                     
-                    if (data.success) {
-                        console.log('[ElevenLabs] Connection successful - Premium voices available');
-                        this.voiceProvider.textContent = 'ElevenLabs Ready';
-                        return true;
+                    const response = await fetch('/api/elevenlabs/test', {
+                        method: 'GET',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        }
+                    });
+                    
+                    if (response.ok) {
+                        const data = await response.json();
+                        console.log('[ElevenLabs] Connection successful:', data);
+                        this.elevenLabsStatus = 'connected';
+                        
+                        // Mettre à jour l'indicateur de provider
+                        if (this.voiceProvider) {
+                            this.voiceProvider.textContent = 'ElevenLabs ✓';
+                            this.voiceProvider.style.color = 'var(--prism-success)';
+                        }
+                        
+                        // Message de succès discret
+                        console.log('[ElevenLabs] ✅ Synthèse vocale premium active');
                     } else {
-                        console.warn('[ElevenLabs] Connection failed:', data.error);
-                        this.voiceProvider.textContent = 'Browser TTS Only';
-                        return false;
+                        throw new Error(`HTTP ${response.status}`);
                     }
+                    
                 } catch (error) {
-                    console.error('[ElevenLabs] Test failed:', error);
-                    this.voiceProvider.textContent = 'Browser TTS Only';
-                    return false;
+                    console.warn('[ElevenLabs] Connection failed:', error);
+                    this.elevenLabsStatus = 'disconnected';
+                    
+                    // Mettre à jour l'indicateur de provider
+                    if (this.voiceProvider) {
+                        this.voiceProvider.textContent = 'Browser TTS';
+                        this.voiceProvider.style.color = 'var(--prism-warning)';
+                    }
+                    
+                    // ✅ CORRECTION : Message informatif uniquement en cas d'échec confirmé
+                    console.log('[ElevenLabs] ⚠️ Synthèse premium indisponible - Fallback TTS activé');
                 }
+            }
+
+            // Scénarios de démonstration pour investisseurs
+            async runDemo(demoType) {
+                console.log('[Demo] Running demo:', demoType);
+                
+                // Nettoyer le chat pour la démonstration
+                this.chatMessages.innerHTML = '';
+                
+                // Messages de démonstration selon le type
+                const demos = {
+                    marketing: {
+                        title: "🎯 Marketing Campaign Demo",
+                        message: "Create a comprehensive marketing strategy for an AI-powered SaaS platform targeting Fortune 500 companies. Include multi-channel approach, budget allocation, and KPI tracking.",
+                        voice: "9BWtsMINqrJLrRacOk9x", // Aria - Female Multilingual
+                        taskType: "marketing"
+                    },
+                    financial: {
+                        title: "💰 Financial Analysis Demo", 
+                        message: "Analyze our startup financials: €2.5M revenue, €3.8M expenses, growth rate 45% MoM. Provide runway analysis, funding requirements, and financial optimization recommendations.",
+                        voice: "EXAVITQu4vr4xnSDxMaL", // Sarah - Professional Female
+                        taskType: "financial"
+                    },
+                    strategy: {
+                        title: "🎯 Business Strategy Demo",
+                        message: "Develop a 5-year strategic roadmap for PRISM AI platform expansion. Consider market penetration, competitive positioning, partnerships, and international scaling.",
+                        voice: "onwK4e9ZLuTAKqWW03F9", // Daniel - British Male
+                        taskType: "strategy"
+                    },
+                    voice: {
+                        title: "🎤 Voice Capabilities Demo",
+                        message: "Demonstrate PRISM's advanced voice synthesis capabilities with different emotional contexts: excitement for achievements, concern for risks, confidence for solutions.",
+                        voice: "m5SBIR8kR76fbA5dP2rU", // Jean - French Professional
+                        taskType: "general"
+                    },
+                    orchestration: {
+                        title: "🧠 AI Orchestration Demo",
+                        message: "Show how PRISM intelligently selects between OpenAI GPT-4, Claude, and Perplexity models based on task complexity. Compare response quality and speed across different AI providers.",
+                        voice: "pqHfZKP75CvOlQylNhV4", // Bill - Multilingual
+                        taskType: "general"
+                    }
+                };
+                
+                const demo = demos[demoType];
+                if (!demo) return;
+                
+                // Ajouter le titre de démonstration
+                this.addSystemMessage(`🚀 INVESTOR DEMONSTRATION: ${demo.title}`);
+                
+                // Sélectionner la voix appropriée pour la démo
+                const voiceSelect = document.getElementById('voiceSelect');
+                if (voiceSelect) {
+                    voiceSelect.value = demo.voice;
+                    // Déclencher l'événement de changement pour mettre à jour l'interface
+                    voiceSelect.dispatchEvent(new Event('change'));
+                }
+                
+                // Attendre un peu pour l'effet dramatique
+                await new Promise(resolve => setTimeout(resolve, 1500));
+                
+                // Lancer la démonstration
+                await this.sendMessage(demo.message, demo.taskType);
+            }
+            
+            // Fonction de démonstration complète (enchaîne plusieurs démos)
+            async runFullDemo() {
+                console.log('[Demo] Starting full investor demonstration...');
+                
+                const demoSequence = ['voice', 'orchestration', 'marketing', 'financial', 'strategy'];
+                
+                this.addSystemMessage('🎬 STARTING FULL PRISM DEMONSTRATION FOR INVESTORS');
+                this.addSystemMessage('This demonstration will showcase all core capabilities of PRISM in sequence.');
+                
+                for (let i = 0; i < demoSequence.length; i++) {
+                    await new Promise(resolve => setTimeout(resolve, 2000));
+                    await this.runDemo(demoSequence[i]);
+                    
+                    if (i < demoSequence.length - 1) {
+                        await new Promise(resolve => setTimeout(resolve, 3000));
+                        this.addSystemMessage(`✅ Demo ${i + 1}/${demoSequence.length} completed. Proceeding to next demonstration...`);
+                    }
+                }
+                
+                this.addSystemMessage('🎉 FULL DEMONSTRATION COMPLETED - Thank you for your attention!');
             }
         }
 

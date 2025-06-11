@@ -1,0 +1,350 @@
+/**
+ * PRISM Corporate Theme
+ * Version: 2.0
+ * Theme: Midnight Blue & Gold Professional Interface
+ * 
+ * Thème principal pour l'interface corporate PRISM
+ * Utilise la palette définie dans prism-color-palette.css
+ */
+
+@import url('./prism-color-palette.css');
+
+/* === RESET ET BASE === */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+/* === LAYOUT PRINCIPAL === */
+body.prism-corporate {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Helvetica Neue', sans-serif;
+    background: var(--prism-gradient-primary);
+    color: var(--prism-text-primary);
+    min-height: 100vh;
+    line-height: 1.6;
+    font-weight: 400;
+    letter-spacing: 0.01em;
+    
+    /* Animation de fond subtile */
+    background-attachment: fixed;
+    background-size: 400% 400%;
+    animation: prismBackgroundShift 8s ease-in-out infinite;
+}
+
+@keyframes prismBackgroundShift {
+    0%, 100% { background-position: 0% 50%; }
+    50% { background-position: 100% 50%; }
+}
+
+/* === CONTAINERS ET LAYOUT === */
+.prism-container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 20px;
+    display: grid;
+    grid-template-columns: 1fr 350px;
+    gap: 30px;
+    height: 90vh;
+    position: relative;
+}
+
+.prism-panel {
+    background: var(--prism-midnight-secondary);
+    backdrop-filter: blur(15px);
+    border: 1px solid var(--prism-border-subtle);
+    border-radius: var(--prism-radius-large);
+    overflow: hidden;
+    box-shadow: 
+        0 10px 40px var(--prism-shadow-medium),
+        inset 0 1px 0 var(--prism-overlay-light);
+    transition: all var(--prism-transition-medium);
+}
+
+.prism-panel:hover {
+    border-color: var(--prism-border-medium);
+    box-shadow: 
+        0 20px 60px var(--prism-shadow-strong),
+        inset 0 1px 0 var(--prism-overlay-medium);
+}
+
+/* === CHAT PANEL === */
+.prism-chat-panel {
+    display: flex;
+    flex-direction: column;
+}
+
+.prism-chat-header {
+    background: var(--prism-midnight-tertiary);
+    border-bottom: 1px solid var(--prism-border-medium);
+    padding: 20px;
+    text-align: center;
+    position: relative;
+    overflow: hidden;
+}
+
+.prism-chat-header::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: radial-gradient(circle at center, var(--prism-gold-primary) 0%, transparent 70%);
+    opacity: 0.02;
+    animation: prismHeaderSubtleGlow 6s ease-in-out infinite;
+}
+
+@keyframes prismHeaderSubtleGlow {
+    0%, 100% { opacity: 0.02; }
+    50% { opacity: 0.04; }
+}
+
+.prism-chat-header h1 {
+    color: var(--prism-gold-primary);
+    font-size: 1.8rem;
+    font-weight: 600;
+    margin-bottom: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 15px;
+    text-shadow: 0 2px 10px var(--prism-shadow-light);
+}
+
+.prism-header-logo {
+    width: 40px;
+    height: 40px;
+    filter: drop-shadow(0 0 12px var(--prism-gold-primary));
+    transition: all var(--prism-transition-medium);
+}
+
+.prism-header-logo:hover {
+    transform: scale(1.05) rotate(5deg);
+    filter: drop-shadow(0 0 20px var(--prism-gold-primary));
+}
+
+.prism-api-status {
+    font-size: 0.9rem;
+    color: var(--prism-text-secondary);
+    font-weight: 500;
+    position: relative;
+    z-index: 1;
+}
+
+/* === MESSAGES === */
+.prism-messages {
+    flex: 1;
+    overflow-y: auto;
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+    scroll-behavior: smooth;
+}
+
+.prism-messages::-webkit-scrollbar {
+    width: 8px;
+}
+
+.prism-messages::-webkit-scrollbar-track {
+    background: var(--prism-midnight-primary);
+    border-radius: var(--prism-radius-small);
+}
+
+.prism-messages::-webkit-scrollbar-thumb {
+    background: var(--prism-gold-muted);
+    border-radius: var(--prism-radius-small);
+    transition: background var(--prism-transition-fast);
+}
+
+.prism-messages::-webkit-scrollbar-thumb:hover {
+    background: var(--prism-gold-secondary);
+}
+
+.prism-message {
+    padding: 16px 20px;
+    border-radius: var(--prism-radius-medium);
+    max-width: 85%;
+    word-wrap: break-word;
+    line-height: 1.6;
+    position: relative;
+    animation: prismMessageSlide 0.4s ease-out;
+    box-shadow: 0 4px 15px var(--prism-shadow-light);
+}
+
+@keyframes prismMessageSlide {
+    from { 
+        opacity: 0; 
+        transform: translateY(20px) scale(0.95); 
+    }
+    to { 
+        opacity: 1; 
+        transform: translateY(0) scale(1); 
+    }
+}
+
+.prism-message.user {
+    background: var(--prism-midnight-tertiary);
+    border: 1px solid var(--prism-border-medium);
+    align-self: flex-end;
+    color: var(--prism-text-primary);
+    border-left: 4px solid var(--prism-gold-primary);
+}
+
+.prism-message.prism {
+    background: var(--prism-midnight-soft);
+    border: 1px solid var(--prism-border-subtle);
+    align-self: flex-start;
+    color: var(--prism-text-secondary);
+    border-left: 4px solid var(--prism-gold-secondary);
+}
+
+.prism-message.system {
+    background: var(--prism-overlay-light);
+    border: 1px solid var(--prism-border-subtle);
+    align-self: center;
+    color: var(--prism-text-accent);
+    font-style: italic;
+    font-size: 0.9rem;
+    text-align: center;
+}
+
+.prism-message.error {
+    background: rgba(234, 67, 53, 0.1);
+    border: 1px solid rgba(234, 67, 53, 0.3);
+    border-left: 4px solid var(--prism-error);
+    align-self: center;
+    color: #FFCDD2;
+}
+
+/* === INPUT AREA === */
+.prism-input-area {
+    background: var(--prism-midnight-tertiary);
+    border-top: 1px solid var(--prism-border-medium);
+    padding: 20px;
+}
+
+.prism-input-row {
+    display: flex;
+    gap: 12px;
+    margin-bottom: 15px;
+    align-items: stretch;
+}
+
+.prism-text-input {
+    flex: 1;
+    background: var(--prism-midnight-primary);
+    border: 1px solid var(--prism-border-subtle);
+    border-radius: var(--prism-radius-small);
+    padding: 14px 16px;
+    color: var(--prism-text-primary);
+    font-size: 16px;
+    transition: all var(--prism-transition-fast);
+    resize: none;
+}
+
+.prism-text-input:focus {
+    outline: none;
+    border-color: var(--prism-gold-primary);
+    box-shadow: 
+        0 0 0 3px var(--prism-overlay-light),
+        0 4px 15px var(--prism-shadow-medium);
+    background: var(--prism-midnight-secondary);
+}
+
+.prism-text-input::placeholder {
+    color: var(--prism-text-muted);
+    opacity: 0.8;
+}
+
+/* === BUTTONS === */
+.prism-button {
+    background: var(--prism-gradient-gold);
+    border: none;
+    border-radius: var(--prism-radius-small);
+    padding: 14px 20px;
+    color: var(--prism-midnight-primary);
+    font-weight: 600;
+    font-size: 14px;
+    cursor: pointer;
+    transition: all var(--prism-transition-fast);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    box-shadow: 0 4px 15px var(--prism-shadow-light);
+    position: relative;
+    overflow: hidden;
+}
+
+.prism-button::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255,255,255,0.3), transparent);
+    transition: left var(--prism-transition-medium);
+}
+
+.prism-button:hover::before {
+    left: 100%;
+}
+
+.prism-button:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 25px var(--prism-shadow-medium);
+}
+
+.prism-button:active {
+    transform: translateY(0);
+    box-shadow: 0 4px 10px var(--prism-shadow-light);
+}
+
+.prism-button.secondary {
+    background: var(--prism-midnight-tertiary);
+    color: var(--prism-text-primary);
+    border: 1px solid var(--prism-border-medium);
+}
+
+.prism-button.secondary:hover {
+    background: var(--prism-midnight-soft);
+    border-color: var(--prism-gold-primary);
+}
+
+/* === RESPONSIVE === */
+@media (max-width: 768px) {
+    .prism-container {
+        grid-template-columns: 1fr;
+        padding: 15px;
+        height: auto;
+        gap: 20px;
+    }
+    
+    .prism-chat-header h1 {
+        font-size: 1.5rem;
+        flex-direction: column;
+        gap: 10px;
+    }
+    
+    .prism-input-row {
+        flex-direction: column;
+        gap: 10px;
+    }
+}
+
+/* === ACCESSIBILITY === */
+@media (prefers-reduced-motion: reduce) {
+    * {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+    }
+}
+
+@media (prefers-high-contrast: high) {
+    :root {
+        --prism-text-primary: #FFFFFF;
+        --prism-border-subtle: var(--prism-border-strong);
+    }
+} 

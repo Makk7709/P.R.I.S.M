@@ -90,7 +90,7 @@ export const config = {
       SPEAKING_RATE: 1.0, // ✨ Vitesse normale pour Jean
       PITCH: 0.0, // ✨ Pitch normal
       RETRY_ATTEMPTS: 3,
-      TIMEOUT: 8000, // ✨ CORRECTION: Revenir au timeout original
+      TIMEOUT: 15000, // ✨ CORRECTION: Augmenté de 8s à 15s pour éviter les timeouts
       MAX_TEXT_LENGTH: 1000, // ✨ GARDER: Limite augmentée pour texte complet
       FALLBACK_TO_TTS: true,
       // ✨ Vraies voix ElevenLabs disponibles dans notre tier (premade)
@@ -113,7 +113,7 @@ export const config = {
       ERROR_HANDLING: {
         MAX_RETRIES: 3,
         RETRY_DELAY: 1000,
-        TIMEOUT: 8000
+        TIMEOUT: 15000
       }
     },
 
@@ -187,6 +187,18 @@ export const config = {
           DURATION: 200,
           SCALE: [1, 1.1, 1]
         }
+      },
+      UI_MODE: process.env.PRISM_UI_MODE || 'standard', // 'standard' ou 'corporate'
+      INTERFACE: {
+        EMOJIS_ENABLED: process.env.PRISM_UI_MODE !== 'corporate', // Désactivés en mode corporate
+        PROFESSIONAL_BRANDING: process.env.PRISM_UI_MODE === 'corporate',
+        DEFAULT_WELCOME_MESSAGE: process.env.PRISM_UI_MODE === 'corporate' 
+          ? "Welcome! I am PRISM, your professional AI assistant. How may I assist you with your business needs today?"
+          : "🎯 Bonjour ! Je suis Prism, votre assistant intelligent. Comment puis-je vous aider aujourd'hui ?",
+        CORPORATE_LANDING_PAGE: process.env.PRISM_UI_MODE === 'corporate' ? '/index-corporate.html' : '/index.html',
+        MAIN_INTERFACE: process.env.PRISM_UI_MODE === 'corporate' 
+          ? '/ui/prismVoiceChatV2-Corporate.html' 
+          : '/ui/prismVoiceChatV2.html'
       }
     },
 

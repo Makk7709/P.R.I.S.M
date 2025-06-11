@@ -1,0 +1,409 @@
+/**
+ * PRISM Corporate Components
+ * Version: 2.0
+ * Composants spécialisés et micro-interactions
+ * 
+ * Composants avancés pour l'interface corporate PRISM
+ * Complément du thème principal
+ */
+
+@import url('./prism-color-palette.css');
+
+/* === ADVANCED INPUT COMPONENTS === */
+
+/* Enhanced Text Input with Focus Ring */
+.prism-text-input-enhanced {
+    position: relative;
+    background: var(--prism-midnight-primary);
+    border: 2px solid var(--prism-border-subtle);
+    border-radius: var(--prism-radius-medium);
+    padding: 16px 20px;
+    color: var(--prism-text-primary);
+    font-size: 16px;
+    font-weight: 500;
+    transition: all var(--prism-transition-medium);
+    width: 100%;
+    box-shadow: inset 0 2px 4px var(--prism-shadow-light);
+}
+
+.prism-text-input-enhanced:focus {
+    outline: none;
+    border-color: var(--prism-gold-primary);
+    background: var(--prism-midnight-secondary);
+    box-shadow: 
+        0 0 0 4px var(--prism-overlay-light),
+        0 8px 25px var(--prism-shadow-medium),
+        inset 0 2px 4px var(--prism-shadow-light);
+    transform: translateY(-1px);
+}
+
+.prism-text-input-enhanced::placeholder {
+    color: var(--prism-text-muted);
+    opacity: 0.7;
+    font-style: italic;
+}
+
+/* Professional Select Dropdown */
+.prism-select-enhanced {
+    appearance: none;
+    background: var(--prism-midnight-primary) url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='%23FFD700' viewBox='0 0 16 16'%3e%3cpath d='m7.247 4.86-4.796 5.481c-.566.647-.106 1.659.753 1.659h9.592a1 1 0 0 0 .753-1.659l-4.796-5.48a1 1 0 0 0-1.506 0z'/%3e%3c/svg%3e") no-repeat right 12px center;
+    background-size: 12px;
+    border: 2px solid var(--prism-border-subtle);
+    border-radius: var(--prism-radius-medium);
+    padding: 14px 40px 14px 20px;
+    color: var(--prism-text-primary);
+    font-size: 15px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all var(--prism-transition-medium);
+    min-width: 160px;
+}
+
+.prism-select-enhanced:focus {
+    outline: none;
+    border-color: var(--prism-gold-primary);
+    background-color: var(--prism-midnight-secondary);
+    box-shadow: 0 0 0 3px var(--prism-overlay-light);
+}
+
+.prism-select-enhanced:hover {
+    border-color: var(--prism-border-medium);
+    background-color: var(--prism-midnight-secondary);
+}
+
+/* Professional Toggle Switch */
+.prism-toggle-switch {
+    position: relative;
+    display: inline-block;
+    width: 56px;
+    height: 28px;
+}
+
+.prism-toggle-switch input {
+    opacity: 0;
+    width: 0;
+    height: 0;
+}
+
+.prism-toggle-slider {
+    position: absolute;
+    cursor: pointer;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: var(--prism-midnight-tertiary);
+    border: 1px solid var(--prism-border-subtle);
+    transition: all var(--prism-transition-medium);
+    border-radius: 28px;
+}
+
+.prism-toggle-slider:before {
+    position: absolute;
+    content: "";
+    height: 20px;
+    width: 20px;
+    left: 3px;
+    bottom: 3px;
+    background: var(--prism-text-muted);
+    transition: all var(--prism-transition-medium);
+    border-radius: 50%;
+    box-shadow: 0 2px 6px var(--prism-shadow-light);
+}
+
+input:checked + .prism-toggle-slider {
+    background: var(--prism-gold-secondary);
+    border-color: var(--prism-gold-primary);
+}
+
+input:checked + .prism-toggle-slider:before {
+    transform: translateX(28px);
+    background: var(--prism-gold-primary);
+    box-shadow: 0 4px 12px var(--prism-shadow-medium);
+}
+
+.prism-toggle-slider:hover {
+    border-color: var(--prism-border-medium);
+}
+
+input:focus + .prism-toggle-slider {
+    box-shadow: 0 0 0 3px var(--prism-overlay-light);
+}
+
+/* === ADVANCED BUTTON VARIATIONS === */
+
+/* Icon Button */
+.prism-button-icon {
+    width: 48px;
+    height: 48px;
+    border-radius: 50%;
+    background: var(--prism-midnight-tertiary);
+    border: 1px solid var(--prism-border-subtle);
+    color: var(--prism-text-secondary);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 18px;
+    cursor: pointer;
+    transition: all var(--prism-transition-medium);
+    position: relative;
+    overflow: hidden;
+}
+
+.prism-button-icon:hover {
+    background: var(--prism-midnight-soft);
+    border-color: var(--prism-gold-primary);
+    color: var(--prism-gold-primary);
+    transform: translateY(-2px);
+    box-shadow: 0 8px 20px var(--prism-shadow-medium);
+}
+
+.prism-button-icon:active {
+    transform: translateY(0);
+    box-shadow: 0 4px 12px var(--prism-shadow-light);
+}
+
+/* Floating Action Button */
+.prism-fab {
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    background: var(--prism-gradient-gold);
+    border: none;
+    color: var(--prism-midnight-primary);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 24px;
+    cursor: pointer;
+    position: fixed;
+    bottom: 30px;
+    right: 30px;
+    z-index: var(--prism-z-elevated);
+    transition: all var(--prism-transition-medium);
+    box-shadow: 0 8px 25px var(--prism-shadow-strong);
+}
+
+.prism-fab:hover {
+    transform: scale(1.1) translateY(-3px);
+    box-shadow: 0 15px 40px var(--prism-shadow-strong);
+}
+
+.prism-fab:active {
+    transform: scale(1.05) translateY(-1px);
+}
+
+/* === ENHANCED CARDS AND PANELS === */
+
+/* Professional Card */
+.prism-card {
+    background: var(--prism-midnight-secondary);
+    border: 1px solid var(--prism-border-subtle);
+    border-radius: var(--prism-radius-large);
+    padding: 24px;
+    box-shadow: 0 8px 25px var(--prism-shadow-light);
+    transition: all var(--prism-transition-medium);
+    position: relative;
+    overflow: hidden;
+}
+
+.prism-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 3px;
+    background: var(--prism-gradient-gold);
+    opacity: 0;
+    transition: opacity var(--prism-transition-medium);
+}
+
+.prism-card:hover {
+    border-color: var(--prism-border-medium);
+    box-shadow: 0 15px 40px var(--prism-shadow-medium);
+    transform: translateY(-5px);
+}
+
+.prism-card:hover::before {
+    opacity: 1;
+}
+
+.prism-card-header {
+    color: var(--prism-gold-primary);
+    font-size: 1.3rem;
+    font-weight: 600;
+    margin-bottom: 16px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.prism-card-content {
+    color: var(--prism-text-secondary);
+    line-height: 1.6;
+    margin-bottom: 20px;
+}
+
+.prism-card-footer {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding-top: 16px;
+    border-top: 1px solid var(--prism-border-subtle);
+}
+
+/* === PROGRESS AND LOADING === */
+
+/* Professional Progress Bar */
+.prism-progress {
+    width: 100%;
+    height: 8px;
+    background: var(--prism-midnight-tertiary);
+    border-radius: var(--prism-radius-small);
+    overflow: hidden;
+    position: relative;
+}
+
+.prism-progress-bar {
+    height: 100%;
+    background: var(--prism-gradient-gold);
+    border-radius: var(--prism-radius-small);
+    transition: width var(--prism-transition-slow);
+    position: relative;
+    overflow: hidden;
+}
+
+.prism-progress-bar::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255,255,255,0.4), transparent);
+    animation: prismProgressShine 2s infinite;
+}
+
+@keyframes prismProgressShine {
+    0% { left: -100%; }
+    100% { left: 100%; }
+}
+
+/* Loading Spinner */
+.prism-spinner {
+    width: 40px;
+    height: 40px;
+    border: 3px solid var(--prism-midnight-tertiary);
+    border-top: 3px solid var(--prism-gold-primary);
+    border-radius: 50%;
+    animation: prismSpin 1s linear infinite;
+}
+
+@keyframes prismSpin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+/* Pulse Loader */
+.prism-pulse-loader {
+    display: flex;
+    gap: 8px;
+    align-items: center;
+}
+
+.prism-pulse-dot {
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    background: var(--prism-gold-primary);
+    animation: prismPulse 1.4s ease-in-out infinite both;
+}
+
+.prism-pulse-dot:nth-child(1) { animation-delay: -0.32s; }
+.prism-pulse-dot:nth-child(2) { animation-delay: -0.16s; }
+.prism-pulse-dot:nth-child(3) { animation-delay: 0; }
+
+@keyframes prismPulse {
+    0%, 80%, 100% {
+        transform: scale(0.6);
+        opacity: 0.5;
+    }
+    40% {
+        transform: scale(1);
+        opacity: 1;
+    }
+}
+
+/* === TOOLTIPS === */
+
+.prism-tooltip {
+    position: relative;
+    display: inline-block;
+}
+
+.prism-tooltip .prism-tooltip-text {
+    visibility: hidden;
+    background: var(--prism-midnight-primary);
+    color: var(--prism-text-primary);
+    text-align: center;
+    border-radius: var(--prism-radius-small);
+    padding: 8px 12px;
+    font-size: 14px;
+    font-weight: 500;
+    position: absolute;
+    z-index: var(--prism-z-tooltip);
+    bottom: 125%;
+    left: 50%;
+    margin-left: -60px;
+    width: 120px;
+    opacity: 0;
+    transition: all var(--prism-transition-medium);
+    border: 1px solid var(--prism-border-medium);
+    box-shadow: 0 8px 20px var(--prism-shadow-strong);
+}
+
+.prism-tooltip .prism-tooltip-text::after {
+    content: "";
+    position: absolute;
+    top: 100%;
+    left: 50%;
+    margin-left: -5px;
+    border-width: 5px;
+    border-style: solid;
+    border-color: var(--prism-border-medium) transparent transparent transparent;
+}
+
+.prism-tooltip:hover .prism-tooltip-text {
+    visibility: visible;
+    opacity: 1;
+    transform: translateY(-5px);
+}
+
+/* === RESPONSIVE UTILITIES === */
+@media (max-width: 768px) {
+    .prism-fab {
+        width: 50px;
+        height: 50px;
+        bottom: 20px;
+        right: 20px;
+        font-size: 20px;
+    }
+    
+    .prism-card {
+        padding: 16px;
+    }
+    
+    .prism-select-enhanced {
+        min-width: 120px;
+    }
+}
+
+/* === ACCESSIBILITY ENHANCEMENTS === */
+@media (prefers-reduced-motion: reduce) {
+    .prism-progress-bar::after,
+    .prism-spinner,
+    .prism-pulse-dot {
+        animation: none !important;
+    }
+} 

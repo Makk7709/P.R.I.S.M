@@ -1,0 +1,640 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PRISM Professional - Advanced AI Orchestration Platform</title>
+    
+    <!-- Nouveau thème PRISM Corporate -->
+    <link rel="stylesheet" href="./styles/prism-corporate-theme.css">
+    
+    <style>
+        /* === STYLES SPÉCIFIQUES PAGE D'ACCUEIL === */
+        .prism-landing-container {
+            text-align: center;
+            z-index: 10;
+            position: relative;
+            background: rgba(15, 25, 40, 0.15);
+            backdrop-filter: blur(20px);
+            border-radius: 20px;
+            padding: 40px 30px;
+            border: 1px solid rgba(255, 215, 0, 0.1);
+            box-shadow: 
+                0 20px 40px rgba(0, 0, 0, 0.5),
+                inset 0 1px 0 rgba(255, 215, 0, 0.05),
+                0 0 60px rgba(0, 0, 0, 0.3);
+            max-width: 1000px;
+            margin: 20px auto;
+            transition: all 0.3s ease-in-out;
+            min-height: fit-content;
+            overflow: visible;
+        }
+
+        .prism-landing-container:hover {
+            border-color: rgba(255, 215, 0, 0.2);
+            box-shadow: 
+                0 30px 60px rgba(0, 0, 0, 0.6),
+                inset 0 1px 0 rgba(255, 215, 0, 0.1),
+                0 0 80px rgba(0, 0, 0, 0.4);
+            background: rgba(20, 30, 45, 0.2);
+        }
+
+        .prism-logo {
+            margin-bottom: 25px;
+        }
+
+        /* Logo PRISM professionnel amélioré */
+        .prism-logo svg {
+            width: 100px;
+            height: 100px;
+            filter: drop-shadow(0 0 25px rgba(255, 215, 0, 0.4));
+            transition: all 0.3s ease-in-out;
+        }
+
+        .prism-logo svg:hover {
+            transform: scale(1.05);
+            filter: drop-shadow(0 0 35px rgba(255, 215, 0, 0.6));
+        }
+
+        .prism-main-title {
+            background: linear-gradient(135deg, #FFD700 0%, #B8860B 50%, #FFD700 100%);
+            background-size: 200% 200%;
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            animation: prismTitleShine 4s ease infinite;
+            margin-bottom: 15px;
+            font-size: 3.2rem;
+            font-weight: 800;
+            text-shadow: 0 4px 15px rgba(255, 215, 0, 0.3);
+            letter-spacing: 1px;
+        }
+
+        @keyframes prismTitleShine {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+
+        .prism-tagline {
+            color: #F8F9FA;
+            font-size: 1.5rem;
+            margin-bottom: 20px;
+            opacity: 0.95;
+            font-weight: 600;
+            text-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+        }
+
+        .prism-subtitle {
+            color: #E8EAED;
+            font-size: 1.1rem;
+            margin-bottom: 35px;
+            opacity: 0.9;
+            line-height: 1.7;
+            max-width: 800px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        .prism-features {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 25px;
+            margin-bottom: 35px;
+            padding: 0 15px;
+        }
+
+        .prism-feature {
+            background: rgba(26, 43, 71, 0.8);
+            border: 1px solid rgba(255, 215, 0, 0.1);
+            border-radius: 12px;
+            padding: 25px 20px;
+            transition: all 0.3s ease-in-out;
+            text-align: left;
+            position: relative;
+            overflow: hidden;
+            backdrop-filter: blur(10px);
+        }
+
+        .prism-feature::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 3px;
+            background: linear-gradient(90deg, #FFD700, #B8860B);
+            transition: left 0.3s ease-in-out;
+        }
+
+        .prism-feature:hover::before {
+            left: 0;
+        }
+
+        .prism-feature:hover {
+            transform: translateY(-5px);
+            border-color: rgba(255, 215, 0, 0.3);
+            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.4);
+            background: rgba(36, 52, 71, 0.9);
+        }
+
+        .prism-feature-title {
+            font-size: 1.2rem;
+            font-weight: 700;
+            color: #FFD700;
+            margin-bottom: 12px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .prism-feature-title::before {
+            content: "◆";
+            color: #B8860B;
+            font-size: 0.8em;
+        }
+
+        .prism-feature-text {
+            font-size: 1rem;
+            color: #E8EAED;
+            line-height: 1.6;
+        }
+
+        .prism-main-button {
+            background: linear-gradient(135deg, #FFD700 0%, #B8860B 50%, #FFD700 100%);
+            color: #0B1426;
+            border: none;
+            padding: 18px 40px;
+            border-radius: 50px;
+            cursor: pointer;
+            font-size: 1.1rem;
+            font-weight: 700;
+            text-decoration: none;
+            display: inline-block;
+            transition: all 0.3s ease-in-out;
+            box-shadow: 0 8px 25px rgba(255, 215, 0, 0.3);
+            margin-bottom: 25px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .prism-main-button::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.3), transparent);
+            transition: left 0.3s ease-in-out;
+        }
+
+        .prism-main-button:hover::before {
+            left: 100%;
+        }
+
+        .prism-main-button:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 15px 40px rgba(255, 215, 0, 0.4);
+        }
+
+        .prism-quick-links {
+            display: flex;
+            gap: 20px;
+            justify-content: center;
+            flex-wrap: wrap;
+            margin-top: 25px;
+        }
+
+        .prism-quick-link {
+            background: rgba(36, 52, 71, 0.8);
+            color: #E8EAED;
+            padding: 12px 24px;
+            border-radius: 25px;
+            text-decoration: none;
+            font-size: 0.95rem;
+            font-weight: 600;
+            transition: all 0.15s ease-in-out;
+            border: 1px solid rgba(255, 215, 0, 0.1);
+            backdrop-filter: blur(10px);
+        }
+
+        .prism-quick-link:hover {
+            background: rgba(45, 59, 79, 0.9);
+            color: #FFD700;
+            border-color: rgba(255, 215, 0, 0.3);
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3);
+        }
+
+        .prism-status {
+            position: absolute;
+            top: 25px;
+            right: 25px;
+            background: rgba(26, 43, 71, 0.9);
+            border: 1px solid rgba(255, 215, 0, 0.2);
+            border-radius: 25px;
+            padding: 12px 20px;
+            font-size: 0.9rem;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            color: #E8EAED;
+            backdrop-filter: blur(10px);
+        }
+
+        .prism-status-dot {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            background: #34A853;
+            animation: prismStatusPulse 2s infinite;
+            box-shadow: 0 0 10px #34A853;
+        }
+
+        @keyframes prismStatusPulse {
+            0%, 50% { 
+                opacity: 1; 
+                transform: scale(1);
+                box-shadow: 0 0 10px #34A853;
+            }
+            51%, 100% { 
+                opacity: 0.6; 
+                transform: scale(0.9);
+                box-shadow: 0 0 5px #34A853;
+            }
+        }
+
+        .prism-capabilities {
+            background: rgba(26, 43, 71, 0.8);
+            border: 1px solid rgba(255, 215, 0, 0.1);
+            border-radius: 12px;
+            padding: 25px;
+            margin: 30px 0;
+            text-align: left;
+            backdrop-filter: blur(10px);
+        }
+
+        .prism-capabilities h3 {
+            color: #FFD700;
+            font-size: 1.3rem;
+            margin-bottom: 18px;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .prism-capabilities h3::before {
+            content: "⚡";
+            font-size: 1.2em;
+        }
+
+        .prism-capabilities ul {
+            list-style: none;
+            padding: 0;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 12px;
+        }
+
+        .prism-capabilities li {
+            color: #E8EAED;
+            margin-bottom: 8px;
+            padding-left: 25px;
+            position: relative;
+            font-size: 1rem;
+            transition: color 0.15s ease-in-out;
+            line-height: 1.5;
+        }
+
+        .prism-capabilities li:before {
+            content: "▶";
+            position: absolute;
+            left: 0;
+            color: #B8860B;
+            transition: color 0.15s ease-in-out;
+            font-weight: bold;
+        }
+
+        .prism-capabilities li:hover {
+            color: #F8F9FA;
+        }
+
+        .prism-capabilities li:hover:before {
+            color: #FFD700;
+        }
+
+        /* === RESPONSIVE === */
+        @media (max-width: 768px) {
+            .prism-landing-container {
+                margin: 15px;
+                padding: 30px 20px;
+            }
+            
+            .prism-main-title {
+                font-size: 2.5rem;
+            }
+            
+            .prism-features {
+                grid-template-columns: 1fr;
+                gap: 20px;
+            }
+            
+            .prism-quick-links {
+                flex-direction: column;
+                align-items: center;
+            }
+            
+            .prism-status {
+                position: relative;
+                top: auto;
+                right: auto;
+                margin-bottom: 20px;
+                align-self: center;
+            }
+
+            .prism-capabilities ul {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        /* === ANIMATION DE FOND AMÉLIORÉE === */
+        body.prism-corporate {
+            position: relative;
+            overflow-x: hidden;
+            min-height: 100vh;
+            padding: 20px 0;
+            background: #0a0f1a;
+        }
+
+        body.prism-corporate::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: 
+                radial-gradient(circle at 25% 25%, rgba(26, 43, 71, 0.15) 0%, transparent 50%),
+                radial-gradient(circle at 75% 75%, rgba(16, 28, 44, 0.12) 0%, transparent 50%),
+                radial-gradient(circle at 50% 10%, rgba(20, 35, 55, 0.08) 0%, transparent 40%),
+                radial-gradient(circle at 20% 80%, rgba(15, 25, 40, 0.1) 0%, transparent 40%),
+                linear-gradient(135deg, #0a0f1a 0%, #101d2c 40%, #162333 60%, #0f1b28 100%);
+            animation: prismBackgroundPulse 12s ease-in-out infinite;
+            z-index: 0;
+        }
+
+        body.prism-corporate::after {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: 
+                radial-gradient(circle at 80% 20%, rgba(20, 35, 55, 0.06) 0%, transparent 60%),
+                radial-gradient(circle at 30% 70%, rgba(15, 25, 40, 0.08) 0%, transparent 50%);
+            animation: prismBackgroundPulse 15s ease-in-out infinite reverse;
+            z-index: 0;
+        }
+
+        @keyframes prismBackgroundPulse {
+            0%, 100% { 
+                opacity: 1; 
+                transform: scale(1) rotate(0deg); 
+            }
+            25% { 
+                opacity: 0.8; 
+                transform: scale(1.02) rotate(0.5deg); 
+            }
+            50% { 
+                opacity: 0.9; 
+                transform: scale(1.01) rotate(-0.3deg); 
+            }
+            75% { 
+                opacity: 0.85; 
+                transform: scale(1.03) rotate(0.2deg); 
+            }
+        }
+
+        /* Particules flottantes */
+        body.prism-corporate .floating-particles {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 1;
+        }
+
+        .floating-particle {
+            position: absolute;
+            width: 2px;
+            height: 2px;
+            background: rgba(255, 215, 0, 0.3);
+            border-radius: 50%;
+            animation: float 20s infinite linear;
+        }
+
+        .floating-particle:nth-child(1) { left: 10%; animation-delay: 0s; }
+        .floating-particle:nth-child(2) { left: 20%; animation-delay: 2s; }
+        .floating-particle:nth-child(3) { left: 30%; animation-delay: 4s; }
+        .floating-particle:nth-child(4) { left: 40%; animation-delay: 6s; }
+        .floating-particle:nth-child(5) { left: 50%; animation-delay: 8s; }
+        .floating-particle:nth-child(6) { left: 60%; animation-delay: 10s; }
+        .floating-particle:nth-child(7) { left: 70%; animation-delay: 12s; }
+        .floating-particle:nth-child(8) { left: 80%; animation-delay: 14s; }
+        .floating-particle:nth-child(9) { left: 90%; animation-delay: 16s; }
+
+        @keyframes float {
+            0% {
+                transform: translateY(100vh) rotate(0deg);
+                opacity: 0;
+            }
+            10% {
+                opacity: 1;
+            }
+            90% {
+                opacity: 1;
+            }
+            100% {
+                transform: translateY(-100px) rotate(360deg);
+                opacity: 0;
+            }
+        }
+
+        /* Assurer que le contenu est au-dessus */
+        .prism-landing-container {
+            position: relative;
+            z-index: 10;
+        }
+
+        .prism-status {
+            z-index: 11;
+        }
+    </style>
+</head>
+<body class="prism-corporate">
+    <!-- Particules flottantes pour l'animation -->
+    <div class="floating-particles">
+        <div class="floating-particle"></div>
+        <div class="floating-particle"></div>
+        <div class="floating-particle"></div>
+        <div class="floating-particle"></div>
+        <div class="floating-particle"></div>
+        <div class="floating-particle"></div>
+        <div class="floating-particle"></div>
+        <div class="floating-particle"></div>
+        <div class="floating-particle"></div>
+    </div>
+
+    <div class="prism-status">
+        <div class="prism-status-dot"></div>
+        <span>System Active</span>
+    </div>
+
+    <div class="prism-landing-container">
+        <div class="prism-logo">
+            <!-- Logo PRISM professionnel amélioré -->
+            <svg viewBox="0 0 120 120" xmlns="http://www.w3.org/2000/svg">
+                <defs>
+                    <linearGradient id="logoGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+                        <stop offset="0%" style="stop-color:#FFD700;stop-opacity:1" />
+                        <stop offset="50%" style="stop-color:#B8860B;stop-opacity:1" />
+                        <stop offset="100%" style="stop-color:#FFD700;stop-opacity:1" />
+                    </linearGradient>
+                    <linearGradient id="centerGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+                        <stop offset="0%" style="stop-color:#0B1426;stop-opacity:1" />
+                        <stop offset="100%" style="stop-color:#1A2B47;stop-opacity:1" />
+                    </linearGradient>
+                    <filter id="glow">
+                        <feGaussianBlur stdDeviation="3" result="coloredBlur"/>
+                        <feMerge> 
+                            <feMergeNode in="coloredBlur"/>
+                            <feMergeNode in="SourceGraphic"/>
+                        </feMerge>
+                    </filter>
+                </defs>
+                
+                <!-- Hexagone externe avec effet de profondeur -->
+                <polygon points="60,15 100,35 100,85 60,105 20,85 20,35" 
+                         fill="url(#logoGradient)" 
+                         stroke="#FFD700" 
+                         stroke-width="2"
+                         filter="url(#glow)"/>
+                
+                <!-- Hexagone interne -->
+                <polygon points="60,25 90,40 90,80 60,95 30,80 30,40" 
+                         fill="url(#centerGradient)" 
+                         stroke="#B8860B" 
+                         stroke-width="1"/>
+                
+                <!-- Symbole PRISM central stylisé -->
+                <g transform="translate(60,60)">
+                    <!-- Triangle principal -->
+                    <polygon points="-15,-10 15,-10 0,15" fill="#FFD700" opacity="0.9"/>
+                    <!-- Rayons prismatiques -->
+                    <line x1="-20" y1="-5" x2="-25" y2="-8" stroke="#FFD700" stroke-width="2" opacity="0.7"/>
+                    <line x1="-18" y1="0" x2="-23" y2="0" stroke="#B8860B" stroke-width="2" opacity="0.7"/>
+                    <line x1="-20" y1="5" x2="-25" y2="8" stroke="#DAA520" stroke-width="2" opacity="0.7"/>
+                    
+                    <line x1="20" y1="-5" x2="25" y2="-8" stroke="#FFD700" stroke-width="2" opacity="0.7"/>
+                    <line x1="18" y1="0" x2="23" y2="0" stroke="#B8860B" stroke-width="2" opacity="0.7"/>
+                    <line x1="20" y1="5" x2="25" y2="8" stroke="#DAA520" stroke-width="2" opacity="0.7"/>
+                    
+                    <!-- Point central -->
+                    <circle cx="0" cy="0" r="3" fill="#FFD700"/>
+                </g>
+                
+                <!-- Texte PRISM -->
+                <text x="60" y="115" text-anchor="middle" fill="#FFD700" font-family="Arial, sans-serif" font-size="8" font-weight="bold">PRISM</text>
+            </svg>
+        </div>
+
+        <h1 class="prism-main-title">PRISM Professional</h1>
+        <p class="prism-tagline">Advanced AI Orchestration Platform</p>
+        <p class="prism-subtitle">
+            Plateforme d'orchestration IA intelligente pour entreprises. Sélection automatique du modèle optimal 
+            et optimisation des performances pour des résultats métier exceptionnels.
+        </p>
+        
+        <div class="prism-features">
+            <div class="prism-feature">
+                <div class="prism-feature-title">Intelligence Multi-Modèles</div>
+                <div class="prism-feature-text">Sélection automatique du modèle IA optimal basée sur vos exigences spécifiques et le contexte métier.</div>
+            </div>
+            <div class="prism-feature">
+                <div class="prism-feature-title">Intégration Vocale Enterprise</div>
+                <div class="prism-feature-text">Synthèse et reconnaissance vocale de qualité professionnelle avec les voix premium ElevenLabs.</div>
+            </div>
+            <div class="prism-feature">
+                <div class="prism-feature-title">Performance Temps Réel</div>
+                <div class="prism-feature-text">Temps de réponse sub-seconde avec algorithmes de cache et d'optimisation intelligents.</div>
+            </div>
+            <div class="prism-feature">
+                <div class="prism-feature-title">Contexte Métier Spécialisé</div>
+                <div class="prism-feature-text">Spécialisé dans la finance, la stratégie, la recherche et les workflows d'analyse métier.</div>
+            </div>
+            <div class="prism-feature">
+                <div class="prism-feature-title">Mémoire Auto-Optimisation</div>
+                <div class="prism-feature-text">Module de conscience qui analyse et corrige automatiquement les performances pour une amélioration continue.</div>
+            </div>
+            <div class="prism-feature">
+                <div class="prism-feature-title">Mémoire Long Terme</div>
+                <div class="prism-feature-text">Système de rétention avancé qui apprend de chaque interaction pour des réponses contextuelles personnalisées.</div>
+            </div>
+        </div>
+
+        <div class="prism-capabilities">
+            <h3>Capacités Principales</h3>
+            <ul>
+                <li>Analyse stratégique métier et intelligence de marché</li>
+                <li>Modélisation financière et évaluation des risques</li>
+                <li>Recherche temps réel et synthèse de données</li>
+                <li>Support briefing exécutif et présentation</li>
+                <li>Analyse concurrentielle et benchmarking</li>
+                <li>Conformité réglementaire et reporting</li>
+            </ul>
+        </div>
+
+        <a href="/ui/prismVoiceChatV2-Corporate.html" class="prism-main-button">Lancer l'Interface Professionnelle</a>
+        
+        <div class="prism-quick-links">
+            <a href="/ui/prismVoiceChatV2-Corporate.html" class="prism-quick-link">Chat Professionnel</a>
+            <a href="/api/test-voice" class="prism-quick-link" target="_blank">Test Vocal</a>
+            <a href="/GUIDE_DEMARRAGE_VOCAL.md" class="prism-quick-link" target="_blank">Documentation</a>
+        </div>
+    </div>
+
+    <script>
+        // Auto-redirection after 10 seconds if user doesn't interact
+        let redirectTimer = setTimeout(() => {
+            console.log('[PRISM] Auto-redirecting to Professional Interface...');
+            window.location.href = '/ui/prismVoiceChatV2-Corporate.html';
+        }, 10000);
+
+        // Cancel auto-redirect on user interaction
+        document.addEventListener('click', () => {
+            clearTimeout(redirectTimer);
+            console.log('[PRISM] Auto-redirect cancelled - User interaction detected');
+        });
+
+        document.addEventListener('keydown', () => {
+            clearTimeout(redirectTimer);
+            console.log('[PRISM] Auto-redirect cancelled - User interaction detected');
+        });
+
+        // Load confirmation
+        console.log('[PRISM] Professional Landing Page Loaded - Enhanced Corporate Theme');
+        console.log('[PRISM] Ready for enterprise deployment');
+        
+        // Smooth scroll behavior for better UX
+        document.documentElement.style.scrollBehavior = 'smooth';
+    </script>
+</body>
+</html> 
