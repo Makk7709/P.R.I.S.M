@@ -6,6 +6,8 @@ import fetch from 'node-fetch';
 import { config } from './config.js';
 import { VoicePersonalityEnhancer } from './backend/voicePersonalityEnhancer.js';
 import { handleUserInstruction } from './backend/orchestrator.js';
+// Import de la nouvelle route Enterprise Export
+import { enterpriseExportRouter } from './backend/routes/enterpriseExport.js';
 
 // Charger les variables d'environnement
 dotenv.config();
@@ -19,6 +21,9 @@ const app = express();
 app.use(express.json());
 app.use(express.static(__dirname));
 app.use('/ui', express.static(path.join(__dirname, 'ui')));
+
+// Ajout de la route Enterprise Export
+app.use('/api/export', enterpriseExportRouter);
 
 // Initialiser l'enhancer vocal
 const voiceEnhancer = new VoicePersonalityEnhancer();
@@ -130,8 +135,90 @@ async function generateElevenLabsAudio(text, voiceConfig, selectedVoiceConfig) {
   const startTime = Date.now();
   const elevenlabs = config.CONFIG.ELEVENLABS;
   
-  // Nettoyage ultra-renforcé du texte avec suppression Unicode
-  const cleanText = text
+  // ✅ NOUVEAU: Système de limite adaptative selon la voix - LIMITES MAXIMALES ELEVENLABS
+  const getMaxLengthForVoice = (voiceId) => {
+    // ✅ CORRECTION MAJEURE: Utiliser les vraies limites ElevenLabs (jusqu'à 5000 chars)
+    // Jean (voix premium) - Limite maximale ElevenLabs
+    if (voiceId === 'm5SBIR8kR76fbA5dP2rU') return 4500;
+    // Autres voix ElevenLabs premium - Limite élevée
+    if (['pqHfZKP75CvOlQylNhV4', 'nPczCjzI2devNBz1zQrb', '9BWtsMINqrJLrRacOk9x'].includes(voiceId)) return 4000;
+    // Voix standard - Limite généreuse
+    return 3500;
+  };
+
+  // ✅ NOUVEAU: Troncature ultra-intelligente préservant le sens
+  const smartTruncate = (text, maxLength) => {
+    if (text.length <= maxLength) return text;
+    
+    console.log(`[ElevenLabs] 📏 Texte long détecté (${text.length} chars), troncature intelligente...`);
+    
+    // Priorité 1: Couper à la fin d'un paragraphe complet
+    const paragraphs = text.split(/\n\s*\n/);
+    let result = '';
+    for (const paragraph of paragraphs) {
+      if ((result + paragraph).length <= maxLength - 10) { // Marge de sécurité
+        result += paragraph + '\n\n';
+      } else {
+        break;
+      }
+    }
+    
+    // Priorité 2: Si pas de paragraphe complet, couper à la fin d'une phrase
+    if (result.length < maxLength * 0.3) { // Si moins de 30% conservé, essayer par phrases
+      result = '';
+      const sentences = text.split(/[.!?]+\s+/);
+      for (const sentence of sentences) {
+        if ((result + sentence).length <= maxLength - 20) { // Marge plus large
+          result += sentence + '. ';
+        } else {
+          break;
+        }
+      }
+    }
+    
+    // Priorité 3: Si toujours pas assez, couper à une virgule ou point-virgule
+    if (result.length < maxLength * 0.2) {
+      result = '';
+      const clauses = text.split(/[,;]\s+/);
+      for (const clause of clauses) {
+        if ((result + clause).length <= maxLength - 10) {
+          result += clause + ', ';
+        } else {
+          break;
+        }
+      }
+    }
+    
+    // Priorité 4: En dernier recours, couper au mot complet le plus proche
+    if (result.length < 100) {
+      const words = text.split(' ');
+      result = '';
+      for (const word of words) {
+        if ((result + word).length <= maxLength - 10) {
+          result += word + ' ';
+        } else {
+          break;
+        }
+      }
+    }
+    
+    result = result.trim();
+    
+    // Ajouter une fin naturelle si nécessaire
+    if (!result.match(/[.!?]$/)) {
+      if (result.length < maxLength - 3) {
+        result += '...';
+      } else {
+        result = result.substring(0, result.lastIndexOf(' ')) + '...';
+      }
+    }
+    
+    console.log(`[ElevenLabs] ✂️ Texte intelligent tronqué: ${result.length} chars (préservation sémantique)`);
+    return result;
+  };
+  
+  // Nettoyage ultra-renforcé du texte SANS suppression des accents français
+  let cleanText = text
     // Supprimer tous les émojis et caractères Unicode problématiques
     .replace(/[\u{1F600}-\u{1F64F}]|[\u{1F300}-\u{1F5FF}]|[\u{1F680}-\u{1F6FF}]|[\u{1F1E0}-\u{1F1FF}]|[\u{2600}-\u{26FF}]|[\u{2700}-\u{27BF}]/gu, '')
     // Supprimer les caractères de contrôle et spéciaux
@@ -141,16 +228,12 @@ async function generateElevenLabsAudio(text, voiceConfig, selectedVoiceConfig) {
     // Normaliser les espaces et sauts de ligne
     .replace(/\n+/g, ' ')
     .replace(/\s+/g, ' ')
-    // Supprimer les caractères non-ASCII problématiques
-    .replace(/[^\x20-\x7E\u00C0-\u017F]/g, '')
-    .trim()
-    .substring(0, 1000); // ✨ CORRECTION: Augmenté de 300 à 1000 caractères
+    // ✅ CORRECTION CRITIQUE: Préserver les accents français
+    // Supprimer uniquement les caractères vraiment problématiques, pas les accents
+    .replace(/[^\x20-\x7E\u00C0-\u017F\u0152\u0153\u0178]/g, '') // Préserve tous les caractères français
+    .trim();
 
-  if (cleanText.length < 3) {
-    throw new Error('Texte trop court après nettoyage');
-  }
-
-  // Déterminer la voix à utiliser
+  // Déterminer la voix à utiliser et sa limite
   let voiceId = elevenlabs.VOICE_ID; // Jean par défaut
   let voiceName = 'Jean (défaut)';
   
@@ -163,11 +246,25 @@ async function generateElevenLabsAudio(text, voiceConfig, selectedVoiceConfig) {
     console.log(`[ElevenLabs] 🎭 Voix personnalisée demandée: ${voiceName}`);
   }
   
-  console.log(`[ElevenLabs] 🎤 Génération avec ${voiceName} - ${cleanText.length} chars`);
-  console.log(`[ElevenLabs] 📝 Texte nettoyé: "${cleanText}"`);
+  // ✅ NOUVEAU: Limite adaptative selon la voix
+  const maxLength = getMaxLengthForVoice(voiceId);
+  
+  // ✅ NOUVEAU: Système de troncature intelligente
+  if (cleanText.length > maxLength) {
+    cleanText = smartTruncate(cleanText, maxLength);
+  }
+
+  if (cleanText.length < 3) {
+    throw new Error('Texte trop court après nettoyage');
+  }
+  
+  console.log(`[ElevenLabs] 🎤 Génération avec ${voiceName} - ${cleanText.length} chars (limite: ${maxLength})`);
+  console.log(`[ElevenLabs] 📝 Texte nettoyé: "${cleanText.substring(0, 100)}..."`);
 
   try {
-    // ✨ CORRECTION: Revenir aux paramètres qui fonctionnaient bien
+    // ✅ NOUVEAU: Timeout adaptatif selon la longueur du texte - AUGMENTÉ POUR TEXTES LONGS
+    const adaptiveTimeout = Math.max(30000, cleanText.length * 50); // 50ms par caractère + 30s minimum
+    
     const response = await fetch(`https://api.elevenlabs.io/v1/text-to-speech/${voiceId}`, {
       method: 'POST',
       headers: {
@@ -177,26 +274,27 @@ async function generateElevenLabsAudio(text, voiceConfig, selectedVoiceConfig) {
       },
       body: JSON.stringify({
         text: cleanText,
-        model_id: 'eleven_multilingual_v2', // ✨ CORRECTION: Revenir au modèle original
-        // ✨ CORRECTION: Revenir aux paramètres optimisés pour Jean
+        model_id: 'eleven_multilingual_v2',
         voice_settings: {
-          stability: 0.35, // Paramètres originaux pour Jean
-          similarity_boost: 0.85,
-          style: 0.0, // Désactivé pour éviter la complexité
+          stability: 0.50,        // ✅ OPTIMISÉ: +0.15 pour clarté
+          similarity_boost: 0.75, // ✅ OPTIMISÉ: -0.10 pour naturel
+          style: 0.10,           // ✅ OPTIMISÉ: +0.10 pour expressivité
           use_speaker_boost: true
         }
       }),
-      signal: AbortSignal.timeout(8000) // ✨ CORRECTION: Revenir au timeout original
+      signal: AbortSignal.timeout(adaptiveTimeout) // ✅ Timeout adaptatif
     });
 
     if (!response.ok) {
       const errorText = await response.text();
       console.error(`[ElevenLabs] ❌ Erreur ${response.status}:`, errorText);
       
-      // Retry avec texte encore plus simple en cas d'erreur
-      if (response.status === 500 && cleanText.length > 100) {
-        console.log('[ElevenLabs] 🔄 Retry avec texte raccourci...');
-        return await generateElevenLabsAudio(cleanText.substring(0, 100) + "...", voiceConfig, selectedVoiceConfig);
+      // ✅ NOUVEAU: Retry intelligent avec réduction progressive - MOINS AGRESSIF
+      if (response.status === 500 && cleanText.length > 2000) {
+        console.log('[ElevenLabs] 🔄 Retry avec texte réduit de 20%...');
+        const reducedLength = Math.floor(cleanText.length * 0.8); // Réduction moins agressive
+        const reducedText = smartTruncate(cleanText, reducedLength);
+        return await generateElevenLabsAudio(reducedText, voiceConfig, selectedVoiceConfig);
       }
       
       throw new Error(`API Error: ${response.status}`);
@@ -204,50 +302,73 @@ async function generateElevenLabsAudio(text, voiceConfig, selectedVoiceConfig) {
 
     const audioBuffer = await response.arrayBuffer();
     const duration = Date.now() - startTime;
-    console.log(`[ElevenLabs] ✅ Audio ${voiceName} généré en ${duration}ms`);
+    console.log(`[ElevenLabs] ✅ Audio ${voiceName} généré en ${duration}ms (${cleanText.length} chars)`);
     
     return `data:audio/mpeg;base64,${Buffer.from(audioBuffer).toString('base64')}`;
     
   } catch (error) {
     const duration = Date.now() - startTime;
     console.warn(`[ElevenLabs] ⚠️ Erreur après ${duration}ms:`, error.message);
+    
+    // ✅ NOUVEAU: Système de fallback progressif - MOINS AGRESSIF
+    if (error.name === 'AbortError' || error.message.includes('timeout')) {
+      console.log('[ElevenLabs] ⏰ Timeout détecté, essai avec texte plus court...');
+      
+      if (cleanText.length > 1000) { // Seuil plus élevé
+        const shortText = smartTruncate(cleanText, Math.floor(cleanText.length * 0.8)); // Réduction moins agressive
+        try {
+          return await generateElevenLabsAudio(shortText, voiceConfig, selectedVoiceConfig);
+        } catch (secondError) {
+          console.error('[ElevenLabs] ❌ Échec même avec texte réduit, abandon ElevenLabs');
+          throw new Error('ElevenLabs indisponible - utiliser TTS navigateur');
+        }
+      }
+    }
+    
     throw error;
   }
 }
 
-// Route pour tester ElevenLabs
+// API Route pour tester une voix ElevenLabs
 app.get('/api/test-voice', async (req, res) => {
+  const { voiceId, voiceName } = req.query;
+  
   try {
-    const testText = "Test de la synthèse vocale PRISM avec ElevenLabs. Votre voix est maintenant plus expressive !";
+    console.log(`[Voice Test] Testing voice: ${voiceName} (${voiceId})`);
     
-    // Récupérer la voix demandée depuis les paramètres de requête
-    const voiceId = req.query.voiceId;
-    const voiceName = req.query.voiceName;
-    
-    let selectedVoiceConfig = null;
-    if (voiceId && voiceName) {
-      selectedVoiceConfig = {
-        id: voiceId,
-        provider: 'elevenlabs',
-        name: voiceName
-      };
+    if (!config.CONFIG.ELEVENLABS.API_KEY || 
+        config.CONFIG.ELEVENLABS.API_KEY === 'ta_clef_api_ici') {
+      return res.json({
+        success: false,
+        error: 'ElevenLabs API key not configured',
+        fallbackToTTS: true
+      });
     }
     
-    const audioUrl = await generateElevenLabsAudio(testText, {
-      context: { mode: 'FRIENDLY', emotion: 'excited' }
-    }, selectedVoiceConfig);
+    // Test avec un message court
+    const testText = "Hello! This is a voice test for PRISM.";
+    
+    const audioUrl = await generateElevenLabsAudio(testText, null, {
+      id: voiceId,
+      name: voiceName,
+      provider: 'elevenlabs'
+    });
     
     res.json({
       success: true,
-      message: 'Test vocal réussi !',
       audioUrl: audioUrl,
-      voiceUsed: selectedVoiceConfig?.name || 'Jean (défaut)'
+      voice: {
+        id: voiceId,
+        name: voiceName
+      }
     });
+    
   } catch (error) {
-    res.status(500).json({
+    console.error('[Voice Test] Error:', error.message);
+    res.json({
       success: false,
       error: error.message,
-      fallback: 'ElevenLabs non configuré - utilisation du TTS navigateur'
+      fallbackToTTS: true
     });
   }
 });
@@ -354,6 +475,11 @@ app.get('/', (req, res) => {
 // Route pour le dashboard investisseur
 app.get('/investor', (req, res) => {
   res.sendFile(path.join(__dirname, 'demo/investor-dashboard/index.html'));
+});
+
+// Route pour le dashboard corporate
+app.get('/corporate', (req, res) => {
+  res.sendFile(path.join(__dirname, 'index-corporate.html'));
 });
 
 // Route pour les demos
