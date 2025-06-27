@@ -1,7 +1,12 @@
 import { analyzeMemoryPerformance } from './memoryAnalyzer.js';
-import { OpenAI } from 'openai';
+import OpenAI from 'openai';
 
-const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
+const openai = new OpenAI({ 
+  apiKey: process.env.OPENAI_API_KEY,
+  dangerouslyAllowBrowser: true
+});
+
+const MAX_SUGGESTION_LENGTH = 150; // Limite la longueur des suggestions générées
 
 /**
  * Génére des suggestions d'amélioration pour PRISM basées sur ses performances mémorielles.

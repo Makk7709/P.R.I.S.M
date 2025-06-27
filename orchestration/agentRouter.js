@@ -72,7 +72,7 @@ class AgentRouter extends EventEmitter {
     super();
     this.config = config;
     this.providers = {
-      [AIProvider.OPENAI]: new OpenAI(config.openai),
+      [AIProvider.OPENAI]: new OpenAI({ ...config.openai, dangerouslyAllowBrowser: true }),
       [AIProvider.CLAUDE]: new Anthropic(config.anthropic),
       [AIProvider.PERPLEXITY]: new Perplexity(config.perplexity)
     };

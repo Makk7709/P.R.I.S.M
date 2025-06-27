@@ -6,7 +6,7 @@
 import kernelBus from '../core/KernelBus.js';
 import { CircularDeque } from './CircularDeque.js';
 import PrismStorage from '../prismStorage.js';
-import PrismHMAC from '../security/prismHMAC.js';
+import { PrismHMAC } from '../security/prismHMAC.js';
 import { PrismProfiler } from '../perf/prismProfiler.js';
 
 const SLIDING_WINDOW_SIZE = 200;
@@ -35,6 +35,7 @@ export class PrismAdaptiveCycler {
     this.baseCycleInterval = 5000; // 5 secondes par défaut
     this.currentCycleInterval = this.baseCycleInterval;
     this.storage = new PrismStorage();
+    this.hmac = new PrismHMAC(); // Pas de clé nécessaire pour la simulation
     this.debug = options.debug || false;
   }
 
@@ -98,7 +99,7 @@ export class PrismAdaptiveCycler {
       };
 
       // Sign the payload
-      const signature = await PrismHMAC.sign(payload);
+      const signature = this.hmac.generate(JSON.stringify(payload));
       if (signature) {
         payload.sig = signature;
       }

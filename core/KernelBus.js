@@ -676,4 +676,5 @@ export class KernelBus extends EventEmitter {
   }
 }
 
-export default KernelBus; 
+const kernelBus = new KernelBus();
+export default kernelBus; 

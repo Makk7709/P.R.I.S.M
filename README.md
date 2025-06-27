@@ -1,5 +1,81 @@
 # 🎯 PRISM v2.4 - Premium Reasoning & Integrated Superintelligence Matrix
 
+**Une architecture d'IA conversationnelle superintelligente, robuste et validée, orchestrant plusieurs modèles de pointe avec un système de consensus et une mémoire persistante.**
+
+[![Status](https://img.shields.io/badge/Status-Stable-brightgreen)](https://github.com/Makk7709/P.R.I.S.M.git)
+[![Tests](https://img.shields.io/badge/Tests-Vitest%20%7C%20100%25-success)](./tests/)
+[![Persistence](https://img.shields.io/badge/Persistence-SQLite-blue)](./backend/database.js)
+[![License](https://img.shields.io/badge/License-AGPL%20v3-red)](./LICENSE)
+
+---
+
+## 🚀 Présentation
+
+PRISM est une intelligence artificielle orchestratrice de pointe conçue pour des applications critiques. Elle intègre un **système de consensus IA** pour des décisions fiables, une **mémoire persistante et transactionnelle** via SQLite pour une robustesse à toute épreuve, et un **environnement de test moderne** avec Vitest pour garantir la qualité du code.
+
+Le projet a récemment fait l'objet d'une migration technique majeure pour résoudre la dette technique, améliorer la stabilité et garantir sa maintenabilité à long terme.
+
+## ✨ Piliers de l'Architecture
+
+### 🧠 Orchestration Multi-Modèles avec Consensus
+- **`ConsensusManager`** : Un système de vote (majorité 2/3) entre plusieurs modèles d'IA (GPT-4, Claude, Llama) pour valider les décisions critiques et améliorer la fiabilité.
+- **`AgentRouter`** : Routage intelligent des requêtes vers le modèle le plus adapté en fonction du contexte, des performances et des coûts.
+- **`PriorityQueue`** : Gestion des tâches par priorité pour assurer que les requêtes critiques sont traitées en premier.
+
+### 🗄️ Persistance Robuste avec SQLite
+- **Migration Complète :** L'ancien système de persistance basé sur des fichiers JSON, sujet aux corruptions, a été remplacé par une base de données **SQLite**.
+- **Fiabilité (ACID) :** Les transactions atomiques garantissent qu'aucune donnée n'est jamais corrompue, même en cas d'arrêt brutal.
+- **Performance :** L'accès indexé aux données est des ordres de grandeur plus rapide que l'analyse de fichiers JSON.
+
+### 🧪 Framework de Test Moderne avec Vitest
+- **Migration depuis Jest :** L'ancienne suite de tests, bloquée par des conflits de configuration insolubles, a été migrée vers **Vitest**.
+- **Environnement Sain :** Vitest, étant natif aux modules ESM, a permis de résoudre tous les problèmes de configuration et de fournir un environnement de test rapide et fiable.
+- **Qualité Garantie :** La nouvelle couche de persistance est validée par une suite de tests d'intégration avec une **couverture de code de 100%**.
+
+## 🛠️ Installation et Utilisation
+
+### 1. Prérequis
+- Node.js (v18+ recommandé)
+- npm
+
+### 2. Installation
+```bash
+# Cloner le projet
+git clone https://github.com/Makk7709/P.R.I.S.M.git
+cd P.R.I.S.M
+
+# Installer les dépendances
+npm install
+```
+
+### 3. Lancer l'Application
+```bash
+# Démarrer le serveur principal de PRISM
+node prismCore.js
+```
+
+## ✅ Exécution des Tests
+
+La suite de tests a été modernisée et s'exécute avec Vitest.
+
+| Commande | Description |
+|---|---|
+| `npm test` | Exécute tous les tests une seule fois. Idéal pour la validation et l'intégration continue (CI). |
+| `npm test:watch` | Lance Vitest en mode "watch", qui ré-exécute automatiquement les tests sur les fichiers modifiés. |
+| `npm run coverage` | Exécute tous les tests et génère un rapport de couverture de code détaillé dans le dossier `/coverage`. |
+
+---
+
+## 📚 Documentation
+
+Pour plus de détails sur l'architecture et les récentes migrations :
+
+- **[Rapport de Migration Technique (Q2 2024)](./MIGRATION_TECHNIQUE_2024_Q2.md)** : Analyse détaillée de la migration vers SQLite et Vitest.
+- **[Dossier Technique Complet](./PRISM_DOSSIER_TECHNIQUE_COMPLET.md)** : Documentation approfondie de l'architecture de PRISM.
+- **[Brochure Investisseurs](./PRISM_BROCHURE_INVESTISSEURS.md)** : Présentation de la vision et de la proposition de valeur du projet.
+
+# 🎯 PRISM v2.4 - Premium Reasoning & Integrated Superintelligence Matrix
+
 **Architecture IA Tri-Modèles Superintelligente avec Révolution Vocale**  
 *OpenAI GPT-4 + Perplexity Llama 3.1 + Claude Sonnet 3.5 + ElevenLabs Premium*
 
@@ -608,3 +684,24 @@ Un merci spécial pour la collaboration exceptionnelle sur cette refonte majeure
 ---
 
 *Développé avec ❤️ pour l'excellence en IA conversationnelle*
+
+## Lancement et Tests
+
+### Lancement de l'Application Principale
+
+Pour démarrer PRISM, exécutez la commande suivante :
+`node prismCore.js`
+
+### Lancement des Tests (Nouveau Framework Vitest)
+
+L'environnement de test a été entièrement modernisé avec Vitest pour garantir la fiabilité et la rapidité.
+
+| Commande | Description |
+|---|---|
+| `npm test` | Exécute tous les tests une seule fois (idéal pour la CI). |
+| `npm test:watch` | Lance les tests en mode interactif pour le développement. |
+| `npm run coverage` | Exécute les tests et génère un rapport de couverture détaillé. |
+
+Pour une analyse détaillée des récentes migrations techniques (Persistance SQLite, Tests Vitest), veuillez consulter le document `MIGRATION_TECHNIQUE_2024_Q2.md`.
+
+## Monitoring

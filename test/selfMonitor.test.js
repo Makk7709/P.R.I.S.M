@@ -1,4 +1,4 @@
-const { SelfMonitor } = require('../infrastructure/selfMonitor');
+import { SelfMonitor } from '../infrastructure/selfMonitor.js';
 
 describe('SelfMonitor', () => {
   let selfMonitor;

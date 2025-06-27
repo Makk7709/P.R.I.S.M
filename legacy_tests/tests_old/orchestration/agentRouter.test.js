@@ -1,4 +1,4 @@
-const { AgentRouter, TaskType, AIProvider } = require('../../orchestration/agentRouter');
+import { AgentRouter, TaskType, AIProvider } from '../../orchestration/agentRouter.js';
 
 describe('AgentRouter', () => {
   let router;

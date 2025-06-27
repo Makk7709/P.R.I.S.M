@@ -4,9 +4,11 @@
  */
 
 import kernelBus from '../core/KernelBus.js';
-import { stateStore } from '../prismStateStore.js';
+import PrismStateStore from '../persistence/prismStateStore.js';
 import { PrismProfiler } from '../perf/prismProfiler.js';
 import http from 'http';
+
+const stateStore = new PrismStateStore();
 
 /**
  * @class PrismCodexAnalyzer

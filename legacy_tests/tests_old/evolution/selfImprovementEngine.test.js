@@ -1,4 +1,5 @@
-const { SelfImprovementEngine, ImprovementArea } = require('../../evolution/selfImprovementEngine');
+import { SelfImprovementEngine } from '../../../evolution/selfImprovementEngine.js';
+import { jest } from '@jest/globals';
 
 describe('SelfImprovementEngine', () => {
   let engine;

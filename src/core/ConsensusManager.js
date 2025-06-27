@@ -20,6 +20,16 @@ export const DecisionType = {
 };
 
 /**
+ * Types de votes avec support d'abstention
+ */
+export const VoteType = {
+  APPROVE: 'approve',
+  REJECT: 'reject',
+  ABSTAIN: 'abstain',
+  UNAVAILABLE: 'unavailable'
+};
+
+/**
  * Statuts de consensus
  */
 export const ConsensusStatus = {
@@ -56,35 +66,53 @@ class DecisionProposal {
 
   addVote(provider, vote, reasoning = '') {
     this.votes.set(provider, {
-      vote: vote, // true = approve, false = reject
+      vote: vote, // VoteType.APPROVE, VoteType.REJECT, VoteType.ABSTAIN, VoteType.UNAVAILABLE
       reasoning: reasoning,
       timestamp: Date.now()
     });
   }
 
   getVoteCount() {
-    const approvals = Array.from(this.votes.values()).filter(v => v.vote === true).length;
-    const rejections = Array.from(this.votes.values()).filter(v => v.vote === false).length;
-    return { approvals, rejections, total: this.votes.size };
+    const approvals = Array.from(this.votes.values()).filter(v => v.vote === VoteType.APPROVE || v.vote === true).length;
+    const rejections = Array.from(this.votes.values()).filter(v => v.vote === VoteType.REJECT || v.vote === false).length;
+    const abstentions = Array.from(this.votes.values()).filter(v => v.vote === VoteType.ABSTAIN).length;
+    const unavailable = Array.from(this.votes.values()).filter(v => v.vote === VoteType.UNAVAILABLE).length;
+    return { approvals, rejections, abstentions, unavailable, total: this.votes.size };
   }
 
   isComplete() {
-    const { approvals, rejections, total } = this.getVoteCount();
+    const { approvals, rejections, abstentions, unavailable, total } = this.getVoteCount();
     const totalProviders = Object.keys(AIProvider).length;
+    const effectiveVotes = approvals + rejections; // Abstentions ne comptent pas dans le quorum
+    const availableProviders = totalProviders - unavailable;
     
-    // Consensus atteint si 2/3 des votes sont pour ou contre
-    if (approvals >= this.requiredVotes) {
+    // Quorum dynamique : ajuster selon les fournisseurs disponibles (fail-open)
+    const dynamicQuorum = Math.max(2, Math.ceil(availableProviders * 2 / 3));
+    
+    // Consensus atteint si 2/3 des votes effectifs sont pour
+    if (approvals >= dynamicQuorum) {
       this.status = ConsensusStatus.APPROVED;
       return true;
     }
     
-    if (rejections >= this.requiredVotes) {
+    // Consensus rejeté si 2/3 des votes effectifs sont contre
+    if (rejections >= dynamicQuorum) {
       this.status = ConsensusStatus.REJECTED;
       return true;
     }
     
-    // Impossible d'atteindre le consensus si tous ont voté
-    if (total === totalProviders && approvals < this.requiredVotes) {
+    // Fail-open : si trop de fournisseurs indisponibles/abstentions, approuver avec un quorum réduit
+    if (unavailable + abstentions >= totalProviders / 2) {
+      // Si plus de la moitié des fournisseurs sont indisponibles/s'abstiennent
+      // et qu'il y a au moins un vote d'approbation, approuver (fail-open)
+      if (approvals > 0 && approvals >= rejections) {
+        this.status = ConsensusStatus.APPROVED;
+        return true;
+      }
+    }
+    
+    // Impossible d'atteindre le consensus si tous les fournisseurs disponibles ont voté
+    if (total === availableProviders && approvals < dynamicQuorum) {
       this.status = ConsensusStatus.REJECTED;
       return true;
     }

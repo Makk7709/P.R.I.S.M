@@ -7,6 +7,10 @@ import { createAudioManagerMock } from '../mocks/audioManagerMock';
 import { createAdaptiveCyclerWidgetMock } from '../mocks/adaptiveCyclerWidgetMock';
 import { createInsightCenterMock } from '../mocks/insightCenterMock';
 import { CONFIG } from '../mocks/configMock.js';
+import { PrismCore } from '../../prismCore.js';
+import { config } from '../../config.js';
+import { jest } from '@jest/globals';
+import { TextEncoder, TextDecoder } from 'util';
 
 // Mock CSS imports
 jest.mock('../../ui/AdaptiveCyclerWidget.css', () => ({}));
@@ -75,13 +79,22 @@ const evaluateFluidity = (metrics) => {
   };
 };
 
-describe('PRISM Core Real-World Tests', () => {
+global.TextEncoder = TextEncoder;
+global.TextDecoder = TextDecoder;
+
+jest.mock('../../core/prismCore.js');
+
+describe('PRISM Core - Real-World Scenarios', () => {
+  let prismCore;
   let adaptiveCyclerWidget;
   let insightCenter;
   let audioManager;
   let testResults;
 
   beforeEach(() => {
+    // Utiliser la configuration réelle pour les tests en conditions réelles
+    prismCore = new PrismCore(config.CONFIG);
+
     // Reset DOM
     document.body.innerHTML = `
       <div id="prism-root">

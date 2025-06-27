@@ -2,13 +2,17 @@
  * @jest-environment jsdom
  */
 
-const PRISM = require('../../prismCore.js');
-const { PrismBus } = require('../../prismBus.js');
-const { PrismVitals } = require('../../prismVitals.js');
-const { PrismSelfHeal } = require('../../prismSelfHeal.js');
-const { PrismEmergencyProtocol } = require('../../prismEmergencyProtocol.js');
+/**
+ * @fileoverview Tests unitaires pour le noyau PRISM
+ */
 
-describe('PRISM Core', () => {
+import PRISM from '../../../prismCore.js';
+import { PrismBus } from '../../../prismBus.js';
+import { PrismVitals } from '../../../prismVitals.js';
+import { PrismSelfHeal } from '../../../prismSelfHeal.js';
+import { PrismEmergencyProtocol } from '../../prismEmergencyProtocol.js';
+
+describe('PRISM Core - Unit Tests', () => {
   let bus;
   let vitals;
   let selfHeal;

@@ -194,7 +194,7 @@ export const config = {
         PROFESSIONAL_BRANDING: process.env.PRISM_UI_MODE === 'corporate',
         DEFAULT_WELCOME_MESSAGE: process.env.PRISM_UI_MODE === 'corporate' 
           ? "Welcome! I am PRISM, your professional AI assistant. How may I assist you with your business needs today?"
-          : "🎯 Bonjour ! Je suis Prism, votre assistant intelligent. Comment puis-je vous aider aujourd'hui ?",
+          : "Bonjour ! Je suis Prism, votre assistant intelligent. Comment puis-je vous aider aujourd'hui ?",
         CORPORATE_LANDING_PAGE: process.env.PRISM_UI_MODE === 'corporate' ? '/index-corporate.html' : '/index.html',
         MAIN_INTERFACE: process.env.PRISM_UI_MODE === 'corporate' 
           ? '/ui/prismVoiceChatV2-Corporate.html' 
@@ -271,4 +271,6 @@ export const config = {
       }
     }
   }
-}; 
+};
+
+export const CONFIG = config.CONFIG; 

@@ -22,7 +22,10 @@ if (!process.env.PERPLEXITY_API_KEY || process.env.PERPLEXITY_API_KEY === 'test_
   console.warn('[PRISM] ⚠️  Clé Perplexity manquante ou placeholder - les appels Perplexity échoueront');
 }
 
-const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
+const openai = new OpenAI({ 
+  apiKey: process.env.OPENAI_API_KEY,
+  dangerouslyAllowBrowser: true 
+});
 
 // 🚀 CACHE HAUTE PERFORMANCE - Nouvelle implémentation
 const responseCache = new Map();

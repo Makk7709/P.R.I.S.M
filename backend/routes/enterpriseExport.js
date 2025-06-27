@@ -5,32 +5,17 @@
  * Route principale avec validation, sécurité, middleware, orchestration services
  */
 
-const express = require('express');
-const crypto = require('crypto');
-const path = require('path');
-const fs = require('fs').promises;
+import express from 'express';
+import crypto from 'crypto';
+import path from 'path';
+import fs from 'fs/promises';
+import { createRequire } from 'module';
 
-// Import des services Phase 1 (déjà testés et validés)
-const { EnterpriseDetectionService } = require('../services/enterpriseDetectionService.js');
-const { EnterpriseSanitizer } = require('../services/enterpriseSanitizer.js');
-const { EnterprisePDFService } = require('../services/enterprisePDFService.js');
+const require = createRequire(import.meta.url);
 
 // Import des middleware Phase 2
-const {
-  validateEnterpriseExportRequest,
-  sanitizeInput,
-  checkPayloadSize
-} = require('../middleware/validation.js');
-
-const {
-  enterpriseExportRateLimit,
-  csrfProtection,
-  getCSRFToken,
-  securityHeaders,
-  requestTimeout,
-  securityLogger,
-  sanitizeErrors
-} = require('../middleware/security.js');
+const { validateEnterpriseExportRequest, sanitizeInput, checkPayloadSize } = require('../middleware/validation.js');
+const { enterpriseExportRateLimit, csrfProtection, getCSRFToken, securityHeaders, requestTimeout, securityLogger, sanitizeErrors } = require('../middleware/security.js');
 
 const router = express.Router();
 
@@ -55,12 +40,15 @@ function injectServices(detection, sanitizer, pdf) {
 // Initialisation paresseuse des services (production) ou utilisation des injectés (tests)
 function initializeServices() {
   if (!serviceInstances.detectionService) {
+    const { EnterpriseDetectionService } = require('../services/enterpriseDetectionService.js');
     serviceInstances.detectionService = new EnterpriseDetectionService();
   }
   if (!serviceInstances.sanitizer) {
+    const { EnterpriseSanitizer } = require('../services/enterpriseSanitizer.js');
     serviceInstances.sanitizer = new EnterpriseSanitizer();
   }
   if (!serviceInstances.pdfService) {
+    const { EnterprisePDFService } = require('../services/enterprisePDFService.js');
     serviceInstances.pdfService = new EnterprisePDFService();
   }
 }
@@ -429,8 +417,5 @@ async function cleanupExpiredFiles() {
 // Gestionnaire d'erreurs global pour ce router
 router.use(sanitizeErrors);
 
-module.exports = { 
-  router: router, 
-  enterpriseExportRouter: router,
-  injectServices // Export pour les tests
-}; 
+export { router as enterpriseExportRouter, injectServices };
+export default router; 

@@ -5,7 +5,7 @@
  * Validation schema d'entrée strict, rate limiting, logging sécurisé
  */
 
-const Joi = require('joi');
+import Joi from 'joi';
 
 // Enterprise Export Schema with strict validation matching test expectations
 const enterpriseExportSchema = Joi.object({
@@ -388,7 +388,7 @@ const checkPayloadSize = (req, res, next) => {
   next();
 };
 
-module.exports = {
+export {
   validateEnterpriseExportRequest,
   sanitizeInput,
   checkPayloadSize,

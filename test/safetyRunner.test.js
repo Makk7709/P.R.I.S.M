@@ -1,4 +1,4 @@
-const SafetyRunner = require('../infrastructure/safetyRunner');
+import SafetyRunner from '../infrastructure/safetyRunner.js';
 
 describe('SafetyRunner', () => {
   let safetyRunner;

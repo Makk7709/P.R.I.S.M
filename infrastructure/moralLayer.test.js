@@ -1,7 +1,8 @@
-const { MoralLayer } = require('./moralLayer');
-const { createLoggerInstance } = require('./logger');
+import { MoralLayer } from './moralLayer.js';
+import { createLoggerInstance } from '../utils/logger.js';
+import { jest } from '@jest/globals';
 
-jest.mock('./logger');
+jest.mock('../utils/logger.js');
 
 describe('MoralLayer', () => {
   beforeEach(() => {

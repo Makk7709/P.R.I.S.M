@@ -2,6 +2,8 @@ import { jest } from '@jest/globals';
 import { AdaptiveCyclerWidget } from './AdaptiveCyclerWidget.js';
 import { InsightCenter } from './InsightCenter.js';
 import { PrismUITestRunner } from './prismUITests.js';
+import { PrismUI } from './prismUI.js';
+import { config } from '../config.js';
 
 // Mock dependencies
 jest.mock('../utils/prismCompression.js', () => ({
@@ -28,9 +30,11 @@ jest.mock('../utils/prismPurgeScheduler.js', () => ({
 
 describe('PRISM UI Tests', () => {
   let testRunner;
+  let ui;
 
   beforeEach(() => {
     testRunner = new PrismUITestRunner();
+    ui = new PrismUI(config.CONFIG.UI);
   });
 
   afterEach(() => {
@@ -78,5 +82,9 @@ describe('PRISM UI Tests', () => {
     expect(result.alerts.cpu.working).toBe(true);
     expect(result.alerts.memory.working).toBe(true);
     expect(result.alerts.fps.working).toBe(true);
+  });
+
+  it('should initialize correctly', () => {
+    // ... existing code ...
   });
 }); 

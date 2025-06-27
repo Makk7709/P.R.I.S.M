@@ -4,6 +4,11 @@
 
 ---
 
+**Note sur la Maturité du Produit (Mise à jour Q2 2024) :**
+PRISM a récemment franchi une étape majeure en matière de robustesse et de fiabilité. La fondation du système a été renforcée par une migration vers une base de données de calibre "enterprise" (SQLite) et la mise en place d'un framework de test de nouvelle génération (Vitest). Ces améliorations se traduisent par une stabilité accrue du produit et une réduction significative des risques opérationnels.
+
+---
+
 ## 📋 Page 1 : Présentation
 
 ### 🎯 PRISM v2.3

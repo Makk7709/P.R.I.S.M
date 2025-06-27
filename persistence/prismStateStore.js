@@ -1,151 +1,64 @@
 /**
  * PRISM State Store
- * Gère la persistance légère des états critiques des modules PRISM
+ * Gère la persistance des états via SQLite.
  * @module persistence/prismStateStore
  */
-
-import fs from 'fs/promises';
-import { fileURLToPath } from 'url';
-import path from 'path';
-
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
-
-const DEFAULT_TTL = 24 * 60 * 60 * 1000; // 24 heures en millisecondes
-const STATE_PREFIX = 'prism_state_';
+import { getDb } from '../backend/database.js';
 
 class PrismStateStore {
   constructor() {
-    this.isNode = typeof process !== 'undefined' && process.versions != null && process.versions.node != null;
-    this.fs = this.isNode ? fs : null;
-    this.path = this.isNode ? path : null;
-    this.storageDir = this.isNode ? path.join(__dirname, '../data/state') : null;
-    this.initialize();
-  }
-
-  initialize() {
-    this.stateFile = './.prism-state.json';
+    // La DB est initialisée à la première requête.
   }
 
   /**
-   * Sauvegarde l'état d'un module
-   * @param {string} key - Clé unique identifiant le module
-   * @param {object} data - Données à sauvegarder
-   * @returns {Promise<void>}
+   * Sauvegarde une valeur pour une clé donnée.
+   * @param {string} key - La clé unique.
+   * @param {*} value - La valeur à stocker (sera sérialisée en JSON).
    */
-  async saveState(key, data) {
-    try {
-      const state = {
-        data,
-        timestamp: Date.now(),
-        ttl: DEFAULT_TTL
-      };
-
-      if (this.isNode) {
-        const existingStates = await this._loadNodeStates();
-        existingStates[key] = state;
-        await this.fs.writeFile(this.stateFile, JSON.stringify(existingStates, null, 2));
-      } else {
-        const encodedState = btoa(JSON.stringify(state));
-        localStorage.setItem(`${STATE_PREFIX}${key}`, encodedState);
-      }
-
-      console.log('🗄️  state saved:', key);
-    } catch (error) {
-      console.error('Failed to save state:', error);
-      throw error;
-    }
+  async set(key, value) {
+    const db = getDb(process.env.DATABASE_PATH);
+    const stmt = db.prepare(
+      'INSERT INTO prism_state (key, value) VALUES (@key, @value) ON CONFLICT(key) DO UPDATE SET value = excluded.value'
+    );
+    stmt.run({ key, value: JSON.stringify(value) });
   }
 
   /**
-   * Charge l'état d'un module
-   * @param {string} key - Clé unique identifiant le module
-   * @returns {Promise<object|null>}
+   * Récupère une valeur par sa clé.
+   * @param {string} key - La clé à récupérer.
+   * @returns {*} La valeur désérialisée, ou undefined si non trouvée.
    */
-  async loadState(key) {
-    try {
-      let state;
-
-      if (this.isNode) {
-        const states = await this._loadNodeStates();
-        state = states[key];
-      } else {
-        const encodedState = localStorage.getItem(`${STATE_PREFIX}${key}`);
-        if (!encodedState) return null;
-        state = JSON.parse(atob(encodedState));
-      }
-
-      if (!state) return null;
-
-      // Vérifier l'expiration
-      if (Date.now() - state.timestamp > state.ttl) {
-        await this.clearState(key);
-        return null;
-      }
-
-      console.log('🗄️  state restored:', key);
-      return state.data;
-    } catch (error) {
-      console.error('Failed to load state:', error);
-      return null;
-    }
+  async get(key) {
+    const db = getDb(process.env.DATABASE_PATH);
+    const stmt = db.prepare('SELECT value FROM prism_state WHERE key = ?');
+    const row = stmt.get(key);
+    return row ? JSON.parse(row.value) : undefined;
   }
 
   /**
-   * Nettoie les états expirés
-   * @param {number} [ttlMs] - TTL personnalisé en millisecondes
-   * @returns {Promise<void>}
+   * Récupère tous les états sous forme d'objet.
+   * @returns {Object<string, *>} Un objet contenant tous les états.
    */
-  async clearExpired(ttlMs = DEFAULT_TTL) {
-    try {
-      if (this.isNode) {
-        const states = await this._loadNodeStates();
-        const now = Date.now();
-        const validStates = {};
-
-        for (const [key, state] of Object.entries(states)) {
-          if (now - state.timestamp <= ttlMs) {
-            validStates[key] = state;
-          } else {
-            console.log('🗑️  state expired:', key);
-          }
-        }
-
-        await this.fs.writeFile(this.stateFile, JSON.stringify(validStates, null, 2));
-      } else {
-        for (let i = 0; i < localStorage.length; i++) {
-          const key = localStorage.key(i);
-          if (key.startsWith(STATE_PREFIX)) {
-            const state = JSON.parse(atob(localStorage.getItem(key)));
-            if (Date.now() - state.timestamp > ttlMs) {
-              localStorage.removeItem(key);
-              console.log('🗑️  state expired:', key.replace(STATE_PREFIX, ''));
-            }
-          }
-        }
-      }
-    } catch (error) {
-      console.error('Failed to clear expired states:', error);
-      throw error;
-    }
+  async getAll() {
+    const db = getDb(process.env.DATABASE_PATH);
+    const stmt = db.prepare('SELECT key, value FROM prism_state');
+    const rows = stmt.all();
+    return rows.reduce((acc, row) => {
+      acc[row.key] = JSON.parse(row.value);
+      return acc;
+    }, {});
   }
 
   /**
-   * Charge les états depuis le fichier en environnement Node
-   * @private
-   * @returns {Promise<object>}
+   * Supprime une clé de la base de données.
+   * @param {string} key - La clé à supprimer.
    */
-  async _loadNodeStates() {
-    try {
-      const content = await this.fs.readFile(this.stateFile, 'utf8');
-      return JSON.parse(content);
-    } catch (error) {
-      if (error.code === 'ENOENT') {
-        return {};
-      }
-      throw error;
-    }
+  async delete(key) {
+    const db = getDb(process.env.DATABASE_PATH);
+    const stmt = db.prepare('DELETE FROM prism_state WHERE key = ?');
+    stmt.run(key);
   }
 }
 
-export default PrismStateStore; 
+// Exporte une instance unique (singleton)
+export const prismStateStore = new PrismStateStore(); 
