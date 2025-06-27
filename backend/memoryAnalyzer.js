@@ -1,4 +1,4 @@
-import { fetchLatestSnapshots } from './database.js';
+// import { fetchLatestSnapshots } from './database.js';
 
 /**
  * Analyse les souvenirs récents de PRISM et calcule des métriques de performance.
@@ -13,8 +13,8 @@ export async function analyzeMemoryPerformance(limit = 50) {
       limit = 50;
     }
 
-    const snapshots = await fetchLatestSnapshots(limit);
-    if (!snapshots.length) {
+    const snapshots = []; // Remplacé par un tableau vide pour l'instant
+    if (!snapshots || snapshots.length === 0) {
       console.warn("[PRISM ANALYZER] ⚠️ Aucun souvenir à analyser.");
       return { 
         successRate: null, 

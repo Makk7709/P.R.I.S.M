@@ -1,13 +1,13 @@
-const { Registry, Counter, Gauge, Histogram } = require('prom-client');
+import { Registry, Counter, Gauge, Histogram } from 'prom-client';
 
 // Create a registry
-const register = new Registry();
+export const register = new Registry();
 
 // Define default buckets for latency
 const DEFAULT_LATENCY_BUCKETS = [0.05, 0.1, 0.2, 0.3, 0.5, 1, Infinity];
 
 // Create metrics
-const metrics = {
+export const metrics = {
   // Counters
   totalRequests: new Counter({
     name: 'prism_total_requests',
@@ -34,7 +34,7 @@ const metrics = {
 };
 
 // Function to update latency buckets
-function updateLatencyBuckets(newBuckets) {
+export function updateLatencyBuckets(newBuckets) {
   if (!Array.isArray(newBuckets) || newBuckets.length === 0) {
     console.warn('Invalid buckets provided, using default buckets');
     return;
@@ -51,7 +51,7 @@ function updateLatencyBuckets(newBuckets) {
 }
 
 // Function to record latency
-function recordLatency(segment, duration) {
+export function recordLatency(segment, duration) {
   if (!segment) {
     console.warn('⚠️ No segment provided for latency recording');
     return;
@@ -60,21 +60,11 @@ function recordLatency(segment, duration) {
 }
 
 // Function to record request
-function recordRequest(status) {
+export function recordRequest(status) {
   metrics.totalRequests.inc({ status });
 }
 
 // Function to update efficiency
-function updateEfficiency(value) {
+export function updateEfficiency(value) {
   metrics.efficiency.set(value);
-}
-
-// Export metrics
-module.exports = {
-  register,
-  metrics,
-  updateLatencyBuckets,
-  recordLatency,
-  recordRequest,
-  updateEfficiency,
-}; 
+} 

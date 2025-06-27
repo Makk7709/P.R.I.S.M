@@ -1,9 +1,11 @@
-import { AdaptiveCyclerWidget } from '../ui/AdaptiveCyclerWidget';
+import { AdaptiveCyclerWidget } from '../ui/AdaptiveCyclerWidget.js';
+import { config } from '../config.js';
 
 describe('AdaptiveCyclerWidget', () => {
   let widget;
   let mockPurgeScheduler;
   let mockCompression;
+  let parentElement;
 
   beforeEach(() => {
     // Clear all mocks
@@ -12,7 +14,14 @@ describe('AdaptiveCyclerWidget', () => {
     // Create fresh instances
     mockPurgeScheduler = new PrismPurgeScheduler();
     mockCompression = new PrismCompression();
-    widget = new AdaptiveCyclerWidget();
+    parentElement = document.createElement('div');
+    document.body.appendChild(parentElement);
+    widget = new AdaptiveCyclerWidget(parentElement, config.CONFIG.UI);
+  });
+
+  afterEach(() => {
+    // Clear all mocks
+    jest.clearAllMocks();
   });
 
   describe('initialization', () => {

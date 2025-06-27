@@ -1,9 +1,10 @@
 /**
- * @fileoverview Tests pour le module PrismCodexAnalyzer
+ * @fileoverview Tests unitaires pour le module prismCodexAnalyzer
  */
 
-import { PrismCodexAnalyzer } from '../prismCodexAnalyzer.js';
+import { PrismCodexAnalyzer } from '../../../memory/prismCodexAnalyzer.js';
 import kernelBus from '../core/KernelBus.js';
+import { jest } from '@jest/globals';
 
 describe('PrismCodexAnalyzer', () => {
   let analyzer;

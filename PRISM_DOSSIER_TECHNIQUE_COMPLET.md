@@ -1,5 +1,6 @@
 # 🎯 PRISM v2.3 — DOSSIER TECHNIQUE COMPLET
-**Premium Reasoning & Integrated Superintelligence Matrix**
+
+**Note de Mise à Jour (Q2 2024) :** Des améliorations majeures ont été apportées à la couche de persistance (migration vers SQLite) et à la suite de tests (migration vers Vitest). Pour une analyse technique détaillée, veuillez consulter le document `MIGRATION_TECHNIQUE_2024_Q2.md`.
 
 ---
 

@@ -1,4 +1,4 @@
-const { metrics } = require('./prismMetrics');
+import { metrics } from './prismMetrics.js';
 
 // Alert configuration
 const ALERT_THRESHOLD = 50; // 50% efficiency threshold
@@ -10,8 +10,8 @@ let lastAlertTime = 0;
 let alertInProgress = false;
 
 // Function to check efficiency and trigger alerts
-async function checkEfficiencyAlert() {
-  const currentEfficiency = metrics.efficiency.get();
+export async function checkEfficiencyAlert() {
+  const currentEfficiency = metrics.efficiency.get().values[0].value;
   const now = Date.now();
 
   // Check if we're below threshold
@@ -28,7 +28,7 @@ async function checkEfficiencyAlert() {
 }
 
 // Function to send alert
-async function sendAlert(efficiencyValue) {
+export async function sendAlert(efficiencyValue) {
   if (!ALERT_URL) {
     console.warn('PRISM_ALERT_URL not configured, skipping alert');
     return;
@@ -56,9 +56,9 @@ async function sendAlert(efficiencyValue) {
 }
 
 // Start monitoring
-setInterval(checkEfficiencyAlert, 60000); // Check every minute
+// setInterval(checkEfficiencyAlert, 60000); // Check every minute
 
-module.exports = {
+export {
   checkEfficiencyAlert,
   sendAlert,
 }; 

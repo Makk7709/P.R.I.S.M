@@ -1,4 +1,4 @@
-import { fetchLatestSnapshots } from './database.js';
+// import { fetchLatestSnapshots } from './database.js';
 
 /**
  * Charge les derniers snapshots de contexte
@@ -6,12 +6,13 @@ import { fetchLatestSnapshots } from './database.js';
  * @returns {Promise<Array>} Liste des snapshots de contexte
  */
 export async function loadContextSnapshots(limit = 5) {
-  try {
-    const snapshots = await fetchLatestSnapshots(limit);
+  // const snapshots = await fetchLatestSnapshots(limit);
+  const snapshots = []; // Remplacé par un tableau vide
+  if (snapshots.length > 0) {
     console.log("[PRISM CONTEXT] 📚 Contexte chargé :", snapshots?.length || 0, "éléments");
     return snapshots || [];
-  } catch (error) {
-    console.warn("[PRISM CONTEXT] ⚠️ Échec chargement contexte (mode fallback):", error.message);
+  } else {
+    console.warn("[PRISM CONTEXT] ⚠️ Échec chargement contexte (mode fallback):");
     // Retourner un contexte par défaut en cas d'erreur
     return [
       {

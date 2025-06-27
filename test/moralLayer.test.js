@@ -1,6 +1,11 @@
-const { MoralLayer } = require('../infrastructure/moralLayer');
-const fs = require('fs');
-const path = require('path');
+import { MoralLayer } from '../infrastructure/moralLayer.js';
+import { jest } from '@jest/globals';
+import fs from 'fs';
+import path from 'path';
+import { fileURLToPath } from 'url';
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
 describe('MoralLayer', () => {
   let moralLayer;

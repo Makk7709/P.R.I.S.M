@@ -1,0 +1,542 @@
+{
+  "openapi": "3.0.3",
+  "info": {
+    "title": "PRISM Enterprise Export API",
+    "description": "API Enterprise pour l'export de rapports PRISM avec validation automatique du contenu enterprise et génération PDF/DOCX haute qualité",
+    "version": "1.0.0",
+    "contact": {
+      "name": "PRISM Team",
+      "email": "enterprise@prism.ai"
+    },
+    "license": {
+      "name": "Enterprise License",
+      "url": "https://prism.ai/enterprise-license"
+    }
+  },
+  "servers": [
+    {
+      "url": "https://api.prism.ai/v1",
+      "description": "Production Enterprise Server"
+    },
+    {
+      "url": "https://staging-api.prism.ai/v1", 
+      "description": "Staging Server"
+    }
+  ],
+  "security": [
+    {
+      "BearerAuth": []
+    },
+    {
+      "ApiKeyAuth": []
+    }
+  ],
+  "paths": {
+    "/api/export/enterprise-report": {
+      "post": {
+        "summary": "Export Enterprise Report",
+        "description": "Génère un export PDF ou DOCX à partir de contenu enterprise validé automatiquement par PRISM",
+        "operationId": "exportEnterpriseReport",
+        "tags": ["Enterprise Export"],
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ],
+        "x-enterprise-validation": true,
+        "x-rate-limit": {
+          "requests": 100,
+          "window": "1h",
+          "burst": 10
+        },
+        "x-concurrency-limit": 5,
+        "requestBody": {
+          "description": "Données du rapport enterprise à exporter",
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/EnterpriseExportRequest"
+              },
+              "examples": {
+                "executive_report": {
+                  "summary": "Executive Report Example",
+                  "value": {
+                    "content": "Analyse stratégique Q4 2024: Les indicateurs financiers montrent une croissance de 15% du chiffre d'affaires avec une optimisation des coûts opérationnels de 8%. Recommandations: expansion géographique en EMEA et investissement R&D.",
+                    "format": "pdf",
+                    "template": "executive",
+                    "metadata": {
+                      "author": "Direction Générale",
+                      "department": "Strategy",
+                      "classification": "CONFIDENTIEL"
+                    },
+                    "options": {
+                      "includeCharts": true,
+                      "watermark": "CONFIDENTIEL",
+                      "language": "fr"
+                    }
+                  }
+                },
+                "analytical_report": {
+                  "summary": "Analytical Report Example", 
+                  "value": {
+                    "content": "Analyse détaillée des métriques de performance: Conversion rate 12.4% (+2.1%), Customer acquisition cost 45€ (-12%), Lifetime value 890€ (+18%). Corrélations significatives identifiées entre engagement social et rétention client.",
+                    "format": "pdf",
+                    "template": "analytical",
+                    "options": {
+                      "includeCharts": true,
+                      "language": "en"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Export généré avec succès",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/EnterpriseExportResponse"
+                },
+                "examples": {
+                  "success": {
+                    "summary": "Successful Export",
+                    "value": {
+                      "success": true,
+                      "exportId": "550e8400-e29b-41d4-a716-446655440000",
+                      "downloadUrl": "https://api.prism.ai/v1/downloads/550e8400-e29b-41d4-a716-446655440000",
+                      "expiresAt": "2024-12-31T23:59:59Z",
+                      "metadata": {
+                        "fileSize": 2847392,
+                        "pageCount": 12,
+                        "template": "executive",
+                        "format": "pdf",
+                        "generatedAt": "2024-12-30T10:30:00Z"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Erreur de validation des données d'entrée",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                },
+                "examples": {
+                  "validation_error": {
+                    "summary": "Schema validation failed",
+                    "value": {
+                      "success": false,
+                      "error": "Content validation failed: minimum length not met",
+                      "code": "VALIDATION_ERROR",
+                      "details": {
+                        "field": "content",
+                        "constraint": "minLength",
+                        "received": 10,
+                        "expected": 50
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Authentication required - Token manquant ou invalide",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                },
+                "examples": {
+                  "auth_required": {
+                    "summary": "Authentication required",
+                    "value": {
+                      "success": false,
+                      "error": "Authentication token required",
+                      "code": "AUTH_REQUIRED"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Access denied - Contenu non enterprise ou permissions insuffisantes",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                },
+                "examples": {
+                  "not_enterprise": {
+                    "summary": "Content not enterprise-grade",
+                    "value": {
+                      "success": false,
+                      "error": "Content does not meet enterprise criteria (score: 65/100)",
+                      "code": "NOT_ENTERPRISE_CONTENT",
+                      "details": {
+                        "contentScore": 65,
+                        "requiredScore": 80,
+                        "classification": "casual_response"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "413": {
+            "description": "Content too large - Taille de contenu dépassée",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                },
+                "examples": {
+                  "too_large": {
+                    "summary": "Content too large",
+                    "value": {
+                      "success": false,
+                      "error": "Content size exceeds maximum limit",
+                      "code": "CONTENT_TOO_LARGE",
+                      "details": {
+                        "currentSize": 1500000,
+                        "maxSize": 1000000,
+                        "unit": "bytes"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "Rate limit exceeded - Limite de requêtes dépassée",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                },
+                "examples": {
+                  "rate_limit": {
+                    "summary": "Rate limit exceeded",
+                    "value": {
+                      "success": false,
+                      "error": "Rate limit exceeded: 100 requests per hour",
+                      "code": "RATE_LIMIT_EXCEEDED",
+                      "details": {
+                        "resetAt": "2024-12-30T11:00:00Z",
+                        "remaining": 0,
+                        "limit": 100
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal generation error - Erreur interne de génération",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                },
+                "examples": {
+                  "internal_error": {
+                    "summary": "Internal server error",
+                    "value": {
+                      "success": false,
+                      "error": "PDF generation service temporarily unavailable",
+                      "code": "INTERNAL_ERROR",
+                      "details": {
+                        "serviceId": "pdf-generator",
+                        "errorId": "ERR-2024-1230-001"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "503": {
+            "description": "Service temporarily unavailable - Service temporairement indisponible",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                },
+                "examples": {
+                  "service_unavailable": {
+                    "summary": "Service temporarily unavailable",
+                    "value": {
+                      "success": false,
+                      "error": "Export service temporarily unavailable due to maintenance",
+                      "code": "SERVICE_UNAVAILABLE",
+                      "details": {
+                        "retryAfter": 1800,
+                        "maintenanceWindow": "2024-12-30T10:00:00Z to 2024-12-30T12:00:00Z"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "securitySchemes": {
+      "BearerAuth": {
+        "type": "http",
+        "scheme": "bearer",
+        "bearerFormat": "JWT",
+        "description": "JWT token pour authentification enterprise"
+      },
+      "ApiKeyAuth": {
+        "type": "apiKey",
+        "in": "header",
+        "name": "X-API-Key",
+        "description": "Clé API enterprise"
+      }
+    },
+    "schemas": {
+      "EnterpriseExportRequest": {
+        "type": "object",
+        "required": ["content"],
+        "x-content-types": [
+          "executive_report",
+          "analytical_response",
+          "structured_response"
+        ],
+        "properties": {
+          "content": {
+            "type": "string",
+            "description": "Contenu du rapport à exporter (validé automatiquement pour niveau enterprise)",
+            "minLength": 50,
+            "maxLength": 1000000,
+            "example": "Analyse stratégique Q4: Performance exceptionnelle avec croissance 15% CA et optimisation 8% coûts. Recommandations: expansion EMEA, investissement R&D."
+          },
+          "format": {
+            "type": "string",
+            "enum": ["pdf", "docx"],
+            "default": "pdf",
+            "description": "Format de sortie du document"
+          },
+          "template": {
+            "type": "string",
+            "enum": ["executive", "analytical", "structured"],
+            "description": "Template enterprise à utiliser",
+            "example": "executive"
+          },
+          "metadata": {
+            "type": "object",
+            "description": "Métadonnées du document",
+            "properties": {
+              "author": {
+                "type": "string",
+                "description": "Auteur du rapport",
+                "maxLength": 100
+              },
+              "department": {
+                "type": "string", 
+                "description": "Département d'origine",
+                "maxLength": 100
+              },
+              "classification": {
+                "type": "string",
+                "enum": ["PUBLIC", "INTERNE", "CONFIDENTIEL", "SECRET"],
+                "description": "Niveau de classification du document"
+              }
+            }
+          },
+          "options": {
+            "type": "object",
+            "description": "Options de génération",
+            "properties": {
+              "includeCharts": {
+                "type": "boolean",
+                "default": false,
+                "description": "Inclure les graphiques dans l'export"
+              },
+              "watermark": {
+                "type": "string",
+                "maxLength": 50,
+                "description": "Filigrane à appliquer",
+                "example": "CONFIDENTIEL"
+              },
+              "language": {
+                "type": "string",
+                "enum": ["fr", "en"],
+                "default": "fr",
+                "description": "Langue du document généré"
+              },
+              "highResolution": {
+                "type": "boolean",
+                "default": false,
+                "description": "Génération haute résolution (impact performance)"
+              },
+              "includeMetadata": {
+                "type": "boolean",
+                "default": true,
+                "description": "Inclure les métadonnées dans le document"
+              }
+            }
+          }
+        }
+      },
+      "EnterpriseExportResponse": {
+        "type": "object",
+        "required": ["success", "exportId", "downloadUrl", "expiresAt"],
+        "x-retention-policy": {
+          "defaultRetention": "7d",
+          "maxRetention": "30d",
+          "autoCleanup": true
+        },
+        "properties": {
+          "success": {
+            "type": "boolean",
+            "enum": [true],
+            "description": "Statut de succès de l'opération"
+          },
+          "exportId": {
+            "type": "string",
+            "format": "uuid",
+            "description": "Identifiant unique de l'export",
+            "example": "550e8400-e29b-41d4-a716-446655440000"
+          },
+          "downloadUrl": {
+            "type": "string",
+            "format": "uri",
+            "description": "URL de téléchargement sécurisée (temporaire)",
+            "example": "https://api.prism.ai/v1/downloads/550e8400-e29b-41d4-a716-446655440000"
+          },
+          "expiresAt": {
+            "type": "string",
+            "format": "date-time",
+            "description": "Date d'expiration du lien de téléchargement",
+            "example": "2024-12-31T23:59:59Z"
+          },
+          "metadata": {
+            "type": "object",
+            "required": ["fileSize", "pageCount", "template"],
+            "description": "Métadonnées du fichier généré",
+            "properties": {
+              "fileSize": {
+                "type": "integer",
+                "minimum": 1,
+                "description": "Taille du fichier en bytes",
+                "example": 2847392
+              },
+              "pageCount": {
+                "type": "integer",
+                "minimum": 1,
+                "description": "Nombre de pages du document",
+                "example": 12
+              },
+              "template": {
+                "type": "string",
+                "description": "Template utilisé pour la génération",
+                "example": "executive"
+              },
+              "format": {
+                "type": "string",
+                "description": "Format du fichier généré",
+                "example": "pdf"
+              },
+              "generatedAt": {
+                "type": "string",
+                "format": "date-time",
+                "description": "Timestamp de génération",
+                "example": "2024-12-30T10:30:00Z"
+              },
+              "processingTime": {
+                "type": "number",
+                "description": "Temps de traitement en secondes",
+                "example": 4.2
+              }
+            }
+          }
+        }
+      },
+      "ErrorResponse": {
+        "type": "object",
+        "required": ["success", "error", "code"],
+        "properties": {
+          "success": {
+            "type": "boolean",
+            "enum": [false],
+            "description": "Statut d'échec de l'opération"
+          },
+          "error": {
+            "type": "string",
+            "description": "Description de l'erreur",
+            "example": "Content validation failed"
+          },
+          "code": {
+            "type": "string",
+            "description": "Code d'erreur machine-readable",
+            "enum": [
+              "VALIDATION_ERROR",
+              "AUTH_REQUIRED", 
+              "INVALID_TOKEN",
+              "NOT_ENTERPRISE_CONTENT",
+              "ACCESS_DENIED",
+              "CONTENT_TOO_LARGE",
+              "RATE_LIMIT_EXCEEDED",
+              "INTERNAL_ERROR",
+              "SERVICE_UNAVAILABLE",
+              "TEMPLATE_ERROR",
+              "GENERATION_FAILED"
+            ],
+            "example": "VALIDATION_ERROR"
+          },
+          "details": {
+            "type": "object",
+            "description": "Détails additionnels spécifiques à l'erreur",
+            "additionalProperties": true
+          },
+          "timestamp": {
+            "type": "string",
+            "format": "date-time",
+            "description": "Timestamp de l'erreur",
+            "example": "2024-12-30T10:30:00Z"
+          },
+          "requestId": {
+            "type": "string",
+            "format": "uuid",
+            "description": "Identifiant de la requête pour traçabilité",
+            "example": "req-550e8400-e29b-41d4-a716-446655440000"
+          }
+        }
+      }
+    }
+  },
+  "x-enterprise-features": {
+    "contentValidation": {
+      "enabled": true,
+      "minimumScore": 80,
+      "supportedTypes": ["executive_report", "analytical_response", "structured_response"]
+    },
+    "security": {
+      "encryption": "AES-256",
+      "dataRetention": "30d",
+      "auditLogging": true
+    },
+    "performance": {
+      "maxConcurrentRequests": 5,
+      "maxProcessingTime": "30s",
+      "cacheEnabled": true
+    }
+  }
+} 

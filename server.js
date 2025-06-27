@@ -1,16 +1,14 @@
+// Sécurité : charger les variables d'environnement AVANT tout autre import
+import 'dotenv/config';
+
+// Ensuite seulement, charger la config et les autres modules
+import * as config from './config.js';
 import express from 'express';
 import path from 'path';
 import { fileURLToPath } from 'url';
-import dotenv from 'dotenv';
 import fetch from 'node-fetch';
-import { config } from './config.js';
 import { VoicePersonalityEnhancer } from './backend/voicePersonalityEnhancer.js';
 import { handleUserInstruction } from './backend/orchestrator.js';
-// Import de la nouvelle route Enterprise Export
-import { enterpriseExportRouter } from './backend/routes/enterpriseExport.js';
-
-// Charger les variables d'environnement
-dotenv.config();
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -22,11 +20,26 @@ app.use(express.json());
 app.use(express.static(__dirname));
 app.use('/ui', express.static(path.join(__dirname, 'ui')));
 
-// Ajout de la route Enterprise Export
-app.use('/api/export', enterpriseExportRouter);
+// Chargement dynamique pour éviter erreur si le module CommonJS/ESM mixte ne fournit pas l'export attendu
+let enterpriseExportRouter = null;
+try {
+  const routeModule = await import('./backend/routes/enterpriseExport.js');
+  enterpriseExportRouter = routeModule.enterpriseExportRouter ?? routeModule.default ?? null;
+} catch (err) {
+  console.warn('[INIT] Enterprise export route disabled:', err.message);
+}
 
 // Initialiser l'enhancer vocal
 const voiceEnhancer = new VoicePersonalityEnhancer();
+
+// DEBUG PIPELINE LOGGING (temporaire)
+const DEBUG_LOG_PIPELINE = true;
+function pipelineLog(...args) {
+  if (DEBUG_LOG_PIPELINE) {
+    const ts = Date.now();
+    console.log(`[PIPELINE][${ts}]`, ...args);
+  }
+}
 
 // API Route pour le chat PRISM avec ElevenLabs
 app.post('/api/chat', async (req, res) => {
@@ -42,11 +55,14 @@ app.post('/api/chat', async (req, res) => {
       });
     }
 
-    console.log('[PRISM API] 🎯 Nouvelle requête chat reçue');
-    console.log(`[PRISM API] 📝 Message: "${message.substring(0, 50)}..."`);
-    console.log(`[PRISM API] 🎯 Type de tâche: ${taskType}`);
+    const pipelineSessionId = Math.random().toString(36).slice(2) + '-' + Date.now();
+    pipelineLog('RECEIVE_REQUEST', { pipelineSessionId, message, taskType, voiceConfig });
+
+    console.log('[PRISM API] Nouvelle requête chat reçue');
+    console.log(`[PRISM API] Message: "${message.substring(0, 50)}..."`);
+    console.log(`[PRISM API] Type de tâche: ${taskType}`);
     if (voiceConfig) {
-      console.log(`[PRISM API] 🎤 Voix demandée: ${voiceConfig.name} (${voiceConfig.provider})`);
+      console.log(`[PRISM API] Voix demandée: ${voiceConfig.name} (${voiceConfig.provider})`);
     }
 
     // Appeler l'orchestrateur PRISM
@@ -72,23 +88,23 @@ app.post('/api/chat', async (req, res) => {
     const responseTime = Date.now() - startTime;
     
     // Génération de réponse vocale enrichie (compatible ElevenLabs)
-    console.log('[PRISM] ✅ Réponse orchestrée:', responseContent?.substring(0, 100) + '...');
+    console.log('[PRISM] Réponse orchestrée:', responseContent?.substring(0, 100) + '...');
     
     // ✨ GÉNÉRATION AUDIO ELEVENLABS OPTIMISÉE
     let audioUrl = null;
     let audioError = null;
     
-    if (config.CONFIG.ELEVENLABS.API_KEY && 
-        config.CONFIG.ELEVENLABS.API_KEY !== 'ta_clef_api_ici') {
+    if (config.config.CONFIG.ELEVENLABS.API_KEY && 
+        config.config.CONFIG.ELEVENLABS.API_KEY !== 'ta_clef_api_ici') {
       try {
         audioUrl = await generateElevenLabsAudio(
           enhancedResponse.enhancedText || responseContent,
           enhancedResponse.voiceConfig,
           voiceConfig // Passer la voix sélectionnée
         );
-        console.log('[PRISM API] 🎤 Audio ElevenLabs généré avec succès');
+        console.log('[PRISM API] Audio ElevenLabs généré avec succès');
       } catch (audioErrorCatch) {
-        console.warn('[PRISM API] ⚠️ ElevenLabs indisponible:', audioErrorCatch.message);
+        console.warn('[PRISM API] ElevenLabs indisponible:', audioErrorCatch.message);
         audioError = audioErrorCatch.message;
         // On continue sans audio - l'interface utilisera le TTS du navigateur
       }
@@ -114,12 +130,20 @@ app.post('/api/chat', async (req, res) => {
       }
     };
 
-    console.log(`[PRISM API] ✅ Réponse générée en ${responseTime}ms`);
+    console.log(`[PRISM API] Réponse générée en ${responseTime}ms`);
+    pipelineLog('ORCHESTRATOR_RESPONSE', { pipelineSessionId, model: orchestratorResponse.metadata?.model });
+    
+    // ✨ GÉNÉRATION AUDIO ELEVENLABS OPTIMISÉE
+    pipelineLog('AUDIO_GENERATION', { pipelineSessionId, voiceConfig });
+    pipelineLog('AUDIO_RESULT', { pipelineSessionId, audioUrl, audioError });
+    
+    pipelineLog('SEND_RESPONSE', { pipelineSessionId, responseTime });
     res.json(result);
 
   } catch (error) {
     const responseTime = Date.now() - startTime;
-    console.error('[PRISM API] ❌ Erreur:', error.message);
+    console.error('[PRISM API] Erreur:', error.message);
+    pipelineLog('ERROR', { pipelineSessionId, error: error.message });
     
     res.status(500).json({
       success: false,
@@ -133,7 +157,7 @@ app.post('/api/chat', async (req, res) => {
 // Fonction optimisée pour générer l'audio avec ElevenLabs (approche simplifiée)
 async function generateElevenLabsAudio(text, voiceConfig, selectedVoiceConfig) {
   const startTime = Date.now();
-  const elevenlabs = config.CONFIG.ELEVENLABS;
+  const elevenlabs = config.config.CONFIG.ELEVENLABS;
   
   // ✅ NOUVEAU: Système de limite adaptative selon la voix - LIMITES MAXIMALES ELEVENLABS
   const getMaxLengthForVoice = (voiceId) => {
@@ -336,8 +360,8 @@ app.get('/api/test-voice', async (req, res) => {
   try {
     console.log(`[Voice Test] Testing voice: ${voiceName} (${voiceId})`);
     
-    if (!config.CONFIG.ELEVENLABS.API_KEY || 
-        config.CONFIG.ELEVENLABS.API_KEY === 'ta_clef_api_ici') {
+    if (!config.config.CONFIG.ELEVENLABS.API_KEY || 
+        config.config.CONFIG.ELEVENLABS.API_KEY === 'ta_clef_api_ici') {
       return res.json({
         success: false,
         error: 'ElevenLabs API key not configured',
@@ -376,8 +400,8 @@ app.get('/api/test-voice', async (req, res) => {
 // Route pour lister les voix ElevenLabs disponibles
 app.get('/api/voices', async (req, res) => {
   try {
-    if (!config.CONFIG.ELEVENLABS.API_KEY || 
-        config.CONFIG.ELEVENLABS.API_KEY === 'ta_clef_api_ici') {
+    if (!config.config.CONFIG.ELEVENLABS.API_KEY || 
+        config.config.CONFIG.ELEVENLABS.API_KEY === 'ta_clef_api_ici') {
       return res.json({
         success: false,
         error: 'ElevenLabs non configuré',
@@ -387,7 +411,7 @@ app.get('/api/voices', async (req, res) => {
 
     const response = await fetch('https://api.elevenlabs.io/v1/voices', {
       headers: {
-        'xi-api-key': config.CONFIG.ELEVENLABS.API_KEY
+        'xi-api-key': config.config.CONFIG.ELEVENLABS.API_KEY
       }
     });
 
@@ -423,7 +447,7 @@ app.get('/api/voices', async (req, res) => {
     res.json({
       success: true,
       voices: formattedVoices,
-      currentVoiceId: config.CONFIG.ELEVENLABS.VOICE_ID,
+      currentVoiceId: config.config.CONFIG.ELEVENLABS.VOICE_ID,
       totalAvailable: formattedVoices.length
     });
 
@@ -450,7 +474,7 @@ app.post('/api/set-voice', async (req, res) => {
     }
 
     // Mettre à jour la configuration temporairement (pour cette session)
-    config.CONFIG.ELEVENLABS.VOICE_ID = voiceId;
+    config.config.CONFIG.ELEVENLABS.VOICE_ID = voiceId;
     
     res.json({
       success: true,
@@ -516,7 +540,7 @@ app.listen(PORT, () => {
   console.log('🎯 PRISM Voice Chat V2 - Prêt !');
   
   // Vérifier la configuration ElevenLabs
-  const elevenlabs = config.CONFIG.ELEVENLABS;
+  const elevenlabs = config.config.CONFIG.ELEVENLABS;
   if (elevenlabs.API_KEY && elevenlabs.API_KEY !== 'ta_clef_api_ici') {
     console.log('✅ ElevenLabs configuré - Synthèse vocale premium active');
   } else {

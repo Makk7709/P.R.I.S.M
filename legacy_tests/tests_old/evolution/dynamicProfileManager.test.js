@@ -1,4 +1,4 @@
-const { DynamicProfileManager, TaskCategory, UserType } = require('../../evolution/dynamicProfileManager');
+import { DynamicProfileManager, TaskCategory, UserType } from '../../evolution/dynamicProfileManager.js';
 
 describe('DynamicProfileManager', () => {
   let profileManager;

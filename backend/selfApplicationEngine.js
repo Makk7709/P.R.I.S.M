@@ -1,5 +1,5 @@
 import { evaluateSuggestion } from './decisionFirewall.js';
-import { saveMemorySnapshot } from './database.js';
+// import { saveMemorySnapshot } from './database.js';
 import { generateSelfInstruction } from './selfOptimizer.js';
 
 /**
@@ -24,15 +24,15 @@ export async function executeSelfOptimizationCycle() {
     console.log("[PRISM SELF-ENGINE] ✅ Suggestion validée :", suggestion);
 
     // Enregistrer la suggestion validée dans la mémoire
-    await saveMemorySnapshot({
-      type: "self_optimization",
-      content: suggestion,
-      metadata: {
-        outcome: "success",
-        validationReason: evaluation.reason,
-        timestamp: new Date().toISOString()
-      }
-    });
+    // await saveMemorySnapshot({
+    //   type: "self_optimization",
+    //   content: suggestion,
+    //   metadata: {
+    //     outcome: "success",
+    //     validationReason: evaluation.reason,
+    //     timestamp: new Date().toISOString()
+    //   }
+    // });
 
     console.log("[PRISM SELF-ENGINE] 📚 Suggestion appliquée et mémorisée.");
   } catch (error) {

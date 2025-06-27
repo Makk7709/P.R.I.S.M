@@ -10,7 +10,10 @@ export function configureOpenAI(instance = null) {
   if (instance) {
     openaiInstance = instance;
   } else if (process.env.OPENAI_API_KEY) {
-    openaiInstance = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
+    openaiInstance = new OpenAI({ 
+      apiKey: process.env.OPENAI_API_KEY,
+      dangerouslyAllowBrowser: true
+    });
   } else {
     console.warn("[PRISM FIREWALL] ⚠️ OPENAI_API_KEY non configurée");
     openaiInstance = null;

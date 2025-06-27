@@ -1,6 +1,6 @@
 import { config } from './config.js';
 import { handleUserInstruction } from './backend/orchestrator.js';
-import { saveMemorySnapshot } from './backend/database.js';
+// import { saveMemorySnapshot } from './backend/database.js';
 
 // Check if we're in a browser environment
 const isBrowser = typeof window !== 'undefined';
@@ -384,84 +384,61 @@ export class AudioManager {
   }
 
   async handleMarketingCampaign({ product, targetAudience }) {
-    try {
-      const result = await handleUserInstruction({
-        type: 'marketing_campaign',
-        product,
-        targetAudience
-      });
-
-      // Save memory snapshot
-      try {
-        await saveMemorySnapshot({
-          type: 'marketing_campaign',
-          content: `Campagne marketing créée pour ${product} ciblant ${targetAudience}`,
-          metadata: { product, targetAudience, result }
-        });
-        console.log("[PRISM MEMORY] ✅ Campagne marketing mémorisée");
-      } catch (memoryError) {
-        console.error("[PRISM MEMORY] ❌ Échec de mémorisation de la campagne:", memoryError.message);
-      }
-
-      return result;
-    } catch (error) {
-      console.error("[PRISM] Erreur lors de la création de la campagne:", error);
-      throw error;
-    }
+    console.log(`[PRISM] Lancement campagne marketing pour ${product}...`);
+    // Simuler une interaction avec le backend pour l'analyse
+    const response = await handleUserInstruction(`Génère une campagne marketing pour ${product} ciblant ${targetAudience}.`);
+    
+    // Sauvegarder l'interaction dans la mémoire
+    // await saveMemorySnapshot({
+    //   type: "marketing_campaign",
+    //   content: `Campagne pour ${product}`,
+    //   metadata: {
+    //     product,
+    //     targetAudience,
+    //     response,
+    //     timestamp: new Date().toISOString()
+    //   }
+    // });
+    
+    return response;
   }
 
   async handleFinancialAnalysis({ revenue, expenses }) {
-    try {
-      const result = await handleUserInstruction({
-        type: 'financial_analysis',
-        revenue,
-        expenses
-      });
-
-      // Save memory snapshot
-      try {
-        await saveMemorySnapshot({
-          type: 'financial_analysis',
-          content: `Analyse financière effectuée avec revenus: ${revenue}, dépenses: ${expenses}`,
-          metadata: { revenue, expenses, result }
-        });
-        console.log("[PRISM MEMORY] ✅ Analyse financière mémorisée");
-      } catch (memoryError) {
-        console.error("[PRISM MEMORY] ❌ Échec de mémorisation de l'analyse:", memoryError.message);
-      }
-
-      return result;
-    } catch (error) {
-      console.error("[PRISM] Erreur lors de l'analyse financière:", error);
-      throw error;
-    }
+    console.log('[PRISM] Analyse financière en cours...');
+    const response = await handleUserInstruction(`Analyse financière: revenus de ${revenue}, dépenses de ${expenses}.`);
+    
+    // Sauvegarder l'interaction
+    // await saveMemorySnapshot({
+    //   type: "financial_analysis",
+    //   content: `Analyse: ${revenue} vs ${expenses}`,
+    //   metadata: {
+    //     revenue,
+    //     expenses,
+    //     response,
+    //     timestamp: new Date().toISOString()
+    //   }
+    // });
+    
+    return response;
   }
 
   async handleEmailComposition({ clientName, product }) {
-    try {
-      const result = await handleUserInstruction({
-        type: 'email_composition',
-        clientName,
-        product
-      });
-
-      // Save memory snapshot
-      try {
-        await saveMemorySnapshot({
-          type: 'email_composition',
-          content: `Email composé pour ${clientName} concernant ${product}`,
-          metadata: { clientName, product, result }
-        });
-        console.log("[PRISM MEMORY] ✅ Composition d'email mémorisée");
-      } catch (memoryError) {
-        console.error("[PRISM MEMORY] ❌ Échec de mémorisation de l'email:", memoryError.message);
-      }
-
-      return result;
-    } catch (error) {
-      console.error("[PRISM] Erreur lors de la composition de l'email:", error);
-      throw error;
-    }
+    console.log(`[PRISM] Rédaction d'email pour ${clientName}...`);
+    const response = await handleUserInstruction(`Rédige un email pour ${clientName} concernant ${product}.`);
+    
+    // Sauvegarder l'interaction
+    // await saveMemorySnapshot({
+    //   type: "email_composition",
+    //   content: `Email pour ${clientName}`,
+    //   metadata: {
+    //     clientName,
+    //     product,
+    //     response,
+    //     timestamp: new Date().toISOString()
+    //   }
+    // });
+    
+    return response;
   }
 }
 

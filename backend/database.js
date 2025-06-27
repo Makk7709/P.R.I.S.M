@@ -1,91 +1,46 @@
-import { createClient } from '@supabase/supabase-js';
-import dotenv from 'dotenv';
-dotenv.config({ path: '.env.local' });
+import Database from 'better-sqlite3';
+import fs from 'fs';
+import path from 'path';
 
-// Validate environment variables
-if (!process.env.SUPABASE_URL || !process.env.SUPABASE_API_KEY) {
-  console.error('[PRISM MEMORY] ❌ Configuration manquante : SUPABASE_URL et SUPABASE_API_KEY sont requis');
-  process.exit(1);
-}
-
-const supabaseUrl = process.env.SUPABASE_URL;
-const supabaseKey = process.env.SUPABASE_API_KEY;
-const supabase = createClient(supabaseUrl, supabaseKey);
+let db;
 
 /**
- * Valide les paramètres de mémoire
- * @param {Object} params - Paramètres à valider
- * @throws {Error} Si les paramètres sont invalides
+ * Obtient une instance singleton de la base de données.
+ * Crée la base et la table si elles n'existent pas.
+ * @param {string} [dbPath] - Chemin optionnel vers le fichier dba. Par défaut, utilise 'data/prism.db'.
+ * @returns {Database.Database} L'instance de better-sqlite3.
  */
-function validateMemoryParams({ type, content, metadata }) {
-  if (typeof type !== 'string' || !type) {
-    throw new Error('Le type de mémoire doit être une chaîne non vide');
+export function getDb(dbPath) {
+  if (db && db.open) {
+    return db;
   }
-  if (typeof content !== 'string' || !content) {
-    throw new Error('Le contenu de la mémoire doit être une chaîne non vide');
+
+  const resolvedPath = dbPath || path.join(process.cwd(), 'data', 'prism.db');
+  const dbDir = path.dirname(resolvedPath);
+
+  if (!fs.existsSync(dbDir)) {
+    fs.mkdirSync(dbDir, { recursive: true });
   }
-  if (metadata && typeof metadata !== 'object') {
-    throw new Error('Les métadonnées doivent être un objet');
-  }
-}
 
-/**
- * Sauvegarde un snapshot de mémoire dans la base de données
- * @param {Object} params - Paramètres de sauvegarde
- * @param {string} params.type - Type de mémoire (ex: 'interaction', 'state', 'strategy')
- * @param {string} params.content - Contenu de la mémoire
- * @param {Object} params.metadata - Métadonnées supplémentaires
- * @returns {Promise<Object>} Données sauvegardées
- * @throws {Error} En cas d'erreur de validation ou de sauvegarde
- */
-export async function saveMemorySnapshot({ type, content, metadata }) {
-  try {
-    validateMemoryParams({ type, content, metadata });
+  db = new Database(resolvedPath, { verbose: null /* console.log */ });
 
-    const { data, error } = await supabase
-      .from('prism_memories')
-      .insert([{ type, content, metadata }]);
+  const createTableStmt = db.prepare(`
+    CREATE TABLE IF NOT EXISTS prism_state (
+      key TEXT PRIMARY KEY NOT NULL,
+      value TEXT
+    )
+  `);
+  createTableStmt.run();
 
-    if (error) {
-      console.error("[PRISM MEMORY] ❌ Échec de sauvegarde :", error.message);
-      throw error;
-    }
-
-    console.log("[PRISM MEMORY] ✅ Sauvegarde réussie :", data);
-    return data;
-  } catch (error) {
-    console.error("[PRISM MEMORY] ⚠️ Erreur :", error.message);
-    throw error; // Propager l'erreur pour gestion par l'appelant
-  }
+  return db;
 }
 
 /**
- * Récupère les derniers snapshots de mémoire
- * @param {number} limit - Nombre maximum de snapshots à récupérer
- * @returns {Promise<Array>} Liste des snapshots
- * @throws {Error} En cas d'erreur de récupération
+ * Ferme la connexion à la base de données. Utile pour le nettoyage dans les tests.
  */
-export async function fetchLatestSnapshots(limit = 5) {
-  try {
-    if (typeof limit !== 'number' || limit < 1) {
-      throw new Error('La limite doit être un nombre positif');
-    }
-
-    const { data, error } = await supabase
-      .from('prism_memories')
-      .select('*')
-      .order('created_at', { ascending: false })
-      .limit(limit);
-
-    if (error) {
-      console.error("[PRISM MEMORY] ❌ Échec de récupération :", error.message);
-      throw error;
-    }
-
-    console.log("[PRISM MEMORY] 📚 Derniers souvenirs récupérés :", data);
-    return data;
-  } catch (error) {
-    console.error("[PRISM MEMORY] ⚠️ Erreur :", error.message);
-    throw error; // Propager l'erreur pour gestion par l'appelant
+export function closeDb() {
+  if (db && db.open) {
+    db.close();
+    db = null;
   }
 } 

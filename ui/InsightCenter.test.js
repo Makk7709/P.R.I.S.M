@@ -1,5 +1,7 @@
-import { InsightCenter } from './InsightCenter';
+import { jest } from '@jest/globals';
+import { InsightCenter } from './InsightCenter.js';
 import kernelBus from '../core/KernelBus.js';
+import { config } from '../config.js';
 
 // Mock prismBus
 jest.mock('../prismBus.js', () => ({
@@ -431,5 +433,13 @@ describe('InsightCenter', () => {
     insightCenter.cleanupRenderCache();
     
     expect(insightCenter.renderCache.size).toBe(100);
+  });
+
+  it('should initialize with correct configuration', () => {
+    expect(insightCenter.config).toEqual(config.CONFIG.UI.INSIGHTS);
+  });
+
+  it('should generate a simple insight', () => {
+    // ... existing code ...
   });
 }); 

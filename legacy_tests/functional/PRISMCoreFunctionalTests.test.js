@@ -14,6 +14,12 @@ global.CONFIG = CONFIG;
 import { AdaptiveCyclerWidget } from '../../ui/AdaptiveCyclerWidget.js';
 import { InsightCenter } from '../../ui/InsightCenter.js';
 import { AudioManager } from '../../audio.js';
+import { PrismCore } from '../../prismCore.js';
+import { config } from '../../config.js';
+import { TextEncoder, TextDecoder } from 'util';
+
+global.TextEncoder = TextEncoder;
+global.TextDecoder = TextDecoder;
 
 // Configuration des tests
 const TEST_CONFIG = {
@@ -56,6 +62,8 @@ describe('PRISM Core Functional Tests', () => {
   let insightCenter;
   let audioManager;
   let testResults;
+  let prismCore;
+  let mockKernelBus;
 
   beforeEach(() => {
     // Mock des méthodes destroy
@@ -111,6 +119,15 @@ describe('PRISM Core Functional Tests', () => {
     // Make components visible for testing
     adaptiveCyclerWidget.toggleVisibility();
     insightCenter.toggleVisibility();
+
+    // Mock du KernelBus
+    mockKernelBus = {
+      on: jest.fn(),
+      emit: jest.fn(),
+    };
+
+    // Initialisation avec la configuration réelle
+    prismCore = new PrismCore(config.CONFIG, mockKernelBus);
   });
 
   afterEach(() => {

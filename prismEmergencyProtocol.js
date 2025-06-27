@@ -183,5 +183,4 @@ class PrismEmergencyProtocol {
   }
 }
 
-export const prismEmergencyProtocol = new PrismEmergencyProtocol();
-export default prismEmergencyProtocol; 
+export { PrismEmergencyProtocol }; 

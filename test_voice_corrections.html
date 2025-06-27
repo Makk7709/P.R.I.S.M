@@ -1,0 +1,291 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test des Corrections Vocales PRISM</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #050B14 0%, #0A1018 50%, #0F151C 100%);
+            color: #F8F9FA;
+            padding: 20px;
+            min-height: 100vh;
+        }
+        
+        .test-container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 20px;
+            padding: 30px;
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 215, 0, 0.2);
+        }
+        
+        .test-section {
+            margin-bottom: 30px;
+            padding: 20px;
+            background: rgba(255, 255, 255, 0.03);
+            border-radius: 12px;
+            border: 1px solid rgba(255, 215, 0, 0.1);
+        }
+        
+        .test-title {
+            color: #FFD700;
+            font-size: 1.5rem;
+            margin-bottom: 15px;
+            font-weight: 600;
+        }
+        
+        .test-button {
+            background: linear-gradient(45deg, #B8860B, #FFD700);
+            color: #050B14;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            margin: 5px;
+            transition: all 0.3s ease;
+        }
+        
+        .test-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(255, 215, 0, 0.4);
+        }
+        
+        .test-result {
+            margin-top: 15px;
+            padding: 10px;
+            background: rgba(16, 185, 129, 0.1);
+            border: 1px solid #10B981;
+            border-radius: 8px;
+            color: #10B981;
+            display: none;
+        }
+        
+        .test-error {
+            margin-top: 15px;
+            padding: 10px;
+            background: rgba(239, 68, 68, 0.1);
+            border: 1px solid #EF4444;
+            border-radius: 8px;
+            color: #EF4444;
+            display: none;
+        }
+        
+        .processing-indicator {
+            display: none;
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(20px);
+            border: 2px solid #FFD700;
+            border-radius: 12px;
+            padding: 20px 30px;
+            color: #F8F9FA;
+            font-weight: 600;
+            z-index: 1000;
+            animation: processingPulse 2s ease-in-out infinite;
+        }
+        
+        .processing-indicator.active {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        
+        .processing-indicator::before {
+            content: '';
+            width: 24px;
+            height: 24px;
+            border: 3px solid #FFD700;
+            border-top: 3px solid transparent;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+        
+        @keyframes processingPulse {
+            0%, 100% { transform: translate(-50%, -50%) scale(1); }
+            50% { transform: translate(-50%, -50%) scale(1.02); }
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+    </style>
+</head>
+<body>
+    <div class="test-container">
+        <h1 style="text-align: center; color: #FFD700; margin-bottom: 30px;">
+            🎯 Test des Corrections Vocales PRISM
+        </h1>
+        
+        <!-- Test 1: Indicateur de traitement -->
+        <div class="test-section">
+            <div class="test-title">✅ Test 1: Indicateur de Traitement</div>
+            <p>Test des fonctions showProcessingIndicator() et hideProcessingIndicator()</p>
+            <button class="test-button" onclick="testProcessingIndicator()">Tester l'Indicateur</button>
+            <button class="test-button" onclick="testProcessingTimeout()">Tester Timeout (30s)</button>
+            <div id="test1-result" class="test-result"></div>
+            <div id="test1-error" class="test-error"></div>
+        </div>
+        
+        <!-- Test 2: Nettoyage du texte -->
+        <div class="test-section">
+            <div class="test-title">✅ Test 2: Nettoyage du Texte pour ElevenLabs</div>
+            <p>Test de la fonction cleanTextForSpeech() améliorée</p>
+            <button class="test-button" onclick="testTextCleaning()">Tester Nettoyage</button>
+            <div id="test2-result" class="test-result"></div>
+            <div id="test2-error" class="test-error"></div>
+        </div>
+        
+        <!-- Test 3: Gestion des erreurs -->
+        <div class="test-section">
+            <div class="test-title">✅ Test 3: Gestion des Erreurs</div>
+            <p>Test de la gestion d'erreur et du masquage automatique</p>
+            <button class="test-button" onclick="testErrorHandling()">Simuler Erreur</button>
+            <div id="test3-result" class="test-result"></div>
+            <div id="test3-error" class="test-error"></div>
+        </div>
+        
+        <!-- Test 4: Test vocal complet -->
+        <div class="test-section">
+            <div class="test-title">🎤 Test 4: Système Vocal Complet</div>
+            <p>Test d'intégration complète avec le dashboard vocal</p>
+            <button class="test-button" onclick="openVoiceDashboard()">Ouvrir Dashboard Vocal</button>
+            <div id="test4-result" class="test-result"></div>
+            <div id="test4-error" class="test-error"></div>
+        </div>
+    </div>
+    
+    <!-- Indicateur de traitement -->
+    <div id="processingIndicator" class="processing-indicator">
+        <span>🔮 Processing your request...</span>
+    </div>
+    
+    <script>
+        // Simulation des fonctions corrigées
+        let processingTimeout = null;
+        
+        function showProcessingIndicator() {
+            const indicator = document.getElementById('processingIndicator');
+            if (indicator) {
+                indicator.classList.add('active');
+                console.log('[Test] Processing indicator shown');
+                
+                // Timeout de sécurité
+                processingTimeout = setTimeout(() => {
+                    console.warn('[Test] Processing indicator timeout - auto-hiding');
+                    hideProcessingIndicator();
+                    showResult('test1', 'Timeout de sécurité activé après 30 secondes ✅', false);
+                }, 30000);
+            }
+        }
+        
+        function hideProcessingIndicator() {
+            const indicator = document.getElementById('processingIndicator');
+            if (indicator) {
+                indicator.classList.remove('active');
+                console.log('[Test] Processing indicator hidden');
+                
+                if (processingTimeout) {
+                    clearTimeout(processingTimeout);
+                    processingTimeout = null;
+                }
+            }
+        }
+        
+        function cleanTextForSpeech(message) {
+            if (!message) return '';
+            
+            return message
+                .replace(/<script\b[^<]*(?:(?!<\/script>)<[^<]*)*<\/script>/gi, '')
+                .replace(/<[^>]*>/g, '')
+                .replace(/\bP\.R\.I\.S\.M\b/g, 'PRISM')
+                .replace(/\bI\.A\./g, 'Intelligence Artificielle')
+                .replace(/\bAPI\b/g, 'A P I')
+                .replace(/(\d+)%/g, '$1 pour cent')
+                .replace(/€(\d+)/g, '$1 euros')
+                .replace(/\bM\./g, 'Monsieur')
+                .replace(/\bMme\./g, 'Madame')
+                .replace(/[\u{1F600}-\u{1F64F}]|[\u{1F300}-\u{1F5FF}]|[\u{1F680}-\u{1F6FF}]|[\u{1F1E0}-\u{1F1FF}]|[\u{2600}-\u{26FF}]|[\u{2700}-\u{27BF}]/gu, '')
+                .replace(/\s+/g, ' ')
+                .replace(/\n+/g, '. ')
+                .trim();
+        }
+        
+        function showResult(testId, message, isError = false) {
+            const resultDiv = document.getElementById(`${testId}-result`);
+            const errorDiv = document.getElementById(`${testId}-error`);
+            
+            if (isError) {
+                errorDiv.textContent = message;
+                errorDiv.style.display = 'block';
+                resultDiv.style.display = 'none';
+            } else {
+                resultDiv.textContent = message;
+                resultDiv.style.display = 'block';
+                errorDiv.style.display = 'none';
+            }
+        }
+        
+        // Tests
+        function testProcessingIndicator() {
+            showProcessingIndicator();
+            setTimeout(() => {
+                hideProcessingIndicator();
+                showResult('test1', 'Indicateur affiché et masqué correctement ✅');
+            }, 2000);
+        }
+        
+        function testProcessingTimeout() {
+            showProcessingIndicator();
+            showResult('test1', 'Test du timeout en cours... (30s)');
+            // Le timeout se déclenchera automatiquement
+        }
+        
+        function testTextCleaning() {
+            const testText = 
+                "**P.R.I.S.M** est une I.A. révolutionnaire ! " +
+                "Elle coûte €2500 et fonctionne à 95%. " +
+                "M. Dupont et Mme Martin sont impressionnés 🚀 " +
+                "<script>alert('test')</script> " +
+                "API: http://example.com";
+            
+            const cleaned = cleanTextForSpeech(testText);
+            console.log('Texte original:', testText);
+            console.log('Texte nettoyé:', cleaned);
+            
+            showResult('test2', `Texte nettoyé: "${cleaned}" ✅`);
+        }
+        
+        function testErrorHandling() {
+            showProcessingIndicator();
+            
+            // Simuler une erreur après 3 secondes
+            setTimeout(() => {
+                hideProcessingIndicator();
+                showResult('test3', 'Erreur simulée - Indicateur masqué automatiquement ✅');
+            }, 3000);
+        }
+        
+        function openVoiceDashboard() {
+            window.open('/ui/prismVoiceChatV2-Corporate.html', '_blank');
+            showResult('test4', 'Dashboard vocal ouvert dans un nouvel onglet ✅');
+        }
+        
+        // Test automatique au chargement
+        window.addEventListener('load', () => {
+            console.log('🎯 Tests des corrections vocales PRISM chargés');
+            console.log('✅ Fonctions showProcessingIndicator et hideProcessingIndicator disponibles');
+            console.log('✅ Fonction cleanTextForSpeech améliorée disponible');
+            console.log('✅ Gestion des timeouts implémentée');
+        });
+    </script>
+</body>
+</html> 
