@@ -15,7 +15,7 @@
 
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: #1a1a1a;
             color: #ffffff;
             min-height: 100vh;
             padding: 20px;
@@ -34,11 +34,39 @@
         .header h1 {
             font-size: 3rem;
             margin-bottom: 10px;
-            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
-            background: linear-gradient(45deg, #ff6b6b, #4ecdc4, #45b7d1);
+            font-weight: 900;
+            letter-spacing: 3px;
+            position: relative;
+            background: linear-gradient(135deg, 
+                #FFF8DC 0%,   /* Or très clair */
+                #FFE55C 15%,  /* Or brillant */
+                #FFD700 30%,  /* Or classique */
+                #DAA520 45%,  /* Or moyen */
+                #B8860B 60%,  /* Or sombre */
+                #DAA520 75%,  /* Or moyen */
+                #FFD700 90%,  /* Or classique */
+                #FFF8DC 100%  /* Or très clair */
+            );
+            background-size: 200% 100%;
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
             background-clip: text;
+            filter: 
+                drop-shadow(1px 1px 0px #8B7355)
+                drop-shadow(2px 2px 0px #6B5B47)
+                drop-shadow(3px 3px 8px rgba(0,0,0,0.4))
+                drop-shadow(0 0 15px rgba(255, 215, 0, 0.5));
+            animation: metallic-flow 6s ease-in-out infinite;
+            text-transform: uppercase;
+        }
+        
+        @keyframes metallic-flow {
+            0%, 100% { 
+                background-position: 0% 50%;
+            }
+            50% { 
+                background-position: 100% 50%;
+            }
         }
 
         .subtitle {
@@ -56,13 +84,13 @@
         }
 
         .status-card {
-            background: rgba(255,255,255,0.1);
+            background: rgba(40,40,40,0.8);
             border-radius: 15px;
             padding: 20px;
-            backdrop-filter: blur(10px);
-            border: 1px solid rgba(255,255,255,0.2);
+            border: 1px solid rgba(255, 215, 0, 0.3);
             min-width: 200px;
             text-align: center;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.3);
         }
 
         .status-indicator {
@@ -73,9 +101,9 @@
             animation: pulse 2s infinite;
         }
 
-        .status-indicator.active { background: #4CAF50; }
-        .status-indicator.voting { background: #FF9800; }
-        .status-indicator.timeout { background: #F44336; }
+        .status-indicator.active { background: #00E676; }
+        .status-indicator.voting { background: #FFD700; }
+        .status-indicator.timeout { background: #FF6B6B; }
 
         .main-grid {
             display: grid;
@@ -85,19 +113,19 @@
         }
 
         .question-panel {
-            background: rgba(255,255,255,0.1);
+            background: rgba(40,40,40,0.8);
             border-radius: 20px;
             padding: 30px;
-            backdrop-filter: blur(10px);
-            border: 1px solid rgba(255,255,255,0.2);
+            border: 1px solid rgba(255, 215, 0, 0.3);
+            box-shadow: 0 4px 15px rgba(0,0,0,0.3);
         }
 
         .consensus-panel {
-            background: rgba(255,255,255,0.1);
+            background: rgba(40,40,40,0.8);
             border-radius: 20px;
             padding: 30px;
-            backdrop-filter: blur(10px);
-            border: 1px solid rgba(255,255,255,0.2);
+            border: 1px solid rgba(255, 215, 0, 0.3);
+            box-shadow: 0 4px 15px rgba(0,0,0,0.3);
         }
 
         .ai-responses {
@@ -108,27 +136,27 @@
         }
 
         .ai-card {
-            background: rgba(255,255,255,0.1);
+            background: rgba(40,40,40,0.8);
             border-radius: 15px;
             padding: 20px;
-            backdrop-filter: blur(10px);
-            border: 1px solid rgba(255,255,255,0.2);
+            border: 1px solid rgba(255, 215, 0, 0.3);
             transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.3);
         }
 
         .ai-card.voting {
-            border-color: #FF9800;
-            box-shadow: 0 0 20px rgba(255, 152, 0, 0.5);
+            border-color: #FFD700;
+            box-shadow: 0 0 20px rgba(255, 215, 0, 0.6);
         }
 
         .ai-card.approved {
-            border-color: #4CAF50;
-            box-shadow: 0 0 20px rgba(76, 175, 80, 0.5);
+            border-color: #00E676;
+            box-shadow: 0 0 20px rgba(0, 230, 118, 0.5);
         }
 
         .ai-card.rejected {
-            border-color: #F44336;
-            box-shadow: 0 0 20px rgba(244, 67, 54, 0.5);
+            border-color: #FF6B6B;
+            box-shadow: 0 0 20px rgba(255, 107, 107, 0.5);
         }
 
         .ai-header {
@@ -151,18 +179,18 @@
         }
 
         .vote-status.pending {
-            background: rgba(255, 152, 0, 0.3);
-            color: #FF9800;
+            background: rgba(255, 215, 0, 0.3);
+            color: #FFD700;
         }
 
         .vote-status.approve {
-            background: rgba(76, 175, 80, 0.3);
-            color: #4CAF50;
+            background: rgba(0, 230, 118, 0.3);
+            color: #00E676;
         }
 
         .vote-status.reject {
-            background: rgba(244, 67, 54, 0.3);
-            color: #F44336;
+            background: rgba(255, 107, 107, 0.3);
+            color: #FF6B6B;
         }
 
         .ai-response {
@@ -184,12 +212,12 @@
         }
 
         .demo-controls {
-            background: rgba(255,255,255,0.1);
+            background: rgba(40,40,40,0.8);
             border-radius: 15px;
             padding: 20px;
-            backdrop-filter: blur(10px);
-            border: 1px solid rgba(255,255,255,0.2);
+            border: 1px solid rgba(255, 215, 0, 0.3);
             margin-bottom: 30px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.3);
         }
 
         .control-buttons {
@@ -209,14 +237,15 @@
         }
 
         .btn.primary {
-            background: linear-gradient(45deg, #667eea, #764ba2);
-            color: white;
+            background: linear-gradient(45deg, #FFD700, #FFA500);
+            color: #1a1a1a;
+            font-weight: bold;
         }
 
         .btn.secondary {
-            background: rgba(255,255,255,0.2);
-            color: white;
-            border: 1px solid rgba(255,255,255,0.3);
+            background: rgba(40,40,40,0.8);
+            color: #FFD700;
+            border: 1px solid rgba(255, 215, 0, 0.5);
         }
 
         .btn:hover {
@@ -231,12 +260,12 @@
         }
 
         .metric-card {
-            background: rgba(255,255,255,0.1);
+            background: rgba(40,40,40,0.8);
             border-radius: 15px;
             padding: 20px;
-            backdrop-filter: blur(10px);
-            border: 1px solid rgba(255,255,255,0.2);
+            border: 1px solid rgba(255, 215, 0, 0.3);
             text-align: center;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.3);
         }
 
         .metric-value {
@@ -253,7 +282,7 @@
         .progress-bar {
             width: 100%;
             height: 8px;
-            background: rgba(255,255,255,0.2);
+            background: rgba(20,20,20,0.5);
             border-radius: 10px;
             overflow: hidden;
             margin: 10px 0;
@@ -261,26 +290,26 @@
 
         .progress-fill {
             height: 100%;
-            background: linear-gradient(90deg, #4CAF50, #45b7d1);
+            background: linear-gradient(90deg, #FFD700, #FFA500);
             transition: width 0.3s ease;
         }
 
         .timeline {
-            background: rgba(255,255,255,0.1);
+            background: rgba(40,40,40,0.8);
             border-radius: 15px;
             padding: 20px;
-            backdrop-filter: blur(10px);
-            border: 1px solid rgba(255,255,255,0.2);
+            border: 1px solid rgba(255, 215, 0, 0.3);
             max-height: 300px;
             overflow-y: auto;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.3);
         }
 
         .timeline-item {
             padding: 10px;
-            border-left: 3px solid #667eea;
+            border-left: 3px solid #FFD700;
             margin-left: 10px;
             margin-bottom: 10px;
-            background: rgba(0,0,0,0.1);
+            background: rgba(20,20,20,0.3);
             border-radius: 5px;
         }
 
@@ -332,8 +361,8 @@
 <body>
     <div class="demo-container">
         <div class="header">
-            <h1>🎯 PRISM Consensus IA</h1>
-            <div class="subtitle">Démonstration Live du Système de Vote IA 2/3 Majorité</div>
+            <h1>△ PRISM Consensus IA</h1>
+            <div class="subtitle">Détection de Fraude en Temps Réel - Consensus IA 2/3 Majorité</div>
         </div>
 
         <!-- Status du Consensus -->
@@ -361,31 +390,32 @@
             <input type="text" 
                    class="question-input" 
                    id="questionInput" 
-                   placeholder="Posez une question pour tester le consensus IA..."
-                   value="Devons-nous implémenter une nouvelle fonctionnalité d'auto-apprentissage?">
+                   placeholder="Transaction à analyser pour détection de fraude..."
+                   value="Transaction 15,000€ - Carte *4567 - 02:15 AM - IP: Roumanie - Nouveau marchand">
             
             <select class="decision-type-select" id="decisionType">
-                <option value="critical">🔥 Décision Critique</option>
-                <option value="security">🛡️ Sécurité</option>
-                <option value="self_improvement">🧠 Auto-amélioration</option>
-                <option value="system_modification">⚙️ Modification Système</option>
+                <option value="fraud_detection">🚨 Détection Fraude</option>
+                <option value="high_risk">⚠️ Transaction Haut Risque</option>
+                <option value="pattern_analysis">🔍 Analyse Pattern</option>
+                <option value="real_time_blocking">🛡️ Blocage Temps Réel</option>
             </select>
             
             <div class="control-buttons">
-                <button class="btn primary" onclick="startConsensusDemo()">🚀 Démarrer Consensus</button>
+                <button class="btn primary" onclick="startConsensusDemo()">🛡️ Analyser Transaction</button>
                 <button class="btn secondary" onclick="resetDemo()">🔄 Reset</button>
+                <button class="btn secondary" onclick="simulateNormalTransaction()">✅ Transaction Normale</button>
+                <button class="btn secondary" onclick="simulateHighRisk()">🚨 Transaction Risquée</button>
                 <button class="btn secondary" onclick="simulateTimeout()">⏱️ Simuler Timeout</button>
-                <button class="btn secondary" onclick="simulateDisagreement()">❌ Simuler Désaccord</button>
             </div>
         </div>
 
         <!-- Grille Principale -->
         <div class="main-grid">
-            <!-- Panel Question -->
+            <!-- Panel Transaction -->
             <div class="question-panel">
-                <h3>❓ Question Posée</h3>
+                <h3>💳 Transaction à Analyser</h3>
                 <div class="ai-response" id="currentQuestion">
-                    Aucune question en cours...
+                    Aucune transaction en cours d'analyse...
                 </div>
                 
                 <h4 style="margin-top: 20px;">⏱️ Progression du Consensus</h4>
@@ -398,25 +428,25 @@
                 </div>
             </div>
 
-            <!-- Panel Consensus -->
+            <!-- Panel Décision Fraude -->
             <div class="consensus-panel">
-                <h3>🎯 Résultat du Consensus</h3>
+                <h3>🛡️ Décision de Sécurité</h3>
                 <div id="consensusResult" class="ai-response">
-                    En attente du démarrage...
+                    En attente de l'analyse...
                 </div>
                 
-                <h4 style="margin-top: 20px;">📊 Détail des Votes</h4>
+                <h4 style="margin-top: 20px;">📊 Votes Sécurité</h4>
                 <div id="voteDetails">
                     <div style="display: flex; justify-content: space-between; margin: 5px 0;">
-                        <span>✅ Approbations:</span>
+                        <span>✅ Transaction Légitime:</span>
                         <span id="approvalCount">0</span>
                     </div>
                     <div style="display: flex; justify-content: space-between; margin: 5px 0;">
-                        <span>❌ Rejets:</span>
+                        <span>🚨 Fraude Détectée:</span>
                         <span id="rejectionCount">0</span>
                     </div>
                     <div style="display: flex; justify-content: space-between; margin: 5px 0;">
-                        <span>⏸️ Abstentions:</span>
+                        <span>⏸️ Analyse Incomplète:</span>
                         <span id="abstentionCount">0</span>
                     </div>
                 </div>
@@ -427,65 +457,65 @@
         <div class="ai-responses">
             <div class="ai-card" id="gpt4Card">
                 <div class="ai-header">
-                    <div class="ai-name">🤖 GPT-4</div>
+                    <div class="ai-name">🧠 GPT-4 Behavioral</div>
                     <div class="vote-status pending" id="gpt4Status">En attente</div>
                 </div>
                 <div class="ai-response" id="gpt4Response">
-                    En attente de la question...
+                    En attente de la transaction...
                 </div>
                 <div class="vote-reasoning" id="gpt4Reasoning" style="display: none;">
-                    Raisonnement du vote...
+                    Analyse comportementale...
                 </div>
             </div>
 
             <div class="ai-card" id="claudeCard">
                 <div class="ai-header">
-                    <div class="ai-name">🧠 Claude-3</div>
+                    <div class="ai-name">⚖️ Claude Ethics & Risk</div>
                     <div class="vote-status pending" id="claudeStatus">En attente</div>
                 </div>
                 <div class="ai-response" id="claudeResponse">
-                    En attente de la question...
+                    En attente de la transaction...
                 </div>
                 <div class="vote-reasoning" id="claudeReasoning" style="display: none;">
-                    Raisonnement du vote...
+                    Évaluation éthique...
                 </div>
             </div>
 
             <div class="ai-card" id="perplexityCard">
                 <div class="ai-header">
-                    <div class="ai-name">🔍 Perplexity</div>
+                    <div class="ai-name">🗃️ Perplexity Database</div>
                     <div class="vote-status pending" id="perplexityStatus">En attente</div>
                 </div>
                 <div class="ai-response" id="perplexityResponse">
-                    En attente de la question...
+                    En attente de la transaction...
                 </div>
                 <div class="vote-reasoning" id="perplexityReasoning" style="display: none;">
-                    Raisonnement du vote...
+                    Croisement données...
                 </div>
             </div>
         </div>
 
-        <!-- Métriques -->
+        <!-- Métriques Fraude -->
         <div class="metrics-panel">
             <div class="metric-card">
                 <div class="metric-value" id="totalProposals">0</div>
-                <div class="metric-label">Propositions Totales</div>
+                <div class="metric-label">Transactions Analysées</div>
             </div>
             <div class="metric-card">
                 <div class="metric-value" id="approvedProposals">0</div>
-                <div class="metric-label">Approuvées</div>
+                <div class="metric-label">Légitimes</div>
             </div>
             <div class="metric-card">
                 <div class="metric-value" id="rejectedProposals">0</div>
-                <div class="metric-label">Rejetées</div>
+                <div class="metric-label">Fraudes Bloquées</div>
             </div>
             <div class="metric-card">
                 <div class="metric-value" id="averageTime">0ms</div>
-                <div class="metric-label">Temps Moyen</div>
+                <div class="metric-label">Temps Détection</div>
             </div>
             <div class="metric-card">
                 <div class="metric-value" id="successRate">100%</div>
-                <div class="metric-label">Taux de Succès</div>
+                <div class="metric-label">Taux Précision</div>
             </div>
             <div class="metric-card">
                 <div class="metric-value" id="activeProposals">0</div>
@@ -612,7 +642,7 @@
                 const vote = responses.vote;
                 const reasoning = responses.reasoning;
 
-                document.getElementById(provider.status).textContent = vote ? '✅ Approuve' : '❌ Rejette';
+                document.getElementById(provider.status).textContent = vote ? '✅ Légitime' : '🚨 Fraude';
                 document.getElementById(provider.status).className = `vote-status ${vote ? 'approve' : 'reject'}`;
                 document.getElementById(provider.card).className = `ai-card ${vote ? 'approved' : 'rejected'}`;
                 document.getElementById(provider.reasoning).textContent = reasoning;
@@ -629,34 +659,74 @@
             }
 
             generateAIResponse(providerId, proposal) {
-                // Générer les votes de manière cohérente
-                const gpt4Vote = Math.random() > 0.3; // 70% chance d'approuver
-                const claudeVote = Math.random() > 0.5; // 50% chance d'approuver  
-                const perplexityVote = Math.random() > 0.4; // 60% chance d'approuver
+                // Créer des scénarios de fraude variés et réalistes
+                const fraudScenarios = this.getFraudScenarios();
+                const scenario = fraudScenarios[Math.floor(Math.random() * fraudScenarios.length)];
+                
+                // Analyser le type de transaction pour adapter les réponses
+                const transactionText = proposal.question.toLowerCase();
+                const isSuspicious = transactionText.includes('2:') || transactionText.includes('roumanie') || 
+                                   transactionText.includes('15,000') || transactionText.includes('nouveau');
+                
+                // Probabilités de détection basées sur les indicateurs de fraude
+                const suspicionLevel = this.calculateSuspicionLevel(transactionText);
+                const gpt4Vote = suspicionLevel > 0.6; // GPT-4 détecte pattern comportemental
+                const claudeVote = suspicionLevel < 0.4; // Claude plus conservateur, accepte si pas évident
+                const perplexityVote = suspicionLevel > 0.7; // Perplexity croise avec bases de données
 
                 const responses = {
                     gpt4: {
-                        response: "Je pense que cette proposition présente des opportunités intéressantes d'innovation. L'auto-apprentissage pourrait améliorer significativement les performances du système.",
+                        response: `Analyse comportementale: Transaction ${suspicionLevel > 0.6 ? 'SUSPECTE' : 'NORMALE'}. Pattern inhabituel détecté: horaire nocturne (02:15), montant élevé (15k€), géolocalisation à risque. Score de risque: ${Math.round(suspicionLevel * 100)}/100.`,
                         vote: gpt4Vote,
-                        reasoning: gpt4Vote ? "Innovation beneficial avec risques managés" : "Risques d'innovation trop élevés"
+                        reasoning: gpt4Vote ? "Pattern comportemental frauduleux identifié" : "Comportement client dans les normes acceptables"
                     },
                     claude: {
-                        response: "Cette proposition soulève des questions éthiques importantes. Il faut s'assurer que l'auto-apprentissage reste aligné avec nos principes de sécurité.",
+                        response: `Évaluation éthique et profil client: ${suspicionLevel < 0.4 ? 'LÉGITTIME' : 'RISQUE ÉLEVÉ'}. Historique client vérifié, capacité financière confirmée. Considérations: impact sur experience client vs sécurité.`,
                         vote: claudeVote,
-                        reasoning: claudeVote ? "Proposition éthiquement acceptable" : "Préoccupations éthiques identifiées"
+                        reasoning: claudeVote ? "Transaction conforme au profil client établi" : "Déviations significatives nécessitant blocage préventif"
                     },
                     perplexity: {
-                        response: "Basé sur les données disponibles, l'auto-apprentissage montre une efficacité de 85% dans les implémentations similaires. Les preuves soutiennent cette approche.",
+                        response: `Croisement bases de données: ${suspicionLevel > 0.7 ? 'FRAUDE DÉTECTÉE' : 'AUCUNE CORRESPONDANCE'}. IP Roumanie blacklistée dans 73% des cas de fraude. Marchand créé il y a 2 jours. Correspondance avec 4 patterns de fraude connus.`,
                         vote: perplexityVote,
-                        reasoning: perplexityVote ? "Preuves et données soutiennent la décision" : "Données insuffisantes ou risques identifiés"
+                        reasoning: perplexityVote ? "Correspondances multiples avec bases fraude internationales" : "Données insuffisantes pour confirmer fraude"
                     }
                 };
 
                 return responses[providerId] || {
-                    response: "Analyse en cours...",
+                    response: "Analyse de sécurité en cours...",
                     vote: Math.random() > 0.5,
-                    reasoning: "Évaluation standard"
+                    reasoning: "Évaluation de risque standard"
                 };
+            }
+
+            calculateSuspicionLevel(transactionText) {
+                let suspicion = 0.2; // Base niveau
+                
+                // Facteurs de risque
+                if (transactionText.includes('02:') || transactionText.includes('2:')) suspicion += 0.3; // Horaire nocturne
+                if (transactionText.includes('roumanie')) suspicion += 0.4; // Géolocalisation à risque
+                if (transactionText.includes('15,000') || transactionText.includes('15000')) suspicion += 0.2; // Montant élevé
+                if (transactionText.includes('nouveau')) suspicion += 0.3; // Nouveau marchand
+                if (transactionText.includes('*4567')) suspicion += 0.1; // Carte spécifique
+                
+                return Math.min(suspicion, 1.0);
+            }
+
+            getFraudScenarios() {
+                return [
+                    {
+                        transaction: "Transaction 2,500€ - Carte *1234 - 14:30 PM - IP: France - Marchand habituel",
+                        risk: "low"
+                    },
+                    {
+                        transaction: "Transaction 25,000€ - Carte *9876 - 03:45 AM - IP: Nigeria - Nouveau marchand",
+                        risk: "high"
+                    },
+                    {
+                        transaction: "Transaction 850€ - Carte *5555 - 11:15 AM - IP: Allemagne - E-commerce connu",
+                        risk: "medium"
+                    }
+                ];
             }
 
             startTimeoutCountdown() {
@@ -840,8 +910,8 @@
                 this.currentProposal = null;
 
                 // Reset UI
-                document.getElementById('currentQuestion').textContent = 'Aucune question en cours...';
-                document.getElementById('consensusResult').textContent = 'En attente du démarrage...';
+                document.getElementById('currentQuestion').textContent = 'Aucune transaction en cours d\'analyse...';
+                document.getElementById('consensusResult').textContent = 'En attente de l\'analyse...';
                 document.getElementById('consensusProgress').style.width = '0%';
                 document.getElementById('timeRemaining').textContent = '1000ms';
                 document.getElementById('voteCount').textContent = '0/3';
@@ -877,6 +947,30 @@
                 // Modifier les votes pour créer un désaccord
                 alert('Fonctionnalité à implémenter: forcer des votes en désaccord');
             }
+
+            simulateHighRisk() {
+                const highRiskTransactions = [
+                    "Transaction 25,000€ - Carte *9876 - 03:45 AM - IP: Nigeria - Nouveau marchand",
+                    "Transaction 50,000€ - Carte *1111 - 01:30 AM - IP: Russie - Crypto exchange",
+                    "Transaction 12,500€ - Carte *2222 - 04:15 AM - IP: Bulgarie - Site gambling"
+                ];
+                
+                const randomTransaction = highRiskTransactions[Math.floor(Math.random() * highRiskTransactions.length)];
+                document.getElementById('questionInput').value = randomTransaction;
+                this.addTimelineEvent('🚨 Transaction à risque générée', randomTransaction);
+            }
+
+            simulateNormalTransaction() {
+                const normalTransactions = [
+                    "Transaction 250€ - Carte *1234 - 14:30 PM - IP: France - Amazon",
+                    "Transaction 85€ - Carte *5678 - 10:15 AM - IP: Allemagne - Supermarché",
+                    "Transaction 1,200€ - Carte *9999 - 16:45 PM - IP: Espagne - Client habituel"
+                ];
+                
+                const randomTransaction = normalTransactions[Math.floor(Math.random() * normalTransactions.length)];
+                document.getElementById('questionInput').value = randomTransaction;
+                this.addTimelineEvent('✅ Transaction normale générée', randomTransaction);
+            }
         }
 
         // Fonctions globales pour les boutons
@@ -896,6 +990,14 @@
 
         function simulateDisagreement() {
             demo.simulateDisagreement();
+        }
+
+        function simulateHighRisk() {
+            demo.simulateHighRisk();
+        }
+
+        function simulateNormalTransaction() {
+            demo.simulateNormalTransaction();
         }
 
         // Initialiser la démo au chargement
