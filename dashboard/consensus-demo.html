@@ -356,6 +356,73 @@
             color: #333;
             margin-bottom: 15px;
         }
+
+        /* Styles pour les scores IA */
+        .ai-score-section {
+            margin: 15px 0;
+            padding: 10px;
+            background: rgba(20,20,20,0.3);
+            border-radius: 8px;
+            border: 1px solid rgba(255, 215, 0, 0.2);
+        }
+
+        .score-label {
+            font-size: 0.9rem;
+            font-weight: bold;
+            margin-bottom: 8px;
+            color: #FFD700;
+        }
+
+        .score-bar {
+            position: relative;
+            width: 100%;
+            height: 20px;
+            background: rgba(40,40,40,0.8);
+            border-radius: 10px;
+            overflow: hidden;
+            border: 1px solid rgba(255, 215, 0, 0.3);
+        }
+
+        .score-fill {
+            height: 100%;
+            background: linear-gradient(90deg, 
+                #00E676 0%,     /* Vert pour score bas (sûr) */
+                #FFD700 50%,    /* Jaune pour score moyen */
+                #FF6B6B 100%    /* Rouge pour score élevé (risque) */
+            );
+            transition: width 0.8s ease-in-out;
+            border-radius: 10px;
+        }
+
+        .score-text {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-size: 0.8rem;
+            font-weight: bold;
+            color: #1a1a1a;
+            text-shadow: 0 0 3px rgba(255,255,255,0.8);
+        }
+
+        .score-threshold {
+            font-size: 0.75rem;
+            margin-top: 5px;
+            opacity: 0.8;
+            text-align: center;
+            color: #FFD700;
+        }
+
+        /* Animation pour les scores */
+        @keyframes scoreUpdate {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+            100% { transform: scale(1); }
+        }
+
+        .score-updating {
+            animation: scoreUpdate 0.3s ease-in-out;
+        }
     </style>
 </head>
 <body>
@@ -475,6 +542,14 @@
                 <div class="ai-response" id="gpt4Response">
                     En attente de la transaction...
                 </div>
+                <div class="ai-score-section" id="gpt4ScoreSection" style="display: none;">
+                    <div class="score-label" id="gpt4ScoreLabel">📊 Score de Risque</div>
+                    <div class="score-bar">
+                        <div class="score-fill" id="gpt4ScoreFill" style="width: 0%"></div>
+                        <div class="score-text" id="gpt4ScoreText">0/100</div>
+                    </div>
+                    <div class="score-threshold">Seuil: 60/100</div>
+                </div>
                 <div class="vote-reasoning" id="gpt4Reasoning" style="display: none;">
                     Analyse comportementale...
                 </div>
@@ -488,6 +563,14 @@
                 <div class="ai-response" id="claudeResponse">
                     En attente de la transaction...
                 </div>
+                <div class="ai-score-section" id="claudeScoreSection" style="display: none;">
+                    <div class="score-label" id="claudeScoreLabel">📊 Score de Risque</div>
+                    <div class="score-bar">
+                        <div class="score-fill" id="claudeScoreFill" style="width: 0%"></div>
+                        <div class="score-text" id="claudeScoreText">0/100</div>
+                    </div>
+                    <div class="score-threshold">Seuil: 40/100</div>
+                </div>
                 <div class="vote-reasoning" id="claudeReasoning" style="display: none;">
                     Évaluation éthique...
                 </div>
@@ -500,6 +583,14 @@
                 </div>
                 <div class="ai-response" id="perplexityResponse">
                     En attente de la transaction...
+                </div>
+                <div class="ai-score-section" id="perplexityScoreSection" style="display: none;">
+                    <div class="score-label" id="perplexityScoreLabel">📊 Score de Risque</div>
+                    <div class="score-bar">
+                        <div class="score-fill" id="perplexityScoreFill" style="width: 0%"></div>
+                        <div class="score-text" id="perplexityScoreText">0/100</div>
+                    </div>
+                    <div class="score-threshold">Seuil: 70/100</div>
                 </div>
                 <div class="vote-reasoning" id="perplexityReasoning" style="display: none;">
                     Croisement données...
@@ -647,6 +738,11 @@
                 document.getElementById(provider.response).textContent = responses.response;
                 this.addTimelineEvent(`${provider.name} répond`, responses.response.substring(0, 50) + '...');
 
+                // Afficher le score si disponible
+                if (responses.score !== undefined) {
+                    this.displayAIScore(provider.id, responses.score, responses.threshold);
+                }
+
                 // Simuler un délai de délibération
                 await new Promise(resolve => setTimeout(resolve, 100 + Math.random() * 200));
 
@@ -670,6 +766,38 @@
                 this.checkConsensus();
             }
 
+            displayAIScore(providerId, score, threshold) {
+                const scoreSection = document.getElementById(`${providerId}ScoreSection`);
+                const scoreFill = document.getElementById(`${providerId}ScoreFill`);
+                const scoreText = document.getElementById(`${providerId}ScoreText`);
+                
+                if (scoreSection && scoreFill && scoreText) {
+                    // Afficher la section score
+                    scoreSection.style.display = 'block';
+                    
+                    // Animation d'update
+                    scoreSection.classList.add('score-updating');
+                    setTimeout(() => scoreSection.classList.remove('score-updating'), 300);
+                    
+                    // Mettre à jour le texte du score
+                    scoreText.textContent = `${score}/100`;
+                    
+                    // Animer la barre de progression
+                    setTimeout(() => {
+                        scoreFill.style.width = `${score}%`;
+                    }, 100);
+                    
+                    // Adapter la couleur selon le score
+                    if (score < 30) {
+                        scoreFill.style.background = '#00E676'; // Vert - Faible risque
+                    } else if (score < 70) {
+                        scoreFill.style.background = 'linear-gradient(90deg, #00E676, #FFD700)'; // Gradient vert-jaune
+                    } else {
+                        scoreFill.style.background = 'linear-gradient(90deg, #FFD700, #FF6B6B)'; // Gradient jaune-rouge
+                    }
+                }
+            }
+
             generateAIResponse(providerId, proposal) {
                 const currentScenario = this.currentScenario || 'fraud_detection';
                 
@@ -686,32 +814,52 @@
                 
                 // Probabilités de détection basées sur les indicateurs de fraude
                 const suspicionLevel = this.calculateSuspicionLevel(transactionText);
-                const gpt4Vote = suspicionLevel < 0.6; // GPT-4 accepte si suspicion faible
-                const claudeVote = suspicionLevel < 0.4; // Claude plus conservateur, accepte si pas évident
-                const perplexityVote = suspicionLevel < 0.7; // Perplexity accepte si pas de correspondance fraude
+                
+                // Scores individuels pour chaque IA (avec légères variations)
+                const gpt4Score = Math.round(suspicionLevel * 100) + Math.round(Math.random() * 10 - 5); // ±5 variation
+                const claudeScore = Math.round(suspicionLevel * 100) + Math.round(Math.random() * 8 - 4); // ±4 variation  
+                const perplexityScore = Math.round(suspicionLevel * 100) + Math.round(Math.random() * 6 - 3); // ±3 variation
+                
+                // Assurer que les scores restent dans [0,100]
+                const finalGpt4Score = Math.max(0, Math.min(100, gpt4Score));
+                const finalClaudeScore = Math.max(0, Math.min(100, claudeScore));
+                const finalPerplexityScore = Math.max(0, Math.min(100, perplexityScore));
+                
+                // Votes basés sur les seuils individuels
+                const gpt4Vote = finalGpt4Score < 60; // GPT-4 accepte si score < 60
+                const claudeVote = finalClaudeScore < 40; // Claude plus strict, accepte si score < 40
+                const perplexityVote = finalPerplexityScore < 70; // Perplexity accepte si score < 70
 
                 const responses = {
                     gpt4: {
-                        response: `Analyse comportementale: Transaction ${suspicionLevel > 0.6 ? 'SUSPECTE' : 'NORMALE'}. Pattern inhabituel détecté: horaire nocturne (02:15), montant élevé (15k€), géolocalisation à risque. Score de risque: ${Math.round(suspicionLevel * 100)}/100.`,
+                        response: `Analyse comportementale: Transaction ${finalGpt4Score > 60 ? 'SUSPECTE' : 'NORMALE'}. Pattern inhabituel détecté: horaire nocturne (02:15), montant élevé (15k€), géolocalisation à risque. Score de risque: ${finalGpt4Score}/100.`,
                         vote: gpt4Vote,
-                        reasoning: gpt4Vote ? "Comportement client dans les normes acceptables" : "Pattern comportemental frauduleux identifié"
+                        reasoning: gpt4Vote ? "Comportement client dans les normes acceptables" : "Pattern comportemental frauduleux identifié",
+                        score: finalGpt4Score,
+                        threshold: 60
                     },
                     claude: {
-                        response: `Évaluation éthique et profil client: ${suspicionLevel < 0.4 ? 'LÉGITTIME' : 'RISQUE ÉLEVÉ'}. Historique client vérifié, capacité financière confirmée. Considérations: impact sur experience client vs sécurité.`,
+                        response: `Évaluation éthique et profil client: ${finalClaudeScore >= 40 ? 'RISQUE ÉLEVÉ' : 'LÉGITTIME'}. Historique client vérifié, capacité financière confirmée. Considérations: impact sur experience client vs sécurité.`,
                         vote: claudeVote,
-                        reasoning: claudeVote ? "Transaction conforme au profil client établi" : "Déviations significatives nécessitant blocage préventif"
+                        reasoning: claudeVote ? "Transaction conforme au profil client établi" : "Déviations significatives nécessitant blocage préventif",
+                        score: finalClaudeScore,
+                        threshold: 40
                     },
                     perplexity: {
-                        response: `Croisement bases de données: ${suspicionLevel > 0.7 ? 'FRAUDE DÉTECTÉE' : 'AUCUNE CORRESPONDANCE'}. IP Roumanie blacklistée dans 73% des cas de fraude. Marchand créé il y a 2 jours. Correspondance avec 4 patterns de fraude connus.`,
+                        response: `Croisement bases de données: ${finalPerplexityScore >= 70 ? 'FRAUDE DÉTECTÉE' : 'AUCUNE CORRESPONDANCE'}. IP Roumanie blacklistée dans 73% des cas de fraude. Marchand créé il y a 2 jours. Correspondance avec 4 patterns de fraude connus.`,
                         vote: perplexityVote,
-                        reasoning: perplexityVote ? "Données insuffisantes pour confirmer fraude" : "Correspondances multiples avec bases fraude internationales"
+                        reasoning: perplexityVote ? "Données insuffisantes pour confirmer fraude" : "Correspondances multiples avec bases fraude internationales",
+                        score: finalPerplexityScore,
+                        threshold: 70
                     }
                 };
 
                 return responses[providerId] || {
                     response: "Analyse de sécurité en cours...",
                     vote: Math.random() > 0.5,
-                    reasoning: "Évaluation de risque standard"
+                    reasoning: "Évaluation de risque standard",
+                    score: 50,
+                    threshold: 50
                 };
             }
 
@@ -1036,6 +1184,16 @@
                     document.getElementById(provider + 'Status').className = 'vote-status pending';
                     document.getElementById(provider + 'Response').textContent = 'En attente de la question...';
                     document.getElementById(provider + 'Reasoning').style.display = 'none';
+                    
+                    // Reset des scores
+                    const scoreSection = document.getElementById(provider + 'ScoreSection');
+                    if (scoreSection) {
+                        scoreSection.style.display = 'none';
+                        const scoreFill = document.getElementById(provider + 'ScoreFill');
+                        if (scoreFill) scoreFill.style.width = '0%';
+                        const scoreText = document.getElementById(provider + 'ScoreText');
+                        if (scoreText) scoreText.textContent = '0/100';
+                    }
                 });
 
                 this.updateStatus('active', 'Prêt', 'active');
@@ -1349,6 +1507,12 @@
                 document.querySelector('#gpt4Card .ai-name').textContent = currentScenario.aiNames.gpt4;
                 document.querySelector('#claudeCard .ai-name').textContent = currentScenario.aiNames.claude;
                 document.querySelector('#perplexityCard .ai-name').textContent = currentScenario.aiNames.perplexity;
+                
+                // Mettre à jour les labels de score selon le scénario
+                const scoreLabel = scenario === 'fraud_detection' ? '📊 Score de Risque' : '📊 Score d\'Analyse';
+                document.getElementById('gpt4ScoreLabel').textContent = scoreLabel;
+                document.getElementById('claudeScoreLabel').textContent = scoreLabel;
+                document.getElementById('perplexityScoreLabel').textContent = scoreLabel;
                 
                 // Mettre à jour les options de décision
                 const decisionSelect = document.getElementById('decisionType');
