@@ -686,15 +686,15 @@
                 
                 // Probabilités de détection basées sur les indicateurs de fraude
                 const suspicionLevel = this.calculateSuspicionLevel(transactionText);
-                const gpt4Vote = suspicionLevel > 0.6; // GPT-4 détecte pattern comportemental
+                const gpt4Vote = suspicionLevel < 0.6; // GPT-4 accepte si suspicion faible
                 const claudeVote = suspicionLevel < 0.4; // Claude plus conservateur, accepte si pas évident
-                const perplexityVote = suspicionLevel > 0.7; // Perplexity croise avec bases de données
+                const perplexityVote = suspicionLevel < 0.7; // Perplexity accepte si pas de correspondance fraude
 
                 const responses = {
                     gpt4: {
                         response: `Analyse comportementale: Transaction ${suspicionLevel > 0.6 ? 'SUSPECTE' : 'NORMALE'}. Pattern inhabituel détecté: horaire nocturne (02:15), montant élevé (15k€), géolocalisation à risque. Score de risque: ${Math.round(suspicionLevel * 100)}/100.`,
                         vote: gpt4Vote,
-                        reasoning: gpt4Vote ? "Pattern comportemental frauduleux identifié" : "Comportement client dans les normes acceptables"
+                        reasoning: gpt4Vote ? "Comportement client dans les normes acceptables" : "Pattern comportemental frauduleux identifié"
                     },
                     claude: {
                         response: `Évaluation éthique et profil client: ${suspicionLevel < 0.4 ? 'LÉGITTIME' : 'RISQUE ÉLEVÉ'}. Historique client vérifié, capacité financière confirmée. Considérations: impact sur experience client vs sécurité.`,
@@ -704,7 +704,7 @@
                     perplexity: {
                         response: `Croisement bases de données: ${suspicionLevel > 0.7 ? 'FRAUDE DÉTECTÉE' : 'AUCUNE CORRESPONDANCE'}. IP Roumanie blacklistée dans 73% des cas de fraude. Marchand créé il y a 2 jours. Correspondance avec 4 patterns de fraude connus.`,
                         vote: perplexityVote,
-                        reasoning: perplexityVote ? "Correspondances multiples avec bases fraude internationales" : "Données insuffisantes pour confirmer fraude"
+                        reasoning: perplexityVote ? "Données insuffisantes pour confirmer fraude" : "Correspondances multiples avec bases fraude internationales"
                     }
                 };
 
