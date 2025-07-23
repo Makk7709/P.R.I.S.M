@@ -548,7 +548,7 @@
                         <div class="score-fill" id="gpt4ScoreFill" style="width: 0%"></div>
                         <div class="score-text" id="gpt4ScoreText">0/100</div>
                     </div>
-                    <div class="score-threshold">Seuil: 60/100</div>
+                    <div class="score-threshold" id="gpt4ScoreThreshold">Seuil: 60/100</div>
                 </div>
                 <div class="vote-reasoning" id="gpt4Reasoning" style="display: none;">
                     Analyse comportementale...
@@ -569,7 +569,7 @@
                         <div class="score-fill" id="claudeScoreFill" style="width: 0%"></div>
                         <div class="score-text" id="claudeScoreText">0/100</div>
                     </div>
-                    <div class="score-threshold">Seuil: 40/100</div>
+                    <div class="score-threshold" id="claudeScoreThreshold">Seuil: 40/100</div>
                 </div>
                 <div class="vote-reasoning" id="claudeReasoning" style="display: none;">
                     Évaluation éthique...
@@ -590,7 +590,7 @@
                         <div class="score-fill" id="perplexityScoreFill" style="width: 0%"></div>
                         <div class="score-text" id="perplexityScoreText">0/100</div>
                     </div>
-                    <div class="score-threshold">Seuil: 70/100</div>
+                    <div class="score-threshold" id="perplexityScoreThreshold">Seuil: 70/100</div>
                 </div>
                 <div class="vote-reasoning" id="perplexityReasoning" style="display: none;">
                     Croisement données...
@@ -864,66 +864,77 @@
             }
 
             generateGenericResponse(providerId, proposal, scenario) {
-                // Générer les votes de manière cohérente pour les scénarios génériques
-                const gpt4Vote = Math.random() > 0.3; // 70% chance d'approuver
-                const claudeVote = Math.random() > 0.5; // 50% chance d'approuver  
-                const perplexityVote = Math.random() > 0.4; // 60% chance d'approuver
+                // Calculer les scores selon le scénario
+                const baseScore = this.calculateScenarioScore(proposal.question, scenario);
+                
+                // Scores individuels pour chaque IA avec variations spécifiques
+                const gpt4Score = Math.max(0, Math.min(100, baseScore + Math.round(Math.random() * 12 - 6))); // ±6 variation
+                const claudeScore = Math.max(0, Math.min(100, baseScore + Math.round(Math.random() * 10 - 5))); // ±5 variation  
+                const perplexityScore = Math.max(0, Math.min(100, baseScore + Math.round(Math.random() * 8 - 4))); // ±4 variation
+                
+                // Seuils différents selon le scénario et l'IA
+                const thresholds = this.getScenarioThresholds(scenario);
+                
+                // Votes basés sur les seuils
+                const gpt4Vote = gpt4Score >= thresholds.gpt4;
+                const claudeVote = claudeScore >= thresholds.claude;
+                const perplexityVote = perplexityScore >= thresholds.perplexity;
 
                 const responseTemplates = {
                     ai_development: {
                         gpt4: {
-                            positive: "Innovation prometteuse avec fort potentiel d'amélioration des performances. L'auto-apprentissage pourrait augmenter l'efficacité de 35% selon mes projections.",
-                            negative: "Risques techniques élevés et complexité d'implémentation importante. Nécessite plus de recherche préalable."
+                            positive: `Innovation prometteuse avec fort potentiel d'amélioration des performances. L'auto-apprentissage pourrait augmenter l'efficacité de 35% selon mes projections. Score d'innovation: ${gpt4Score}/100.`,
+                            negative: `Risques techniques élevés et complexité d'implémentation importante. Nécessite plus de recherche préalable. Score d'innovation: ${gpt4Score}/100.`
                         },
                         claude: {
-                            positive: "Proposition éthiquement solide et alignée avec nos principes de sécurité. Impact positif prévu sur l'expérience utilisateur.",
-                            negative: "Préoccupations éthiques identifiées concernant l'autonomie du système. Supervision humaine renforcée requise."
+                            positive: `Proposition éthiquement solide et alignée avec nos principes de sécurité. Impact positif prévu sur l'expérience utilisateur. Score d'analyse: ${claudeScore}/100.`,
+                            negative: `Préoccupations éthiques identifiées concernant l'autonomie du système. Supervision humaine renforcée requise. Score d'analyse: ${claudeScore}/100.`
                         },
                         perplexity: {
-                            positive: "Données empiriques favorables: 78% de réussite dans des projets similaires. Littérature scientifique appuie cette approche.",
-                            negative: "Preuves insuffisantes et résultats contradictoires dans les études de référence. Recommande plus de tests."
+                            positive: `Données empiriques favorables: 78% de réussite dans des projets similaires. Littérature scientifique appuie cette approche. Score d'analyse: ${perplexityScore}/100.`,
+                            negative: `Preuves insuffisantes et résultats contradictoires dans les études de référence. Recommande plus de tests. Score d'analyse: ${perplexityScore}/100.`
                         }
                     },
                     business_strategy: {
                         gpt4: {
-                            positive: "Opportunité de marché excellente avec ROI estimé à 180%. Timing optimal selon l'analyse concurrentielle.",
-                            negative: "Risques de marché trop élevés et barrières à l'entrée significatives. Recommande une approche progressive."
+                            positive: `Opportunité de marché excellente avec ROI estimé à 180%. Timing optimal selon l'analyse concurrentielle. Score d'opportunité: ${gpt4Score}/100.`,
+                            negative: `Risques de marché trop élevés et barrières à l'entrée significatives. Recommande une approche progressive. Score d'opportunité: ${gpt4Score}/100.`
                         },
                         claude: {
-                            positive: "Stratégie équilibrée respectant nos valeurs d'entreprise. Impact positif sur notre positionnement à long terme.",
-                            negative: "Conflits potentiels avec nos engagements éthiques actuels. Nécessite une révision de l'approche."
+                            positive: `Stratégie équilibrée respectant nos valeurs d'entreprise. Impact positif sur notre positionnement à long terme. Score d'analyse: ${claudeScore}/100.`,
+                            negative: `Conflits potentiels avec nos engagements éthiques actuels. Nécessite une révision de l'approche. Score d'analyse: ${claudeScore}/100.`
                         },
                         perplexity: {
-                            positive: "Tendances de marché favorables et données économiques positives. 67% des entreprises similaires ont réussi.",
-                            negative: "Indicateurs économiques défavorables et saturation du marché détectée. Moment peu propice."
+                            positive: `Tendances de marché favorables et données économiques positives. 67% des entreprises similaires ont réussi. Score d'analyse: ${perplexityScore}/100.`,
+                            negative: `Indicateurs économiques défavorables et saturation du marché détectée. Moment peu propice. Score d'analyse: ${perplexityScore}/100.`
                         }
                     },
                     security_assessment: {
                         gpt4: {
-                            positive: "Évaluation sécuritaire favorable avec amélioration de 45% de la protection. Architecture robuste et bien conçue.",
-                            negative: "Vulnérabilités potentielles identifiées dans l'implémentation. Nécessite renforcement des mécanismes de défense."
+                            positive: `Évaluation sécuritaire favorable avec amélioration de 45% de la protection. Architecture robuste et bien conçue. Score de sécurité: ${gpt4Score}/100.`,
+                            negative: `Vulnérabilités potentielles identifiées dans l'implémentation. Nécessite renforcement des mécanismes de défense. Score de sécurité: ${gpt4Score}/100.`
                         },
                         claude: {
-                            positive: "Protocole conforme aux standards éthiques et réglementaires. Balance appropriée sécurité/accessibilité.",
-                            negative: "Risques de sur-sécurisation impactant l'expérience utilisateur. Approche plus nuancée recommandée."
+                            positive: `Protocole conforme aux standards éthiques et réglementaires. Balance appropriée sécurité/accessibilité. Score d'analyse: ${claudeScore}/100.`,
+                            negative: `Risques de sur-sécurisation impactant l'expérience utilisateur. Approche plus nuancée recommandée. Score d'analyse: ${claudeScore}/100.`
                         },
                         perplexity: {
-                            positive: "Conformité aux standards internationaux et bonnes pratiques validées. Pas de vulnérabilités connues répertoriées.",
-                            negative: "Base de données de menaces révèle des risques émergents. Vigilance accrue nécessaire."
+                            positive: `Conformité aux standards internationaux et bonnes pratiques validées. Pas de vulnérabilités connues répertoriées. Score d'analyse: ${perplexityScore}/100.`,
+                            negative: `Base de données de menaces révèle des risques émergents. Vigilance accrue nécessaire. Score d'analyse: ${perplexityScore}/100.`
                         }
                     },
                     innovation_review: {
                         gpt4: {
-                            positive: "Innovation disruptive avec potentiel de transformation majeure. Avantage concurrentiel de 3-5 ans anticipé.",
-                            negative: "Technologie trop précoce et risques d'adoption élevés. Recommande attendre plus de maturité."
+                            positive: `Innovation disruptive avec potentiel de transformation majeure. Avantage concurrentiel de 3-5 ans anticipé. Score de viabilité: ${gpt4Score}/100.`,
+                            negative: `Technologie trop précoce et risques d'adoption élevés. Recommande attendre plus de maturité. Score de viabilité: ${gpt4Score}/100.`
                         },
                         claude: {
-                            positive: "Innovation responsable et alignée avec l'évolution sociétale. Impact positif mesuré sur nos stakeholders.",
-                            negative: "Implications éthiques complexes et effets sociétaux incertains. Prudence requise."
+                            positive: `Innovation responsable et alignée avec l'évolution sociétale. Impact positif mesuré sur nos stakeholders. Score d'analyse: ${claudeScore}/100.`,
+                            negative: `Implications éthiques complexes et effets sociétaux incertains. Prudence requise. Score d'analyse: ${claudeScore}/100.`
                         },
                         perplexity: {
-                            positive: "Recherches récentes confirment la viabilité. 89% des experts du domaine soutiennent cette direction.",
-                            negative: "Consensus scientifique limité et résultats préliminaires contradictoires. Recherche supplémentaire nécessaire."
+                            positive: `Recherches récentes confirment la viabilité. 89% des experts du domaine soutiennent cette direction. Score d'analyse: ${perplexityScore}/100.`,
+                            negative: `Consensus scientifique limité et résultats préliminaires contradictoires. Recherche supplémentaire nécessaire. Score d'analyse: ${perplexityScore}/100.`
                         }
                     }
                 };
@@ -933,24 +944,32 @@
                     gpt4: {
                         response: gpt4Vote ? templates.gpt4.positive : templates.gpt4.negative,
                         vote: gpt4Vote,
-                        reasoning: gpt4Vote ? "Analyse technique favorable avec bénéfices identifiés" : "Risques techniques ou complexité excessive"
+                        reasoning: gpt4Vote ? "Analyse technique favorable avec bénéfices identifiés" : "Risques techniques ou complexité excessive",
+                        score: gpt4Score,
+                        threshold: thresholds.gpt4
                     },
                     claude: {
                         response: claudeVote ? templates.claude.positive : templates.claude.negative,
                         vote: claudeVote,
-                        reasoning: claudeVote ? "Proposition éthiquement acceptable et bénéfique" : "Préoccupations éthiques ou impacts négatifs identifiés"
+                        reasoning: claudeVote ? "Proposition éthiquement acceptable et bénéfique" : "Préoccupations éthiques ou impacts négatifs identifiés",
+                        score: claudeScore,
+                        threshold: thresholds.claude
                     },
                     perplexity: {
                         response: perplexityVote ? templates.perplexity.positive : templates.perplexity.negative,
                         vote: perplexityVote,
-                        reasoning: perplexityVote ? "Données et preuves empiriques favorables" : "Preuves insuffisantes ou données contradictoires"
+                        reasoning: perplexityVote ? "Données et preuves empiriques favorables" : "Preuves insuffisantes ou données contradictoires",
+                        score: perplexityScore,
+                        threshold: thresholds.perplexity
                     }
                 };
 
                 return responses[providerId] || {
                     response: "Analyse en cours...",
                     vote: Math.random() > 0.5,
-                    reasoning: "Évaluation standard"
+                    reasoning: "Évaluation standard",
+                    score: 50,
+                    threshold: 50
                 };
             }
 
@@ -965,6 +984,86 @@
                 if (transactionText.includes('*4567')) suspicion += 0.1; // Carte spécifique
                 
                 return Math.min(suspicion, 1.0);
+            }
+
+            calculateScenarioScore(questionText, scenario) {
+                // Score de base selon le contenu de la question
+                let baseScore = 40; // Score neutre par défaut
+                const questionLower = questionText.toLowerCase();
+                
+                // Facteurs positifs génériques
+                if (questionLower.includes('améliorer') || questionLower.includes('optimiser')) baseScore += 15;
+                if (questionLower.includes('sécurité') || questionLower.includes('protection')) baseScore += 10;
+                if (questionLower.includes('innovation') || questionLower.includes('nouveau')) baseScore += 12;
+                if (questionLower.includes('efficace') || questionLower.includes('performance')) baseScore += 8;
+                
+                // Facteurs négatifs génériques
+                if (questionLower.includes('risque') || questionLower.includes('problème')) baseScore -= 12;
+                if (questionLower.includes('difficile') || questionLower.includes('complexe')) baseScore -= 8;
+                if (questionLower.includes('échec') || questionLower.includes('erreur')) baseScore -= 15;
+                
+                // Ajustements spécifiques par scénario
+                switch (scenario) {
+                    case 'ai_development':
+                        if (questionLower.includes('apprentissage') || questionLower.includes('ia')) baseScore += 10;
+                        if (questionLower.includes('automatique') || questionLower.includes('intelligent')) baseScore += 8;
+                        if (questionLower.includes('expérimental') || questionLower.includes('beta')) baseScore -= 10;
+                        break;
+                        
+                    case 'business_strategy':
+                        if (questionLower.includes('marché') || questionLower.includes('croissance')) baseScore += 12;
+                        if (questionLower.includes('profit') || questionLower.includes('roi')) baseScore += 10;
+                        if (questionLower.includes('concurrent') || questionLower.includes('saturation')) baseScore -= 8;
+                        break;
+                        
+                    case 'security_assessment':
+                        if (questionLower.includes('protocole') || questionLower.includes('cryptage')) baseScore += 15;
+                        if (questionLower.includes('conforme') || questionLower.includes('standard')) baseScore += 10;
+                        if (questionLower.includes('vulnérabilité') || questionLower.includes('faille')) baseScore -= 20;
+                        break;
+                        
+                    case 'innovation_review':
+                        if (questionLower.includes('révolutionnaire') || questionLower.includes('breakthrough')) baseScore += 18;
+                        if (questionLower.includes('disruptif') || questionLower.includes('transformateur')) baseScore += 15;
+                        if (questionLower.includes('précoce') || questionLower.includes('immature')) baseScore -= 12;
+                        break;
+                }
+                
+                // Assurer que le score reste dans [20, 80] pour plus de réalisme
+                return Math.max(20, Math.min(80, baseScore));
+            }
+
+            getScenarioThresholds(scenario) {
+                // Seuils différents selon le scénario et la spécialité de chaque IA
+                const thresholds = {
+                    fraud_detection: {
+                        gpt4: 60,    // GPT-4 analyse comportementale
+                        claude: 40,  // Claude plus strict sur éthique
+                        perplexity: 70 // Perplexity vérifie bases données
+                    },
+                    ai_development: {
+                        gpt4: 55,    // GPT-4 optimiste sur tech
+                        claude: 65,  // Claude plus prudent sur éthique
+                        perplexity: 50 // Perplexity se base sur données existantes
+                    },
+                    business_strategy: {
+                        gpt4: 60,    // GPT-4 analyste business
+                        claude: 70,  // Claude évalue impact social
+                        perplexity: 55 // Perplexity compare avec le marché
+                    },
+                    security_assessment: {
+                        gpt4: 65,    // GPT-4 technique
+                        claude: 75,  // Claude très strict sur sécurité
+                        perplexity: 60 // Perplexity compare avec standards
+                    },
+                    innovation_review: {
+                        gpt4: 50,    // GPT-4 curieux d'innovation
+                        claude: 70,  // Claude prudent sur nouveautés
+                        perplexity: 55 // Perplexity vérifie la littérature
+                    }
+                };
+                
+                return thresholds[scenario] || thresholds.ai_development;
             }
 
             getFraudScenarios() {
@@ -1513,6 +1612,12 @@
                 document.getElementById('gpt4ScoreLabel').textContent = scoreLabel;
                 document.getElementById('claudeScoreLabel').textContent = scoreLabel;
                 document.getElementById('perplexityScoreLabel').textContent = scoreLabel;
+                
+                // Mettre à jour les seuils selon le scénario
+                const thresholds = demo.getScenarioThresholds(scenario);
+                document.getElementById('gpt4ScoreThreshold').textContent = `Seuil: ${thresholds.gpt4}/100`;
+                document.getElementById('claudeScoreThreshold').textContent = `Seuil: ${thresholds.claude}/100`;
+                document.getElementById('perplexityScoreThreshold').textContent = `Seuil: ${thresholds.perplexity}/100`;
                 
                 // Mettre à jour les options de décision
                 const decisionSelect = document.getElementById('decisionType');
