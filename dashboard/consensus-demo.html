@@ -1,0 +1,907 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PRISM - Démo Consensus IA Live</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.7.4/socket.io.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: #ffffff;
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .demo-container {
+            max-width: 1600px;
+            margin: 0 auto;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .header h1 {
+            font-size: 3rem;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+            background: linear-gradient(45deg, #ff6b6b, #4ecdc4, #45b7d1);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .subtitle {
+            font-size: 1.4rem;
+            opacity: 0.9;
+            margin-bottom: 20px;
+        }
+
+        .consensus-status {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin-bottom: 30px;
+            gap: 30px;
+        }
+
+        .status-card {
+            background: rgba(255,255,255,0.1);
+            border-radius: 15px;
+            padding: 20px;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255,255,255,0.2);
+            min-width: 200px;
+            text-align: center;
+        }
+
+        .status-indicator {
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            margin: 0 auto 10px;
+            animation: pulse 2s infinite;
+        }
+
+        .status-indicator.active { background: #4CAF50; }
+        .status-indicator.voting { background: #FF9800; }
+        .status-indicator.timeout { background: #F44336; }
+
+        .main-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 30px;
+            margin-bottom: 30px;
+        }
+
+        .question-panel {
+            background: rgba(255,255,255,0.1);
+            border-radius: 20px;
+            padding: 30px;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255,255,255,0.2);
+        }
+
+        .consensus-panel {
+            background: rgba(255,255,255,0.1);
+            border-radius: 20px;
+            padding: 30px;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255,255,255,0.2);
+        }
+
+        .ai-responses {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .ai-card {
+            background: rgba(255,255,255,0.1);
+            border-radius: 15px;
+            padding: 20px;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255,255,255,0.2);
+            transition: all 0.3s ease;
+        }
+
+        .ai-card.voting {
+            border-color: #FF9800;
+            box-shadow: 0 0 20px rgba(255, 152, 0, 0.5);
+        }
+
+        .ai-card.approved {
+            border-color: #4CAF50;
+            box-shadow: 0 0 20px rgba(76, 175, 80, 0.5);
+        }
+
+        .ai-card.rejected {
+            border-color: #F44336;
+            box-shadow: 0 0 20px rgba(244, 67, 54, 0.5);
+        }
+
+        .ai-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 15px;
+        }
+
+        .ai-name {
+            font-weight: bold;
+            font-size: 1.1rem;
+        }
+
+        .vote-status {
+            padding: 5px 10px;
+            border-radius: 20px;
+            font-size: 0.9rem;
+            font-weight: bold;
+        }
+
+        .vote-status.pending {
+            background: rgba(255, 152, 0, 0.3);
+            color: #FF9800;
+        }
+
+        .vote-status.approve {
+            background: rgba(76, 175, 80, 0.3);
+            color: #4CAF50;
+        }
+
+        .vote-status.reject {
+            background: rgba(244, 67, 54, 0.3);
+            color: #F44336;
+        }
+
+        .ai-response {
+            background: rgba(0,0,0,0.2);
+            border-radius: 10px;
+            padding: 15px;
+            margin-bottom: 10px;
+            font-size: 0.95rem;
+            line-height: 1.4;
+        }
+
+        .vote-reasoning {
+            background: rgba(0,0,0,0.1);
+            border-radius: 8px;
+            padding: 10px;
+            font-size: 0.9rem;
+            font-style: italic;
+            opacity: 0.8;
+        }
+
+        .demo-controls {
+            background: rgba(255,255,255,0.1);
+            border-radius: 15px;
+            padding: 20px;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255,255,255,0.2);
+            margin-bottom: 30px;
+        }
+
+        .control-buttons {
+            display: flex;
+            gap: 15px;
+            flex-wrap: wrap;
+        }
+
+        .btn {
+            padding: 12px 24px;
+            border: none;
+            border-radius: 25px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 1rem;
+        }
+
+        .btn.primary {
+            background: linear-gradient(45deg, #667eea, #764ba2);
+            color: white;
+        }
+
+        .btn.secondary {
+            background: rgba(255,255,255,0.2);
+            color: white;
+            border: 1px solid rgba(255,255,255,0.3);
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+        }
+
+        .metrics-panel {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+        }
+
+        .metric-card {
+            background: rgba(255,255,255,0.1);
+            border-radius: 15px;
+            padding: 20px;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255,255,255,0.2);
+            text-align: center;
+        }
+
+        .metric-value {
+            font-size: 2.5rem;
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+
+        .metric-label {
+            font-size: 1rem;
+            opacity: 0.8;
+        }
+
+        .progress-bar {
+            width: 100%;
+            height: 8px;
+            background: rgba(255,255,255,0.2);
+            border-radius: 10px;
+            overflow: hidden;
+            margin: 10px 0;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #4CAF50, #45b7d1);
+            transition: width 0.3s ease;
+        }
+
+        .timeline {
+            background: rgba(255,255,255,0.1);
+            border-radius: 15px;
+            padding: 20px;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255,255,255,0.2);
+            max-height: 300px;
+            overflow-y: auto;
+        }
+
+        .timeline-item {
+            padding: 10px;
+            border-left: 3px solid #667eea;
+            margin-left: 10px;
+            margin-bottom: 10px;
+            background: rgba(0,0,0,0.1);
+            border-radius: 5px;
+        }
+
+        .timeline-time {
+            color: #b3b3b3;
+            font-size: 0.8rem;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+
+        @keyframes slideIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .slide-in {
+            animation: slideIn 0.5s ease-out;
+        }
+
+        .question-input {
+            width: 100%;
+            padding: 15px;
+            border: none;
+            border-radius: 10px;
+            background: rgba(255,255,255,0.9);
+            color: #333;
+            font-size: 1.1rem;
+            margin-bottom: 15px;
+        }
+
+        .question-input:focus {
+            outline: none;
+            box-shadow: 0 0 10px rgba(102, 126, 234, 0.5);
+        }
+
+        .decision-type-select {
+            padding: 10px;
+            border: none;
+            border-radius: 8px;
+            background: rgba(255,255,255,0.9);
+            color: #333;
+            margin-bottom: 15px;
+        }
+    </style>
+</head>
+<body>
+    <div class="demo-container">
+        <div class="header">
+            <h1>🎯 PRISM Consensus IA</h1>
+            <div class="subtitle">Démonstration Live du Système de Vote IA 2/3 Majorité</div>
+        </div>
+
+        <!-- Status du Consensus -->
+        <div class="consensus-status">
+            <div class="status-card">
+                <div class="status-indicator active" id="systemStatus"></div>
+                <div class="status-label">Système</div>
+                <div class="status-text" id="systemStatusText">Prêt</div>
+            </div>
+            <div class="status-card">
+                <div class="status-indicator" id="consensusStatus"></div>
+                <div class="status-label">Consensus</div>
+                <div class="status-text" id="consensusStatusText">En Attente</div>
+            </div>
+            <div class="status-card">
+                <div class="status-indicator" id="votingStatus"></div>
+                <div class="status-label">Vote</div>
+                <div class="status-text" id="votingStatusText">Aucun</div>
+            </div>
+        </div>
+
+        <!-- Contrôles de Démo -->
+        <div class="demo-controls">
+            <h3>🎮 Contrôles de Démo</h3>
+            <input type="text" 
+                   class="question-input" 
+                   id="questionInput" 
+                   placeholder="Posez une question pour tester le consensus IA..."
+                   value="Devons-nous implémenter une nouvelle fonctionnalité d'auto-apprentissage?">
+            
+            <select class="decision-type-select" id="decisionType">
+                <option value="critical">🔥 Décision Critique</option>
+                <option value="security">🛡️ Sécurité</option>
+                <option value="self_improvement">🧠 Auto-amélioration</option>
+                <option value="system_modification">⚙️ Modification Système</option>
+            </select>
+            
+            <div class="control-buttons">
+                <button class="btn primary" onclick="startConsensusDemo()">🚀 Démarrer Consensus</button>
+                <button class="btn secondary" onclick="resetDemo()">🔄 Reset</button>
+                <button class="btn secondary" onclick="simulateTimeout()">⏱️ Simuler Timeout</button>
+                <button class="btn secondary" onclick="simulateDisagreement()">❌ Simuler Désaccord</button>
+            </div>
+        </div>
+
+        <!-- Grille Principale -->
+        <div class="main-grid">
+            <!-- Panel Question -->
+            <div class="question-panel">
+                <h3>❓ Question Posée</h3>
+                <div class="ai-response" id="currentQuestion">
+                    Aucune question en cours...
+                </div>
+                
+                <h4 style="margin-top: 20px;">⏱️ Progression du Consensus</h4>
+                <div class="progress-bar">
+                    <div class="progress-fill" id="consensusProgress" style="width: 0%"></div>
+                </div>
+                <div style="display: flex; justify-content: space-between; margin-top: 10px;">
+                    <span>Temps restant: <span id="timeRemaining">1000ms</span></span>
+                    <span>Votes: <span id="voteCount">0/3</span></span>
+                </div>
+            </div>
+
+            <!-- Panel Consensus -->
+            <div class="consensus-panel">
+                <h3>🎯 Résultat du Consensus</h3>
+                <div id="consensusResult" class="ai-response">
+                    En attente du démarrage...
+                </div>
+                
+                <h4 style="margin-top: 20px;">📊 Détail des Votes</h4>
+                <div id="voteDetails">
+                    <div style="display: flex; justify-content: space-between; margin: 5px 0;">
+                        <span>✅ Approbations:</span>
+                        <span id="approvalCount">0</span>
+                    </div>
+                    <div style="display: flex; justify-content: space-between; margin: 5px 0;">
+                        <span>❌ Rejets:</span>
+                        <span id="rejectionCount">0</span>
+                    </div>
+                    <div style="display: flex; justify-content: space-between; margin: 5px 0;">
+                        <span>⏸️ Abstentions:</span>
+                        <span id="abstentionCount">0</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Réponses des IA -->
+        <div class="ai-responses">
+            <div class="ai-card" id="gpt4Card">
+                <div class="ai-header">
+                    <div class="ai-name">🤖 GPT-4</div>
+                    <div class="vote-status pending" id="gpt4Status">En attente</div>
+                </div>
+                <div class="ai-response" id="gpt4Response">
+                    En attente de la question...
+                </div>
+                <div class="vote-reasoning" id="gpt4Reasoning" style="display: none;">
+                    Raisonnement du vote...
+                </div>
+            </div>
+
+            <div class="ai-card" id="claudeCard">
+                <div class="ai-header">
+                    <div class="ai-name">🧠 Claude-3</div>
+                    <div class="vote-status pending" id="claudeStatus">En attente</div>
+                </div>
+                <div class="ai-response" id="claudeResponse">
+                    En attente de la question...
+                </div>
+                <div class="vote-reasoning" id="claudeReasoning" style="display: none;">
+                    Raisonnement du vote...
+                </div>
+            </div>
+
+            <div class="ai-card" id="perplexityCard">
+                <div class="ai-header">
+                    <div class="ai-name">🔍 Perplexity</div>
+                    <div class="vote-status pending" id="perplexityStatus">En attente</div>
+                </div>
+                <div class="ai-response" id="perplexityResponse">
+                    En attente de la question...
+                </div>
+                <div class="vote-reasoning" id="perplexityReasoning" style="display: none;">
+                    Raisonnement du vote...
+                </div>
+            </div>
+        </div>
+
+        <!-- Métriques -->
+        <div class="metrics-panel">
+            <div class="metric-card">
+                <div class="metric-value" id="totalProposals">0</div>
+                <div class="metric-label">Propositions Totales</div>
+            </div>
+            <div class="metric-card">
+                <div class="metric-value" id="approvedProposals">0</div>
+                <div class="metric-label">Approuvées</div>
+            </div>
+            <div class="metric-card">
+                <div class="metric-value" id="rejectedProposals">0</div>
+                <div class="metric-label">Rejetées</div>
+            </div>
+            <div class="metric-card">
+                <div class="metric-value" id="averageTime">0ms</div>
+                <div class="metric-label">Temps Moyen</div>
+            </div>
+            <div class="metric-card">
+                <div class="metric-value" id="successRate">100%</div>
+                <div class="metric-label">Taux de Succès</div>
+            </div>
+            <div class="metric-card">
+                <div class="metric-value" id="activeProposals">0</div>
+                <div class="metric-label">Propositions Actives</div>
+            </div>
+        </div>
+
+        <!-- Timeline des Événements -->
+        <div style="margin-top: 30px;">
+            <h3>📜 Timeline des Événements</h3>
+            <div class="timeline" id="eventTimeline">
+                <div class="timeline-item">
+                    <div class="timeline-time">Système initialisé</div>
+                    <div>Interface de démo consensus IA prête</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        class ConsensusDemo {
+            constructor() {
+                this.currentProposal = null;
+                this.isActive = false;
+                this.metrics = {
+                    totalProposals: 0,
+                    approvedProposals: 0,
+                    rejectedProposals: 0,
+                    timeoutProposals: 0,
+                    averageDecisionTime: 0,
+                    successRate: 100
+                };
+                this.eventLog = [];
+                this.consensusTimeout = null;
+                
+                this.initializeDemo();
+            }
+
+            initializeDemo() {
+                this.addTimelineEvent('Démo initialisée', 'Système de consensus IA prêt pour la démonstration');
+                this.updateMetricsDisplay();
+            }
+
+            async startConsensusDemo() {
+                if (this.isActive) {
+                    this.addTimelineEvent('Démo déjà active', 'Une proposition est en cours de traitement');
+                    return;
+                }
+
+                const question = document.getElementById('questionInput').value;
+                const decisionType = document.getElementById('decisionType').value;
+
+                if (!question.trim()) {
+                    alert('Veuillez saisir une question');
+                    return;
+                }
+
+                this.isActive = true;
+                this.metrics.totalProposals++;
+
+                // Afficher la question
+                document.getElementById('currentQuestion').textContent = question;
+                this.addTimelineEvent('Nouvelle proposition', `Question: ${question}`);
+
+                // Mettre à jour le statut
+                this.updateStatus('voting', 'Vote en cours', 'voting');
+
+                // Créer la proposition simulée
+                this.currentProposal = {
+                    id: 'demo-' + Date.now(),
+                    question: question,
+                    type: decisionType,
+                    startTime: Date.now(),
+                    votes: new Map(),
+                    status: 'PENDING'
+                };
+
+                // Démarrer le processus de vote
+                await this.simulateVotingProcess();
+            }
+
+            async simulateVotingProcess() {
+                const providers = [
+                    { id: 'gpt4', name: 'GPT-4', card: 'gpt4Card', response: 'gpt4Response', status: 'gpt4Status', reasoning: 'gpt4Reasoning' },
+                    { id: 'claude', name: 'Claude-3', card: 'claudeCard', response: 'claudeResponse', status: 'claudeStatus', reasoning: 'claudeReasoning' },
+                    { id: 'perplexity', name: 'Perplexity', card: 'perplexityCard', response: 'perplexityResponse', status: 'perplexityStatus', reasoning: 'perplexityReasoning' }
+                ];
+
+                // Reset les cartes IA
+                providers.forEach(provider => {
+                    document.getElementById(provider.card).className = 'ai-card voting';
+                    document.getElementById(provider.status).textContent = 'Analyse...';
+                    document.getElementById(provider.status).className = 'vote-status pending';
+                    document.getElementById(provider.response).textContent = 'Génération de la réponse...';
+                    document.getElementById(provider.reasoning).style.display = 'none';
+                });
+
+                // Démarrer le timeout
+                this.startTimeoutCountdown();
+
+                // Simuler les réponses des IA avec délais réalistes
+                for (let i = 0; i < providers.length; i++) {
+                    const provider = providers[i];
+                    const delay = 200 + Math.random() * 400; // 200-600ms
+                    
+                    setTimeout(async () => {
+                        await this.simulateAIResponse(provider);
+                    }, delay);
+                }
+            }
+
+            async simulateAIResponse(provider) {
+                // Générer une réponse simulée
+                const responses = this.generateAIResponse(provider.id, this.currentProposal);
+                
+                // Afficher la réponse
+                document.getElementById(provider.response).textContent = responses.response;
+                this.addTimelineEvent(`${provider.name} répond`, responses.response.substring(0, 50) + '...');
+
+                // Simuler un délai de délibération
+                await new Promise(resolve => setTimeout(resolve, 100 + Math.random() * 200));
+
+                // Afficher le vote
+                const vote = responses.vote;
+                const reasoning = responses.reasoning;
+
+                document.getElementById(provider.status).textContent = vote ? '✅ Approuve' : '❌ Rejette';
+                document.getElementById(provider.status).className = `vote-status ${vote ? 'approve' : 'reject'}`;
+                document.getElementById(provider.card).className = `ai-card ${vote ? 'approved' : 'rejected'}`;
+                document.getElementById(provider.reasoning).textContent = reasoning;
+                document.getElementById(provider.reasoning).style.display = 'block';
+
+                // Enregistrer le vote
+                this.currentProposal.votes.set(provider.id, { vote, reasoning });
+                
+                this.addTimelineEvent(`${provider.name} vote`, `${vote ? 'Approuve' : 'Rejette'}: ${reasoning}`);
+                this.updateVoteCount();
+
+                // Vérifier si le consensus est atteint
+                this.checkConsensus();
+            }
+
+            generateAIResponse(providerId, proposal) {
+                // Générer les votes de manière cohérente
+                const gpt4Vote = Math.random() > 0.3; // 70% chance d'approuver
+                const claudeVote = Math.random() > 0.5; // 50% chance d'approuver  
+                const perplexityVote = Math.random() > 0.4; // 60% chance d'approuver
+
+                const responses = {
+                    gpt4: {
+                        response: "Je pense que cette proposition présente des opportunités intéressantes d'innovation. L'auto-apprentissage pourrait améliorer significativement les performances du système.",
+                        vote: gpt4Vote,
+                        reasoning: gpt4Vote ? "Innovation beneficial avec risques managés" : "Risques d'innovation trop élevés"
+                    },
+                    claude: {
+                        response: "Cette proposition soulève des questions éthiques importantes. Il faut s'assurer que l'auto-apprentissage reste aligné avec nos principes de sécurité.",
+                        vote: claudeVote,
+                        reasoning: claudeVote ? "Proposition éthiquement acceptable" : "Préoccupations éthiques identifiées"
+                    },
+                    perplexity: {
+                        response: "Basé sur les données disponibles, l'auto-apprentissage montre une efficacité de 85% dans les implémentations similaires. Les preuves soutiennent cette approche.",
+                        vote: perplexityVote,
+                        reasoning: perplexityVote ? "Preuves et données soutiennent la décision" : "Données insuffisantes ou risques identifiés"
+                    }
+                };
+
+                return responses[providerId] || {
+                    response: "Analyse en cours...",
+                    vote: Math.random() > 0.5,
+                    reasoning: "Évaluation standard"
+                };
+            }
+
+            startTimeoutCountdown() {
+                let timeLeft = 1000; // 1 seconde
+                const progressBar = document.getElementById('consensusProgress');
+                const timeDisplay = document.getElementById('timeRemaining');
+
+                const countdown = setInterval(() => {
+                    timeLeft -= 50;
+                    const progress = ((1000 - timeLeft) / 1000) * 100;
+                    
+                    progressBar.style.width = progress + '%';
+                    timeDisplay.textContent = timeLeft + 'ms';
+
+                    if (timeLeft <= 0) {
+                        clearInterval(countdown);
+                        if (this.isActive && this.currentProposal.status === 'PENDING') {
+                            this.handleTimeout();
+                        }
+                    }
+                }, 50);
+
+                this.consensusTimeout = countdown;
+            }
+
+            updateVoteCount() {
+                const votes = this.currentProposal.votes;
+                const approvals = Array.from(votes.values()).filter(v => v.vote).length;
+                const rejections = Array.from(votes.values()).filter(v => !v.vote).length;
+                
+                document.getElementById('voteCount').textContent = `${votes.size}/3`;
+                document.getElementById('approvalCount').textContent = approvals;
+                document.getElementById('rejectionCount').textContent = rejections;
+                document.getElementById('abstentionCount').textContent = 3 - votes.size;
+            }
+
+            checkConsensus() {
+                const votes = this.currentProposal.votes;
+                const approvals = Array.from(votes.values()).filter(v => v.vote).length;
+                const rejections = Array.from(votes.values()).filter(v => !v.vote).length;
+
+                // Règle 2/3 majorité (2 sur 3)
+                if (approvals >= 2) {
+                    this.finalizeConsensus('APPROVED');
+                } else if (rejections >= 2) {
+                    this.finalizeConsensus('REJECTED');
+                } else if (votes.size === 3) {
+                    // Tous ont voté mais pas de majorité claire
+                    this.finalizeConsensus('SPLIT');
+                }
+            }
+
+            finalizeConsensus(status) {
+                if (!this.isActive) return;
+
+                this.isActive = false;
+                this.currentProposal.status = status;
+                
+                if (this.consensusTimeout) {
+                    clearInterval(this.consensusTimeout);
+                }
+
+                const decisionTime = Date.now() - this.currentProposal.startTime;
+                
+                // Mettre à jour les métriques
+                if (status === 'APPROVED') {
+                    this.metrics.approvedProposals++;
+                } else if (status === 'REJECTED') {
+                    this.metrics.rejectedProposals++;
+                } else {
+                    this.metrics.timeoutProposals++;
+                }
+
+                // Calculer temps moyen
+                const totalDecisions = this.metrics.approvedProposals + this.metrics.rejectedProposals + this.metrics.timeoutProposals;
+                this.metrics.averageDecisionTime = Math.round(
+                    (this.metrics.averageDecisionTime * (totalDecisions - 1) + decisionTime) / totalDecisions
+                );
+
+                // Calculer taux de succès
+                this.metrics.successRate = Math.round(
+                    ((this.metrics.approvedProposals + this.metrics.rejectedProposals) / this.metrics.totalProposals) * 100
+                );
+
+                // Afficher le résultat
+                this.displayConsensusResult(status, decisionTime);
+                this.updateMetricsDisplay();
+                this.updateStatus('active', 'Prêt', 'active');
+            }
+
+            displayConsensusResult(status, decisionTime) {
+                const resultElement = document.getElementById('consensusResult');
+                const progressBar = document.getElementById('consensusProgress');
+                
+                let message, color;
+                switch (status) {
+                    case 'APPROVED':
+                        message = `✅ CONSENSUS ATTEINT - APPROUVÉ (${decisionTime}ms)`;
+                        color = '#4CAF50';
+                        progressBar.style.background = 'linear-gradient(90deg, #4CAF50, #45b7d1)';
+                        break;
+                    case 'REJECTED':
+                        message = `❌ CONSENSUS ATTEINT - REJETÉ (${decisionTime}ms)`;
+                        color = '#F44336';
+                        progressBar.style.background = 'linear-gradient(90deg, #F44336, #ff6b6b)';
+                        break;
+                    case 'SPLIT':
+                        message = `⚖️ VOTES PARTAGÉS - AUCUN CONSENSUS (${decisionTime}ms)`;
+                        color = '#FF9800';
+                        progressBar.style.background = 'linear-gradient(90deg, #FF9800, #ffab40)';
+                        break;
+                    default:
+                        message = `⏱️ TIMEOUT - ESCALADE SÉCURITÉ (${decisionTime}ms)`;
+                        color = '#9E9E9E';
+                        progressBar.style.background = 'linear-gradient(90deg, #9E9E9E, #bdbdbd)';
+                }
+
+                resultElement.textContent = message;
+                resultElement.style.color = color;
+                resultElement.style.fontWeight = 'bold';
+
+                progressBar.style.width = '100%';
+
+                this.addTimelineEvent('Consensus finalisé', message);
+            }
+
+            handleTimeout() {
+                this.addTimelineEvent('Timeout atteint', 'Escalade vers TrustContext pour approbation humaine');
+                this.finalizeConsensus('TIMEOUT');
+            }
+
+            updateStatus(statusClass, text, indicator) {
+                document.getElementById('consensusStatus').className = `status-indicator ${statusClass}`;
+                document.getElementById('consensusStatusText').textContent = text;
+                document.getElementById('votingStatus').className = `status-indicator ${indicator}`;
+                document.getElementById('votingStatusText').textContent = text;
+            }
+
+            updateMetricsDisplay() {
+                document.getElementById('totalProposals').textContent = this.metrics.totalProposals;
+                document.getElementById('approvedProposals').textContent = this.metrics.approvedProposals;
+                document.getElementById('rejectedProposals').textContent = this.metrics.rejectedProposals;
+                document.getElementById('averageTime').textContent = this.metrics.averageDecisionTime + 'ms';
+                document.getElementById('successRate').textContent = this.metrics.successRate + '%';
+                document.getElementById('activeProposals').textContent = this.isActive ? 1 : 0;
+            }
+
+            addTimelineEvent(title, description) {
+                const timeline = document.getElementById('eventTimeline');
+                const timelineItem = document.createElement('div');
+                timelineItem.className = 'timeline-item slide-in';
+                
+                const now = new Date();
+                const timeString = now.toLocaleTimeString('fr-FR', { 
+                    hour12: false, 
+                    hour: '2-digit', 
+                    minute: '2-digit', 
+                    second: '2-digit' 
+                });
+
+                timelineItem.innerHTML = `
+                    <div class="timeline-time">${timeString}</div>
+                    <div><strong>${title}</strong></div>
+                    <div>${description}</div>
+                `;
+
+                timeline.insertBefore(timelineItem, timeline.firstChild);
+
+                // Garder seulement les 20 derniers événements
+                while (timeline.children.length > 20) {
+                    timeline.removeChild(timeline.lastChild);
+                }
+            }
+
+            resetDemo() {
+                if (this.consensusTimeout) {
+                    clearInterval(this.consensusTimeout);
+                }
+
+                this.isActive = false;
+                this.currentProposal = null;
+
+                // Reset UI
+                document.getElementById('currentQuestion').textContent = 'Aucune question en cours...';
+                document.getElementById('consensusResult').textContent = 'En attente du démarrage...';
+                document.getElementById('consensusProgress').style.width = '0%';
+                document.getElementById('timeRemaining').textContent = '1000ms';
+                document.getElementById('voteCount').textContent = '0/3';
+
+                // Reset vote counts
+                document.getElementById('approvalCount').textContent = '0';
+                document.getElementById('rejectionCount').textContent = '0';
+                document.getElementById('abstentionCount').textContent = '0';
+
+                // Reset AI cards
+                const providers = ['gpt4', 'claude', 'perplexity'];
+                providers.forEach(provider => {
+                    document.getElementById(provider + 'Card').className = 'ai-card';
+                    document.getElementById(provider + 'Status').textContent = 'En attente';
+                    document.getElementById(provider + 'Status').className = 'vote-status pending';
+                    document.getElementById(provider + 'Response').textContent = 'En attente de la question...';
+                    document.getElementById(provider + 'Reasoning').style.display = 'none';
+                });
+
+                this.updateStatus('active', 'Prêt', 'active');
+                this.addTimelineEvent('Démo reset', 'Interface remise à zéro');
+            }
+
+            simulateTimeout() {
+                if (this.isActive) {
+                    this.handleTimeout();
+                } else {
+                    alert('Démarrez d\'abord une démo');
+                }
+            }
+
+            simulateDisagreement() {
+                // Modifier les votes pour créer un désaccord
+                alert('Fonctionnalité à implémenter: forcer des votes en désaccord');
+            }
+        }
+
+        // Fonctions globales pour les boutons
+        let demo;
+
+        function startConsensusDemo() {
+            demo.startConsensusDemo();
+        }
+
+        function resetDemo() {
+            demo.resetDemo();
+        }
+
+        function simulateTimeout() {
+            demo.simulateTimeout();
+        }
+
+        function simulateDisagreement() {
+            demo.simulateDisagreement();
+        }
+
+        // Initialiser la démo au chargement
+        window.addEventListener('DOMContentLoaded', () => {
+            demo = new ConsensusDemo();
+        });
+    </script>
+</body>
+</html> 
