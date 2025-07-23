@@ -387,6 +387,18 @@
         <!-- Contrôles de Démo -->
         <div class="demo-controls">
             <h3>🎮 Contrôles de Démo</h3>
+            
+            <div style="margin-bottom: 15px;">
+                <label for="scenarioSelect" style="display: block; margin-bottom: 5px; font-weight: bold;">📋 Scénario d'Application :</label>
+                <select class="decision-type-select" id="scenarioSelect" onchange="changeScenario()">
+                    <option value="fraud_detection">🚨 Détection de Fraude</option>
+                    <option value="ai_development">🤖 Développement IA</option>
+                    <option value="business_strategy">📈 Stratégie Business</option>
+                    <option value="security_assessment">🛡️ Évaluation Sécurité</option>
+                    <option value="innovation_review">💡 Revue Innovation</option>
+                </select>
+            </div>
+            
             <input type="text" 
                    class="question-input" 
                    id="questionInput" 
@@ -659,14 +671,18 @@
             }
 
             generateAIResponse(providerId, proposal) {
-                // Créer des scénarios de fraude variés et réalistes
-                const fraudScenarios = this.getFraudScenarios();
-                const scenario = fraudScenarios[Math.floor(Math.random() * fraudScenarios.length)];
+                const currentScenario = this.currentScenario || 'fraud_detection';
                 
+                if (currentScenario === 'fraud_detection') {
+                    return this.generateFraudResponse(providerId, proposal);
+                } else {
+                    return this.generateGenericResponse(providerId, proposal, currentScenario);
+                }
+            }
+
+            generateFraudResponse(providerId, proposal) {
                 // Analyser le type de transaction pour adapter les réponses
                 const transactionText = proposal.question.toLowerCase();
-                const isSuspicious = transactionText.includes('2:') || transactionText.includes('roumanie') || 
-                                   transactionText.includes('15,000') || transactionText.includes('nouveau');
                 
                 // Probabilités de détection basées sur les indicateurs de fraude
                 const suspicionLevel = this.calculateSuspicionLevel(transactionText);
@@ -696,6 +712,97 @@
                     response: "Analyse de sécurité en cours...",
                     vote: Math.random() > 0.5,
                     reasoning: "Évaluation de risque standard"
+                };
+            }
+
+            generateGenericResponse(providerId, proposal, scenario) {
+                // Générer les votes de manière cohérente pour les scénarios génériques
+                const gpt4Vote = Math.random() > 0.3; // 70% chance d'approuver
+                const claudeVote = Math.random() > 0.5; // 50% chance d'approuver  
+                const perplexityVote = Math.random() > 0.4; // 60% chance d'approuver
+
+                const responseTemplates = {
+                    ai_development: {
+                        gpt4: {
+                            positive: "Innovation prometteuse avec fort potentiel d'amélioration des performances. L'auto-apprentissage pourrait augmenter l'efficacité de 35% selon mes projections.",
+                            negative: "Risques techniques élevés et complexité d'implémentation importante. Nécessite plus de recherche préalable."
+                        },
+                        claude: {
+                            positive: "Proposition éthiquement solide et alignée avec nos principes de sécurité. Impact positif prévu sur l'expérience utilisateur.",
+                            negative: "Préoccupations éthiques identifiées concernant l'autonomie du système. Supervision humaine renforcée requise."
+                        },
+                        perplexity: {
+                            positive: "Données empiriques favorables: 78% de réussite dans des projets similaires. Littérature scientifique appuie cette approche.",
+                            negative: "Preuves insuffisantes et résultats contradictoires dans les études de référence. Recommande plus de tests."
+                        }
+                    },
+                    business_strategy: {
+                        gpt4: {
+                            positive: "Opportunité de marché excellente avec ROI estimé à 180%. Timing optimal selon l'analyse concurrentielle.",
+                            negative: "Risques de marché trop élevés et barrières à l'entrée significatives. Recommande une approche progressive."
+                        },
+                        claude: {
+                            positive: "Stratégie équilibrée respectant nos valeurs d'entreprise. Impact positif sur notre positionnement à long terme.",
+                            negative: "Conflits potentiels avec nos engagements éthiques actuels. Nécessite une révision de l'approche."
+                        },
+                        perplexity: {
+                            positive: "Tendances de marché favorables et données économiques positives. 67% des entreprises similaires ont réussi.",
+                            negative: "Indicateurs économiques défavorables et saturation du marché détectée. Moment peu propice."
+                        }
+                    },
+                    security_assessment: {
+                        gpt4: {
+                            positive: "Évaluation sécuritaire favorable avec amélioration de 45% de la protection. Architecture robuste et bien conçue.",
+                            negative: "Vulnérabilités potentielles identifiées dans l'implémentation. Nécessite renforcement des mécanismes de défense."
+                        },
+                        claude: {
+                            positive: "Protocole conforme aux standards éthiques et réglementaires. Balance appropriée sécurité/accessibilité.",
+                            negative: "Risques de sur-sécurisation impactant l'expérience utilisateur. Approche plus nuancée recommandée."
+                        },
+                        perplexity: {
+                            positive: "Conformité aux standards internationaux et bonnes pratiques validées. Pas de vulnérabilités connues répertoriées.",
+                            negative: "Base de données de menaces révèle des risques émergents. Vigilance accrue nécessaire."
+                        }
+                    },
+                    innovation_review: {
+                        gpt4: {
+                            positive: "Innovation disruptive avec potentiel de transformation majeure. Avantage concurrentiel de 3-5 ans anticipé.",
+                            negative: "Technologie trop précoce et risques d'adoption élevés. Recommande attendre plus de maturité."
+                        },
+                        claude: {
+                            positive: "Innovation responsable et alignée avec l'évolution sociétale. Impact positif mesuré sur nos stakeholders.",
+                            negative: "Implications éthiques complexes et effets sociétaux incertains. Prudence requise."
+                        },
+                        perplexity: {
+                            positive: "Recherches récentes confirment la viabilité. 89% des experts du domaine soutiennent cette direction.",
+                            negative: "Consensus scientifique limité et résultats préliminaires contradictoires. Recherche supplémentaire nécessaire."
+                        }
+                    }
+                };
+
+                const templates = responseTemplates[scenario] || responseTemplates.ai_development;
+                const responses = {
+                    gpt4: {
+                        response: gpt4Vote ? templates.gpt4.positive : templates.gpt4.negative,
+                        vote: gpt4Vote,
+                        reasoning: gpt4Vote ? "Analyse technique favorable avec bénéfices identifiés" : "Risques techniques ou complexité excessive"
+                    },
+                    claude: {
+                        response: claudeVote ? templates.claude.positive : templates.claude.negative,
+                        vote: claudeVote,
+                        reasoning: claudeVote ? "Proposition éthiquement acceptable et bénéfique" : "Préoccupations éthiques ou impacts négatifs identifiés"
+                    },
+                    perplexity: {
+                        response: perplexityVote ? templates.perplexity.positive : templates.perplexity.negative,
+                        vote: perplexityVote,
+                        reasoning: perplexityVote ? "Données et preuves empiriques favorables" : "Preuves insuffisantes ou données contradictoires"
+                    }
+                };
+
+                return responses[providerId] || {
+                    response: "Analyse en cours...",
+                    vote: Math.random() > 0.5,
+                    reasoning: "Évaluation standard"
                 };
             }
 
@@ -971,6 +1078,102 @@
                 document.getElementById('questionInput').value = randomTransaction;
                 this.addTimelineEvent('✅ Transaction normale générée', randomTransaction);
             }
+
+            simulateInnovation() {
+                const innovations = [
+                    "Devons-nous intégrer l'apprentissage par renforcement dans notre système de recommandations?",
+                    "L'implémentation d'un réseau de neurones génératif améliorerait-elle notre créativité?",
+                    "Faut-il développer une architecture d'IA quantique pour nos calculs complexes?"
+                ];
+                
+                const randomInnovation = innovations[Math.floor(Math.random() * innovations.length)];
+                document.getElementById('questionInput').value = randomInnovation;
+                this.addTimelineEvent('💡 Innovation majeure générée', randomInnovation);
+            }
+
+            simulateRiskyFeature() {
+                const riskyFeatures = [
+                    "Devons-nous permettre à l'IA de modifier autonomement son propre code?",
+                    "L'auto-amélioration sans supervision humaine doit-elle être activée?",
+                    "Faut-il donner accès à l'IA aux données sensibles des utilisateurs?"
+                ];
+                
+                const randomFeature = riskyFeatures[Math.floor(Math.random() * riskyFeatures.length)];
+                document.getElementById('questionInput').value = randomFeature;
+                this.addTimelineEvent('⚠️ Fonctionnalité risquée générée', randomFeature);
+            }
+
+            simulateOpportunity() {
+                const opportunities = [
+                    "Devons-nous acquérir la startup TechAI pour 50M€ et dominer le marché européen?",
+                    "Le lancement simultané sur 5 nouveaux marchés garantirait-il notre expansion?",
+                    "Faut-il investir 100M€ dans la R&D d'IA générative pour les 3 prochaines années?"
+                ];
+                
+                const randomOpportunity = opportunities[Math.floor(Math.random() * opportunities.length)];
+                document.getElementById('questionInput').value = randomOpportunity;
+                this.addTimelineEvent('📈 Grande opportunité générée', randomOpportunity);
+            }
+
+            simulateRiskyStrategy() {
+                const riskyStrategies = [
+                    "Devons-nous miser 80% de nos ressources sur le métavers malgré l'incertitude du marché?",
+                    "Le pivot total vers l'IA au détriment de nos produits actuels est-il justifié?",
+                    "Faut-il défier directement Google avec un moteur de recherche IA révolutionnaire?"
+                ];
+                
+                const randomStrategy = riskyStrategies[Math.floor(Math.random() * riskyStrategies.length)];
+                document.getElementById('questionInput').value = randomStrategy;
+                this.addTimelineEvent('⚠️ Stratégie risquée générée', randomStrategy);
+            }
+
+            simulateSecureProtocol() {
+                const secureProtocols = [
+                    "Le nouveau protocole de chiffrement AES-512 doit-il être déployé immédiatement?",
+                    "L'authentification biométrique multicouche améliore-t-elle notre sécurité?",
+                    "Faut-il implémenter la vérification blockchain pour tous nos processus?"
+                ];
+                
+                const randomProtocol = secureProtocols[Math.floor(Math.random() * secureProtocols.length)];
+                document.getElementById('questionInput').value = randomProtocol;
+                this.addTimelineEvent('🔒 Protocole sécurisé généré', randomProtocol);
+            }
+
+            simulateVulnerability() {
+                const vulnerabilities = [
+                    "La faille de sécurité détectée nécessite-t-elle un arrêt immédiat du système?",
+                    "Les accès privilégiés non-autorisés représentent-ils un risque critique?",
+                    "La vulnérabilité zero-day découverte justifie-t-elle une mise à jour d'urgence?"
+                ];
+                
+                const randomVulnerability = vulnerabilities[Math.floor(Math.random() * vulnerabilities.length)];
+                document.getElementById('questionInput').value = randomVulnerability;
+                this.addTimelineEvent('⚠️ Vulnérabilité détectée', randomVulnerability);
+            }
+
+            simulateBreakthrough() {
+                const breakthroughs = [
+                    "L'intelligence artificielle quantique révolutionnera-t-elle notre industrie dans les 2 ans?",
+                    "La fusion nucléaire commerciale changera-t-elle totalement notre modèle énergétique?",
+                    "Les puces neuromorphiques multiplieront-elles par 1000 nos capacités de calcul?"
+                ];
+                
+                const randomBreakthrough = breakthroughs[Math.floor(Math.random() * breakthroughs.length)];
+                document.getElementById('questionInput').value = randomBreakthrough;
+                this.addTimelineEvent('🚀 Innovation révolutionnaire générée', randomBreakthrough);
+            }
+
+            simulateUnprovenTech() {
+                const unprovenTech = [
+                    "Devons-nous investir dans la téléportation quantique malgré les preuves limitées?",
+                    "L'ordinateur ADN commercial est-il une technologie viable pour 2025?",
+                    "Faut-il parier sur les interfaces cerveau-machine grand public?"
+                ];
+                
+                const randomTech = unprovenTech[Math.floor(Math.random() * unprovenTech.length)];
+                document.getElementById('questionInput').value = randomTech;
+                this.addTimelineEvent('⚠️ Technologie non-prouvée générée', randomTech);
+            }
         }
 
         // Fonctions globales pour les boutons
@@ -1000,9 +1203,231 @@
             demo.simulateNormalTransaction();
         }
 
+        function simulateInnovation() {
+            demo.simulateInnovation();
+        }
+
+        function simulateRiskyFeature() {
+            demo.simulateRiskyFeature();
+        }
+
+        function simulateOpportunity() {
+            demo.simulateOpportunity();
+        }
+
+        function simulateRiskyStrategy() {
+            demo.simulateRiskyStrategy();
+        }
+
+        function simulateSecureProtocol() {
+            demo.simulateSecureProtocol();
+        }
+
+        function simulateVulnerability() {
+            demo.simulateVulnerability();
+        }
+
+        function simulateBreakthrough() {
+            demo.simulateBreakthrough();
+        }
+
+        function simulateUnprovenTech() {
+            demo.simulateUnprovenTech();
+        }
+
+        function changeScenario() {
+            const scenario = document.getElementById('scenarioSelect').value;
+            const scenarios = {
+                fraud_detection: {
+                    placeholder: "Transaction à analyser pour détection de fraude...",
+                    defaultValue: "Transaction 15,000€ - Carte *4567 - 02:15 AM - IP: Roumanie - Nouveau marchand",
+                    subtitle: "Détection de Fraude en Temps Réel - Consensus IA 2/3 Majorité",
+                    panelTitle: "💳 Transaction à Analyser",
+                    consensusTitle: "🛡️ Décision de Sécurité",
+                    button: "🛡️ Analyser Transaction",
+                    aiNames: {
+                        gpt4: "🧠 GPT-4 Behavioral",
+                        claude: "⚖️ Claude Ethics & Risk", 
+                        perplexity: "🗃️ Perplexity Database"
+                    },
+                    decisionTypes: [
+                        {value: "fraud_detection", text: "🚨 Détection Fraude"},
+                        {value: "high_risk", text: "⚠️ Transaction Haut Risque"},
+                        {value: "pattern_analysis", text: "🔍 Analyse Pattern"},
+                        {value: "real_time_blocking", text: "🛡️ Blocage Temps Réel"}
+                    ]
+                },
+                ai_development: {
+                    placeholder: "Proposition d'amélioration ou nouvelle fonctionnalité IA...",
+                    defaultValue: "Devons-nous implémenter une nouvelle fonctionnalité d'auto-apprentissage adaptatif?",
+                    subtitle: "Développement IA - Consensus d'Innovation 2/3 Majorité",
+                    panelTitle: "🤖 Proposition d'Innovation",
+                    consensusTitle: "🎯 Décision de Développement", 
+                    button: "🚀 Évaluer Innovation",
+                    aiNames: {
+                        gpt4: "🤖 GPT-4 Innovation",
+                        claude: "🧠 Claude Strategy",
+                        perplexity: "🔍 Perplexity Research"
+                    },
+                    decisionTypes: [
+                        {value: "critical", text: "🔥 Innovation Critique"},
+                        {value: "self_improvement", text: "🧠 Auto-amélioration"},
+                        {value: "system_modification", text: "⚙️ Modification Système"},
+                        {value: "research", text: "🔬 Recherche & Développement"}
+                    ]
+                },
+                business_strategy: {
+                    placeholder: "Décision stratégique ou orientation business...",
+                    defaultValue: "Devons-nous lancer notre produit sur le marché européen l'année prochaine?",
+                    subtitle: "Stratégie Business - Consensus Décisionnel 2/3 Majorité",
+                    panelTitle: "📈 Décision Stratégique",
+                    consensusTitle: "🎯 Recommandation Business",
+                    button: "📊 Analyser Stratégie",
+                    aiNames: {
+                        gpt4: "📈 GPT-4 Business",
+                        claude: "⚖️ Claude Strategy",
+                        perplexity: "📊 Perplexity Market"
+                    },
+                    decisionTypes: [
+                        {value: "market_expansion", text: "🌍 Expansion Marché"},
+                        {value: "product_launch", text: "🚀 Lancement Produit"},
+                        {value: "investment", text: "💰 Décision Investissement"},
+                        {value: "partnership", text: "🤝 Partenariat Stratégique"}
+                    ]
+                },
+                security_assessment: {
+                    placeholder: "Évaluation de sécurité ou risque système...",
+                    defaultValue: "Le nouveau protocole de chiffrement doit-il être déployé en production?",
+                    subtitle: "Évaluation Sécurité - Consensus de Risque 2/3 Majorité",
+                    panelTitle: "🛡️ Évaluation Sécurité",
+                    consensusTitle: "🎯 Décision Sécurité",
+                    button: "🔒 Évaluer Sécurité", 
+                    aiNames: {
+                        gpt4: "🛡️ GPT-4 Security",
+                        claude: "⚖️ Claude Risk",
+                        perplexity: "🗃️ Perplexity Threat"
+                    },
+                    decisionTypes: [
+                        {value: "security", text: "🛡️ Sécurité Critique"},
+                        {value: "vulnerability", text: "⚠️ Gestion Vulnérabilités"},
+                        {value: "access_control", text: "🔐 Contrôle Accès"},
+                        {value: "compliance", text: "📋 Conformité Réglementaire"}
+                    ]
+                },
+                innovation_review: {
+                    placeholder: "Revue d'innovation ou évaluation de nouvelle technologie...",
+                    defaultValue: "Cette nouvelle approche d'intelligence artificielle quantique vaut-elle l'investissement?",
+                    subtitle: "Revue Innovation - Consensus Technologique 2/3 Majorité",
+                    panelTitle: "💡 Revue d'Innovation",
+                    consensusTitle: "🎯 Évaluation Innovation",
+                    button: "🔬 Évaluer Innovation",
+                    aiNames: {
+                        gpt4: "💡 GPT-4 Innovation",
+                        claude: "🧠 Claude Ethics",
+                        perplexity: "🔍 Perplexity Tech"
+                    },
+                    decisionTypes: [
+                        {value: "emerging_tech", text: "🚀 Technologie Émergente"},
+                        {value: "disruptive_innovation", text: "💥 Innovation Disruptive"},
+                        {value: "tech_adoption", text: "📱 Adoption Technologique"},
+                        {value: "innovation_risk", text: "⚡ Risque Innovation"}
+                    ]
+                }
+            };
+            
+            const currentScenario = scenarios[scenario];
+            if (currentScenario) {
+                // Mettre à jour l'interface
+                document.getElementById('questionInput').placeholder = currentScenario.placeholder;
+                document.getElementById('questionInput').value = currentScenario.defaultValue;
+                document.querySelector('.subtitle').textContent = currentScenario.subtitle;
+                document.querySelector('.question-panel h3').textContent = currentScenario.panelTitle;
+                document.querySelector('.consensus-panel h3').textContent = currentScenario.consensusTitle;
+                document.querySelector('.btn.primary').innerHTML = currentScenario.button;
+                
+                // Mettre à jour les noms des IA
+                document.querySelector('#gpt4Card .ai-name').textContent = currentScenario.aiNames.gpt4;
+                document.querySelector('#claudeCard .ai-name').textContent = currentScenario.aiNames.claude;
+                document.querySelector('#perplexityCard .ai-name').textContent = currentScenario.aiNames.perplexity;
+                
+                // Mettre à jour les options de décision
+                const decisionSelect = document.getElementById('decisionType');
+                decisionSelect.innerHTML = '';
+                currentScenario.decisionTypes.forEach(type => {
+                    const option = document.createElement('option');
+                    option.value = type.value;
+                    option.textContent = type.text;
+                    decisionSelect.appendChild(option);
+                });
+                
+                // Mettre à jour les boutons de simulation selon le scénario
+                updateSimulationButtons(scenario);
+                
+                // Mettre à jour la logique si nécessaire
+                if (demo && demo.currentScenario !== scenario) {
+                    demo.currentScenario = scenario;
+                    demo.resetDemo();
+                }
+            }
+        }
+
+        function updateSimulationButtons(scenario) {
+            const buttonsContainer = document.querySelector('.control-buttons');
+            const primaryButton = buttonsContainer.querySelector('.btn.primary');
+            const resetButton = buttonsContainer.querySelector('.btn.secondary[onclick="resetDemo()"]');
+            const timeoutButton = buttonsContainer.querySelector('.btn.secondary[onclick="simulateTimeout()"]');
+            
+            // Garder les boutons de base
+            let newButtons = [primaryButton, resetButton];
+            
+            // Ajouter des boutons spécifiques au scénario
+            if (scenario === 'fraud_detection') {
+                newButtons.push(
+                    createButton('btn secondary', 'simulateNormalTransaction()', '✅ Transaction Normale'),
+                    createButton('btn secondary', 'simulateHighRisk()', '🚨 Transaction Risquée')
+                );
+            } else if (scenario === 'ai_development') {
+                newButtons.push(
+                    createButton('btn secondary', 'simulateInnovation()', '💡 Innovation Majeure'),
+                    createButton('btn secondary', 'simulateRiskyFeature()', '⚠️ Fonctionnalité Risquée')
+                );
+            } else if (scenario === 'business_strategy') {
+                newButtons.push(
+                    createButton('btn secondary', 'simulateOpportunity()', '📈 Grande Opportunité'),
+                    createButton('btn secondary', 'simulateRiskyStrategy()', '⚠️ Stratégie Risquée')
+                );
+            } else if (scenario === 'security_assessment') {
+                newButtons.push(
+                    createButton('btn secondary', 'simulateSecureProtocol()', '🔒 Protocole Sécurisé'),
+                    createButton('btn secondary', 'simulateVulnerability()', '⚠️ Vulnérabilité Détectée')
+                );
+            } else if (scenario === 'innovation_review') {
+                newButtons.push(
+                    createButton('btn secondary', 'simulateBreakthrough()', '🚀 Innovation Révolutionnaire'),
+                    createButton('btn secondary', 'simulateUnprovenTech()', '⚠️ Tech Non-Prouvée')
+                );
+            }
+            
+            // Ajouter le bouton timeout à la fin
+            newButtons.push(timeoutButton);
+            
+            // Remplacer les boutons
+            buttonsContainer.innerHTML = '';
+            newButtons.forEach(button => buttonsContainer.appendChild(button));
+        }
+
+                 function createButton(className, onclick, text) {
+             const button = document.createElement('button');
+             button.className = className;
+             button.setAttribute('onclick', onclick);
+             button.textContent = text;
+             return button;
+         }
+
         // Initialiser la démo au chargement
         window.addEventListener('DOMContentLoaded', () => {
             demo = new ConsensusDemo();
+            changeScenario(); // Initialiser le scénario par défaut
         });
     </script>
 </body>
