@@ -1,0 +1,46 @@
+global:
+  scrape_interval: 5s
+  evaluation_interval: 5s
+  external_labels:
+    monitor: 'prism-local'
+
+rule_files:
+  - "rules.yml"
+
+scrape_configs:
+  # PRISM Application Metrics (local)
+  - job_name: 'prism-app'
+    static_configs:
+      - targets: ['host.docker.internal:9090']  # Accès au host depuis Docker
+    scrape_interval: 2s
+    scrape_timeout: 1s
+    metrics_path: '/metrics'
+    honor_labels: true
+
+  # PRISM Application Health (local)
+  - job_name: 'prism-health'
+    static_configs:
+      - targets: ['host.docker.internal:3000']
+    scrape_interval: 5s
+    metrics_path: '/api/health'
+    honor_labels: true
+
+  # Prometheus self-monitoring
+  - job_name: 'prometheus'
+    static_configs:
+      - targets: ['localhost:9090']
+    scrape_interval: 10s
+
+  # PRISM Frontend Corporate
+  - job_name: 'prism-corporate'
+    static_configs:
+      - targets: ['host.docker.internal:3001']
+    scrape_interval: 10s
+    metrics_path: '/health'
+    honor_labels: true
+
+# Alerting configuration
+alerting:
+  alertmanagers:
+    - static_configs:
+        - targets: [] 

@@ -26,7 +26,10 @@
     "coverage:check": "nyc check-coverage --statements 95 --branches 95 --functions 95 --lines 95",
     "security:scan": "npm audit --audit-level=moderate",
     "validate:phase2": "npm run test:phase2 && npm run test:api:security && npm run test:performance:api",
-    "test:legacy": "node --experimental-vm-modules node_modules/jest/bin/jest.js --config legacy_tests/jest.config.js"
+    "test:legacy": "node --experimental-vm-modules node_modules/jest/bin/jest.js --config legacy_tests/jest.config.js",
+    "start:full": "node launch-prism-full-stack.js",
+    "start:monitoring": "docker-compose -f docker-compose-monitoring.yml up -d",
+    "stop:monitoring": "docker-compose -f docker-compose-monitoring.yml down"
   },
   "dependencies": {
     "@apidevtools/swagger-parser": "^10.1.1",
