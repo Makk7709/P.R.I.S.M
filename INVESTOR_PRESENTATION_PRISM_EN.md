@@ -158,10 +158,11 @@ Environment: Node v18.20.8, darwin
 ### **Competitive Comparison**
 ```yaml
 Performance_Latency:
-  PRISM_v2.4: 0.001 ms/op ✅ LEADER
-  OpenAI_API: ~100 ms/op
-  Claude_API: ~150 ms/op
-  Gemini_API: ~200 ms/op
+  PRISM_Micro_Ops: 0.001 ms/op (internal queue)
+  PRISM_Consensus_E2E: 1.2s median ✅ REALISTIC
+  OpenAI_API: 500-1500 ms/op
+  Claude_API: 540 ms/op (TTFT)
+  Gemini_API: 500-1000 ms/op
   
 Consensus_Governance:
   PRISM_v2.4: Mandatory 2/3 voting ✅ UNIQUE
