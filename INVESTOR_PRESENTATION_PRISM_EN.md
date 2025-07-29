@@ -270,21 +270,22 @@ Custom_Government: Quote-based
   - Team training
 ```
 
-### **Financial Projections 2025-2027**
+### **Financial Projections 2025-2028 (Revised)**
 ```yaml
 Revenue_Projections:
-  2025_H2: €2.5M (5 enterprise clients)
-  2026: €15M (35 clients + partnerships)
-  2027: €45M (120 clients + international)
+  2025_H2: €600k-€1M (2-3 pilot clients)
+  2026: €4M-€7M (12-18 clients + partnerships)
+  2027: €15M-€25M (35-50 clients + international)
+  2028: €35M-€50M (70-90 mature clients)
   
 Unit_Economics:
-  CAC: €25,000 (6 months payback)
-  LTV: €750,000 (30 months average retention)
-  LTV/CAC: 30x (Excellent for B2B SaaS)
-  Gross_Margin: 85% (SaaS model)
+  CAC: €50,000-€75,000 (12-18 months payback)
+  LTV: €400,000-€500,000 (24-36 months retention)
+  LTV/CAC: 6-8x (Realistic for AI B2B)
+  Gross_Margin: 65-75% (AI model with infrastructure)
   
-Break_Even: Q2 2026 (18 months)
-Cash_Flow_Positive: Q4 2026
+Break_Even: Q4 2027 (36 months)
+Cash_Flow_Positive: Q2 2028
 ```
 
 ---
@@ -366,47 +367,46 @@ Business_Innovation:
 
 # 💰 FUNDING REQUEST
 
-## 🎯 **SERIES A - €8M**
+## 🎯 **SERIES A - €12M-€15M**
 
 ### **Use of Funds**
 ```yaml
-Engineering_&_R&D (45%): €3.6M
-  - Team expansion: 8 senior engineers
-  - ASI v2.0 development
-  - Performance optimization
-  - Security & compliance
+Engineering_&_R&D (40%): €5M-€6M
+  - Team expansion: 12-15 senior engineers
+  - ASI v2.0 development & scaling
+  - GPU/API infrastructure optimization
+  - Enterprise security & compliance
   
-Sales_&_Marketing (30%): €2.4M
-  - Commercial team (5 people)
-  - B2B digital marketing
-  - Trade shows & conferences
-  - Technical content marketing
+Sales_&_Marketing (35%): €4M-€5M
+  - Commercial team (8-12 people)
+  - Enterprise sales enablement
+  - B2B digital marketing + events
+  - Customer success expansion
   
-Operations_&_Infrastructure (15%): €1.2M
-  - Cloud infrastructure scaling
-  - Monitoring & observability
-  - Customer success team
-  - Legal & regulatory
+Operations_&_Infrastructure (15%): €2M-€2.5M
+  - Enterprise cloud infrastructure
+  - Advanced monitoring & observability
+  - Legal & regulatory compliance
+  - International setup
   
-Business_Development (10%): €0.8M
+Strategic_Reserve (10%): €1M-€1.5M
   - Strategic partnerships
-  - International expansion
   - M&A opportunities
-  - Strategic reserve
+  - Market expansion buffer
 ```
 
-### **18-Month Success Metrics**
+### **36-Month Success Metrics**
 ```yaml
 Technical_KPIs:
-  Performance: <25ms latency (vs 0.001ms core)
-  Scalability: 1M+ concurrent users
-  Reliability: 99.99% SLA
+  Performance: <10ms enterprise latency
+  Scalability: Fortune 500 clients validated
+  Reliability: 99.95% enterprise SLA
   
 Business_KPIs:
-  Revenue: €15M ARR
-  Customers: 35 enterprise clients
-  Team: 35 people (vs 8 currently)
-  Valuation: €80M post-money target
+  Revenue: €15M-€25M ARR
+  Customers: 35-50 enterprise clients
+  Team: 60-80 people (vs 8 currently)
+  Valuation: €120M-€180M post-money target
 ```
 
 ---
