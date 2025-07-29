@@ -35,8 +35,9 @@
 ### 📈 **VALIDATED TRACTION**
 ```yaml
 Core_Performance:
-  Latency: 0.001ms/op (measured)
-  Throughput: 1M+ ops/s
+  Micro_Ops: 0.001ms/op (internal queue)
+  Consensus_E2E: 1.2s median (realistic)
+  Throughput_Peak: 180 decisions/minute
   Test_Coverage: 86% enterprise-grade
   
 Validated_Architecture:
