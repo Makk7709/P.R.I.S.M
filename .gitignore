@@ -327,3 +327,12 @@ logs
 # === PRISM SPECIFIC ===
 *.backup-*
 test-results-*.log
+
+# Brevets et propriété intellectuelle - CONFIDENTIEL
+BREVET_PRISM_*.docx
+BREVET_PRISM_*.pdf
+BREVET_PRISM_*.doc
+*.brevet
+*.patent
+*_INPI_*.docx
+*_INPI_*.pdf
