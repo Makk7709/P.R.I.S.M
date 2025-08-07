@@ -8,6 +8,7 @@
     "test": "vitest run",
     "test:watch": "vitest",
     "coverage": "vitest run --coverage",
+    "test:consensus": "vitest run --config vitest.config.consensus.mjs",
     "test:phase1": "NODE_ENV=test jest __tests__/backend/services/ --coverage --verbose",
     "test:phase2": "NODE_ENV=test npm run test:enterprise:all",
     "test:enterprise:all": "NODE_ENV=test jest __tests__/backend/api/enterpriseExport.test.js __tests__/backend/middleware/ --coverage --verbose",
@@ -32,6 +33,7 @@
     "stop:monitoring": "docker-compose -f docker-compose-monitoring.yml down"
   },
   "dependencies": {
+    "@anthropic-ai/sdk": "^0.26.0",
     "@apidevtools/swagger-parser": "^10.1.1",
     "@apollo/client": "^3.9.5",
     "@supabase/supabase-js": "^2.49.4",

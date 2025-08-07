@@ -316,6 +316,21 @@ const cm = new ConsensusManager({
 });
 ```
 
+### 🐳 Déploiement rapide (Docker)
+
+```bash
+docker build -t prism:prod .
+OPENAI_API_KEY=... ANTHROPIC_API_KEY=... PERPLEXITY_API_KEY=... \
+  docker run -e NODE_ENV=production -e PRISM_MODE=PROD -e PRISM_USE_REAL_PROVIDERS=true \
+  -e OPENAI_API_KEY -e ANTHROPIC_API_KEY -e PERPLEXITY_API_KEY -p 3000:3000 prism:prod
+```
+
+Ou via docker-compose:
+
+```bash
+OPENAI_API_KEY=... ANTHROPIC_API_KEY=... PERPLEXITY_API_KEY=... docker-compose up -d --build
+```
+
 ### 🔄 Auto-Évolution Sécurisée
 
 - **SelfImprovementEngine** : Consensus obligatoire pour toute modification
