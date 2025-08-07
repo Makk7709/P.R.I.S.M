@@ -293,6 +293,29 @@ PRISM est une intelligence artificielle orchestratrice de pointe avec **système
 - Gestion dynamique des profils utilisateurs
 - Système de repli intelligent en cas d'erreur
 
+### 🔌 Intégration Providers Réels pour le Consensus
+
+- Activer l'usage des vrais providers dans `ConsensusManager` en passant `useRealProviders: true` et en exposant les clés API dans l'environnement.
+- Variables supportées:
+  - `OPENAI_API_KEY` et optionnel `OPENAI_MODEL` (par défaut `gpt-4o-mini`)
+  - `ANTHROPIC_API_KEY` et optionnel `ANTHROPIC_MODEL` (par défaut `claude-3-5-sonnet-20240620`)
+  - `PERPLEXITY_API_KEY`, optionnel `PERPLEXITY_BASE_URL`, `PERPLEXITY_MODEL` (par défaut `pplx-7b-online`)
+- Résilience intégrée par provider: timeout, retries avec backoff exponentiel, circuit breaker (ouverture après échecs répétés, demi-ouverture après cooldown).
+- Fallback automatique sur simulation si une clé est manquante.
+
+Exemple d’instanciation:
+
+```js
+const cm = new ConsensusManager({
+  useRealProviders: true,
+  providers: {
+    openai: { timeoutMs: 1500 },
+    anthropic: { timeoutMs: 1500 },
+    perplexity: { timeoutMs: 1500 }
+  }
+});
+```
+
 ### 🔄 Auto-Évolution Sécurisée
 
 - **SelfImprovementEngine** : Consensus obligatoire pour toute modification
