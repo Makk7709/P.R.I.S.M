@@ -33,7 +33,8 @@ describe('ConsensusManager', () => {
     
     consensusManager = new ConsensusManager({
       timeoutMs: 100, // Timeout court pour les tests
-      maxConcurrentProposals: 5
+      maxConcurrentProposals: 5,
+      useRealProviders: false
     });
     
     // Attendre l'initialisation

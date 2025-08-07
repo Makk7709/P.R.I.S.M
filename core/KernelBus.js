@@ -121,7 +121,13 @@ export class KernelBus extends EventEmitter {
     try {
       this.consensusManager = new ConsensusManager({
         timeoutMs: 1000, // 1 seconde timeout strict
-        enableTrustContext: this.securityEnabled
+        enableTrustContext: this.securityEnabled,
+        useRealProviders: process.env.PRISM_USE_REAL_PROVIDERS === 'true' || process.env.NODE_ENV === 'production' || process.env.PRISM_MODE === 'PROD',
+        providers: {
+          openai: { timeoutMs: 1500 },
+          anthropic: { timeoutMs: 1500 },
+          perplexity: { timeoutMs: 1500 }
+        }
       });
       
       // Écouter les événements de consensus
