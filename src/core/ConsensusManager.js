@@ -7,6 +7,9 @@
 import { EventEmitter } from 'events';
 import crypto from 'crypto';
 import { getTrustContext } from './TrustContext.js';
+import OpenAIAdapter from './providers/OpenAIAdapter.js';
+import AnthropicAdapter from './providers/AnthropicAdapter.js';
+import PerplexityAdapter from './providers/PerplexityAdapter.js';
 
 /**
  * Types de décisions critiques
@@ -146,6 +149,7 @@ export class ConsensusManager extends EventEmitter {
     };
     
     this.trustContext = null;
+    this.providerAdapters = null;
     this.isInitialized = false;
     
     this.init();
@@ -155,6 +159,14 @@ export class ConsensusManager extends EventEmitter {
     try {
       if (this.config.enableTrustContext) {
         this.trustContext = getTrustContext();
+      }
+      // Initialiser adaptateurs réels si demandé et si clés présentes
+      if (this.config.useRealProviders) {
+        this.providerAdapters = {
+          [AIProvider.GPT4]: process.env.OPENAI_API_KEY ? new OpenAIAdapter(this.config.providers?.openai || {}) : null,
+          [AIProvider.CLAUDE3]: process.env.ANTHROPIC_API_KEY ? new AnthropicAdapter(this.config.providers?.anthropic || {}) : null,
+          [AIProvider.PERPLEXITY]: process.env.PERPLEXITY_API_KEY ? new PerplexityAdapter(this.config.providers?.perplexity || {}) : null,
+        };
       }
       this.isInitialized = true;
       console.log('🔒 ConsensusManager initialized');
@@ -231,9 +243,13 @@ export class ConsensusManager extends EventEmitter {
    */
   async requestVoteFromProvider(provider, proposal) {
     try {
-      // Simuler l'appel à l'IA pour obtenir un vote
-      // Dans une implémentation réelle, ceci ferait appel aux APIs des IA
-      const vote = await this.simulateAIVote(provider, proposal);
+      let vote;
+      if (this.providerAdapters && this.providerAdapters[provider]) {
+        vote = await this.providerAdapters[provider].evaluate({ type: proposal.type, payload: proposal.payload });
+      } else {
+        // Fallback simulation
+        vote = await this.simulateAIVote(provider, proposal);
+      }
       this.submitVote(proposal.id, provider, vote.decision, vote.reasoning);
     } catch (error) {
       console.error(`Error getting vote from ${provider}:`, error);

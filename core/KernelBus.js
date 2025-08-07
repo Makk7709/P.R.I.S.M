@@ -333,7 +333,7 @@ export class KernelBus extends EventEmitter {
     }
   }
 
-  async publish(eventType, payload) {
+  async publish(eventType, payload, options = {}) {
     if (!eventType.startsWith(this.PREFIX)) {
       eventType = this.PREFIX + eventType;
     }
@@ -370,6 +370,10 @@ export class KernelBus extends EventEmitter {
           const consensusResult = await this.waitForConsensus(proposalId);
           
           if (consensusResult.status !== ConsensusStatus.APPROVED) {
+            if (options.onReject === 'return') {
+              // Mode tolérant: ne pas lever, remonter un résultat de rejet
+              return { success: false, reason: `rejected:${consensusResult.status}`, consensusResult };
+            }
             throw new Error(`Event ${eventType} rejected by consensus: ${consensusResult.status}`);
           }
           
@@ -437,6 +441,21 @@ export class KernelBus extends EventEmitter {
    */
   async waitForConsensus(proposalId) {
     return new Promise((resolve, reject) => {
+      // Fast-path: if consensus already finalized before listeners attach
+      try {
+        const current = this.consensusManager?.getProposalStatus(proposalId);
+        if (current && current.status !== ConsensusStatus.PENDING) {
+          return resolve({
+            proposalId,
+            status: current.status,
+            votes: current.votes,
+            // decisionTime is emitted during finalize; if we missed it, return without it
+            timestamp: Date.now()
+          });
+        }
+      } catch (_) {
+        // Ignore and fall back to event-based wait
+      }
       const timeout = setTimeout(() => {
         reject(new Error('Consensus timeout'));
       }, 1100); // Légèrement plus que le timeout du ConsensusManager

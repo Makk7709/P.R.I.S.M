@@ -23,6 +23,20 @@ node run-consensus-tests.js security
 node run-consensus-tests.js performance
 ```
 
+### 3. Tests d’Intégration Providers Réels (Conditionnels)
+
+Ces tests ne s’exécutent que si les variables d’environnement sont définies:
+
+```bash
+export OPENAI_API_KEY=...  # optionnel OPENAI_MODEL
+export ANTHROPIC_API_KEY=...  # optionnel ANTHROPIC_MODEL
+export PERPLEXITY_API_KEY=...  # optionnel PERPLEXITY_BASE_URL, PERPLEXITY_MODEL
+
+npx vitest run tests/integration/consensusProviders.integration.test.js
+```
+
+Pour activer les providers réels dans les scénarios E2E, instancier `ConsensusManager` avec `useRealProviders: true`.
+
 ## 📋 Scénarios de Test Disponibles
 
 ### 🔥 Scénario 1: Consensus Critique
