@@ -23,6 +23,13 @@ OPENAI_API_KEY=... ANTHROPIC_API_KEY=... PERPLEXITY_API_KEY=... docker-compose u
 ```bash
 node demo-consensus-live.js
 ```
+### 3b) Démo Scriptée (APPROVE puis REJECT garantis)
+```bash
+node demo-scripted-consensus.js
+```
+Cas 1: `riskLevel=0.3`, `evidenceQuality=0.85`, `ethicalConcerns=false` → APPROVE attendu.
+Cas 2: `riskLevel=0.85`, `evidenceQuality=0.3`, `ethicalConcerns=true` (SECURITY) → REJECT attendu.
+
 - Tapez une question; observez:
   - `proposalCreated`, `voteSubmitted`, `consensusReached`/`consensusTimeout`
   - métriques finales affichées (taux succès, temps décision)
