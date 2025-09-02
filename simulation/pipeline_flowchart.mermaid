@@ -1,0 +1,30 @@
+flowchart TD
+    A[Acquisition Capteurs] --> B[Pré-traitement]
+    B --> C[Calcul MHI]
+    C --> D{MHI < Seuil Critique?}
+    D -->|Oui| E[Mode Unanimité Requis]
+    D -->|Non| F[Mode Majorité Qualifiée]
+    
+    E --> G[Agents Génèrent Votes]
+    F --> G
+    G --> H[Application Filtres Socratiques]
+    H --> I{Consensus Atteint?}
+    
+    I -->|Unanimité| J[Décision Validée]
+    I -->|Majorité 2/3| J
+    I -->|Échec| K[Résolution par Score Pondéré]
+    
+    K --> J
+    J --> L{Type Recommandation}
+    
+    L -->|CLEAN_NOW| M[Exécution CIP]
+    L -->|DELAY_12H/24H| N[Surveillance Continue]
+    L -->|ADJUST_SETPOINTS| O[Ajustement Paramètres]
+    
+    M --> P[Reset Modèle Fouling]
+    N --> Q[Log Audit + Attente]
+    O --> R[Optimisation Performance]
+    
+    P --> A
+    Q --> A  
+    R --> A

@@ -1,0 +1,23 @@
+{
+  "name": "prism-ind-simulation",
+  "version": "1.0.0",
+  "description": "PRISM-IND Water Treatment Simulation with AI Consensus",
+  "type": "module",
+  "scripts": {
+    "sim:run": "tsx index.ts",
+    "test": "vitest",
+    "sim:config": "tsx --help-config"
+  },
+  "dependencies": {
+    "zod": "^3.22.4"
+  },
+  "devDependencies": {
+    "typescript": "^5.3.0",
+    "tsx": "^4.7.0",
+    "vitest": "^1.2.0",
+    "@types/node": "^20.11.0"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  }
+}

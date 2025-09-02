@@ -1,0 +1,11 @@
+{
+  "downtimeSaved": -30,
+  "cipReduction": -10,
+  "opexSavings": -18140,
+  "chemistrySavings": -17640,
+  "energySavings": -500,
+  "productionGain": -3000,
+  "membraneLifeExtension": -5,
+  "netROI": -45201.88756173299,
+  "summary": "\nPRISM vs Baseline (10 days):\n• CIPs avoided: -10 (-250.0%)\n• Downtime saved: -30.0h\n• OPEX savings: -18140€\n• Chemistry savings: -17640€\n• Production gain: -3000€\n• Membrane life extension: -5.0%\n• Net ROI: -45202€\n    "
+}
