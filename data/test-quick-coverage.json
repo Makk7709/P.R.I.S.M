@@ -1,0 +1,61 @@
+{
+  "storage": {
+    "episodic": {},
+    "semantic": {
+      "mem_1756846215610_c424a7cf": {
+        "id": "entry_1756846215611_3fdf9a",
+        "type": "semantic",
+        "content": "Test rapide système corrigé avec intelligence sémantique",
+        "domain": "test",
+        "importance": 0.5,
+        "timestamp": "2025-09-02T20:50:15.611Z",
+        "metadata": {
+          "originalType": "test",
+          "source": "manual",
+          "confidence": 0.8,
+          "tags": [
+            "test",
+            "intelligence",
+            "sémantique"
+          ],
+          "associations": [],
+          "lastAccessed": "2025-09-02T20:50:15.611Z",
+          "accessCount": 2,
+          "createdAt": "2025-09-02T20:50:15.611Z"
+        },
+        "compression": "medium",
+        "retention": "high",
+        "estimatedSize": 0.140625
+      }
+    },
+    "procedural": {},
+    "working": {},
+    "meta": {}
+  },
+  "indexes": {
+    "temporal": {
+      "2025-09-02": {}
+    },
+    "semantic": {},
+    "associative": {
+      "semantic_test": {}
+    },
+    "frequency": {
+      "mem_1756846215610_c424a7cf": 0
+    }
+  },
+  "state": {
+    "totalEntries": 1,
+    "memoryUsage": 0.140625,
+    "memoryStats": {
+      "reads": 1,
+      "writes": 0.140625,
+      "compressions": 0,
+      "cleanups": 0,
+      "semanticQueries": 1,
+      "persistenceOps": 1
+    }
+  },
+  "timestamp": "2025-09-02T20:50:15.615Z",
+  "version": "2.0.0"
+}

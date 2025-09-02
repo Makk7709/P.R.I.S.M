@@ -1,0 +1,65 @@
+sequenceDiagram
+    participant S as Capteurs IoT
+    participant P as Pré-traitement
+    participant M as Modèle MHI
+    participant A1 as Agent Membrane
+    participant A2 as Agent Économique  
+    participant A3 as Agent Opérationnel
+    participant C as Consensus Engine
+    participant E as Exécution
+    
+    S->>P: Données capteurs (ΔP, flux, turbidité, etc.)
+    P->>P: Filtrage outliers, imputations
+    P->>M: Données validées
+    M->>M: Calcul Membrane Health Index
+    
+    par Votes parallèles
+        M->>A1: MHI + données contextuelles
+        A1->>A1: Filtres socratiques (V/B/U)
+        A1->>C: Vote + confiance + justification
+    and
+        M->>A2: Analyse ROI économique
+        A2->>A2: Optimisation coûts/bénéfices  
+        A2->>C: Vote + confiance + justification
+    and
+        M->>A3: Équilibrage opérationnel
+        A3->>A3: Gestion risques/performance
+        A3->>C: Vote + confiance + justification
+    end
+    
+    C->>C: Résolution consensus (majorité qualifiée/unanimité)
+    C->>E: Recommandation finale
+    E->>E: CIP / Ajustement / Délai
+    E->>S: Feedback système
+```
+```mermaid
+flowchart TD
+    A[Acquisition Capteurs] --> B[Pré-traitement]
+    B --> C[Calcul MHI]
+    C --> D{MHI < Seuil Critique?}
+    D -->|Oui| E[Mode Unanimité Requis]
+    D -->|Non| F[Mode Majorité Qualifiée]
+    
+    E --> G[Agents Génèrent Votes]
+    F --> G
+    G --> H[Application Filtres Socratiques]
+    H --> I{Consensus Atteint?}
+    
+    I -->|Unanimité| J[Décision Validée]
+    I -->|Majorité 2/3| J
+    I -->|Échec| K[Résolution par Score Pondéré]
+    
+    K --> J
+    J --> L{Type Recommandation}
+    
+    L -->|CLEAN_NOW| M[Exécution CIP]
+    L -->|DELAY_12H/24H| N[Surveillance Continue]
+    L -->|ADJUST_SETPOINTS| O[Ajustement Paramètres]
+    
+    M --> P[Reset Modèle Fouling]
+    N --> Q[Log Audit + Attente]
+    O --> R[Optimisation Performance]
+    
+    P --> A
+    Q --> A  
+    R --> A
