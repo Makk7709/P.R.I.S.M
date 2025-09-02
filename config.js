@@ -79,7 +79,7 @@ export const config = {
 
     // Configuration ElevenLabs
     ELEVENLABS: {
-      API_KEY: process.env.ELEVENLABS_API_KEY || 'ta_clef_api_ici', // ✨ Utilise la vraie clé d'environnement
+      API_KEY: process.env.ELEVENLABS_API_KEY || '', // ✨ Utilise la vraie clé d'environnement
       VOICE_ID: 'm5SBIR8kR76fbA5dP2rU', // Jean - Voix masculine française (fonctionne)
       AGENT_ID: 'PH3zu8YoKkawQT5H3tB8', // ID de votre agent vocal
       MODEL_ID: 'eleven_multilingual_v2', // ✨ CORRECTION: Revenir au modèle original
