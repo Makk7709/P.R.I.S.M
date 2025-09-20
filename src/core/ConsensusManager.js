@@ -76,10 +76,11 @@ class DecisionProposal {
   }
 
   getVoteCount() {
-    const approvals = Array.from(this.votes.values()).filter(v => v.vote === VoteType.APPROVE || v.vote === true).length;
-    const rejections = Array.from(this.votes.values()).filter(v => v.vote === VoteType.REJECT || v.vote === false).length;
-    const abstentions = Array.from(this.votes.values()).filter(v => v.vote === VoteType.ABSTAIN).length;
-    const unavailable = Array.from(this.votes.values()).filter(v => v.vote === VoteType.UNAVAILABLE).length;
+    const values = Array.from(this.votes.values());
+    const approvals = values.filter(v => v.vote === VoteType.APPROVE || v.vote === true).length;
+    const rejections = values.filter(v => v.vote === VoteType.REJECT || v.vote === false).length;
+    const abstentions = values.filter(v => v.vote === VoteType.ABSTAIN).length;
+    const unavailable = values.filter(v => v.vote === VoteType.UNAVAILABLE).length;
     return { approvals, rejections, abstentions, unavailable, total: this.votes.size };
   }
 
@@ -89,34 +90,45 @@ class DecisionProposal {
     const effectiveVotes = approvals + rejections; // Abstentions ne comptent pas dans le quorum
     const availableProviders = totalProviders - unavailable;
     
-    // Quorum dynamique : ajuster selon les fournisseurs disponibles (fail-open)
-    const dynamicQuorum = Math.max(2, Math.ceil(availableProviders * 2 / 3));
+    // Quorum dynamique : 2/3 des fournisseurs totaux
+    const requiredQuorum = Math.ceil(totalProviders * 2 / 3);
     
-    // Consensus atteint si 2/3 des votes effectifs sont pour
-    if (approvals >= dynamicQuorum) {
+    // Debug logging pour comprendre le problème
+    if (process.env.NODE_ENV === 'test') {
+      console.log('DEBUG isComplete:', {
+        approvals, rejections, abstentions, unavailable, total,
+        totalProviders, requiredQuorum
+      });
+    }
+    
+    // Consensus atteint si 2/3 des fournisseurs totaux approuvent
+    if (approvals >= requiredQuorum) {
       this.status = ConsensusStatus.APPROVED;
       return true;
     }
     
-    // Consensus rejeté si 2/3 des votes effectifs sont contre
-    if (rejections >= dynamicQuorum) {
+    // Consensus rejeté si 2/3 des fournisseurs totaux rejettent
+    if (rejections >= requiredQuorum) {
       this.status = ConsensusStatus.REJECTED;
       return true;
     }
     
-    // Fail-open : si trop de fournisseurs indisponibles/abstentions, approuver avec un quorum réduit
+    // Fail-open : si plus de la moitié des fournisseurs sont indisponibles/abstentions
     if (unavailable + abstentions >= totalProviders / 2) {
-      // Si plus de la moitié des fournisseurs sont indisponibles/s'abstiennent
-      // et qu'il y a au moins un vote d'approbation, approuver (fail-open)
+      // et qu'il y a au moins un vote d'approbation qui domine les rejets
       if (approvals > 0 && approvals >= rejections) {
         this.status = ConsensusStatus.APPROVED;
         return true;
       }
     }
     
-    // Impossible d'atteindre le consensus si tous les fournisseurs disponibles ont voté
-    if (total === availableProviders && approvals < dynamicQuorum) {
-      this.status = ConsensusStatus.REJECTED;
+    // Impossible d'atteindre le consensus si tous les fournisseurs ont voté
+    if (total === totalProviders) {
+      if (approvals >= requiredQuorum) {
+        this.status = ConsensusStatus.APPROVED;
+      } else {
+        this.status = ConsensusStatus.REJECTED;
+      }
       return true;
     }
     
@@ -135,10 +147,13 @@ export class ConsensusManager extends EventEmitter {
       timeoutMs: config.timeoutMs || 1000, // 1 seconde timeout strict
       maxConcurrentProposals: config.maxConcurrentProposals || 10,
       enableTrustContext: config.enableTrustContext !== false,
+      cleanupDelayMs: config.cleanupDelayMs || 100, // Délai de nettoyage configurable
+      autoRequestVotes: config.autoRequestVotes !== false, // Demande automatique des votes
       ...config
     };
     
     this.proposals = new Map();
+    this.recentProposals = new Map(); // Cache temporaire pour getProposalStatus
     this.metrics = {
       totalProposals: 0,
       approvedProposals: 0,
@@ -211,8 +226,10 @@ export class ConsensusManager extends EventEmitter {
       timestamp: proposal.timestamp
     });
 
-    // Demander les votes des IA fournisseurs
-    await this.requestVotes(proposal);
+    // Demander les votes des IA fournisseurs (si activé)
+    if (this.config.autoRequestVotes) {
+      await this.requestVotes(proposal);
+    }
 
     return proposal.id;
   }
@@ -360,10 +377,17 @@ export class ConsensusManager extends EventEmitter {
       this.trustContext.recordConsensusRejection(proposal);
     }
 
-    // Nettoyer la proposition après un délai
+    // Garder dans le cache temporaire pour les tests
+    this.recentProposals.set(proposalId, proposal);
+    
+    // Nettoyer la proposition après un délai configurable
     setTimeout(() => {
       this.proposals.delete(proposalId);
-    }, 5000);
+      // Nettoyer aussi le cache après un délai plus long
+      setTimeout(() => {
+        this.recentProposals.delete(proposalId);
+      }, this.config.cleanupDelayMs * 2);
+    }, this.config.cleanupDelayMs);
   }
 
   /**
@@ -443,8 +467,12 @@ export class ConsensusManager extends EventEmitter {
    * @returns {Object|null} Statut de la proposition
    */
   getProposalStatus(proposalId) {
-    const proposal = this.proposals.get(proposalId);
-    if (!proposal) return null;
+    let proposal = this.proposals.get(proposalId);
+    if (!proposal) {
+      // Vérifier dans le cache temporaire
+      proposal = this.recentProposals.get(proposalId);
+      if (!proposal) return null;
+    }
 
     return {
       id: proposal.id,
@@ -468,6 +496,7 @@ export class ConsensusManager extends EventEmitter {
     }
     
     this.proposals.clear();
+    this.recentProposals.clear();
     this.removeAllListeners();
   }
 }

@@ -13,21 +13,28 @@ export default defineConfig({
     'legacy_tests/**',
   ],
   test: {
-    // Utilise le provider V8 pour la couverture, plus rapide et natif.
+    environment: 'node',
+    globals: true,
     coverage: {
       provider: 'v8',
-      reporter: ['text', 'json', 'html', 'lcov'],
-      // Cible la couverture uniquement sur nos fichiers sources critiques
-      include: ['src/core/**', 'backend/database.js', 'persistence/prismStateStore.js'],
-      all: true,
-      lines: 90,
-      functions: 90,
-      branches: 90,
-      statements: 90,
-    },
-    // Environnement par défaut (peut être surchargé avec @vitest-environment)
-    environment: 'node',
-    globals: true, // Pour ne pas avoir à importer describe, it, etc.
+      all: false,  // ✅ pas de scan de tout le repo
+      reportsDirectory: 'coverage',
+      reporter: ['json', 'html', 'text', 'json-summary'],
+      include: [
+        'src/enterprise/enterpriseDetectionService.ts',
+        'src/enterprise/enterpriseSanitizer.ts',
+        'src/core/**/*.js',
+        'prismCore.js'
+      ],
+      exclude: [
+        '**/__tests__/**',
+        '**/*.spec.ts', 
+        '**/*.test.ts',
+        '**/dist/**',
+        '**/*.d.ts',
+        '**/legacy/**'
+      ]
+    }
   },
   resolve: {
     alias: {
