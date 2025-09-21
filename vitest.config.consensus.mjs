@@ -4,6 +4,7 @@ export default defineConfig({
   test: {
     include: [
       'tests/consensus/**/*.spec.js',
+      'tests/consensus/**/*.spec.ts',
       'tests/integration/consensusProviders.integration.test.js'
     ],
     coverage: {
