@@ -4,7 +4,7 @@
 
 **Status**: ✅ **PASS** - All Adapters Successfully QA'd and Frozen  
 **Date**: 2025-01-27  
-**Commit Hash**: `[TO_BE_UPDATED]`  
+**Commit Hash**: `5401411` - [View on GitHub](https://github.com/Makk7709/P.R.I.S.M/commit/5401411)  
 **QA Architect**: Amine MOHAMED  
 
 The PRISM Adapters (OpenAI, Anthropic, Perplexity) have been successfully tested, validated, and frozen according to enterprise-grade QA standards. All adapters meet or exceed the required quality thresholds.
