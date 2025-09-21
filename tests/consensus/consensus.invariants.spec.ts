@@ -15,8 +15,8 @@
  * GUARD SCRIPT: scripts/consensus-invariant-guard.mjs
  */
 
-import { describe, it, expect } from 'vitest';
-import { ConsensusManager } from '../../src/consensus/ConsensusManager.js';
+import { describe, it, expect, beforeEach } from 'vitest';
+import { ConsensusManager } from '../../src/consensus/ConsensusManager.ts';
 
 describe('ConsensusManager - INVARIANTS GELÉS', () => {
   let consensusManager: ConsensusManager;

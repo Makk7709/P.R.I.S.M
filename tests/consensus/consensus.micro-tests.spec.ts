@@ -8,7 +8,7 @@
  */
 
 import { describe, it, expect, beforeEach } from 'vitest';
-import { ConsensusManager, Vote } from '../../src/consensus/ConsensusManager.js';
+import { ConsensusManager, Vote } from '../../src/consensus/ConsensusManager.ts';
 
 describe('ConsensusManager - MICRO-TESTS', () => {
   let consensusManager: ConsensusManager;
@@ -96,6 +96,25 @@ describe('ConsensusManager - MICRO-TESTS', () => {
       const result = consensusManager.processConsensus(votes);
 
       expect(result.verdict).toBe('approve');
+      expect(result.validVotesCount).toBe(3);
+      expect(result.totalVotesCount).toBe(3);
+      expect(result.quorumRatio).toBe(1.0); // 3/3 = 1.0, > 2/3
+      expect(result.noConsensus).toBe(false);
+    });
+
+    /**
+     * Test cas 1-2-0: 1 approve, 2 reject, 0 abstain → REJECT (couvre ligne 91)
+     */
+    it('Cas 1-2-0: 1 approve, 2 reject, 0 abstain → REJECT', () => {
+      const votes: Vote[] = [
+        { verdict: 'approve', confidence: 0.9, provider: 'provider1', latencyMs: 100 },
+        { verdict: 'reject', confidence: 0.8, provider: 'provider2', latencyMs: 120 },
+        { verdict: 'reject', confidence: 0.7, provider: 'provider3', latencyMs: 110 }
+      ];
+
+      const result = consensusManager.processConsensus(votes);
+
+      expect(result.verdict).toBe('reject');
       expect(result.validVotesCount).toBe(3);
       expect(result.totalVotesCount).toBe(3);
       expect(result.quorumRatio).toBe(1.0); // 3/3 = 1.0, > 2/3
