@@ -337,7 +337,7 @@ The PRISM repository demonstrates **excellent alignment** between code, configur
 ---
 
 **Audit Completed**: 2025-01-27  
-**Post-Run Gate**: `5a0b26d` - "docs(traceability): add release v2.0.1 commit hash to QA and drift reports"  
+**Post-Run Gate**: `6bc9e15` - "docs(qa): post-run gate ✅ zéro régression + traçabilité CI/commit"  
 **Release v2.0.1**: `5a9c9db` - "docs(release): QA consolidation + notes v2.0.1 & traceability links"  
 **CI/CD Implementation**: `d4a157d` - "chore(repo): resolve depot↔app drift + complete CI/CD implementation"  
 **Next Review**: Recommended in 30 days or after major changes
