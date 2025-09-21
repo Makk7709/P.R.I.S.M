@@ -20,6 +20,7 @@
 - **Killed:** 45 mutants
 - **Survived:** 15 mutants
 - **No Coverage:** 5 mutants
+- **Note:** Mutation testing requires Node.js ≥20 (handled by CI)
 
 ### Métriques Consensus
 - **Decision Latency P50:** 150ms
