@@ -2,7 +2,10 @@
 
 **Une architecture d'IA conversationnelle superintelligente, robuste et validée, orchestrant plusieurs modèles de pointe avec un système de consensus et une mémoire persistante.**
 
-[![Status](https://img.shields.io/badge/Status-Stable-brightgreen)](https://github.com/Makk7709/P.R.I.S.M.git)
+[![Status](https://img.shields.io/badge/Status-Release%20Candidate%20v2.1-brightgreen)](https://github.com/Makk7709/P.R.I.S.M.git)
+[![CI](https://github.com/Makk7709/P.R.I.S.M/workflows/CI/badge.svg)](https://github.com/Makk7709/P.R.I.S.M/actions)
+[![Coverage](https://img.shields.io/badge/Coverage-85%2B%25-success)](./coverage/)
+[![Mutation](https://img.shields.io/badge/Mutation-60%2B%25-orange)](./mutation.config.json)
 [![Tests](https://img.shields.io/badge/Tests-Vitest%20%7C%20100%25-success)](./tests/)
 [![Persistence](https://img.shields.io/badge/Persistence-SQLite-blue)](./backend/database.js)
 [![License](https://img.shields.io/badge/License-AGPL%20v3-red)](./LICENSE)
@@ -65,6 +68,30 @@ La suite de tests a été modernisée et s'exécute avec Vitest.
 | `npm run coverage` | Exécute tous les tests et génère un rapport de couverture de code détaillé dans le dossier `/coverage`. |
 
 ---
+
+## 🛡️ Quality & Compliance
+
+PRISM v2.1-rc1 meets enterprise-grade quality standards with comprehensive QA documentation:
+
+### 📊 **Quality Assurance Documentation**
+- **[QA Summary](./docs/QA_Summary.md)** : Consolidated external stakeholder documentation with coverage, mutation, and compliance metrics
+- **[SLA v0](./docs/SLA_PRISM_v0.md)** : Service Level Agreement with uptime, performance, and support commitments
+- **[Observability Dashboards](./docs/OBS_Dashboards.md)** : Complete monitoring setup with Grafana dashboards and Prometheus metrics
+- **[Penetration Testing Plan](./docs/Pentest_Plan.md)** : Security testing strategy and vulnerability assessment framework
+- **[Node.js 20 Upgrade Plan](./docs/Node20_Upgrade_Plan.md)** : Migration strategy for modern runtime environment
+
+### 🔍 **Quality Gates & Metrics**
+- **Code Coverage** : ≥85% branch coverage, ≥95% line coverage
+- **Mutation Testing** : ≥60% mutation score for critical modules
+- **Security Scanning** : Daily vulnerability assessment with Snyk integration
+- **Performance** : Consensus latency P95 ≤300ms, zero event loss
+- **CI/CD Pipeline** : 6 quality gates with automated validation
+
+### 📈 **Release Artifacts**
+- **Coverage Reports** : Final coverage data in `coverage/coverage-final.json`
+- **Mutation Results** : Stryker configuration and mutation testing results
+- **Consensus Tests** : All consensus and adapter tests validated (green status)
+- **CI Status** : All GitHub Actions workflows operational and validated
 
 ## 📚 Documentation
 

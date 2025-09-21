@@ -1,5 +1,42 @@
 # CHANGELOG - PRISM
 
+## [2.1-rc1] - 2025-01-27 🎯 RELEASE CANDIDATE v2.1 - QA HARDENING COMPLETE
+
+### 🚀 **Release Candidate Consolidation**
+- **QA Hardening Complete**: All quality assurance documentation consolidated and validated
+- **SLA Documentation**: Service Level Agreement v0 finalized (`docs/SLA_PRISM_v0.md`)
+- **Observability Dashboards**: Complete monitoring setup documented (`docs/OBS_Dashboards.md`)
+- **Penetration Testing Plan**: Security testing strategy documented (`docs/Pentest_Plan.md`)
+- **Node.js 20 Upgrade Plan**: Migration strategy documented (`docs/Node20_Upgrade_Plan.md`)
+
+### 📚 **Documentation & Compliance**
+- **QA Summary**: Consolidated external stakeholder documentation (`docs/QA_Summary.md`)
+- **Quality Gates**: Coverage ≥85%, Mutation ≥60%, Security validation complete
+- **CI/CD Pipeline**: GitHub Actions workflows with comprehensive quality gates
+- **External Presentation**: Complete dossier ready for incubator/investor/CTO review
+
+### 🛡️ **Security & Quality**
+- **Security Workflow**: Daily vulnerability scanning with Snyk integration
+- **CodeQL Analysis**: Automated code security analysis
+- **Mutation Testing**: Comprehensive test coverage validation
+- **Coverage Reports**: Final coverage artifacts archived and validated
+
+### 📊 **Release Artifacts**
+- **Coverage**: Final coverage report (`coverage/coverage-final.json`)
+- **Mutation**: Stryker mutation testing configuration and results
+- **Consensus Tests**: All consensus and adapter tests validated (green status)
+- **CI Status**: All GitHub Actions workflows validated and operational
+
+### 🔗 **References**
+- QA Summary: `docs/QA_Summary.md` - Complete external stakeholder documentation
+- SLA v0: `docs/SLA_PRISM_v0.md` - Service Level Agreement finalized
+- Observability: `docs/OBS_Dashboards.md` - Monitoring and dashboards setup
+- Security: `docs/Pentest_Plan.md` - Penetration testing strategy
+- Upgrade: `docs/Node20_Upgrade_Plan.md` - Node.js 20 migration plan
+- Tag: `v2.1-rc1` - Release candidate for external presentation
+
+---
+
 ## [2.0.1] - 2025-01-27 🎯 QA CONSOLIDATION & CI/CD COMPLETE
 
 ### 🚀 **Added**
