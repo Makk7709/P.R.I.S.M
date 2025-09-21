@@ -18,7 +18,7 @@ jobs:
     
     strategy:
       matrix:
-        test-suite: [unit, consensus, enterprise, security]
+        test-suite: [unit, consensus, enterprise, security, adapters]
     
     steps:
     - name: 📥 Checkout Repository
@@ -48,6 +48,10 @@ jobs:
     - name: 🧪 Run Security Tests
       if: matrix.test-suite == 'security'
       run: npm run test:security
+      
+    - name: 🧪 Run Adapter Tests
+      if: matrix.test-suite == 'adapters'
+      run: npm run test -- tests/adapters/ --coverage
       
     - name: 📊 Generate Coverage Report
       run: npm run coverage
