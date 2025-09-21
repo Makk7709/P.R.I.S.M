@@ -1,0 +1,291 @@
+name: 🔒 PRISM Frozen Modules Protection
+
+on:
+  push:
+    branches: [ main ]
+    paths:
+      - 'src/core/TrustContext.js'
+      - 'src/core/SecureJournalManager.js'
+      - 'src/core/ConsensusManager.js'
+      - 'src/core/PrismCoreOrchestrator.js'
+  pull_request:
+    branches: [ main ]
+    paths:
+      - 'src/core/TrustContext.js'
+      - 'src/core/SecureJournalManager.js'
+      - 'src/core/ConsensusManager.js'
+      - 'src/core/PrismCoreOrchestrator.js'
+
+env:
+  NODE_VERSION: '18'
+
+jobs:
+  # Frozen Modules Integrity Check
+  frozen-modules-integrity:
+    name: 🔒 Frozen Modules Integrity
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: 📥 Checkout Repository
+      uses: actions/checkout@v4
+      with:
+        fetch-depth: 0  # Fetch full history for comparison
+        
+    - name: 🔧 Setup Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: ${{ env.NODE_VERSION }}
+        cache: 'npm'
+        
+    - name: 📦 Install Dependencies
+      run: npm ci
+      
+    - name: 🔒 Validate Frozen Modules Structure
+      run: |
+        echo "🔒 Validating frozen modules structure..."
+        
+        # Define frozen modules
+        frozen_modules=(
+          "src/core/TrustContext.js"
+          "src/core/SecureJournalManager.js" 
+          "src/core/ConsensusManager.js"
+        )
+        
+        for module in "${frozen_modules[@]}"; do
+          if [ -f "$module" ]; then
+            echo "✅ $module exists"
+            
+            # Check file size (basic integrity check)
+            size=$(wc -c < "$module")
+            if [ "$size" -gt 1000 ]; then
+              echo "✅ $module has sufficient content ($size bytes)"
+            else
+              echo "❌ $module appears to be empty or corrupted ($size bytes)"
+              exit 1
+            fi
+            
+            # Check for required class/export
+            module_name=$(basename "$module" .js)
+            if grep -q "export.*class.*$module_name\|export.*$module_name" "$module"; then
+              echo "✅ $module exports expected class"
+            else
+              echo "❌ $module missing expected export"
+              exit 1
+            fi
+          else
+            echo "❌ $module missing"
+            exit 1
+          fi
+        done
+        
+        echo "🔒 All frozen modules structure validated"
+        
+    - name: 🔒 Check for Unauthorized Changes
+      run: |
+        echo "🔒 Checking for unauthorized changes to frozen modules..."
+        
+        # Check if this is a PR
+        if [ "${{ github.event_name }}" = "pull_request" ]; then
+          echo "📝 This is a pull request - checking changes..."
+          
+          # Get changed files
+          changed_files=$(git diff --name-only HEAD~1 HEAD)
+          
+          # Check if any frozen modules were modified
+          frozen_modules=(
+            "src/core/TrustContext.js"
+            "src/core/SecureJournalManager.js"
+            "src/core/ConsensusManager.js"
+          )
+          
+          for module in "${frozen_modules[@]}"; do
+            if echo "$changed_files" | grep -q "$module"; then
+              echo "⚠️ FROZEN MODULE MODIFIED: $module"
+              echo "🔒 Frozen modules require special approval process"
+              echo "📋 Please ensure changes are authorized and documented"
+              
+              # Check if PR has special labels
+              if [ -z "${{ github.event.pull_request.labels.*.name }}" ]; then
+                echo "❌ No special labels found for frozen module changes"
+                echo "🔒 Please add 'frozen-module-change' label to this PR"
+                exit 1
+              fi
+            fi
+          done
+        else
+          echo "📝 This is a direct push - checking for major structural changes..."
+          
+          # For direct pushes, just validate structure
+          echo "✅ Direct push to main - structure validation passed"
+        fi
+
+  # Frozen Modules Test Suite
+  frozen-modules-tests:
+    name: 🧪 Frozen Modules Tests
+    runs-on: ubuntu-latest
+    needs: frozen-modules-integrity
+    
+    steps:
+    - name: 📥 Checkout Repository
+      uses: actions/checkout@v4
+      
+    - name: 🔧 Setup Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: ${{ env.NODE_VERSION }}
+        cache: 'npm'
+        
+    - name: 📦 Install Dependencies
+      run: npm ci
+      
+    - name: 🧪 Run TrustContext Tests
+      run: |
+        echo "🧪 Running TrustContext specific tests..."
+        
+        # Run consensus tests (includes TrustContext)
+        if npm run test:consensus; then
+          echo "✅ TrustContext tests passed"
+        else
+          echo "❌ TrustContext tests failed"
+          exit 1
+        fi
+        
+    - name: 🧪 Run SecureJournalManager Tests
+      run: |
+        echo "🧪 Running SecureJournalManager specific tests..."
+        
+        # Run enterprise tests (includes SecureJournalManager)
+        if npm run test:enterprise; then
+          echo "✅ SecureJournalManager tests passed"
+        else
+          echo "❌ SecureJournalManager tests failed"
+          exit 1
+        fi
+        
+    - name: 🧪 Run ConsensusManager Tests
+      run: |
+        echo "🧪 Running ConsensusManager specific tests..."
+        
+        # Run consensus tests
+        if npm run test:consensus; then
+          echo "✅ ConsensusManager tests passed"
+        else
+          echo "❌ ConsensusManager tests failed"
+          exit 1
+        fi
+
+  # Frozen Modules Performance Validation
+  frozen-modules-performance:
+    name: ⚡ Frozen Modules Performance
+    runs-on: ubuntu-latest
+    needs: frozen-modules-integrity
+    
+    steps:
+    - name: 📥 Checkout Repository
+      uses: actions/checkout@v4
+      
+    - name: 🔧 Setup Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: ${{ env.NODE_VERSION }}
+        cache: 'npm'
+        
+    - name: 📦 Install Dependencies
+      run: npm ci
+        
+    - name: ⚡ Performance Validation
+      run: |
+        echo "⚡ Validating frozen modules performance..."
+        
+        # Run performance tests
+        if npm run validate:all; then
+          echo "✅ Performance validation passed"
+        else
+          echo "❌ Performance validation failed"
+          exit 1
+        fi
+        
+        # Check specific performance thresholds for frozen modules
+        echo "⚡ Checking performance thresholds..."
+        
+        # Run consensus tests with timing
+        start_time=$(date +%s%3N)
+        npm run test:consensus > /dev/null 2>&1
+        end_time=$(date +%s%3N)
+        duration=$((end_time - start_time))
+        
+        echo "Consensus tests duration: ${duration}ms"
+        
+        # Check if tests complete within reasonable time (30 seconds)
+        if [ "$duration" -lt 30000 ]; then
+          echo "✅ Consensus tests performance acceptable"
+        else
+          echo "❌ Consensus tests too slow: ${duration}ms"
+          exit 1
+        fi
+
+  # Frozen Modules Documentation Check
+  frozen-modules-docs:
+    name: 📚 Frozen Modules Documentation
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: 📥 Checkout Repository
+      uses: actions/checkout@v4
+      
+    - name: 📚 Check Documentation Coverage
+      run: |
+        echo "📚 Checking frozen modules documentation..."
+        
+        # Check for QA documentation
+        if [ -f "docs/ConsensusManager_QA.md" ]; then
+          echo "✅ ConsensusManager QA documentation exists"
+        else
+          echo "❌ ConsensusManager QA documentation missing"
+          exit 1
+        fi
+        
+        # Check for frozen modules documentation
+        frozen_modules=(
+          "TrustContext"
+          "SecureJournalManager"
+          "ConsensusManager"
+        )
+        
+        for module in "${frozen_modules[@]}"; do
+          # Check if module is documented in README or docs
+          if grep -r -i "$module" docs/ README.md > /dev/null 2>&1; then
+            echo "✅ $module documented"
+          else
+            echo "⚠️ $module documentation may be missing"
+          fi
+        done
+
+  # Frozen Modules Approval Gate
+  frozen-modules-gate:
+    name: 🚪 Frozen Modules Approval Gate
+    runs-on: ubuntu-latest
+    needs: [frozen-modules-integrity, frozen-modules-tests, frozen-modules-performance, frozen-modules-docs]
+    if: always()
+    
+    steps:
+    - name: 🚪 Frozen Modules Approval Gate
+      run: |
+        echo "🚪 Frozen Modules Approval Gate Results:"
+        echo "🔒 Integrity: ${{ needs.frozen-modules-integrity.result }}"
+        echo "🧪 Tests: ${{ needs.frozen-modules-tests.result }}"
+        echo "⚡ Performance: ${{ needs.frozen-modules-performance.result }}"
+        echo "📚 Documentation: ${{ needs.frozen-modules-docs.result }}"
+        
+        # Check if all gates passed
+        if [[ "${{ needs.frozen-modules-integrity.result }}" == "success" && 
+              "${{ needs.frozen-modules-tests.result }}" == "success" && 
+              "${{ needs.frozen-modules-performance.result }}" == "success" && 
+              "${{ needs.frozen-modules-docs.result }}" == "success" ]]; then
+          echo "✅ All frozen modules gates passed"
+          exit 0
+        else
+          echo "❌ Frozen modules gates failed"
+          echo "🔒 Frozen modules require special approval and validation"
+          exit 1
+        fi
