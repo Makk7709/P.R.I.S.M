@@ -18,7 +18,7 @@ jobs:
     
     strategy:
       matrix:
-        test-suite: [unit, consensus, enterprise, security, adapters]
+        test-suite: [unit, consensus, enterprise, security, adapters, voice]
     
     steps:
     - name: 📥 Checkout Repository
@@ -53,6 +53,10 @@ jobs:
       if: matrix.test-suite == 'adapters'
       run: npm run test -- tests/adapters/ --coverage
       
+    - name: 🧪 Run Voice Analysis Tests
+      if: matrix.test-suite == 'voice'
+      run: pnpm vitest run tests/voice --coverage --reporter=verbose
+      
     - name: 📊 Generate Coverage Report
       run: npm run coverage
       
@@ -66,6 +70,40 @@ jobs:
       run: |
         echo "Checking coverage thresholds..."
         npm run coverage:check
+
+  # Voice Analysis Quality Gate
+  qa-voice:
+    name: 🎤 Voice Analysis QA
+    runs-on: ubuntu-latest
+    needs: test-and-coverage
+    
+    steps:
+    - name: 📥 Checkout Repository
+      uses: actions/checkout@v4
+      
+    - name: 🔧 Setup Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: ${{ env.NODE_VERSION }}
+        cache: 'npm'
+        
+    - name: 📦 Install Dependencies
+      run: npm ci
+      
+    - name: 🎤 Run Voice Analysis Tests with Coverage
+      run: pnpm vitest run tests/voice --coverage --reporter=verbose
+      
+    - name: 📊 Generate Voice Coverage Report
+      run: pnpm vitest run tests/voice --coverage --reporter=json --outputFile=coverage/voice-coverage.json
+      
+    - name: 📤 Upload Voice Coverage Artifacts
+      uses: actions/upload-artifact@v3
+      with:
+        name: voice-coverage-report
+        path: coverage/voice-coverage.json
+        
+    - name: 📈 Voice Analysis Performance Test
+      run: pnpm vitest run tests/voice --reporter=verbose --testNamePattern="Performance"
 
   # Frozen Modules Protection
   frozen-modules-validation:
