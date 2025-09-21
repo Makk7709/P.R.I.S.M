@@ -130,8 +130,9 @@
 ## 🔗 **TRACEABILITY**
 
 ### Commit References
-- **Main Release**: `a130a45` - "docs(drift): add final traceability links"
+- **Release v2.0.1**: `5a9c9db` - "docs(release): QA consolidation + notes v2.0.1 & traceability links"
 - **CI/CD Implementation**: `d4a157d` - "chore(repo): resolve depot↔app drift"
+- **Drift Report**: `a130a45` - "docs(drift): add final traceability links"
 - **QA Documentation**: `docs/ConsensusManager_QA.md`
 
 ### External Links
