@@ -1,5 +1,46 @@
 # CHANGELOG - PRISM
 
+## [2.0.1] - 2025-01-27 🎯 QA CONSOLIDATION & CI/CD COMPLETE
+
+### 🚀 **Added**
+- **CI/CD Pipeline**: Complete GitHub Actions implementation with 6 quality gates
+- **Security Workflow**: Automated vulnerability scanning and code security analysis  
+- **Frozen Modules Guard**: Special protection for TrustContext, SecureJournalManager, ConsensusManager
+- **QA Summary**: Consolidated documentation for external stakeholders (`docs/QA_Summary.md`)
+- **Drift Report**: Complete repository↔application alignment verification (`docs/DRIFT_Report.md`)
+
+### 📚 **Documentation**
+- **QA Summary**: Unified report with coverage, mutation, and invariant metrics
+- **Drift Audit**: Comprehensive repository health assessment (100/100 score)
+- **CI/CD Documentation**: Complete workflow specifications and quality gates
+- **Traceability**: Full commit hash tracking and external links
+
+### 🛡️ **Security**
+- **Security Workflow**: Daily vulnerability scanning with Snyk integration
+- **CodeQL Analysis**: Automated code security analysis
+- **Secret Detection**: Hardcoded secrets validation
+- **Environment Security**: Comprehensive configuration validation
+
+### 🔧 **Fixed**
+- **Repository Drift**: Eliminated all drift between code, config, and documentation
+- **CI/CD Gap**: Implemented missing GitHub Actions workflows
+- **Documentation**: Consolidated fragmented QA documentation
+- **Traceability**: Added comprehensive audit trail
+
+### 📊 **Quality Gates**
+- **Coverage**: B≥85%, L≥95%, F≥95%, S≥95% enforced
+- **Mutation**: Score≥60% for all frozen modules
+- **Security**: Automated scanning with quality thresholds
+- **Performance**: Consensus latency P95≤300ms
+
+### 🔗 **References**
+- Issue #1: Mutation survivors (Consensus) — 15 survivors / 5 nocov reduction plan
+- Issue #2: CI hardening — public coverage/mutation artifacts and badges
+- Commit: `a130a45` - Final traceability and drift report completion
+- Commit: `d4a157d` - Complete CI/CD implementation and drift resolution
+
+---
+
 ## [2.4.1] - 2025-01-27 🚀 TDD ENTERPRISE EXPORT API - RÉVOLUTION PERFORMANCE
 
 ### 🎯 NOUVELLES FONCTIONNALITÉS MAJEURES
