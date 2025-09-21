@@ -1,0 +1,14 @@
+{
+  "version": "1.0.0",
+  "module": "ConsensusManager",
+  "description": "Manifest de freeze pour tests invariants",
+  "timestamp_init": "2025-09-21T17:36:41.098Z",
+  "files": {
+    "tests/consensus/consensus.invariants.spec.ts": {
+      "path": "tests/consensus/consensus.invariants.spec.ts",
+      "sha256": "7f431e8d665658a39d0b3955d91671022e21424e81d6f4acad9d216acccada91",
+      "size": 6533,
+      "mtime": "2025-09-21T17:35:35.493Z"
+    }
+  }
+}
