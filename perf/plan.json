@@ -1,0 +1,64 @@
+{
+  "benchmark_plan": {
+    "version": "1.0.0",
+    "timestamp": "2025-01-27T10:00:00Z",
+    "description": "PRISM Consensus Latency Benchmark - Real-world performance measurement",
+    "environment": {
+      "use_mocks": false,
+      "node_version": ">=18.0.0",
+      "timezone": "Europe/Paris",
+      "required_api_keys": [
+        "OPENAI_API_KEY",
+        "ANTHROPIC_API_KEY", 
+        "PERPLEXITY_API_KEY"
+      ]
+    },
+    "experiment_matrix": {
+      "agent_counts": [3, 5, 7],
+      "context_sizes": [1000, 4000, 8000],
+      "timeouts": [1000, 2000],
+      "modes": ["cold", "warm"],
+      "total_scenarios": 36
+    },
+    "test_parameters": {
+      "runs_per_scenario": 50,
+      "min_runs": 30,
+      "max_runs": 100,
+      "total_runs": 1800
+    },
+    "rate_limiting": {
+      "max_rps": 3,
+      "min_delay_ms": 100,
+      "max_delay_ms": 300,
+      "burst_limit": 5
+    },
+    "quality_thresholds": {
+      "max_timeout_rate": 0.05,
+      "max_orchestration_overhead": 0.25,
+      "min_quorum_success_rate": 0.95
+    },
+    "measurement_points": [
+      "request_start",
+      "provider_connect_start",
+      "provider_connect_end", 
+      "ttft",
+      "provider_done",
+      "vote_start",
+      "vote_end",
+      "audit_write_start",
+      "audit_write_end",
+      "consensus_end"
+    ],
+    "output_files": {
+      "raw_results": "perf/results/consensus_runs_<timestamp>.jsonl",
+      "csv_export": "perf/exports/consensus_summary_<timestamp>.csv",
+      "analysis_report": "perf/reports/CONSENSUS_LATENCY_REPORT_<timestamp>.md",
+      "control_prompt": "perf/reports/CONTROL_PROMPT_<timestamp>.md"
+    },
+    "seeds": {
+      "generation_method": "sha256(run_spec + index)",
+      "variability": "high",
+      "reproducibility": "deterministic"
+    }
+  }
+}
