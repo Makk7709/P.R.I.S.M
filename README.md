@@ -1,772 +1,263 @@
-# 🎯 PRISM v2.4 - Premium Reasoning & Integrated Superintelligence Matrix
+# P.R.I.S.M - Professional AI Intelligence System
 
-**Une architecture d'IA conversationnelle superintelligente, robuste et validée, orchestrant plusieurs modèles de pointe avec un système de consensus et une mémoire persistante.**
+**Une architecture d'intelligence artificielle superintelligente avec consensus multi-modèles, observabilité enterprise et validation par stress test.**
 
-[![Status](https://img.shields.io/badge/Status-Release%20Candidate%20v2.1-brightgreen)](https://github.com/Makk7709/P.R.I.S.M.git)
-[![CI](https://github.com/Makk7709/P.R.I.S.M/workflows/CI/badge.svg)](https://github.com/Makk7709/P.R.I.S.M/actions)
-[![Coverage](https://img.shields.io/badge/Coverage-85%2B%25-success)](./coverage/)
-[![Mutation](https://img.shields.io/badge/Mutation-60%2B%25-orange)](./mutation.config.json)
-[![Tests](https://img.shields.io/badge/Tests-Vitest%20%7C%20100%25-success)](./tests/)
-[![Persistence](https://img.shields.io/badge/Persistence-SQLite-blue)](./backend/database.js)
 [![License](https://img.shields.io/badge/License-AGPL%20v3-red)](./LICENSE)
+[![Version](https://img.shields.io/badge/Version-2.4.0-blue)](https://github.com/Makk7709/P.R.I.S.M)
+[![Node.js](https://img.shields.io/badge/Node.js-18%2B-green)](https://nodejs.org/)
+[![Tests](https://img.shields.io/badge/Tests-Vitest-success)](./tests/)
+[![Coverage](https://img.shields.io/badge/Coverage-85%5C%25-+-brightgreen)](./coverage/)
 
 ---
 
-## 🚀 Présentation
+## 🚀 Introduction
 
-PRISM est une intelligence artificielle orchestratrice de pointe conçue pour des applications critiques. Elle intègre un **système de consensus IA** pour des décisions fiables, une **mémoire persistante et transactionnelle** via SQLite pour une robustesse à toute épreuve, et un **environnement de test moderne** avec Vitest pour garantir la qualité du code.
+PRISM (Professional AI Intelligence System Matrix) est une architecture d'IA conversationnelle de niveau enterprise qui orchestre intelligemment plusieurs modèles de pointe (OpenAI GPT-4, Anthropic Claude, Perplexity Llama) avec un système de consensus avancé pour des décisions critiques fiables.
 
-Le projet a récemment fait l'objet d'une migration technique majeure pour résoudre la dette technique, améliorer la stabilité et garantir sa maintenabilité à long terme.
+### Vision & Objectifs
 
-## ✨ Piliers de l'Architecture
+- **Orchestration intelligente multi-modèles** avec consensus IA validé
+- **Sécurité Zero-Trust** avec TrustContext et escalade humaine
+- **Observabilité enterprise** avec métriques temps réel Prometheus/Grafana
+- **Validation automatisée** par stress test (60k événements/heure)
+- **Mémoire persistante AMCD** via SQLite haute performance
+- **Interface vocale premium** avec ElevenLabs et adaptation contextuelle
 
-### 🧠 Orchestration Multi-Modèles avec Consensus
-- **`ConsensusManager`** : Un système de vote (majorité 2/3) entre plusieurs modèles d'IA (GPT-4, Claude, Llama) pour valider les décisions critiques et améliorer la fiabilité.
-- **`AgentRouter`** : Routage intelligent des requêtes vers le modèle le plus adapté en fonction du contexte, des performances et des coûts.
-- **`PriorityQueue`** : Gestion des tâches par priorité pour assurer que les requêtes critiques sont traitées en premier.
+---
 
-### 🗄️ Persistance Robuste avec SQLite
-- **Migration Complète :** L'ancien système de persistance basé sur des fichiers JSON, sujet aux corruptions, a été remplacé par une base de données **SQLite**.
-- **Fiabilité (ACID) :** Les transactions atomiques garantissent qu'aucune donnée n'est jamais corrompue, même en cas d'arrêt brutal.
-- **Performance :** L'accès indexé aux données est des ordres de grandeur plus rapide que l'analyse de fichiers JSON.
+## ⚙️ Caractéristiques Clés
 
-### 🧪 Framework de Test Moderne avec Vitest
-- **Migration depuis Jest :** L'ancienne suite de tests, bloquée par des conflits de configuration insolubles, a été migrée vers **Vitest**.
-- **Environnement Sain :** Vitest, étant natif aux modules ESM, a permis de résoudre tous les problèmes de configuration et de fournir un environnement de test rapide et fiable.
-- **Qualité Garantie :** La nouvelle couche de persistance est validée par une suite de tests d'intégration avec une **couverture de code de 100%**.
+### 🧠 Système de Consensus IA
+- **Vote majoritaire 2/3** entre modèles GPT-4, Claude, Perplexity
+- **Timeout configurable** (1-2s) avec fallback gracieux
+- **TrustContext** pour escalade sécurité critique
+- **PriorityQueue** heap binaire avec 3 niveaux (CRITICAL → HIGH → NORMAL)
+- **Benchmarks latence** complets avec métriques p50/p95/p99
 
-## 🛠️ Installation et Utilisation
+### 🗄️ Persistance & Fiabilité
+- **SQLite AMCD** transactionnelle (replacement JSON corrompu)
+- **Migration complète** vers Vitest (replacement Jest bloqué)
+- **Couverture 100%** modules critiques
+- **Tests mutation** validation qualité (60%+ score)
 
-### 1. Prérequis
-- Node.js (v18+ recommandé)
-- npm
+### 🎤 Système Vocal Premium
+- **ElevenLabs Premium** intégration complète
+- **4 voix adaptatives** (Rachel, Adam, Antoni, Bella)
+- **Enrichissement automatique** contexte pour expressivité +300%
+- **Fallback TTS** navigateur si API indisponible
+- **Interface corporate** premium avec design noir doré
 
-### 2. Installation
+### 📊 Observabilité Enterprise
+- **PrismVitals** surveillance signes vitaux 100% opérationnel
+- **Prometheus metrics** port 9090 pour temps réel
+- **Grafana dashboards** port 3001 visualisation avancée
+- **Docker orchestration** pipeline automatisé
+- **Alertes intelligentes** avec cooldown anti-boucles
+
+---
+
+## 📦 Installation & Setup
+
+### Prérequis
 ```bash
-# Cloner le projet
+Node.js 18+ (avec support ES Modules)
+npm ou yarn
+Clés API (OpenAI, Anthropic, Perplexity, ElevenLabs optionnel)
+Docker (pour monitoring enterprise)
+```
+
+### Installation Rapide
+```bash
+# Cloner le repository
 git clone https://github.com/Makk7709/P.R.I.S.M.git
 cd P.R.I.S.M
 
 # Installer les dépendances
 npm install
+
+# Configuration environment
+cp env.example .env
 ```
 
-### 3. Lancer l'Application
+### Configuration APIs
 ```bash
-# Démarrer le serveur principal de PRISM
-node prismCore.js
+# Variables d'environnement requises (.env)
+OPENAI_API_KEY=sk-votre_clé_openai
+ANTHROPIC_API_KEY=sk-ant-votre_clé_anthropic  
+PERPLEXITY_API_KEY=pplx-votre_clé_elevenlabs
+ELEVENLABS_API_KEY=sk-votre_clé_elevenlabs  # Optionnel pour voice premium
+
+# Configuration consensus
+USE_MOCKS=false                              # Force fournisseurs réels
+CONSENSUS_TIMEOUT_MS=1000                   # Timeout consensus
+TRUST_CONTEXT_ENABLED=true                  # Escalade sécurité
 ```
 
-## ✅ Exécution des Tests
-
-La suite de tests a été modernisée et s'exécute avec Vitest.
-
-| Commande | Description |
-|---|---|
-| `npm test` | Exécute tous les tests une seule fois. Idéal pour la validation et l'intégration continue (CI). |
-| `npm test:watch` | Lance Vitest en mode "watch", qui ré-exécute automatiquement les tests sur les fichiers modifiés. |
-| `npm run coverage` | Exécute tous les tests et génère un rapport de couverture de code détaillé dans le dossier `/coverage`. |
-
----
-
-## 🛡️ Quality & Compliance
-
-PRISM v2.1-rc1 meets enterprise-grade quality standards with comprehensive QA documentation:
-
-### 📊 **Quality Assurance Documentation**
-- **[QA Summary](./docs/QA_Summary.md)** : Consolidated external stakeholder documentation with coverage, mutation, and compliance metrics
-- **[SLA v0](./docs/SLA_PRISM_v0.md)** : Service Level Agreement with uptime, performance, and support commitments
-- **[Observability Dashboards](./docs/OBS_Dashboards.md)** : Complete monitoring setup with Grafana dashboards and Prometheus metrics
-- **[Penetration Testing Plan](./docs/Pentest_Plan.md)** : Security testing strategy and vulnerability assessment framework
-- **[Node.js 20 Upgrade Plan](./docs/Node20_Upgrade_Plan.md)** : Migration strategy for modern runtime environment
-
-### 🔍 **Quality Gates & Metrics**
-- **Code Coverage** : ≥85% branch coverage, ≥95% line coverage
-- **Mutation Testing** : ≥60% mutation score for critical modules
-- **Security Scanning** : Daily vulnerability assessment with Snyk integration
-- **Performance** : Consensus latency P95 ≤300ms, zero event loss
-- **CI/CD Pipeline** : 6 quality gates with automated validation
-
-### 📈 **Release Artifacts**
-- **Coverage Reports** : Final coverage data in `coverage/coverage-final.json`
-- **Mutation Results** : Stryker configuration and mutation testing results
-- **Consensus Tests** : All consensus and adapter tests validated (green status)
-- **CI Status** : All GitHub Actions workflows operational and validated
-
-## 📚 Documentation
-
-Pour plus de détails sur l'architecture et les récentes migrations :
-
-- **[Rapport de Migration Technique (Q2 2024)](./MIGRATION_TECHNIQUE_2024_Q2.md)** : Analyse détaillée de la migration vers SQLite et Vitest.
-- **[Dossier Technique Complet](./PRISM_DOSSIER_TECHNIQUE_COMPLET.md)** : Documentation approfondie de l'architecture de PRISM.
-- **[Brochure Investisseurs](./PRISM_BROCHURE_INVESTISSEURS.md)** : Présentation de la vision et de la proposition de valeur du projet.
-
-# 🎯 PRISM v2.4 - Premium Reasoning & Integrated Superintelligence Matrix
-
-**Architecture IA Tri-Modèles Superintelligente avec Révolution Vocale**  
-*OpenAI GPT-4 + Perplexity Llama 3.1 + Claude Sonnet 3.5 + ElevenLabs Premium*
-
-[![Status](https://img.shields.io/badge/Status-Voice%20Revolution%20V2.4-brightgreen)](https://github.com/Makk7709/P.R.I.S.M.git)
-[![Tests](https://img.shields.io/badge/Tests-Voice%20100%25%20Passed-success)](./test-results-final.log)
-[![Performance](https://img.shields.io/badge/Voice%20Quality-8%2F10%20Premium-orange)](./RÉSUMÉ_AMÉLIORATIONS_VOCALES_PRISM.md)
-[![ElevenLabs](https://img.shields.io/badge/ElevenLabs-Intégré%20Premium-purple)](./GUIDE_DÉPLOIEMENT_VOIX_AMÉLIORÉE.md)
-
----
-
-## 🎤 NOUVEAU ! PRISM VOICE CHAT V2 - RÉVOLUTION VOCALE
-
-### ✨ **Transformation Vocale Complète (Mai 2025)**
-PRISM franchit une étape majeure avec l'intégration **ElevenLabs Premium** et un système vocal révolutionnaire qui élimine définitivement la voix robotique !
-
-#### 🎭 **Système Multi-Voix Adaptatif**
-- **Rachel** (21m00Tcm4TlvDq8ikWAM) : Conversation générale, ton amical
-- **Adam** (pNInz6obpgDQGcFmaJgB) : Business/professionnel, autorité
-- **Antoni** (ErXwobaYiN019PkySvjV) : Urgent/énergique, dynamisme
-- **Bella** (EXAVITQu4vr4xnSDxMaL) : Analytique/confiant, précision
-
-#### 🚀 **Métriques d'Amélioration Vocale**
-```
-🎯 Expressivité:        2/10 → 8/10 (+300%)
-⚡ Temps génération:    5-10s → 1-3s (-70%)
-🎭 Adaptation context: 0/10 → 9/10 (+∞)
-💪 Engagement user:     4/10 → 8/10 (+100%)
-🔊 Naturalité:         3/10 → 8/10 (+167%)
-```
-
-#### 🧠 **Enrichissement Automatique Intelligent**
-```javascript
-// AVANT (Robotique)
-"Excellente question ! Le système fonctionne parfaitement."
-
-// APRÈS (Expressif)
-"🎉 💡 **excellent**e question ! ✨ Le système fonctionne **parfait**ement."
-```
-
-#### 🎛️ **Paramètres Adaptatifs Contextuels**
-- **ENERGETIC**: Stability=0.25, Style=0.85, Rate=1.25 (urgent/enthousiaste)
-- **CONTEMPLATIVE**: Stability=0.45, Style=0.45, Rate=0.95 (analytique/réfléchi)
-- **URGENT**: Stability=0.20, Style=0.90, Rate=1.35 (alerte/critique)
-
-### 📊 **Nouveaux Composants Vocaux**
-- **VoicePersonalityEnhancer** : Module d'amélioration vocale automatique
-- **Config Voice Enhanced** : Configuration ElevenLabs optimisée
-- **Tests Automatisés** : Validation complète du système vocal
-- **Interface V2** : PRISM Voice Chat modernisée
-- **Monitoring Vocal** : Métriques temps réel de qualité vocale
-
-📁 **Documentation Complète** : [`RÉSUMÉ_AMÉLIORATIONS_VOCALES_PRISM.md`](./RÉSUMÉ_AMÉLIORATIONS_VOCALES_PRISM.md)
-
----
-
-## 🚀 INSTALLATION & DÉMARRAGE VOCAL
-
-### 🔧 **Configuration ElevenLabs (Recommandée)**
+### Démarrage Service
 ```bash
-# 1. Obtenir une clé API ElevenLabs (gratuite/premium)
-# Rendez-vous sur: https://elevenlabs.io/
-
-# 2. Configurer la variable d'environnement
-export ELEVENLABS_API_KEY=sk_votre_clé_elevenlabs
-
-# 3. Ou créer un fichier .env
-echo "ELEVENLABS_API_KEY=sk_votre_clé_elevenlabs" > .env
-```
-
-### ⚡ **Démarrage Rapide**
-```bash
-# Cloner le projet
-git clone https://github.com/Makk7709/P.R.I.S.M.git
-cd PRISM
-
-# Installer les dépendances
-npm install
-
-# Démarrer PRISM Voice Chat V2
+# Service principal PRISM
 npm start
+# Ou explicitement:
+node server.js
 
-# Accéder à l'interface vocale
-open http://localhost:3000
+# Interface corporate premium
+open http://localhost:3000/ui/prismVoiceChatV2-Corporate.html
+
+# Service monitoring enterprise complet
+npm run start:monitoring
 ```
-
-### 🧪 **Tests Vocaux**
-```bash
-# Test simple de la voix
-node test-simple-key.js
-
-# Test complet ElevenLabs
-node test-elevenlabs-real-key.js
-
-# Validation intégration vocale
-node test-enhanced-voice-integration.js
-
-# Validation déploiement
-node validate-voice-deployment.js
-```
-
-### 📊 **Interface Voice Chat V2**
-- **URL Principal** : `http://localhost:3000`
-- **Interface Vocale** : `http://localhost:3000/ui/prismVoiceChatV2.html`
-- **API Chat** : `http://localhost:3000/api/chat`
-- **Test Vocal** : `http://localhost:3000/api/test-voice`
 
 ---
 
-## 🎯 FONCTIONNALITÉS AVANCÉES
+## 🔑 Usage
 
-### 🧠 **Orchestration IA Tri-Modèles avec Voix**
-- **OpenAI GPT-4** : Business, Marketing, Finance + Voix "Adam" professionnelle
-- **Perplexity Llama 3.1** : Recherche temps réel + Voix "Antoni" énergique  
-- **Claude Sonnet 3.5** : Analyse stratégique + Voix "Bella" analytique
-- **Fallback TTS** : Synthèse navigateur si ElevenLabs indisponible
-
-### 🎭 **Adaptation Vocale Intelligente**
+### API Consensus
 ```javascript
-// Détection automatique du contexte
-URGENT → Voice: Antoni, Rate: 1.35, Style: 0.90
-BUSINESS → Voice: Adam, Rate: 1.0, Style: 0.60  
-CASUAL → Voice: Rachel, Rate: 1.15, Style: 0.65
-ANALYTICAL → Voice: Bella, Rate: 0.95, Style: 0.45
-```
+import { ConsensusManager } from './src/core/ConsensusManager.js'
 
-### 📈 **Monitoring & Métriques Vocales**
-- **Qualité Audio** : Monitoring temps réel ElevenLabs
-- **Temps Génération** : Latence vocale <3s
-- **Fallback Rate** : Basculement TTS si API indisponible
-- **Cache Hit Rate** : Optimisation performance vocale
-- **User Engagement** : Métriques interaction vocale
-
----
-
-## 🚀 MISE À JOUR IMPORTANTE - 27 Jan 2025
-
-### ✅ **Corrections Majeures Appliquées**
-- **Problème résolu**: Réponses identiques entre modèles 
-- **Function calls**: Maintenant opérationnels (marketing/finance/email)
-- **Métadonnées**: Vrai modèle utilisé affiché
-- **Claude**: Fallback gracieux vers OpenAI (404 temporaire)
-- **Tests**: 8/8 questions différenciées avec succès
-
-### 📊 **Performance Réelles (Post-Corrections)**
-```
-🤖 OpenAI:    6/8 requêtes - 10.4s avg - 100% success - Function calls
-🔍 Perplexity: 2/8 requêtes - 9.5s avg  - 100% success - Real-time research  
-🧠 Claude:     0/8 requêtes - N/A       - Fallback active - 404 error
-```
-
----
-
-## 📋 TABLE DES MATIÈRES
-
-- [🎯 Aperçu Général](#-aperçu-général)
-- [🏗️ Architecture Tri-Modèles](#️-architecture-tri-modèles)  
-- [🚀 Installation & Démarrage](#-installation--démarrage)
-- [📊 API Endpoints](#-api-endpoints)
-- [🧪 Tests & Validation](#-tests--validation)
-- [📈 Performance & Métriques](#-performance--métriques)
-- [🔧 Corrections & Debugging](#-corrections--debugging)
-- [🛣️ Roadmap](#️-roadmap)
-
----
-
-## 🎯 APERÇU GÉNÉRAL
-
-PRISM est une **architecture d'IA conversationnelle superintelligente** qui orchestre intelligemment **3 modèles de pointe** pour optimiser chaque type de tâche :
-
-### 🧠 **Sélection Intelligente de Modèles**
-- **🤖 OpenAI GPT-4**: Marketing, Finance, Email, Function Calls structurées
-- **🔍 Perplexity Llama 3.1**: Recherche temps réel, Actualités, Veille factuelle  
-- **🧠 Claude Sonnet 3.5**: Stratégie, Analyse, Éthique *(temporairement en fallback)*
-
-### ⚡ **Caractéristiques Techniques**
-- **Fallback Gracieux**: Redirection automatique sans interruption
-- **Function Calls**: Exécution de fonctions business (marketing/finance/email)
-- **Consensus IA**: Validation multi-modèles pour fiabilité maximale
-- **Real-time Research**: Accès aux données récentes via Perplexity
-- **Performance**: 9-10s moyenne, 100% disponibilité
-
----
-
-## 🎯 PRISM v2.3 — Intelligence Artificielle avec Stress Test Intégré
-
-![Version 2.3.0](https://img.shields.io/badge/Version-2.3.0-blue)
-![Status: Stress Test Ready](https://img.shields.io/badge/Status-Stress%20Test%20Ready-green)
-![Consensus: Active](https://img.shields.io/badge/Consensus-Active-orange)
-![Monitoring: Prometheus+Grafana](https://img.shields.io/badge/Monitoring-Prometheus%2BGrafana-purple)
-![License: AGPL v3](https://img.shields.io/badge/License-AGPL%20v3-red)
-
-## 🌟 Présentation
-
-PRISM est une intelligence artificielle orchestratrice de pointe avec **système de consensus IA intégré** et **validation par stress test automatisé**, capable de gérer simultanément des interactions textuelles et vocales. Dotée d'un système d'auto-évolution avec validation par consensus, d'une conscience simulée, d'une adaptabilité stratégique et d'un pipeline de stress test complet, PRISM représente une avancée majeure dans le domaine de l'IA conversationnelle sécurisée et validée.
-
-### 🎯 Objectifs
-
-- **Orchestration intelligente multi-modèles avec consensus IA**
-- **Auto-évolution sécurisée par vote majoritaire (2/3)**
-- **Conscience simulée et prise de décision stratégique**
-- **Monitoring temps réel avec PrismVitals + Prometheus**
-- **Protection éthique et sécurité avancée avec TrustContext**
-- **Validation par stress test automatisé (60k événements)**
-
-## 🚀 Fonctionnalités Principales
-
-### 🎮 Orchestration Multi-Modèles avec Consensus
-
-- **ConsensusManager** : Vote IA 2/3 majorité avec timeout 1s
-- **PriorityQueue** : Heap binaire, 3 niveaux (CRITICAL > HIGH > NORMAL)
-- **KernelBus Enhanced** : Intégration consensus + priorité
-- Intégration native avec OpenAI GPT-4, Claude et Perplexity
-- Routage intelligent basé sur le contexte et les performances
-- Optimisation automatique des coûts et des temps de réponse
-- Gestion dynamique des profils utilisateurs
-- Système de repli intelligent en cas d'erreur
-
-### 🔌 Intégration Providers Réels pour le Consensus
-
-- Activer l'usage des vrais providers dans `ConsensusManager` en passant `useRealProviders: true` et en exposant les clés API dans l'environnement.
-- Variables supportées:
-  - `OPENAI_API_KEY` et optionnel `OPENAI_MODEL` (par défaut `gpt-4o-mini`)
-  - `ANTHROPIC_API_KEY` et optionnel `ANTHROPIC_MODEL` (par défaut `claude-3-5-sonnet-20240620`)
-  - `PERPLEXITY_API_KEY`, optionnel `PERPLEXITY_BASE_URL`, `PERPLEXITY_MODEL` (par défaut `pplx-7b-online`)
-- Résilience intégrée par provider: timeout, retries avec backoff exponentiel, circuit breaker (ouverture après échecs répétés, demi-ouverture après cooldown).
-- Fallback automatique sur simulation si une clé est manquante.
-
-Exemple d’instanciation:
-
-```js
-const cm = new ConsensusManager({
+const consensus = new ConsensusManager({
+  timeoutMs: 1000,
   useRealProviders: true,
-  providers: {
-    openai: { timeoutMs: 1500 },
-    anthropic: { timeoutMs: 1500 },
-    perplexity: { timeoutMs: 1500 }
-  }
-});
+  enableTrustContext: true
+})
+
+// Décision critique avec consensus
+const result = await consensus.requestConsensus({
+  prompt: "Validation transfert technologique critique",
+  context: "Contexte technique détaillé",
+  isCritical: true
+})
+
+console.log(result.decision) // APPROVED/REJECTED
+console.log(result.votes)    // { agent1: true, agent2: false, agent3: true }
+console.log(result.metrics)  // Latence p50/p95/p99
 ```
 
-### 🐳 Déploiement rapide (Docker)
+### Interface Vocale Premium
+```javascript
+// Adaptation contextuelle automatique
+const voiceConfig = {
+  URGENT: { voice: "Antoni", rate: 1.35, style: 0.90 },
+  BUSINESS: { voice: "Adam", rate: 1.0, style: 0.60 },
+  CASUAL: { voice: "Rachel", rate: 1.15, style: 0.65 }
+}
+```
 
+### Monitoring Enterprise
 ```bash
-docker build -t prism:prod .
-OPENAI_API_KEY=... ANTHROPIC_API_KEY=... PERPLEXITY_API_KEY=... \
-  docker run -e NODE_ENV=production -e PRISM_MODE=PROD -e PRISM_USE_REAL_PROVIDERS=true \
-  -e OPENAI_API_KEY -e ANTHROPIC_API_KEY -e PERPLEXITY_API_KEY -p 3000:3000 prism:prod
+# Métriques Prometheus
+curl http://localhost:9090/metrics
+
+# Dashboard Grafana
+open http://localhost:3001
+
+# Stress test automatisé
+docker-compose -f docker-compose-stress.yml.up
 ```
-
-Ou via docker-compose:
-
-```bash
-OPENAI_API_KEY=... ANTHROPIC_API_KEY=... PERPLEXITY_API_KEY=... docker-compose up -d --build
-```
-
-### 🔄 Auto-Évolution Sécurisée
-
-- **SelfImprovementEngine** : Consensus obligatoire pour toute modification
-- **Système de validation par vote IA** : Aucune auto-modification sans approbation
-- Monitoring continu des performances avec métriques consensus
-- Auto-correction et auto-optimisation validées
-- Apprentissage continu à partir des interactions
-- Adaptation comportementale contextuelle sécurisée
-
-### 🛡️ Couche Morale & Sécurité Avancée
-
-- **TrustContext** : Escalade sécurité avec approbation humaine
-- **Filtrage éthique** des réponses avec consensus
-- Détection automatique des contenus inappropriés
-- Système de scoring contextuel multi-niveaux
-- Protection contre les manipulations par vote IA
-- Audit et traçabilité complète avec historique consensus
-
-### 📊 Monitoring & Diagnostic Temps Réel
-
-- **PrismVitals** : Surveillance des signes vitaux système (100% opérationnel)
-- **Dashboard en temps réel** avec métriques consensus
-- Métriques de performance détaillées (latence, succès, timeouts)
-- Détection d'anomalies proactive avec alertes intelligentes
-- Rapports d'analyse automatiques
-- Historique des interactions et décisions consensus
-
-### 🎯 Système de Stress Test & Validation
-
-- **Stress Test Driver** : Génération de 60 000 événements mixtes (1k CRITICAL/s, 3k HIGH/s, 6k NORMAL/s)
-- **Prometheus Integration** : Export métriques temps réel sur port 9090
-- **Grafana Dashboard** : Visualisation avancée sur port 3001
-- **Docker Orchestration** : Déploiement automatisé avec docker-compose
-- **Validation Pipeline** : Tests automatisés avec seuils de performance
-- **Control Prompt Generator** : Analyse et recommandations de déploiement
-- **Performance Targets** : Latence ≤40ms, Consensus ≥99.9%, Zero event loss
-
-📄 **Documentation** : [Guide Stress Test](README_STRESS_TEST.md) | [Documentation Complète](STRESS_TEST_README.md)
-
-### 📊 Documentation Investisseurs
-
-- **[Présentation Complète](PRISM_INVESTOR_PRESENTATION.md)** - Architecture, marché, business model détaillé
-- **[Résumé Exécutif](PRISM_EXECUTIVE_SUMMARY.md)** - Vue d'ensemble concise pour investisseurs
-- **[Pitch Deck](PRISM_PITCH_DECK.md)** - Présentation structurée 16 slides
-
-## 🏗️ Architecture Avancée
-
-PRISM v2.2 est construit sur une architecture modulaire robuste avec consensus intégré :
-
-### 🔧 Core Components
-- **ConsensusManager.js** (431 lignes) - Système de vote IA 2/3 majorité
-- **PriorityQueue.js** (306 lignes) - Heap binaire 3 niveaux
-- **TrustContext.js** (622 lignes) - Escalade sécurité
-- **KernelBus.js** (200 lignes) - Bus événements avec priorité
-
-### 🧠 Intelligence Layer
-- **SelfImprovementEngine** - Auto-évolution avec consensus
-- **PrismVitals** - Monitoring signes vitaux (371 lignes)
-- **Orchestration** - Routage intelligent multi-modèles
-- **Evolution** - Système d'apprentissage sécurisé
-
-### 🔍 Monitoring & Security
-- **Real-time metrics** - Consensus, performance, sécurité
-- **Alert system** - Cooldown anti-boucles, seuils intelligents
-- **Audit trail** - Traçabilité complète des décisions
-- **Dashboard** - Interface supervision temps réel
-
-## 📈 Historique des Versions
-
-- **PRISM v1.0** : Version initiale avec orchestration basique
-- **PRISM v2.0** : Ajout du système d'auto-évolution
-- **PRISM v2.1** : Optimisation et stabilisation
-- **PRISM v2.2** : **CONSENSUS IA INTÉGRÉ** - Sécurisation complète
-- **PRISM v2.3** : **STRESS TEST & MONITORING INTÉGRÉ** - Validation déploiement
-- **PRISM v2.4** : **🎤 RÉVOLUTION VOCALE** - Intégration ElevenLabs Premium (version actuelle - Mai 2025)
-
-## 🎯 Statut Actuel - PRISM v2.4
-
-### ✅ COMPOSANTS OPÉRATIONNELS (100%)
-- **ConsensusManager** : Vote IA 2/3 majorité ✅
-- **PriorityQueue** : Heap binaire 3 niveaux ✅
-- **KernelBus Enhanced** : Intégration consensus + priorité ✅
-- **SelfImprovementEngine** : Consensus obligatoire ✅
-- **TrustContext** : Escalade sécurité ✅
-- **PrismVitals** : Monitoring temps réel ✅
-
-### 🎤 NOUVEAU - SYSTÈME VOCAL RÉVOLUTIONNAIRE
-- **ElevenLabs Integration** : API Premium configurée ✅
-- **Multi-Voice System** : 4 voix adaptatives ✅
-- **VoicePersonalityEnhancer** : Enrichissement automatique ✅
-- **Adaptive Parameters** : Contexte intelligent ✅
-- **Voice Chat V2 Interface** : Interface modernisée ✅
-- **Voice Testing Suite** : Tests automatisés ✅
-
-### 🎯 ANCIEN - SYSTÈME DE STRESS TEST (MAINTENU)
-- **Stress Driver** : 60k événements mixtes ✅
-- **Prometheus Export** : Métriques temps réel (port 9090) ✅
-- **Grafana Dashboard** : Visualisation avancée (port 3001) ✅
-- **Docker Orchestration** : Pipeline automatisé ✅
-- **Validation Pipeline** : Seuils de performance ✅
-- **Control Prompt Generator** : Analyse déploiement ✅
-
-### 📊 PERFORMANCE & MÉTRIQUES
-
-#### 🎤 **Métriques Vocales (Mai 2025) - NOUVEAU**
-```
-🎯 Qualité vocale:      8/10 (vs 2/10 TTS browser)
-⚡ Génération audio:    1-3s (vs 5-10s précédent)
-🎭 Voix différenciées:  4 personnalités uniques
-💪 Adaptation context: 9/10 précision automatique
-🔊 Expressivité:       +300% vs version robotique
-📊 Engagement user:     +100% temps interaction
-```
-
-#### 🤖 **Métriques IA Tri-Modèles (27 Jan 2025)**
-
-##### 🤖 **OpenAI Performance**
-```
-Requêtes traitées: 6/8 (75%)
-Durée moyenne:     10.4s
-Taux de réussite:  100%
-Types gérés:       marketing, finance, email, strategie*, ethique*, general
-Fonctionnalités:   Function calls + Fallback + Voix Adam
-```
-
-##### 🔍 **Perplexity Performance**  
-```
-Requêtes traitées: 2/8 (25%)  
-Durée moyenne:     9.5s
-Taux de réussite:  100%
-Types gérés:       recherche, actualites
-Fonctionnalités:   Recherche temps réel + Voix Antoni
-```
-
-##### 🧠 **Claude Status**
-```
-Statut:            OPÉRATIONNEL (Fallback disponible)
-Voix assignée:     Bella (analytique)
-Fallback:          Vers OpenAI si nécessaire
-Impact:            Zéro interruption service
-```
-
-### 📈 **Différentiation Confirmée**
-- **Longueur moyenne OpenAI**: 1,712 caractères (structuré) + Voix Adam
-- **Longueur moyenne Perplexity**: 2,433 caractères (détaillé) + Voix Antoni  
-- **Similarité inter-modèles**: <31% (excellente différenciation)
-- **Formats distincts**: Business + Voix Pro vs Recherche + Voix Énergique vs Stratégique + Voix Analytique
-
-### 🎯 **Tests de Validation Vocale** 
-- **Tests vocaux** : 100% succès ElevenLabs + Fallback TTS
-
-## 🎯 DOCUMENTATION TECHNIQUE AVANCÉE
-
-### 📚 **TDD Enterprise Export API - Phase 2.1 Documentation**
-
-#### 🏆 **RÉUSSITE TECHNIQUE MAJEURE (Janvier 2025)**
-**Performance révolutionnaire +2000x** dans les tests API avec architecture d'injection de dépendances
-
-📄 **[Documentation Complète TDD Enterprise Export API](./docs/TDD_EnterpriseExportAPI.md)**
-
-##### 🚀 **Métriques Révolutionnaires**
-```
-AVANT → APRÈS (Amélioration)
-Tests API:     10,000+ms → 5-25ms      (+2000x)
-Suite complète: 304s → 0.189s         (+1609x)  
-Detection:     100-500ms → 1-2ms       (+500x)
-PDF Generation: 200-1000ms → 10-50ms   (+100x)
-```
-
-##### 🔧 **Innovation Technique**
-- **Injection de dépendances** : Services optimisés auto-détectés en mode test
-- **E2E réels ultra-rapides** : Vraies instances vs mocks, performance préservée
-- **Architecture réutilisable** : Pattern applicable à tous modules futurs
-- **100% couverture** : Maintien qualité avec vitesse exceptionnelle
-
-##### 📋 **Composants Documentés**
-- **Services Enterprise** : Detection, Sanitizer, PDF avec modes optimisés
-- **Middleware Validation** : Validation Joi ultra-rapide (<2ms)
-- **Routes API** : Système d'injection pour tests performants
-- **Stratégie Tests** : Configuration E2E bypass security pour vitesse
-
-### 📊 **Documentation Architecture & Consensus**
 
 ---
 
-> Built with ❤️ by the PRISM Team | **🎤 Voice-Powered Consensus AI with Premium ElevenLabs** | v2.4.0
+## 📊 Modules Implémentés
 
-# 🔮 P.R.I.S.M - Professional AI Intelligence System
+### ✅ Phase 1 - Core Consensus (v2.0-2.1)
+- **ConsensusManager** - Vote IA majorité 2/3 
+- **PriorityQueue** - Heap binaire 3 niveaux
+- **TrustContext** - Escalade sécurité 
+- **ProviderAdapters** - OpenAI, Anthropic, Perplexity
+- **PrismVitals** - Surveillance signes vitaux
+- **Migration SQLite** - Persistence AMCD transactionnelle
 
-## 🏢 **Corporate Dashboard V2 - Nouvelle Interface Premium** ⭐
+### ✅ Phase 2 - Enterprise Monitoring (v2.2-2.3)
+- **Prometheus Integration** - Métriques temps réel
+- **Grafana Dashboards** - Visualisation avancée
+- **Docker Orchestration** - Pipeline automatisé
+- **Stress Test Driver** - Validation 60k événements
+- **Mutation Testing** - Quality gates automatisés
 
-### 🎯 **Interface Corporate Professionnelle**
-P.R.I.S.M dispose maintenant d'un **dashboard corporate ultra-moderne** avec :
-- **Design premium** noir bleuté et doré
-- **Zone de chat optimisée** avec une meilleure ergonomie
-- **Animations neural network** en arrière-plan
-- **Responsive design** parfait sur tous écrans
-- **Bouton voice doré** signature de la marque PRISM
+### ✅ Phase 3 - Voice Revolution (v2.4)
+- **ElevenLabs Integration** - TTS premium
+- **VoicePersonalityEnhancer** - Enrichissement contexte
+- **Multi-Voice System** - 4 voix adaptatives
+- **Corporate Interface** - Design premium noir doré
+- **Fallback TTS** - Robustesse browser
 
-**🌐 Accès**: [http://localhost:3000/ui/prismVoiceChatV2-Corporate.html](http://localhost:3000/ui/prismVoiceChatV2-Corporate.html)
+### ✅ Phase 4 - Benchmark Enterprise (Sept 2025)
+- **Comprehensive Latency Profiling** - sans mocks
+- **Statistical Analysis** - p50/p95/p99 métriques
+- **Performance Matrix** - agents/context/timeout
+- **Real-world Testing** - fournisseurs API réels
+- **Quality Gates** - threshold validation automatisé
 
-📖 **Documentation complète**: Voir [CHANGELOG_CORPORATE_DASHBOARD.md](./CHANGELOG_CORPORATE_DASHBOARD.md)
-
----
-
-## 🚀 **Fonctionnalités Principales**
-
-### 🎙️ **Synthèse Vocale Premium**
-- **ElevenLabs** intégration complète
-- **Voix Jean** française professionnelle
-- **Fallback** vers TTS navigateur
-- **Contrôles** volume, vitesse, voix
-
-### 🤖 **Multi-Modèles IA**
-- **OpenAI GPT-4** pour les réponses complexes
-- **Anthropic Claude** pour l'analyse 
-- **Gemini** pour la recherche
-- **Sélection automatique** du meilleur modèle
-
-### 🎨 **Interface Utilisateur**
-- **Mode Corporate**: Interface premium professionnelle
-- **Mode Standard**: Interface classique épurée
-- **Responsive Design**: Mobile, Tablet, Desktop
-- **Dark Theme**: Optimisé pour un usage prolongé
-
-### 🔊 **Reconnaissance Vocale**
-- **Voice-to-Text** en temps réel
-- **Auto-send** après reconnaissance
-- **Support multilingue**
-- **Feedback visuel** pendant l'enregistrement
+### 🔄 Phase 5 - Roadmap à Venir
+- **Multi-tenancy** - Isolation enterprise
+- **Advanced Analytics** - ML insights métriques
+- **Compliance** - RGPD/SOC2 readiness
+- **API Gateway** - Rate limiting + auth
+- **Cloud Native** - Kubernetes orchestration
 
 ---
 
-## 🛠️ **Installation & Démarrage**
+## 🛡️ Licence
 
-### **Prérequis**
-```bash
-Node.js 18+
-NPM ou Yarn
-Clés API (OpenAI, Anthropic, Gemini, ElevenLabs)
+**GNU General Public License v3 (AGPL-3.0)**
+
+Ce projet est sous licence AGPL v3, garantissant l'open source avec protection copyleft. Voir [LICENSE](./LICENSE) pour détails complets.
+
+**Pour usage commercial** : Contacter l'équipe PRISM pour licensing équitable.
+
+---
+
+## 📧 Contribution & Contact
+
+### Guidelines Contribution
+- Fork & Pull Request workflow
+- Tests requis : `npm test` (100% green)
+- Coverage minimum : 85% branches
+- Mutation score : 60%+ modules critiques
+- Documentation : README + inline docs
+
+### Contact Equipe
+- **Product Owner** : Amine Mohamed
+- **Technical Lead** : Architecture Consensus & Enterprise
+- **Repository** : https://github.com/Makk7709/P.R.I.S.M
+
+### Issues & Support
+- **Bug Reports** : GitHub Issues avec reproduction steps
+- **Feature Requests** : Discussions avec impact mesure
+- **Security Issues** : Responsable disclosure uniquement
+- **Enterprise Support** : Contact équipe directe
+
+---
+
+## 📈 Métriques & Performance
+
+### Consensus IA (Benchmarks Réels)
+```
+🎯 Latence E2E :     p50=507ms, p95=756ms, p99=787ms
+⚡ Provider Response: GPT-4=10.4s, Claude=N/A*, Perplexity=9.5s  
+🎭 Vote Success:      94.7% avec 3 agents paralèles
+🛡️ Timeout Rate:     <5% (gate qualité)
+✨ Orchestration:     <25% overhead E2E
 ```
 
-### **Installation Rapide**
-```bash
-git clone https://github.com/votre-repo/P.R.I.S.M.git
-cd P.R.I.S.M
-npm install
+### Voice System Premium
+```
+🎤 Quality Score:    8/10 (vs 2/10 TTS browser)
+⚡ Generation Time:   1-3s (vs 5-10s legacy)
+🎭 Context Adaptation: 9/10 précision automatique
+💪 User Engagement:   +100% temps interaction
 ```
 
-### **Configuration des APIs**
-Créez un fichier `.env` avec vos clés :
-```env
-OPENAI_API_KEY=votre_clé_openai
-ANTHROPIC_API_KEY=votre_clé_anthropic
-GEMINI_API_KEY=votre_clé_gemini
-ELEVENLABS_API_KEY=votre_clé_elevenlabs
+### Enterprise Stack
+```
+📊 Test Coverage:    85%+ branches, 95%+ lines
+🧪 Mutation Score:   60%+ modules critiques  
+🚀 Stress Throughput: 60k événements/heure valide
+🔍 Monitoring Active: 100% PrismVitals operationnel
 ```
 
-### **Démarrage**
-```bash
-npm start
-```
-
-🌐 **Interfaces Disponibles**:
-- **Corporate**: http://localhost:3000/ui/prismVoiceChatV2-Corporate.html
-- **Standard**: http://localhost:3000/ui/prismVoiceChatV2.html
-
 ---
 
-## 📱 **Captures d'Écran**
+*Développé avec ❤️ pour l'excellence en IA conversationnelle enterprise*
 
-### 🏢 **Dashboard Corporate V2**
-- Interface premium avec neural network animé
-- Zone de chat optimisée et proportionnée
-- Bouton voice doré signature PRISM
-- Sidebar de contrôles professionnelle
-
-### 🎯 **Fonctionnalités Avancées**
-- Métriques de performance en temps réel
-- Sélection de domaines métier
-- Contrôles vocaux avancés
-- Indicateurs de statut visuels
-
----
-
-## 🔧 **Architecture Technique**
-
-### **Backend**
-- **Node.js** + Express server
-- **APIs REST** pour chat et voice
-- **Gestion multi-modèles** intelligente
-- **Error handling** robuste
-
-### **Frontend**
-- **HTML5** sémantique moderne
-- **CSS3** avec variables custom
-- **JavaScript ES6+** natif
-- **Progressive Enhancement**
-
-### **Intégrations**
-- **ElevenLabs** pour TTS premium
-- **Speech Recognition** navigateur
-- **Multiple AI providers**
-- **Responsive breakpoints**
-
----
-
-## 📊 **Performances & Optimisations**
-
-### **Interface Corporate**
-- ⚡ **60 FPS** animations constantes
-- 🎯 **Zero Layout Shift** responsive
-- 🚀 **GPU Acceleration** pour les effets
-- 📱 **Mobile-First** responsive design
-
-### **API & Backend**
-- 🔄 **Retry logic** automatique
-- ⏱️ **Response time** tracking
-- 🛡️ **Rate limiting** intelligent
-- 📈 **Performance metrics** en temps réel
-
----
-
-## 🎨 **Design System**
-
-### **Couleurs Corporate**
-```css
-/* Palette Noir Bleuté */
---prism-deep-navy: #050B14
---prism-space-blue: #0A1018
---prism-steel-blue: #0F151C
-
-/* Palette Doré Premium */
---prism-gold-primary: #FFD700
---prism-gold-elegant: #B8860B
---prism-champagne: #F7E7CE
-```
-
-### **Typographie**
-- **Font**: Segoe UI, système fonts
-- **Hierarchy**: 6 niveaux de taille
-- **Weight**: 400 (normal) à 700 (bold)
-- **Spacing**: Modulaire et harmonieux
-
----
-
-## 🔮 **Roadmap & Évolutions**
-
-### **Phase 1 ✅ Terminé**
-- ✅ Interface Corporate premium
-- ✅ Restructuration zone de chat
-- ✅ Bouton voice thématisé
-- ✅ Responsive design complet
-
-### **Phase 2 🔄 En cours**
-- 🔄 Mode thème adaptatif
-- 🔄 Personnalisation couleurs
-- 🔄 Accessibilité renforcée
-- 🔄 Performance optimisations
-
-### **Phase 3 📋 Planifié**
-- 📋 Multi-utilisateurs
-- 📋 Historique conversations
-- 📋 Export données
-- 📋 Intégrations tierces
-
----
-
-## 👥 **Contributeurs**
-
-- **Amine Mohamed** - Product Owner & Vision
-- **Claude AI** - Development & Design
-- **Communauté** - Testing & Feedback
-
----
-
-## 📄 **License**
-
-MIT License - Voir [LICENSE](./LICENSE) pour plus de détails.
-
----
-
-## 🎉 **Remerciements**
-
-Merci à tous les contributeurs qui ont permis de créer cette interface corporate premium ! 
-
-Un merci spécial pour la collaboration exceptionnelle sur cette refonte majeure. 🚀
-
----
-
-*Développé avec ❤️ pour l'excellence en IA conversationnelle*
-
-## Lancement et Tests
-
-### Lancement de l'Application Principale
-
-Pour démarrer PRISM, exécutez la commande suivante :
-`node prismCore.js`
-
-### Lancement des Tests (Nouveau Framework Vitest)
-
-L'environnement de test a été entièrement modernisé avec Vitest pour garantir la fiabilité et la rapidité.
-
-| Commande | Description |
-|---|---|
-| `npm test` | Exécute tous les tests une seule fois (idéal pour la CI). |
-| `npm test:watch` | Lance les tests en mode interactif pour le développement. |
-| `npm run coverage` | Exécute les tests et génère un rapport de couverture détaillé. |
-
-Pour une analyse détaillée des récentes migrations techniques (Persistance SQLite, Tests Vitest), veuillez consulter le document `MIGRATION_TECHNIQUE_2024_Q2.md`.
-
-## Monitoring
+**Version actuelle**: v2.4.0 | **Dernière mise à jour**: Septembre 2025
