@@ -9,6 +9,10 @@ import { fileURLToPath } from 'url';
 import fetch from 'node-fetch';
 import { VoicePersonalityEnhancer } from './backend/voicePersonalityEnhancer.js';
 import { handleUserInstruction } from './backend/orchestrator.js';
+import { HybridOrchestrator } from './src/orchestrator/HybridOrchestrator.js';
+
+// Initialiser l'orchestrateur hybride (routing + consensus)
+const hybridOrchestrator = new HybridOrchestrator();
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -65,18 +69,43 @@ app.post('/api/chat', async (req, res) => {
       console.log(`[PRISM API] Voix demandée: ${voiceConfig.name} (${voiceConfig.provider})`);
     }
 
-    // Appeler l'orchestrateur PRISM
-    const orchestratorResponse = await handleUserInstruction(message, taskType);
+    // ✨ NOUVEAU: Appeler l'orchestrateur HYBRIDE (routing + consensus intelligent)
+    const hybridResponse = await hybridOrchestrator.process(message, taskType, {
+      context: req.body.context // Passer le contexte si fourni
+    });
     
-    if (!orchestratorResponse || !orchestratorResponse.data) {
-      throw new Error('Réponse invalide de l\'orchestrateur');
+    // Fallback vers l'ancien orchestrateur si nécessaire
+    let orchestratorResponse;
+    let responseContent;
+    
+    if (hybridResponse && hybridResponse.content) {
+      // Utiliser la réponse de l'orchestrateur hybride
+      responseContent = hybridResponse.content;
+      orchestratorResponse = {
+        data: { content: hybridResponse.content },
+        metadata: {
+          model: hybridResponse.model,
+          orchestrationMode: hybridResponse.mode,
+          consensusUsed: hybridResponse.consensusUsed,
+          criticalityScore: hybridResponse.criticalityScore,
+          ...hybridResponse.metadata
+        }
+      };
+      console.log(`[PRISM API] Mode orchestration: ${hybridResponse.mode}`);
+      if (hybridResponse.consensusUsed) {
+        console.log(`[PRISM API] Consensus utilisé - Statut: ${hybridResponse.consensusStatus}`);
+      }
+    } else {
+      // Fallback vers l'orchestrateur classique
+      orchestratorResponse = await handleUserInstruction(message, taskType);
+      if (!orchestratorResponse || !orchestratorResponse.data) {
+        throw new Error('Réponse invalide de l\'orchestrateur');
+      }
+      responseContent = orchestratorResponse.data.enhancedContent || 
+                       orchestratorResponse.data.choices?.[0]?.message?.content ||
+                       orchestratorResponse.data.content ||
+                       'Réponse générée par PRISM';
     }
-
-    // Extraire le contenu de la réponse
-    const responseContent = orchestratorResponse.data.enhancedContent || 
-                           orchestratorResponse.data.choices?.[0]?.message?.content ||
-                           orchestratorResponse.data.content ||
-                           'Réponse générée par PRISM';
 
     // Améliorer la réponse pour la voix
     const enhancedResponse = voiceEnhancer.enhanceForVoice(responseContent, taskType, {
@@ -123,6 +152,14 @@ app.post('/api/chat', async (req, res) => {
         voiceMode: enhancedResponse.voiceMetadata?.mode,
         emotion: enhancedResponse.voiceMetadata?.emotion,
         voice: enhancedResponse.voiceMetadata?.voice,
+        // ✨ NOUVEAU: Métadonnées d'orchestration hybride
+        orchestration: {
+          mode: orchestratorResponse.metadata?.orchestrationMode || 'ROUTED',
+          modeLabel: orchestratorResponse.metadata?.modeLabel || 'Router Simple',
+          consensusUsed: orchestratorResponse.metadata?.consensusUsed || false,
+          criticalityScore: orchestratorResponse.metadata?.criticalityScore || 0,
+          consensusDetails: orchestratorResponse.metadata?.consensusDetails || null
+        },
         cached: orchestratorResponse.metadata?.cached,
         fallback: orchestratorResponse.metadata?.fallback,
         elevenLabsError: audioError, // ✨ Détails de l'erreur pour debug
@@ -528,6 +565,103 @@ app.get('/api/metrics', (req, res) => {
     data: metrics,
     timestamp: new Date().toISOString()
   });
+});
+
+// ============================================================================
+// API Export PDF Premium
+// ============================================================================
+
+import { PdfExportService } from './src/export/PdfExportService.js';
+
+const pdfExportService = new PdfExportService();
+
+// Endpoint d'export PDF des conversations
+app.post('/api/export/pdf', async (req, res) => {
+  try {
+    const { messages, options = {} } = req.body;
+    
+    if (!messages || !Array.isArray(messages) || messages.length === 0) {
+      return res.status(400).json({
+        success: false,
+        error: 'Liste de messages requise'
+      });
+    }
+    
+    console.log(`[PDF Export] Génération PDF pour ${messages.length} messages`);
+    
+    // Convertir les timestamps string en Date
+    const formattedMessages = messages.map(msg => ({
+      ...msg,
+      timestamp: new Date(msg.timestamp || Date.now())
+    }));
+    
+    // Générer le PDF
+    const result = await pdfExportService.generateForDownload(formattedMessages, {
+      title: options.title || 'Conversation PRISM',
+      author: options.author || 'PRISM User',
+      includeCoverPage: options.includeCoverPage !== false,
+      includePageNumbers: options.includePageNumbers !== false,
+      includeHeader: options.includeHeader !== false,
+      includeFooter: options.includeFooter !== false,
+      includeSummaryPage: options.includeSummaryPage || false
+    });
+    
+    if (!result.success) {
+      return res.status(500).json({
+        success: false,
+        error: result.error
+      });
+    }
+    
+    console.log(`[PDF Export] ✅ PDF généré: ${result.fileSizeFormatted}`);
+    
+    // Envoyer le PDF en téléchargement
+    res.setHeader('Content-Type', 'application/pdf');
+    res.setHeader('Content-Disposition', `attachment; filename="${result.filename}"`);
+    res.setHeader('Content-Length', result.buffer.length);
+    res.send(result.buffer);
+    
+  } catch (error) {
+    console.error('[PDF Export] ❌ Erreur:', error);
+    res.status(500).json({
+      success: false,
+      error: error.message
+    });
+  }
+});
+
+// Endpoint pour prévisualiser les stats avant export
+app.post('/api/export/pdf/preview', async (req, res) => {
+  try {
+    const { messages } = req.body;
+    
+    if (!messages || !Array.isArray(messages)) {
+      return res.status(400).json({
+        success: false,
+        error: 'Liste de messages requise'
+      });
+    }
+    
+    const formattedMessages = messages.map(msg => ({
+      ...msg,
+      timestamp: new Date(msg.timestamp || Date.now())
+    }));
+    
+    const stats = pdfExportService.calculateStats(formattedMessages);
+    
+    res.json({
+      success: true,
+      stats,
+      estimatedPages: Math.ceil(messages.length / 10) + 2, // Estimation
+      themes: ['prism-corporate', 'prism-light', 'prism-executive']
+    });
+    
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      error: error.message
+    });
+  }
 });
 
 // Démarrer le serveur
