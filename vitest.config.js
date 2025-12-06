@@ -24,6 +24,8 @@ export default defineConfig({
         'src/enterprise/enterpriseDetectionService.ts',
         'src/enterprise/enterpriseSanitizer.ts',
         'src/core/**/*.js',
+        'src/voice/**/*.js',
+        'src/modules/voice/**/*.js',
         'prismCore.js'
       ],
       exclude: [

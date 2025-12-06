@@ -1752,7 +1752,11 @@
                         <span class="prism-metric-value" id="responseTime">-</span>
                     </div>
                     <div class="prism-metric-row">
-                        <span class="prism-metric-label">Model Selected</span>
+                        <span class="prism-metric-label">Orchestration</span>
+                        <span class="prism-metric-value" id="orchestrationMode">Router</span>
+                    </div>
+                    <div class="prism-metric-row">
+                        <span class="prism-metric-label">Model(s)</span>
                         <span class="prism-metric-value" id="modelUsed">-</span>
                     </div>
                     <div class="prism-metric-row">
@@ -2391,12 +2395,14 @@
                             emotion: data.metadata?.emotion
                         });
                         
-                        // Mettre à jour les métriques
+                        // Mettre à jour les métriques (avec info ElevenLabs et orchestration)
                         this.updateMetrics(
                             responseTime, 
                             data.model,
                             data.metadata?.voiceMode,
-                            data.metadata?.emotion
+                            data.metadata?.emotion,
+                            !!data.audioUrl,  // true si ElevenLabs audio disponible
+                            data.metadata?.orchestration  // ✨ Info orchestration hybride
                         );
                         
                         // Lecture vocale automatique si activée
@@ -2850,7 +2856,7 @@
                 }, 1000);
             }
 
-            updateMetrics(responseTime, model, voiceMode = null, emotion = null) {
+            updateMetrics(responseTime, model, voiceMode = null, emotion = null, hasElevenLabsAudio = false, orchestration = null) {
                 this.metrics.totalRequests++;
                 this.metrics.totalResponseTime += responseTime;
                 this.metrics.lastModel = model;
@@ -2865,6 +2871,32 @@
                 // Métriques de base
                 this.responseTime.textContent = `${responseTime}ms`;
                 this.modelUsed.textContent = model || 'Unknown';
+                
+                // ✅ NOUVEAU: Mettre à jour le Mode d'Orchestration
+                const orchestrationModeEl = document.getElementById('orchestrationMode');
+                if (orchestrationModeEl && orchestration) {
+                    if (orchestration.consensusUsed) {
+                        orchestrationModeEl.textContent = 'Consensus';
+                        orchestrationModeEl.style.color = 'var(--prism-gold-primary)';
+                        orchestrationModeEl.title = `Consensus Multi-IA: ${orchestration.consensusDetails?.participatingModels?.join(', ') || 'GPT-4 + Claude'}`;
+                    } else {
+                        orchestrationModeEl.textContent = 'Router';
+                        orchestrationModeEl.style.color = 'var(--prism-success)';
+                        orchestrationModeEl.title = 'Routing direct vers un modèle';
+                    }
+                }
+                
+                // ✅ Mettre à jour le Voice Provider
+                const voiceProviderEl = document.getElementById('voiceProvider');
+                if (voiceProviderEl) {
+                    if (hasElevenLabsAudio) {
+                        voiceProviderEl.textContent = 'ElevenLabs';
+                        voiceProviderEl.style.color = 'var(--prism-success)';
+                    } else {
+                        voiceProviderEl.textContent = 'Browser TTS';
+                        voiceProviderEl.style.color = 'var(--prism-warning)';
+                    }
+                }
                 
                 // Nouvelles métriques détaillées
                 const totalRequests = document.getElementById('totalRequests');
@@ -3351,5 +3383,11 @@
             });
         }
     </script>
+    
+    <!-- PRISM Voice Controller - Anti-Répétition Audio -->
+    <script src="js/prism-voice-controller.js"></script>
+    
+    <!-- PRISM PDF Export - Export Premium des Conversations -->
+    <script src="js/prism-pdf-export.js"></script>
 </body>
 </html> 

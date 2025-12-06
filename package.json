@@ -38,7 +38,16 @@
     "test:legacy": "node --experimental-vm-modules node_modules/jest/bin/jest.js --config legacy_tests/jest.config.js",
     "start:full": "node launch-prism-full-stack.js",
     "start:monitoring": "docker-compose -f docker-compose-monitoring.yml up -d",
-    "stop:monitoring": "docker-compose -f docker-compose-monitoring.yml down"
+    "stop:monitoring": "docker-compose -f docker-compose-monitoring.yml down",
+    "test:voice": "vitest run --config vitest.config.voice.js",
+    "test:voice:watch": "vitest --config vitest.config.voice.js",
+    "test:voice:coverage": "vitest run --config vitest.config.voice.js --coverage",
+    "test:voice:ui": "vitest --config vitest.config.voice.js --ui",
+    "test:pdf": "vitest run --config vitest.config.pdf.js",
+    "test:pdf:coverage": "vitest run --config vitest.config.pdf.js --coverage",
+    "test:orchestrator": "vitest run --config vitest.config.orchestrator.js",
+    "test:orchestrator:watch": "vitest --config vitest.config.orchestrator.js",
+    "test:orchestrator:coverage": "vitest run --config vitest.config.orchestrator.js --coverage"
   },
   "dependencies": {
     "@anthropic-ai/sdk": "^0.26.0",
