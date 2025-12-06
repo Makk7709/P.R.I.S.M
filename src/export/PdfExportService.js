@@ -495,9 +495,13 @@ export class PdfExportService {
     const margins = this.config.layout.margins;
     const contentWidth = doc.page.width - margins.left - margins.right;
 
+    // ✅ CORRECTION: Réinitialiser la position Y au début de la zone de contenu
+    doc.y = margins.top;
+
     // En-tête si demandé
     if (options.includeHeader) {
       this._addHeader(doc);
+      doc.y = margins.top + 30; // Espace après le header
     }
 
     doc.fontSize(10)
@@ -505,26 +509,33 @@ export class PdfExportService {
 
     let currentDate = null;
 
-    for (const message of messages) {
+    for (let i = 0; i < messages.length; i++) {
+      const message = messages[i];
       const formatted = this.formatMessage(message);
       const msgDate = formatted.formattedDate;
 
       // Séparateur de date
       if (msgDate !== currentDate) {
         currentDate = msgDate;
-        doc.moveDown(1);
+        doc.moveDown(0.5);
         doc.fontSize(10)
-           .fillColor('#9CA3AF')
+           .fillColor('#6B7280')
            .font('Helvetica-Bold')
-           .text(`── ${msgDate} ──`, { align: 'center' });
-        doc.moveDown(1);
+           .text(`── ${msgDate} ──`, margins.left, doc.y, { 
+             align: 'center',
+             width: contentWidth
+           });
+        doc.moveDown(0.5);
       }
 
       // Vérifier si on a besoin d'une nouvelle page
-      if (doc.y > doc.page.height - 150) {
+      const estimatedHeight = this._estimateMessageHeight(doc, formatted, contentWidth);
+      if (doc.y + estimatedHeight > doc.page.height - margins.bottom - 50) {
         doc.addPage();
+        doc.y = margins.top;
         if (options.includeHeader) {
           this._addHeader(doc);
+          doc.y = margins.top + 30;
         }
       }
 
@@ -536,6 +547,18 @@ export class PdfExportService {
     if (options.includeFooter) {
       this._addFooter(doc);
     }
+  }
+  
+  _estimateMessageHeight(doc, formatted, contentWidth) {
+    const bubbleWidth = contentWidth * 0.75;
+    const bubblePadding = 12;
+    
+    doc.fontSize(11).font('Helvetica');
+    const textHeight = doc.heightOfString(formatted.content || ' ', {
+      width: bubbleWidth - bubblePadding * 2
+    });
+    
+    return textHeight + bubblePadding * 2 + 20 + 15; // header + padding + espacement
   }
 
   _drawMessage(doc, formatted, contentWidth) {
@@ -558,52 +581,62 @@ export class PdfExportService {
     const textColor = isUser ? theme.userTextColor :
                       isSystem ? '#6B7280' : theme.assistantTextColor;
 
+    // ✅ CORRECTION: Sauvegarder la position Y de départ
+    const startY = doc.y;
+
     // Calculer hauteur du texte
     doc.fontSize(11).font(isSystem ? 'Helvetica-Oblique' : 'Helvetica');
-    const textHeight = doc.heightOfString(formatted.content, {
+    const textHeight = doc.heightOfString(formatted.content || ' ', {
       width: bubbleWidth - bubblePadding * 2
     });
 
-    const bubbleHeight = textHeight + bubblePadding * 2 + 25; // +25 pour header
+    const headerHeight = 20;
+    const bubbleHeight = textHeight + bubblePadding * 2 + headerHeight;
 
-    // Dessiner la bulle
-    doc.roundedRect(x, doc.y, bubbleWidth, bubbleHeight, borderRadius)
+    // ✅ Dessiner la bulle à la position de départ
+    doc.roundedRect(x, startY, bubbleWidth, bubbleHeight, borderRadius)
        .fill(bgColor);
 
-    // Header du message
+    // ✅ Header du message - position absolue depuis startY
     doc.fontSize(9)
        .fillColor(isUser ? '#6B7280' : (isSystem ? '#9CA3AF' : theme.accentColor))
        .font('Helvetica-Bold')
-       .text(formatted.displayName, x + bubblePadding, doc.y - bubbleHeight + bubblePadding, {
-         width: bubbleWidth - bubblePadding * 2 - 60,
-         continued: false
+       .text(formatted.displayName, x + bubblePadding, startY + bubblePadding, {
+         width: bubbleWidth - bubblePadding * 2 - 80,
+         lineBreak: false
        });
 
-    // Badge modèle si assistant
-    if (formatted.model && !isUser && !isSystem) {
-      doc.fontSize(8)
+    // ✅ Timestamp à droite du header
+    doc.fontSize(8)
+       .fillColor('#9CA3AF')
+       .text(formatted.formattedTime, x + bubbleWidth - bubblePadding - 50, startY + bubblePadding, {
+         width: 50,
+         align: 'right',
+         lineBreak: false
+       });
+
+    // ✅ Badge modèle si assistant (sous le timestamp)
+    if (formatted.model && !isUser && !isSystem && formatted.modelBadge) {
+      doc.fontSize(7)
          .fillColor(theme.accentColor)
-         .text(formatted.modelBadge, x + bubbleWidth - bubblePadding - 60, doc.y - bubbleHeight + bubblePadding, {
+         .text(formatted.modelBadge, x + bubbleWidth - bubblePadding - 60, startY + bubblePadding + 10, {
            width: 60,
-           align: 'right'
+           align: 'right',
+           lineBreak: false
          });
     }
 
-    // Timestamp
-    doc.fontSize(8)
-       .fillColor('#9CA3AF')
-       .text(formatted.formattedTime, x + bubbleWidth - bubblePadding - 40, doc.y - bubbleHeight + bubblePadding);
-
-    // Contenu
+    // ✅ Contenu du message - position absolue
     doc.fontSize(11)
        .fillColor(textColor)
        .font(isSystem ? 'Helvetica-Oblique' : 'Helvetica')
-       .text(formatted.content, x + bubblePadding, doc.y - bubbleHeight + bubblePadding + 18, {
+       .text(formatted.content || '', x + bubblePadding, startY + bubblePadding + headerHeight, {
          width: bubbleWidth - bubblePadding * 2,
          lineGap: 3
        });
 
-    doc.y = doc.y + 15; // Espacement entre messages
+    // ✅ Avancer Y à la fin de la bulle + espacement
+    doc.y = startY + bubbleHeight + 15;
   }
 
   _addHeader(doc) {
