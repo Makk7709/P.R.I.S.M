@@ -133,8 +133,22 @@ export class HybridOrchestrator {
   async _processWithRouter(input, taskType) {
     const response = await this.router.process(input, taskType);
     
+    // Extraire le contenu de manière robuste
+    let content = null;
+    if (response.data) {
+      content = response.data.enhancedContent ||
+                response.data.content ||
+                response.data.choices?.[0]?.message?.content ||
+                (typeof response.data === 'string' ? response.data : null);
+    }
+    
+    // Fallback si toujours pas de contenu
+    if (!content && typeof response.data === 'object') {
+      content = JSON.stringify(response.data);
+    }
+    
     return {
-      content: response.data?.content || response.data,
+      content: content || 'Réponse générée par PRISM',
       model: response.metadata?.model || response.model || 'openai',
       success: response.success !== false,
       rawResponse: response
