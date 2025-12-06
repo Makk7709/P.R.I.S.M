@@ -608,32 +608,76 @@
     _getMessages() {
       const messages = [];
       
-      // Chercher les messages dans l'interface
-      const messageElements = document.querySelectorAll('.chat-message, .prism-message, .user-message, .assistant-message');
-      
-      messageElements.forEach(el => {
-        const isUser = el.classList.contains('user') || el.classList.contains('user-message');
-        const isSystem = el.classList.contains('system');
-        
-        const contentEl = el.querySelector('.message-content, .message-text, p') || el;
-        const content = contentEl.textContent?.trim() || '';
-        
-        if (content) {
-          messages.push({
-            role: isUser ? 'user' : (isSystem ? 'system' : 'assistant'),
-            content,
-            timestamp: new Date().toISOString(),
-            model: el.dataset?.model || null
-          });
-        }
-      });
-      
-      // Fallback: si chat instance disponible avec historique
-      if (messages.length === 0 && this.chat?.messageHistory) {
+      // ✅ PRIORITÉ 1: Utiliser l'historique du chat si disponible
+      if (this.chat?.messageHistory && this.chat.messageHistory.length > 0) {
+        console.log('[PrismPdfExport] Utilisation de l\'historique chat:', this.chat.messageHistory.length, 'messages');
         return this.chat.messageHistory;
       }
       
+      // ✅ PRIORITÉ 2: Utiliser l'historique global si disponible
+      if (window.prismMessageHistory && window.prismMessageHistory.length > 0) {
+        console.log('[PrismPdfExport] Utilisation de l\'historique global:', window.prismMessageHistory.length, 'messages');
+        return window.prismMessageHistory;
+      }
+      
+      // ✅ PRIORITÉ 3: Parser les messages depuis le DOM avec les bons sélecteurs PRISM
+      const messageElements = document.querySelectorAll('.prism-message');
+      
+      console.log('[PrismPdfExport] Parsing DOM:', messageElements.length, 'éléments trouvés');
+      
+      messageElements.forEach((el, index) => {
+        const isUser = el.classList.contains('user');
+        const isSystem = el.classList.contains('system');
+        const isPrism = el.classList.contains('prism');
+        
+        // Extraire le contenu - le texte peut être directement dans l'élément ou dans un sous-élément
+        let content = '';
+        
+        // Chercher d'abord dans les sous-éléments de contenu
+        const contentEl = el.querySelector('.message-content, .message-text, p, span');
+        if (contentEl) {
+          content = contentEl.textContent?.trim() || '';
+        }
+        
+        // Sinon, prendre le textContent complet de l'élément
+        if (!content) {
+          content = el.textContent?.trim() || '';
+        }
+        
+        // Nettoyer le contenu (enlever les badges de modèle, etc.)
+        content = this._cleanMessageContent(content);
+        
+        if (content) {
+          const role = isUser ? 'user' : (isSystem ? 'system' : 'assistant');
+          
+          messages.push({
+            role: role,
+            content: content,
+            timestamp: el.dataset?.timestamp || new Date(Date.now() - (messageElements.length - index) * 60000).toISOString(),
+            model: el.dataset?.model || (role === 'assistant' ? 'openai' : null)
+          });
+          
+          console.log(`[PrismPdfExport] Message ${index + 1}:`, role, content.substring(0, 50) + '...');
+        }
+      });
+      
+      console.log('[PrismPdfExport] Total messages collectés:', messages.length);
       return messages;
+    }
+    
+    _cleanMessageContent(content) {
+      if (!content) return '';
+      
+      // Supprimer les badges de modèle courants
+      let cleaned = content
+        .replace(/\[GPT-4\]/gi, '')
+        .replace(/\[Claude\]/gi, '')
+        .replace(/\[Perplexity\]/gi, '')
+        .replace(/\[openai\]/gi, '')
+        .replace(/\[consensus\]/gi, '')
+        .trim();
+      
+      return cleaned;
     }
 
     _updateStats(messages) {
