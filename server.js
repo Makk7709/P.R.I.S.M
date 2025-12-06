@@ -48,6 +48,7 @@ function pipelineLog(...args) {
 // API Route pour le chat PRISM avec ElevenLabs
 app.post('/api/chat', async (req, res) => {
   const startTime = Date.now();
+  const pipelineSessionId = Math.random().toString(36).slice(2) + '-' + Date.now();
 
   try {
     const { message, taskType = 'general', model = 'auto-select', voiceConfig } = req.body;
@@ -59,7 +60,6 @@ app.post('/api/chat', async (req, res) => {
       });
     }
 
-    const pipelineSessionId = Math.random().toString(36).slice(2) + '-' + Date.now();
     pipelineLog('RECEIVE_REQUEST', { pipelineSessionId, message, taskType, voiceConfig });
 
     console.log('[PRISM API] Nouvelle requête chat reçue');
@@ -80,7 +80,10 @@ app.post('/api/chat', async (req, res) => {
     
     if (hybridResponse && hybridResponse.content) {
       // Utiliser la réponse de l'orchestrateur hybride
-      responseContent = hybridResponse.content;
+      // S'assurer que responseContent est une chaîne
+      responseContent = typeof hybridResponse.content === 'string' 
+        ? hybridResponse.content 
+        : hybridResponse.content?.content || hybridResponse.content?.data || String(hybridResponse.content);
       orchestratorResponse = {
         data: { content: hybridResponse.content },
         metadata: {
@@ -117,7 +120,8 @@ app.post('/api/chat', async (req, res) => {
     const responseTime = Date.now() - startTime;
     
     // Génération de réponse vocale enrichie (compatible ElevenLabs)
-    console.log('[PRISM] Réponse orchestrée:', responseContent?.substring(0, 100) + '...');
+    const logContent = typeof responseContent === 'string' ? responseContent.substring(0, 100) : JSON.stringify(responseContent).substring(0, 100);
+    console.log('[PRISM] Réponse orchestrée:', logContent + '...');
     
     // ✨ GÉNÉRATION AUDIO ELEVENLABS OPTIMISÉE
     let audioUrl = null;
