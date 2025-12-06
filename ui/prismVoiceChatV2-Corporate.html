@@ -1844,6 +1844,10 @@
                     totalResponseTime: 0,
                     lastModel: null
                 };
+                
+                // ✅ NOUVEAU: Historique des messages pour l'export PDF
+                this.messageHistory = [];
+                window.prismMessageHistory = this.messageHistory; // Accessible globalement
 
                 // Test ElevenLabs connection
                 this.testElevenLabsConnection();
@@ -2638,14 +2642,25 @@
                 const messageDiv = document.createElement('div');
                 messageDiv.className = 'prism-message user';
                 messageDiv.textContent = message;
+                messageDiv.dataset.timestamp = new Date().toISOString();
                 this.chatMessages.appendChild(messageDiv);
                 this.scrollToBottom();
-                console.log('[Chat] User message added:', message);
+                
+                // ✅ Ajouter à l'historique pour l'export PDF
+                const historyEntry = {
+                    role: 'user',
+                    content: message,
+                    timestamp: messageDiv.dataset.timestamp
+                };
+                this.messageHistory.push(historyEntry);
+                console.log('[Chat] User message added:', message, '| History:', this.messageHistory.length);
             }
 
             addPrismMessage(message, options = {}) {
                 const messageDiv = document.createElement('div');
                 messageDiv.className = 'prism-message prism';
+                messageDiv.dataset.timestamp = new Date().toISOString();
+                messageDiv.dataset.model = options.model || 'openai';
                 
                 // Format content professionally
                 const formattedMessage = this.formatProfessionalContent(message);
@@ -2663,7 +2678,16 @@
                 
                 this.chatMessages.appendChild(messageDiv);
                 this.scrollToBottom();
-                console.log('[Chat] PRISM message added:', message.substring(0, 50) + '...');
+                
+                // ✅ Ajouter à l'historique pour l'export PDF
+                const historyEntry = {
+                    role: 'assistant',
+                    content: message,
+                    timestamp: messageDiv.dataset.timestamp,
+                    model: options.model || 'openai'
+                };
+                this.messageHistory.push(historyEntry);
+                console.log('[Chat] PRISM message added:', message.substring(0, 50) + '... | History:', this.messageHistory.length);
                 
                 // Trigger speech synthesis if enabled
                 if (this.speechEnabled) {
