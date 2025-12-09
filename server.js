@@ -11,6 +11,7 @@ import { VoicePersonalityEnhancer } from './backend/voicePersonalityEnhancer.js'
 import { handleUserInstruction } from './backend/orchestrator.js';
 import { HybridOrchestrator } from './src/orchestrator/HybridOrchestrator.js';
 import { TaskTypeProcessor } from './src/core/TaskTypeProcessor.js';
+import { ImageGenerator } from './src/infographic/ImageGenerator.js';
 
 // Initialiser l'orchestrateur hybride (routing + consensus)
 const hybridOrchestrator = new HybridOrchestrator();
@@ -18,6 +19,10 @@ const hybridOrchestrator = new HybridOrchestrator();
 // ✨ NOUVEAU: Initialiser le TaskTypeProcessor (orchestration AGI complète avec mémoire)
 const taskTypeProcessor = new TaskTypeProcessor();
 console.log('[INIT] ✅ TaskTypeProcessor initialisé - Mémoire persistante et orchestration AGI activées');
+
+// ✨ NOUVEAU: Initialiser le ImageGenerator (Nano Banana Pro + Gemini 2.0 Flash)
+const imageGenerator = new ImageGenerator();
+console.log('[INIT] ✅ ImageGenerator initialisé - Nano Banana Pro prêt pour génération d\'images');
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -616,6 +621,92 @@ app.get('/api/metrics', (req, res) => {
 import { PdfExportService } from './src/export/PdfExportService.js';
 
 const pdfExportService = new PdfExportService();
+
+// ============================================================================
+// ENDPOINT GÉNÉRATION D'IMAGES - Nano Banana Pro
+// ============================================================================
+
+/**
+ * Génère une image via Nano Banana Pro
+ * POST /api/generate-image
+ */
+app.post('/api/generate-image', async (req, res) => {
+  try {
+    const { prompt, taskType, options = {} } = req.body;
+    
+    if (!prompt) {
+      return res.status(400).json({
+        success: false,
+        error: 'Prompt requis pour la génération d\'image'
+      });
+    }
+    
+    console.log(`[Image Generation] Prompt: "${prompt.substring(0, 50)}..." | TaskType: ${taskType}`);
+    
+    // Générer l'image
+    const result = await imageGenerator.generateForChat({
+      message: prompt,
+      taskType: taskType || 'general',
+      previousMessages: options.previousMessages || []
+    }, options);
+    
+    if (!result.success) {
+      console.warn(`[Image Generation] Échec: ${result.error}`);
+      return res.status(500).json({
+        success: false,
+        error: result.error
+      });
+    }
+    
+    console.log(`[Image Generation] ✅ Image générée avec succès`);
+    
+    res.json({
+      success: true,
+      imageUrl: result.imageUrl,
+      downloadUrl: result.downloadUrl,
+      downloadFilename: result.downloadFilename,
+      html: result.html,
+      metadata: result.metadata
+    });
+    
+  } catch (error) {
+    console.error('[Image Generation] Erreur:', error.message);
+    res.status(500).json({
+      success: false,
+      error: error.message
+    });
+  }
+});
+
+/**
+ * Vérifie si un message est une demande d'image
+ * POST /api/check-image-request
+ */
+app.post('/api/check-image-request', (req, res) => {
+  try {
+    const { message } = req.body;
+    
+    if (!message) {
+      return res.status(400).json({
+        success: false,
+        error: 'Message requis'
+      });
+    }
+    
+    const isImageRequest = imageGenerator.isImageRequest(message);
+    
+    res.json({
+      success: true,
+      isImageRequest
+    });
+    
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      error: error.message
+    });
+  }
+});
 
 // Endpoint d'export PDF des conversations
 app.post('/api/export/pdf', async (req, res) => {

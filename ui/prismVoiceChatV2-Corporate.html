@@ -2385,6 +2385,14 @@
                     
                     console.log('[Chat] Task type detected:', finalTaskType);
                     
+                    // ✨ NOUVEAU: Détecter si c'est une demande d'image
+                    if (this.isImageRequest(message)) {
+                        console.log('[Chat] 🖼️ Image request detected, generating image...');
+                        await this.handleImageGeneration(message, finalTaskType);
+                        this.hideProcessingIndicator();
+                        return;
+                    }
+                    
                     // Obtenir la voix sélectionnée
                     const selectedVoice = this.getSelectedVoice();
                     
@@ -2499,6 +2507,92 @@
                 }
                 
                 return 'general';
+            }
+            
+            // ✨ NOUVEAU: Détecter si c'est une demande d'image
+            isImageRequest(message) {
+                const lowerMsg = message.toLowerCase();
+                
+                // Mots-clés d'action
+                const actionWords = ['génère', 'genere', 'crée', 'cree', 'dessine', 'produis', 'fais', 'montre', 'affiche', 'illustre', 'visualise'];
+                // Mots-clés d'objet
+                const objectWords = ['image', 'graphique', 'diagramme', 'visualisation', 'illustration', 'infographie', 'schéma', 'schema', 'visuel'];
+                
+                const hasAction = actionWords.some(word => lowerMsg.includes(word));
+                const hasObject = objectWords.some(word => lowerMsg.includes(word));
+                
+                return hasAction && hasObject;
+            }
+            
+            // ✨ NOUVEAU: Gérer la génération d'images
+            async handleImageGeneration(prompt, taskType) {
+                try {
+                    console.log('[Image] Generating image for:', prompt.substring(0, 50) + '...');
+                    
+                    const response = await fetch('/api/generate-image', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify({
+                            prompt: prompt,
+                            taskType: taskType,
+                            options: {}
+                        })
+                    });
+                    
+                    const data = await response.json();
+                    
+                    if (data.success && data.imageUrl) {
+                        // Créer le HTML de l'image avec bouton de téléchargement
+                        const imageHtml = `
+                            <div class="prism-generated-image" style="margin: 15px 0;">
+                                <img src="${data.imageUrl}" alt="Image générée par PRISM" style="max-width: 100%; border-radius: 8px; box-shadow: 0 4px 15px rgba(0,0,0,0.3);" loading="lazy" />
+                                <div class="prism-image-actions" style="margin-top: 10px; display: flex; gap: 10px;">
+                                    <a href="${data.downloadUrl}" download="${data.downloadFilename}" class="prism-download-btn" style="display: inline-flex; align-items: center; gap: 5px; padding: 8px 16px; background: linear-gradient(135deg, #D4AF37, #B8860B); color: #000; text-decoration: none; border-radius: 5px; font-weight: 500;">
+                                        📥 Télécharger
+                                    </a>
+                                    <button onclick="window.prismChat.regenerateImage('${prompt.replace(/'/g, "\\'")}', '${taskType}')" class="prism-regenerate-btn" style="padding: 8px 16px; background: rgba(255,255,255,0.1); color: #fff; border: 1px solid rgba(255,255,255,0.2); border-radius: 5px; cursor: pointer;">
+                                        🔄 Régénérer
+                                    </button>
+                                </div>
+                            </div>
+                        `;
+                        
+                        // Ajouter le message avec l'image
+                        this.addPrismMessage('Voici l\'image générée :', {
+                            model: 'nano-banana-pro',
+                            customHtml: imageHtml
+                        });
+                        
+                        // Stocker dans l'historique
+                        if (this.messageHistory) {
+                            this.messageHistory.push({
+                                role: 'assistant',
+                                content: 'Image générée',
+                                imageUrl: data.imageUrl,
+                                timestamp: new Date().toISOString()
+                            });
+                        }
+                        
+                        console.log('[Image] ✅ Image generated successfully');
+                    } else {
+                        throw new Error(data.error || 'Erreur lors de la génération');
+                    }
+                    
+                } catch (error) {
+                    console.error('[Image] Generation error:', error);
+                    this.addPrismMessage(`Désolé, je n'ai pas pu générer l'image: ${error.message}`, {
+                        model: 'error'
+                    });
+                }
+            }
+            
+            // ✨ NOUVEAU: Régénérer une image
+            async regenerateImage(prompt, taskType) {
+                this.showProcessingIndicator();
+                await this.handleImageGeneration(prompt, taskType);
+                this.hideProcessingIndicator();
             }
             
             // Obtenir la voix sélectionnée
@@ -2699,6 +2793,13 @@
                 // Format content professionally
                 const formattedMessage = this.formatProfessionalContent(message);
                 messageDiv.innerHTML = formattedMessage;
+                
+                // ✨ NOUVEAU: Support du HTML personnalisé (ex: images générées)
+                if (options.customHtml) {
+                    const customDiv = document.createElement('div');
+                    customDiv.innerHTML = options.customHtml;
+                    messageDiv.appendChild(customDiv);
+                }
                 
                 // Add model badge if provided - DISABLED FOR USER PRIVACY
                 /*
