@@ -50,6 +50,8 @@
     "test:orchestrator:coverage": "vitest run --config vitest.config.orchestrator.js --coverage",
     "test:core": "vitest run --config vitest.config.core.js",
     "test:core:watch": "vitest --config vitest.config.core.js",
+    "test:infographic": "vitest run --config vitest.config.infographic.js",
+    "test:infographic:watch": "vitest --config vitest.config.infographic.js",
     "test:core:coverage": "vitest run --config vitest.config.core.js --coverage",
     "test:scenarios": "node tests/integration/final-scenarios-test.js"
   },
