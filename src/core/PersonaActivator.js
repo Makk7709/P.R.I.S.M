@@ -52,9 +52,9 @@ class GeneralPersona extends BasePersona {
   }
 
   async generate(input, options = {}) {
-    // Implémentation basique - sera remplacée par l'appel API réel
+    // Retourner le contenu tel quel - le formatage est géré par le modèle
     return {
-      content: `Réponse générale pour: ${input}`,
+      content: input,
       metadata: {
         persona: this.name,
         format: 'general'
@@ -153,7 +153,7 @@ FORMAT DE RÉPONSE OBLIGATOIRE:
 
   async generate(input, options = {}) {
     return {
-      content: `Réponse stratégique pour: ${input}`,
+      content: input,
       metadata: {
         persona: this.name,
         format: 'strategic',
@@ -203,7 +203,7 @@ FORMAT DE RÉPONSE OBLIGATOIRE:
 
   async generate(input, options = {}) {
     return {
-      content: `Réponse financière pour: ${input}`,
+      content: input,
       metadata: {
         persona: this.name,
         format: 'structured'
@@ -255,7 +255,7 @@ FORMAT DE RÉPONSE OBLIGATOIRE:
 
   async generate(input, options = {}) {
     return {
-      content: `Réponse marketing pour: ${input}`,
+      content: input,
       metadata: {
         persona: this.name,
         format: 'creative'
@@ -315,7 +315,7 @@ FORMAT DE RÉPONSE OBLIGATOIRE:
 
   async generate(input, options = {}) {
     return {
-      content: `Réponse de recherche pour: ${input}`,
+      content: input,
       metadata: {
         persona: this.name,
         format: 'factual'
@@ -355,7 +355,7 @@ FORMAT DE RÉPONSE OBLIGATOIRE:
 
   async generate(input, options = {}) {
     return {
-      content: `Réponse analytique pour: ${input}`,
+      content: input,
       metadata: {
         persona: this.name,
         format: 'analytical'
@@ -385,7 +385,7 @@ TON RÔLE:
 
   async generate(input, options = {}) {
     return {
-      content: `Réponse technique pour: ${input}`,
+      content: input,
       metadata: {
         persona: this.name,
         format: 'technical'
@@ -415,7 +415,7 @@ TON RÔLE:
 
   async generate(input, options = {}) {
     return {
-      content: `Réponse éthique pour: ${input}`,
+      content: input,
       metadata: {
         persona: this.name,
         format: 'ethical'
@@ -445,7 +445,7 @@ TON RÔLE:
 
   async generate(input, options = {}) {
     return {
-      content: `Réponse créative pour: ${input}`,
+      content: input,
       metadata: {
         persona: this.name,
         format: 'creative'
