@@ -10,6 +10,7 @@ import fetch from 'node-fetch';
 import { VoicePersonalityEnhancer } from './backend/voicePersonalityEnhancer.js';
 import { handleUserInstruction } from './backend/orchestrator.js';
 import { HybridOrchestrator } from './src/orchestrator/HybridOrchestrator.js';
+import { TaskTypeProcessor } from './src/core/TaskTypeProcessor.js';
 
 // Initialiser l'orchestrateur hybride (routing + consensus)
 const hybridOrchestrator = new HybridOrchestrator();
@@ -69,45 +70,71 @@ app.post('/api/chat', async (req, res) => {
       console.log(`[PRISM API] Voix demandée: ${voiceConfig.name} (${voiceConfig.provider})`);
     }
 
-    // ✨ NOUVEAU: Appeler l'orchestrateur HYBRIDE (routing + consensus intelligent)
-    const hybridResponse = await hybridOrchestrator.process(message, taskType, {
-      context: req.body.context // Passer le contexte si fourni
-    });
-    
-    // Fallback vers l'ancien orchestrateur si nécessaire
-    let orchestratorResponse;
+    // ✨ NOUVEAU: Utiliser TaskTypeProcessor (orchestration AGI complète)
+    let processorResponse;
     let responseContent;
+    let orchestratorResponse;
     
-    if (hybridResponse && hybridResponse.content) {
-      // Utiliser la réponse de l'orchestrateur hybride
-      // S'assurer que responseContent est une chaîne
-      responseContent = typeof hybridResponse.content === 'string' 
-        ? hybridResponse.content 
-        : hybridResponse.content?.content || hybridResponse.content?.data || String(hybridResponse.content);
+    try {
+      processorResponse = await taskTypeProcessor.process(message, taskType, {
+        context: req.body.context,
+        voiceConfig
+      });
+      
+      responseContent = processorResponse.content;
       orchestratorResponse = {
-        data: { content: hybridResponse.content },
+        data: { content: responseContent },
         metadata: {
-          model: hybridResponse.model,
-          orchestrationMode: hybridResponse.mode,
-          consensusUsed: hybridResponse.consensusUsed,
-          criticalityScore: hybridResponse.criticalityScore,
-          ...hybridResponse.metadata
+          model: processorResponse.metadata?.model || 'auto',
+          orchestrationMode: processorResponse.metadata?.consensusUsed ? 'consensus' : 'routed',
+          consensusUsed: processorResponse.metadata?.consensusUsed || false,
+          persona: processorResponse.metadata?.persona,
+          researchUsed: processorResponse.metadata?.researchUsed || false,
+          ethicalScore: processorResponse.metadata?.ethicalScore,
+          ...processorResponse.metadata
         }
       };
-      console.log(`[PRISM API] Mode orchestration: ${hybridResponse.mode}`);
-      if (hybridResponse.consensusUsed) {
-        console.log(`[PRISM API] Consensus utilisé - Statut: ${hybridResponse.consensusStatus}`);
+      
+      console.log(`[PRISM API] Persona activé: ${processorResponse.metadata?.persona}`);
+      if (processorResponse.metadata?.consensusUsed) {
+        console.log(`[PRISM API] Consensus utilisé - Statut: ${processorResponse.metadata?.consensusStatus}`);
       }
-    } else {
-      // Fallback vers l'orchestrateur classique
-      orchestratorResponse = await handleUserInstruction(message, taskType);
-      if (!orchestratorResponse || !orchestratorResponse.data) {
-        throw new Error('Réponse invalide de l\'orchestrateur');
+      if (processorResponse.metadata?.researchUsed) {
+        console.log(`[PRISM API] Recherche temps réel utilisée - ${processorResponse.metadata?.researchSources?.length || 0} sources`);
       }
-      responseContent = orchestratorResponse.data.enhancedContent || 
-                       orchestratorResponse.data.choices?.[0]?.message?.content ||
-                       orchestratorResponse.data.content ||
-                       'Réponse générée par PRISM';
+    } catch (processorError) {
+      console.warn(`[PRISM API] TaskTypeProcessor error, fallback to HybridOrchestrator:`, processorError.message);
+      
+      // Fallback vers HybridOrchestrator
+      const hybridResponse = await hybridOrchestrator.process(message, taskType, {
+        context: req.body.context
+      });
+      
+      if (hybridResponse && hybridResponse.content) {
+        responseContent = typeof hybridResponse.content === 'string' 
+          ? hybridResponse.content 
+          : hybridResponse.content?.content || hybridResponse.content?.data || String(hybridResponse.content);
+        orchestratorResponse = {
+          data: { content: hybridResponse.content },
+          metadata: {
+            model: hybridResponse.model,
+            orchestrationMode: hybridResponse.mode,
+            consensusUsed: hybridResponse.consensusUsed,
+            criticalityScore: hybridResponse.criticalityScore,
+            ...hybridResponse.metadata
+          }
+        };
+      } else {
+        // Fallback final vers orchestrateur classique
+        orchestratorResponse = await handleUserInstruction(message, taskType);
+        if (!orchestratorResponse || !orchestratorResponse.data) {
+          throw new Error('Réponse invalide de l\'orchestrateur');
+        }
+        responseContent = orchestratorResponse.data.enhancedContent || 
+                         orchestratorResponse.data.choices?.[0]?.message?.content ||
+                         orchestratorResponse.data.content ||
+                         'Réponse générée par PRISM';
+      }
     }
 
     // Améliorer la réponse pour la voix
