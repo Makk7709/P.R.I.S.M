@@ -1645,13 +1645,16 @@
                 <!-- Ligne du sélecteur de domaine - Séparée pour moins d'encombrement -->
                 <div class="prism-input-row prism-domain-row">
                     <label class="prism-domain-label">Task Type:</label>
-                    <select class="prism-task-select" id="taskTypeSelect">
+                    <select class="prism-task-select" id="taskTypeSelect" title="Sélectionnez le type de tâche pour activer les capacités PRISM spécialisées">
                         <option value="general">General</option>
-                        <option value="finance">Finance</option>
-                        <option value="recherche">Research</option>
-                        <option value="strategie">Strategy</option>
-                        <option value="marketing">Marketing</option>
-                        <option value="analyse">Analysis</option>
+                        <option value="finance">Finance (Financial Advisor)</option>
+                        <option value="recherche">Research (Research Analyst + Real-time)</option>
+                        <option value="strategie">Strategy (Strategic Advisor + Real-time)</option>
+                        <option value="marketing">Marketing (Marketing Strategist)</option>
+                        <option value="analyse">Analysis (Data Analyst + Real-time)</option>
+                        <option value="technique">Technical (Technical Expert)</option>
+                        <option value="ethique">Ethics (Ethics Counselor)</option>
+                        <option value="creative">Creative (Creative Director)</option>
                     </select>
                 </div>
                 
@@ -1754,6 +1757,14 @@
                     <div class="prism-metric-row">
                         <span class="prism-metric-label">Orchestration</span>
                         <span class="prism-metric-value" id="orchestrationMode">Router</span>
+                    </div>
+                    <div class="prism-metric-row" id="personaRow" style="display: none;">
+                        <span class="prism-metric-label">Persona</span>
+                        <span class="prism-metric-value" id="personaMode">-</span>
+                    </div>
+                    <div class="prism-metric-row" id="researchRow" style="display: none;">
+                        <span class="prism-metric-label">Research</span>
+                        <span class="prism-metric-value" id="researchStatus">-</span>
                     </div>
                     <div class="prism-metric-row">
                         <span class="prism-metric-label">Model(s)</span>
@@ -1860,6 +1871,29 @@
                 this.voiceButton = document.getElementById('voiceButton');
                 this.stopButton = document.getElementById('stopButton');
                 this.taskTypeSelect = document.getElementById('taskTypeSelect');
+                
+                // ✅ NOUVEAU: Afficher un feedback visuel lors du changement de Task Type
+                if (this.taskTypeSelect) {
+                    this.taskTypeSelect.addEventListener('change', (e) => {
+                        const selectedType = e.target.value;
+                        const personaMap = {
+                            'general': 'General',
+                            'finance': 'Financial Advisor',
+                            'recherche': 'Research Analyst + Real-time',
+                            'strategie': 'Strategic Advisor + Real-time',
+                            'marketing': 'Marketing Strategist',
+                            'analyse': 'Data Analyst + Real-time',
+                            'technique': 'Technical Expert',
+                            'ethique': 'Ethics Counselor',
+                            'creative': 'Creative Director'
+                        };
+                        const persona = personaMap[selectedType] || 'General';
+                        console.log(`[Task Type] ${selectedType} sélectionné → Persona: ${persona}`);
+                        
+                        // Afficher un badge temporaire
+                        this.showTaskTypeFeedback(selectedType, persona);
+                    });
+                }
                 this.processingIndicator = document.getElementById('processingIndicator');
                 
                 // Voice controls
@@ -2861,6 +2895,84 @@
                 console.log('[Chat] System message added:', message);
             }
 
+            // ✅ NOUVEAU: Afficher un feedback visuel lors du changement de Task Type
+            showTaskTypeFeedback(taskType, persona) {
+                // Supprimer le feedback précédent s'il existe
+                const existingFeedback = document.getElementById('taskTypeFeedback');
+                if (existingFeedback) {
+                    existingFeedback.remove();
+                }
+                
+                // Créer le badge de feedback
+                const feedback = document.createElement('div');
+                feedback.id = 'taskTypeFeedback';
+                feedback.style.cssText = `
+                    position: fixed;
+                    top: 20px;
+                    right: 20px;
+                    background: var(--prism-gradient-neural);
+                    border: 2px solid var(--prism-accent-color);
+                    border-radius: 8px;
+                    padding: 12px 20px;
+                    color: var(--prism-text-primary);
+                    font-size: 14px;
+                    font-weight: 600;
+                    z-index: 10000;
+                    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+                    animation: slideInRight 0.3s ease-out;
+                `;
+                feedback.innerHTML = `
+                    <div style="display: flex; align-items: center; gap: 10px;">
+                        <span style="font-size: 18px;">✨</span>
+                        <div>
+                            <div style="font-weight: 700; margin-bottom: 4px;">${taskType.toUpperCase()} Mode</div>
+                            <div style="font-size: 12px; opacity: 0.9;">Persona: ${persona}</div>
+                        </div>
+                    </div>
+                `;
+                
+                // Ajouter l'animation CSS si elle n'existe pas
+                if (!document.querySelector('#taskTypeFeedbackStyle')) {
+                    const style = document.createElement('style');
+                    style.id = 'taskTypeFeedbackStyle';
+                    style.textContent = `
+                        @keyframes slideInRight {
+                            from {
+                                transform: translateX(100%);
+                                opacity: 0;
+                            }
+                            to {
+                                transform: translateX(0);
+                                opacity: 1;
+                            }
+                        }
+                        @keyframes slideOutRight {
+                            from {
+                                transform: translateX(0);
+                                opacity: 1;
+                            }
+                            to {
+                                transform: translateX(100%);
+                                opacity: 0;
+                            }
+                        }
+                    `;
+                    document.head.appendChild(style);
+                }
+                
+                document.body.appendChild(feedback);
+                
+                // Auto-suppression après 3 secondes
+                setTimeout(() => {
+                    feedback.style.animation = 'slideOutRight 0.3s ease-out';
+                    setTimeout(() => {
+                        if (feedback.parentNode) {
+                            feedback.remove();
+                        }
+                    }, 300);
+                }, 3000);
+            }
+
             addErrorMessage(message) {
                 const messageDiv = document.createElement('div');
                 messageDiv.className = 'prism-message error';
@@ -2908,6 +3020,35 @@
                         orchestrationModeEl.style.color = 'var(--prism-success)';
                         orchestrationModeEl.title = 'Routing direct vers un modèle';
                     }
+                }
+                
+                // ✅ NOUVEAU: Afficher le Persona activé
+                const personaRow = document.getElementById('personaRow');
+                const personaModeEl = document.getElementById('personaMode');
+                if (orchestration && orchestration.persona) {
+                    if (personaRow) personaRow.style.display = 'flex';
+                    if (personaModeEl) {
+                        personaModeEl.textContent = orchestration.persona;
+                        personaModeEl.style.color = 'var(--prism-accent-color)';
+                        personaModeEl.title = `Persona spécialisé activé pour ce Task Type`;
+                    }
+                } else {
+                    if (personaRow) personaRow.style.display = 'none';
+                }
+                
+                // ✅ NOUVEAU: Afficher l'état de la recherche temps réel
+                const researchRow = document.getElementById('researchRow');
+                const researchStatusEl = document.getElementById('researchStatus');
+                if (orchestration && orchestration.researchUsed) {
+                    if (researchRow) researchRow.style.display = 'flex';
+                    if (researchStatusEl) {
+                        const sourceCount = orchestration.researchSources?.length || 0;
+                        researchStatusEl.textContent = `✓ ${sourceCount} source${sourceCount > 1 ? 's' : ''}`;
+                        researchStatusEl.style.color = 'var(--prism-success)';
+                        researchStatusEl.title = `Recherche temps réel avec ${sourceCount} source(s)`;
+                    }
+                } else {
+                    if (researchRow) researchRow.style.display = 'none';
                 }
                 
                 // ✅ Mettre à jour le Voice Provider
