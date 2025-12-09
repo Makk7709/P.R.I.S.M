@@ -183,13 +183,20 @@ app.post('/api/chat', async (req, res) => {
         voiceMode: enhancedResponse.voiceMetadata?.mode,
         emotion: enhancedResponse.voiceMetadata?.emotion,
         voice: enhancedResponse.voiceMetadata?.voice,
-        // ✨ NOUVEAU: Métadonnées d'orchestration hybride
+        // ✨ NOUVEAU: Métadonnées d'orchestration hybride + TaskTypeProcessor
         orchestration: {
           mode: orchestratorResponse.metadata?.orchestrationMode || 'ROUTED',
           modeLabel: orchestratorResponse.metadata?.modeLabel || 'Router Simple',
           consensusUsed: orchestratorResponse.metadata?.consensusUsed || false,
           criticalityScore: orchestratorResponse.metadata?.criticalityScore || 0,
-          consensusDetails: orchestratorResponse.metadata?.consensusDetails || null
+          consensusDetails: orchestratorResponse.metadata?.consensusDetails || null,
+          // ✨ Métadonnées TaskTypeProcessor
+          persona: orchestratorResponse.metadata?.persona || null,
+          researchUsed: orchestratorResponse.metadata?.researchUsed || false,
+          researchSources: orchestratorResponse.metadata?.researchSources || [],
+          consensusStatus: orchestratorResponse.metadata?.consensusStatus || null,
+          ethicalScore: orchestratorResponse.metadata?.ethicalScore || null,
+          ethicalStatus: orchestratorResponse.metadata?.ethicalStatus || null
         },
         cached: orchestratorResponse.metadata?.cached,
         fallback: orchestratorResponse.metadata?.fallback,
