@@ -47,7 +47,11 @@
     "test:pdf:coverage": "vitest run --config vitest.config.pdf.js --coverage",
     "test:orchestrator": "vitest run --config vitest.config.orchestrator.js",
     "test:orchestrator:watch": "vitest --config vitest.config.orchestrator.js",
-    "test:orchestrator:coverage": "vitest run --config vitest.config.orchestrator.js --coverage"
+    "test:orchestrator:coverage": "vitest run --config vitest.config.orchestrator.js --coverage",
+    "test:core": "vitest run --config vitest.config.core.js",
+    "test:core:watch": "vitest --config vitest.config.core.js",
+    "test:core:coverage": "vitest run --config vitest.config.core.js --coverage",
+    "test:scenarios": "node tests/integration/final-scenarios-test.js"
   },
   "dependencies": {
     "@anthropic-ai/sdk": "^0.26.0",
