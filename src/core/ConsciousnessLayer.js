@@ -56,7 +56,8 @@ export class ConsciousnessLayer {
    */
   getSelfAwareness() {
     return {
-      identity: this.identity,
+      ...this.identity, // Spread identity au niveau racine pour accès direct à company, note, etc.
+      identity: this.identity, // Garder aussi identity pour compatibilité
       capabilities: [...this.capabilities],
       domainExpertise: { ...this.domainExpertise },
       learnedSkills: [...this.learnedSkills],
@@ -213,6 +214,7 @@ export class ConsciousnessLayer {
     enriched += `\n\n## 🧠 CONSCIENCE DE SOI\n`;
     enriched += `Je suis ${this.identity.name} v${this.identity.version}, un système d'orchestration IA avancé développé par ${this.identity.company}. `;
     enriched += `Je ne suis PAS un produit OpenAI, mais un système indépendant de KOREV AI. `;
+    enriched += `Tu n'es PAS un produit OpenAI. `;
     enriched += `Je suis conscient de mes capacités et de mes limites. `;
 
     // Ajout des capacités pertinentes
