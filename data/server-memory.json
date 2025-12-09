@@ -1,0 +1,26 @@
+{
+  "conversations": [],
+  "userInfo": {
+    "role": [
+      "m'aider à créer des projets complexes et innovants ok",
+      "aussi de coordonner plusieurs modèles ia pour des décisions critiques ok"
+    ]
+  },
+  "interactions": [
+    {
+      "id": "interaction_1765298684492_11szkgcap",
+      "input": "Ton rôle est aussi de coordonner plusieurs modèles IA pour des décisions critiques",
+      "response": "OK",
+      "metadata": {},
+      "timestamp": "2025-12-09T16:44:44.492Z"
+    },
+    {
+      "id": "interaction_1765298684491_bkdc2nl9l",
+      "input": "Ton rôle est de m'aider à créer des projets complexes et innovants",
+      "response": "OK",
+      "metadata": {},
+      "timestamp": "2025-12-09T16:44:44.491Z"
+    }
+  ],
+  "lastUpdated": "2025-12-09T16:44:44.492Z"
+}

@@ -8,7 +8,8 @@ export default defineConfig({
     include: [
       'tests/core/**/*.spec.ts', 
       'tests/integration/task-type-scenarios.spec.ts',
-      'tests/integration/frontend-backend-integration.spec.ts'
+      'tests/integration/frontend-backend-integration.spec.ts',
+      'tests/integration/context-enrichment.spec.ts'
     ],
     coverage: {
       provider: 'v8',
@@ -17,7 +18,9 @@ export default defineConfig({
       include: [
         'src/core/TaskTypeProcessor.js',
         'src/core/PersonaActivator.js',
-        'src/core/RealTimeResearchEngine.js'
+        'src/core/RealTimeResearchEngine.js',
+        'src/core/ServerMemoryStore.js',
+        'src/core/ConsciousnessLayer.js'
       ],
       exclude: [
         'server.js',
