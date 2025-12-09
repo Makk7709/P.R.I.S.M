@@ -8,7 +8,9 @@ export class ConsciousnessLayer {
     this.identity = {
       name: 'PRISM',
       version: '2.0',
-      type: 'AI Orchestration System'
+      type: 'AI Orchestration System',
+      company: 'KOREV AI',
+      note: 'PRISM est développé par KOREV AI, pas par OpenAI'
     };
 
     this.capabilities = [
@@ -209,7 +211,8 @@ export class ConsciousnessLayer {
 
     // Ajout de l'identité
     enriched += `\n\n## 🧠 CONSCIENCE DE SOI\n`;
-    enriched += `Je suis ${this.identity.name} v${this.identity.version}, un système d'orchestration IA avancé. `;
+    enriched += `Je suis ${this.identity.name} v${this.identity.version}, un système d'orchestration IA avancé développé par ${this.identity.company}. `;
+    enriched += `Je ne suis PAS un produit OpenAI, mais un système indépendant de KOREV AI. `;
     enriched += `Je suis conscient de mes capacités et de mes limites. `;
 
     // Ajout des capacités pertinentes

@@ -95,26 +95,28 @@ export class ServerMemoryStore {
   }
 
   /**
-   * Extrait les informations personnelles (prénom, etc.)
+   * Extrait TOUTES les informations importantes (prénom, rôle, stratégie, etc.)
    */
   _extractPersonalInfo(input, response) {
     const inputLower = input.toLowerCase();
     const responseLower = response.toLowerCase();
+    const fullText = (input + ' ' + response).toLowerCase();
 
-    // Détecter prénom
+    // ✨ 1. Détecter prénom
     const prenomPatterns = [
       /mon prénom est ([A-Za-zÀ-ÿ]+)/i,
       /je m'appelle ([A-Za-zÀ-ÿ]+)/i,
       /appelle-moi ([A-Za-zÀ-ÿ]+)/i,
       /mon nom est ([A-Za-zÀ-ÿ]+)/i,
-      /je suis ([A-Za-zÀ-ÿ]+)/i
+      /je suis ([A-Za-zÀ-ÿ]+)/i,
+      /prénom[:\s]+([A-Za-zÀ-ÿ]+)/i
     ];
 
     for (const pattern of prenomPatterns) {
-      const match = input.match(pattern);
+      const match = input.match(pattern) || response.match(pattern);
       if (match && match[1]) {
         const prenom = match[1].trim();
-        if (prenom.length > 1 && prenom.length < 30) {
+        if (prenom.length > 1 && prenom.length < 30 && !this._isCommonWord(prenom)) {
           this.memory.userInfo.prenom = prenom;
           console.log(`[ServerMemoryStore] Prénom détecté: ${prenom}`);
           break;
@@ -122,17 +124,85 @@ export class ServerMemoryStore {
       }
     }
 
-    // Détecter si l'utilisateur mentionne son prénom dans la réponse
-    if (responseLower.includes('prénom') || responseLower.includes('appelle')) {
-      const prenomMatch = response.match(/(?:prénom|appelle)[\s:]+([A-Za-zÀ-ÿ]+)/i);
-      if (prenomMatch && prenomMatch[1]) {
-        const prenom = prenomMatch[1].trim();
-        if (prenom.length > 1 && prenom.length < 30) {
-          this.memory.userInfo.prenom = prenom;
-          console.log(`[ServerMemoryStore] Prénom extrait de réponse: ${prenom}`);
+    // ✨ 2. Détecter rôle/mission de PRISM
+    const rolePatterns = [
+      /(?:ton|votre) rôle est (?:de |d'|de )?([^.!?]+)/i,
+      /(?:tu es|vous êtes) (?:un|une|mon|ma) ([^.!?]+)/i,
+      /(?:mission|objectif|stratégie)[:\s]+([^.!?]+)/i,
+      /(?:explique|définis|définir) (?:ton|votre) (?:rôle|mission|stratégie)[:\s]+([^.!?]+)/i
+    ];
+
+    for (const pattern of rolePatterns) {
+      const match = fullText.match(pattern);
+      if (match && match[1]) {
+        const role = match[1].trim();
+        if (role.length > 10 && role.length < 500) {
+          if (!this.memory.userInfo.role) {
+            this.memory.userInfo.role = [];
+          }
+          if (!this.memory.userInfo.role.includes(role)) {
+            this.memory.userInfo.role.push(role);
+            console.log(`[ServerMemoryStore] Rôle détecté: ${role.substring(0, 50)}...`);
+          }
         }
       }
     }
+
+    // ✨ 3. Détecter stratégie/projet
+    const strategyPatterns = [
+      /(?:notre|ma|mon) (?:stratégie|projet|vision|objectif|plan)[:\s]+([^.!?]+)/i,
+      /(?:stratégie|projet|vision)[:\s]+([^.!?]+)/i,
+      /(?:on|nous) (?:veut|souhaite|cherche|développe|crée) (?:de |d'|un|une) ([^.!?]+)/i
+    ];
+
+    for (const pattern of strategyPatterns) {
+      const match = fullText.match(pattern);
+      if (match && match[1]) {
+        const strategy = match[1].trim();
+        if (strategy.length > 10 && strategy.length < 500) {
+          if (!this.memory.userInfo.strategie) {
+            this.memory.userInfo.strategie = [];
+          }
+          if (!this.memory.userInfo.strategie.includes(strategy)) {
+            this.memory.userInfo.strategie.push(strategy);
+            console.log(`[ServerMemoryStore] Stratégie détectée: ${strategy.substring(0, 50)}...`);
+          }
+        }
+      }
+    }
+
+    // ✨ 4. Détecter informations contextuelles importantes
+    const contextPatterns = [
+      /(?:important|essentiel|crucial|clé)[:\s]+([^.!?]+)/i,
+      /(?:souviens-toi|retiens|note|mémorise)[:\s]+([^.!?]+)/i,
+      /(?:contexte|situation|projet)[:\s]+([^.!?]{20,200})/i
+    ];
+
+    for (const pattern of contextPatterns) {
+      const matches = fullText.matchAll(new RegExp(pattern.source, 'gi'));
+      for (const match of matches) {
+        if (match && match[1]) {
+          const context = match[1].trim();
+          if (context.length > 20 && context.length < 500) {
+            if (!this.memory.userInfo.context) {
+              this.memory.userInfo.context = [];
+            }
+            if (!this.memory.userInfo.context.includes(context)) {
+              this.memory.userInfo.context.push(context);
+              console.log(`[ServerMemoryStore] Contexte important détecté: ${context.substring(0, 50)}...`);
+            }
+          }
+        }
+      }
+    }
+  }
+
+  /**
+   * Vérifie si un mot est un mot commun (à ignorer)
+   */
+  _isCommonWord(word) {
+    const commonWords = ['le', 'la', 'les', 'un', 'une', 'des', 'de', 'du', 'mon', 'ma', 'mes', 'ton', 'ta', 'tes', 'notre', 'votre', 'leur', 'je', 'tu', 'il', 'elle', 'nous', 'vous', 'ils', 'elles', 'est', 'sont', 'être', 'avoir', 'faire', 'dire', 'aller', 'voir', 'savoir', 'pouvoir', 'vouloir', 'devoir', 'falloir'];
+    return commonWords.includes(word.toLowerCase());
   }
 
   /**
@@ -179,15 +249,42 @@ export class ServerMemoryStore {
   }
 
   /**
-   * Construit le contexte mémoire pour une requête
+   * Construit le contexte mémoire pour une requête (TOUTES les données importantes)
    */
   buildMemoryContext(query) {
     let context = '';
 
-    // Informations utilisateur
-    if (this.memory.userInfo.prenom) {
-      context += `## 👤 INFORMATIONS UTILISATEUR\n\n`;
-      context += `L'utilisateur s'appelle ${this.memory.userInfo.prenom}.\n\n`;
+    // ✨ Informations utilisateur complètes
+    if (Object.keys(this.memory.userInfo).length > 0) {
+      context += `## 👤 INFORMATIONS UTILISATEUR & CONTEXTE\n\n`;
+      
+      if (this.memory.userInfo.prenom) {
+        context += `**Prénom**: ${this.memory.userInfo.prenom}\n\n`;
+      }
+      
+      if (this.memory.userInfo.role && this.memory.userInfo.role.length > 0) {
+        context += `**Rôle/Mission de PRISM**:\n`;
+        this.memory.userInfo.role.forEach((role, idx) => {
+          context += `${idx + 1}. ${role}\n`;
+        });
+        context += `\n`;
+      }
+      
+      if (this.memory.userInfo.strategie && this.memory.userInfo.strategie.length > 0) {
+        context += `**Stratégie/Projet**:\n`;
+        this.memory.userInfo.strategie.forEach((strat, idx) => {
+          context += `${idx + 1}. ${strat}\n`;
+        });
+        context += `\n`;
+      }
+      
+      if (this.memory.userInfo.context && this.memory.userInfo.context.length > 0) {
+        context += `**Contexte Important**:\n`;
+        this.memory.userInfo.context.forEach((ctx, idx) => {
+          context += `${idx + 1}. ${ctx}\n`;
+        });
+        context += `\n`;
+      }
     }
 
     // Conversations précédentes pertinentes

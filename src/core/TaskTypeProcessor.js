@@ -127,10 +127,40 @@ export class TaskTypeProcessor {
         projectContext: activeProject
       });
       
-      // Ajouter contexte utilisateur si disponible
+      // ✨ Ajouter TOUT le contexte utilisateur (prénom, rôle, stratégie, etc.)
       let userContextInfo = '';
-      if (userInfo.prenom) {
-        userContextInfo = `\n\n## 👤 CONTEXTE UTILISATEUR\nL'utilisateur s'appelle ${userInfo.prenom}. Utilise son prénom dans tes réponses quand c'est approprié et naturel.`;
+      if (Object.keys(userInfo).length > 0) {
+        userContextInfo = `\n\n## 👤 CONTEXTE UTILISATEUR & MISSION\n`;
+        
+        if (userInfo.prenom) {
+          userContextInfo += `L'utilisateur s'appelle ${userInfo.prenom}. Utilise son prénom dans tes réponses quand c'est approprié et naturel.\n\n`;
+        }
+        
+        if (userInfo.role && userInfo.role.length > 0) {
+          userContextInfo += `**TON RÔLE/MISSION (défini par l'utilisateur)**:\n`;
+          userInfo.role.forEach(role => {
+            userContextInfo += `- ${role}\n`;
+          });
+          userContextInfo += `\n`;
+        }
+        
+        if (userInfo.strategie && userInfo.strategie.length > 0) {
+          userContextInfo += `**STRATÉGIE/PROJET (défini par l'utilisateur)**:\n`;
+          userInfo.strategie.forEach(strat => {
+            userContextInfo += `- ${strat}\n`;
+          });
+          userContextInfo += `\n`;
+        }
+        
+        if (userInfo.context && userInfo.context.length > 0) {
+          userContextInfo += `**CONTEXTE IMPORTANT (à retenir)**:\n`;
+          userInfo.context.forEach(ctx => {
+            userContextInfo += `- ${ctx}\n`;
+          });
+          userContextInfo += `\n`;
+        }
+        
+        userContextInfo += `Utilise ces informations pour répondre de manière pertinente et contextuelle.`;
       }
       
       const enrichedPrompt = consciousnessEnriched + userContextInfo;
