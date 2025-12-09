@@ -194,25 +194,86 @@ describe('PersonaActivator', () => {
   });
 
   describe('Génération de Réponse', () => {
-    it('DOIT générer une réponse avec le persona', async () => {
+    it('DOIT générer une réponse avec Strategic Advisor persona', async () => {
       const persona = activator.activate('strategie');
-      
-      // Mock de l'appel API (sera implémenté dans le persona)
-      const mockGenerate = vi.fn().mockResolvedValue({
-        content: 'Réponse stratégique générée',
-        metadata: {
-          persona: 'Strategic Advisor',
-          format: 'strategic'
-        }
-      });
-
-      persona.generate = mockGenerate;
-
       const result = await persona.generate('input test', {});
 
-      expect(mockGenerate).toHaveBeenCalledWith('input test', {});
-      expect(result.content).toBe('Réponse stratégique générée');
+      expect(result).toBeDefined();
+      expect(result.content).toBeDefined();
+      expect(result.metadata).toBeDefined();
       expect(result.metadata.persona).toBe('Strategic Advisor');
+    });
+
+    it('DOIT générer une réponse avec Financial Advisor persona', async () => {
+      const persona = activator.activate('finance');
+      const result = await persona.generate('input test', {});
+
+      expect(result).toBeDefined();
+      expect(result.content).toBeDefined();
+      expect(result.metadata.persona).toBe('Financial Advisor');
+    });
+
+    it('DOIT générer une réponse avec Marketing Strategist persona', async () => {
+      const persona = activator.activate('marketing');
+      const result = await persona.generate('input test', {});
+
+      expect(result).toBeDefined();
+      expect(result.content).toBeDefined();
+      expect(result.metadata.persona).toBe('Marketing Strategist');
+    });
+
+    it('DOIT générer une réponse avec Research Analyst persona', async () => {
+      const persona = activator.activate('recherche');
+      const result = await persona.generate('input test', {});
+
+      expect(result).toBeDefined();
+      expect(result.content).toBeDefined();
+      expect(result.metadata.persona).toBe('Research Analyst');
+    });
+
+    it('DOIT générer une réponse avec Data Analyst persona', async () => {
+      const persona = activator.activate('analyse');
+      const result = await persona.generate('input test', {});
+
+      expect(result).toBeDefined();
+      expect(result.content).toBeDefined();
+      expect(result.metadata.persona).toBe('Data Analyst');
+    });
+
+    it('DOIT générer une réponse avec Technical Expert persona', async () => {
+      const persona = activator.activate('technique');
+      const result = await persona.generate('input test', {});
+
+      expect(result).toBeDefined();
+      expect(result.content).toBeDefined();
+      expect(result.metadata.persona).toBe('Technical Expert');
+    });
+
+    it('DOIT générer une réponse avec Ethics Counselor persona', async () => {
+      const persona = activator.activate('ethique');
+      const result = await persona.generate('input test', {});
+
+      expect(result).toBeDefined();
+      expect(result.content).toBeDefined();
+      expect(result.metadata.persona).toBe('Ethics Counselor');
+    });
+
+    it('DOIT générer une réponse avec Creative Director persona', async () => {
+      const persona = activator.activate('creative');
+      const result = await persona.generate('input test', {});
+
+      expect(result).toBeDefined();
+      expect(result.content).toBeDefined();
+      expect(result.metadata.persona).toBe('Creative Director');
+    });
+
+    it('DOIT générer une réponse avec General persona', async () => {
+      const persona = activator.activate('general');
+      const result = await persona.generate('input test', {});
+
+      expect(result).toBeDefined();
+      expect(result.content).toBeDefined();
+      expect(result.metadata.persona).toBe('General');
     });
   });
 
@@ -227,6 +288,100 @@ describe('PersonaActivator', () => {
       
       expect(persona.criticality).toEqual(options.criticality);
       expect(persona.context).toEqual(options.context);
+    });
+  });
+
+  describe('Méthodes Persona - Accès Direct', () => {
+    it('DOIT retourner le prompt du persona via getSystemPrompt', () => {
+      const persona = activator.activate('strategie');
+      const prompt = persona.getSystemPrompt();
+      
+      expect(prompt).toBeDefined();
+      expect(typeof prompt).toBe('string');
+      expect(prompt.length).toBeGreaterThan(0);
+      expect(prompt).toContain('Strategic Advisor');
+    });
+
+    it('DOIT retourner prompt avec données de recherche via buildContext', () => {
+      const persona = activator.activate('strategie');
+      const researchData = {
+        summary: 'Synthèse recherche',
+        sources: [
+          { title: 'Source 1', url: 'http://example.com', date: '2024-12-01' }
+        ],
+        timestamp: new Date().toISOString()
+      };
+
+      const context = persona.buildContext('input test', researchData);
+      
+      expect(context).toContain('DONNÉES TEMPS RÉEL');
+      expect(context).toContain('Synthèse recherche');
+      expect(context).toContain('Source 1');
+    });
+
+    it('DOIT gérer taskType inconnu avec persona general', () => {
+      const persona = activator.activate('unknown');
+      expect(persona.name).toBe('General');
+      expect(persona.getSystemPrompt()).toBeDefined();
+    });
+
+    it('DOIT avoir formatResearchData pour tous les personas', () => {
+      const persona = activator.activate('strategie');
+      const researchData = {
+        summary: 'Test',
+        sources: [],
+        timestamp: new Date().toISOString()
+      };
+      
+      const formatted = persona.formatResearchData(researchData);
+      expect(formatted).toBeDefined();
+      expect(typeof formatted).toBe('string');
+    });
+  });
+
+  describe('Tous les Personas - Couverture Complète', () => {
+    const taskTypes = [
+      'general',
+      'finance',
+      'strategie',
+      'marketing',
+      'recherche',
+      'analyse',
+      'technique',
+      'ethique',
+      'creative'
+    ];
+
+    taskTypes.forEach(taskType => {
+      it(`DOIT activer persona pour "${taskType}" avec toutes les méthodes`, () => {
+        const persona = activator.activate(taskType);
+        const prompt = persona.getSystemPrompt();
+
+        expect(persona).toBeDefined();
+        expect(persona.name).toBeDefined();
+        expect(typeof persona.name).toBe('string');
+        expect(prompt).toBeDefined();
+        expect(typeof prompt).toBe('string');
+        expect(prompt.length).toBeGreaterThan(0);
+        
+        // Vérifier que le persona peut formater des données de recherche (méthode héritée de BasePersona)
+        if (persona.formatResearchData) {
+          const researchData = {
+            summary: 'Test summary',
+            sources: [],
+            timestamp: new Date().toISOString()
+          };
+          const formatted = persona.formatResearchData(researchData);
+          expect(formatted).toBeDefined();
+          expect(typeof formatted).toBe('string');
+        }
+        
+        // Vérifier buildContext
+        const context = persona.buildContext('test input');
+        expect(context).toBeDefined();
+        expect(typeof context).toBe('string');
+        expect(context).toContain(persona.name);
+      });
     });
   });
 });
