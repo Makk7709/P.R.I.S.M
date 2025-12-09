@@ -102,7 +102,7 @@ function logModelChoice(model, taskType) {
   console.log(`[PRISM] Modèle choisi: ${model} pour tâche: ${taskType}`);
 }
 
-async function callOpenAI(userInput, skipContext = false) {
+async function callOpenAI(userInput, skipContext = false, customSystemPrompt = null) {
   if (!process.env.OPENAI_API_KEY || process.env.OPENAI_API_KEY === 'test_openai_key_placeholder') {
     throw new Error('OpenAI API key non configurée');
   }
@@ -116,10 +116,11 @@ async function callOpenAI(userInput, skipContext = false) {
   console.log(`[PRISM] 🚀 Appel OpenAI avec modèle: ${process.env.OPENAI_MODEL || 'gpt-4.1'}`);
   
   // ✨ PROMPT PRISM ENRICHI POUR PLUS D'EXPRESSIVITÉ
+  // Si un prompt personnalisé est fourni (avec mémoire utilisateur), l'utiliser
   const enhancedPrompts = voiceEnhancer.enhanceSystemPrompts();
-  const basePrompt = skipContext ? 
+  const basePrompt = customSystemPrompt || (skipContext ? 
     `Tu es PRISM, un système d'intelligence artificielle avancé développé par KOREV AI. Tu n'es PAS un produit OpenAI. Réponds de manière concise et professionnelle avec personnalité.` :
-    enhancedPrompts.openai + (contextSummary ? `\n\n## 📊 CONTEXTE RÉCENT\n${contextSummary}` : '');
+    enhancedPrompts.openai + (contextSummary ? `\n\n## 📊 CONTEXTE RÉCENT\n${contextSummary}` : ''));
 
   const completion = await openai.chat.completions.create({
     model: process.env.OPENAI_MODEL || 'gpt-4.1',
@@ -364,7 +365,7 @@ function chooseModel(taskType) {
   }
 }
 
-export async function handleUserInstruction(userInput, taskType = "general") {
+export async function handleUserInstruction(userInput, taskType = "general", options = {}) {
   const startTime = Date.now();
   
   // 🚀 ÉTAPE 1: Vérification cache rapide
@@ -413,8 +414,10 @@ export async function handleUserInstruction(userInput, taskType = "general") {
     let actualModel = modelChoice;
     
     // 🎯 ÉTAPE 3: Optimisation des appels API
+    // ✨ Passer le prompt enrichi (avec mémoire utilisateur) si fourni
+    const customSystemPrompt = options?.enrichedPrompt || null;
     if (modelChoice === "openai") {
-      response = await callOpenAI(userInput, SKIP_CONTEXT_LOADING);
+      response = await callOpenAI(userInput, SKIP_CONTEXT_LOADING, customSystemPrompt);
     } else if (modelChoice === "claude") {
       response = await callClaude(userInput, SKIP_CONTEXT_LOADING);
     } else if (modelChoice === "perplexity") {
@@ -471,7 +474,7 @@ export async function handleUserInstruction(userInput, taskType = "general") {
     if (modelChoice !== "openai") {
       console.log(`[PRISM] 🔄 Fallback rapide vers OpenAI...`);
       try {
-        const fallbackResponse = await callOpenAI(userInput, true); // Force skip context
+        const fallbackResponse = await callOpenAI(userInput, true, options?.enrichedPrompt || null); // Force skip context mais garde prompt enrichi
         const responseTime = Date.now() - startTime;
         return {
           data: fallbackResponse,
