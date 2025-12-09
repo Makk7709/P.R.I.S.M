@@ -62,6 +62,7 @@ vi.mock('../../src/core/PriorityQueue.js', () => ({
 const createMockPersona = (name) => ({
   name,
   buildContext: vi.fn().mockReturnValue('context'),
+  getSystemPrompt: vi.fn().mockReturnValue(`Tu es ${name}, assistant PRISM développé par KOREV AI.`),
   generate: vi.fn().mockResolvedValue({
     content: `Réponse ${name}`,
     metadata: { persona: name, format: 'strategic' }
@@ -97,6 +98,19 @@ vi.mock('../../src/core/RealTimeResearchEngine.js', () => ({
       ],
       timestamp: new Date().toISOString()
     })
+  }))
+}));
+
+vi.mock('../../src/core/JarvisPersonality.js', () => ({
+  JarvisPersonality: vi.fn().mockImplementation(() => ({
+    enrichBasePrompt: vi.fn().mockImplementation((prompt, options) => {
+      return `[JARVIS] ${prompt} [USER: ${options.userName || 'Unknown'}]`;
+    }),
+    generateSystemPrompt: vi.fn().mockReturnValue('Tu es JARVIS, assistant PRISM développé par KOREV AI.'),
+    enrichResponse: vi.fn().mockImplementation((response, options) => response),
+    generateGreeting: vi.fn().mockImplementation((name) => `Bonjour ${name}, à votre service.`),
+    shouldMakeSuggestion: vi.fn().mockReturnValue(false),
+    getFormattingInstructions: vi.fn().mockReturnValue('Format JARVIS')
   }))
 }));
 

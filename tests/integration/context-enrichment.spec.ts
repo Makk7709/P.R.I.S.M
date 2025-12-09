@@ -60,6 +60,7 @@ vi.mock('../../src/core/PersonaActivator.js', () => ({
     activate: vi.fn().mockReturnValue({
       name: 'General',
       getSystemPrompt: vi.fn().mockReturnValue('Base prompt'),
+      buildContext: vi.fn().mockReturnValue('context'),
       format: 'text',
       temperature: 0.7
     })
@@ -69,6 +70,16 @@ vi.mock('../../src/core/PersonaActivator.js', () => ({
 vi.mock('../../src/core/RealTimeResearchEngine.js', () => ({
   RealTimeResearchEngine: vi.fn().mockImplementation(() => ({
     search: vi.fn().mockResolvedValue(null)
+  }))
+}));
+
+vi.mock('../../src/core/JarvisPersonality.js', () => ({
+  JarvisPersonality: vi.fn().mockImplementation(() => ({
+    enrichBasePrompt: vi.fn().mockImplementation((prompt) => `[JARVIS] ${prompt}`),
+    generateSystemPrompt: vi.fn().mockReturnValue('Tu es JARVIS'),
+    enrichResponse: vi.fn().mockImplementation((response) => response),
+    generateGreeting: vi.fn().mockImplementation((name) => `Bonjour ${name}`),
+    shouldMakeSuggestion: vi.fn().mockReturnValue(false)
   }))
 }));
 

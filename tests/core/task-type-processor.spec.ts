@@ -54,7 +54,28 @@ vi.mock('../../src/core/PriorityQueue.js', () => ({
 
 vi.mock('../../src/core/PersonaActivator.js', () => ({
   PersonaActivator: vi.fn().mockImplementation(() => ({
-    activate: vi.fn()
+    activate: vi.fn().mockImplementation((taskType) => ({
+      name: taskType || 'General',
+      buildContext: vi.fn().mockReturnValue('context'),
+      getSystemPrompt: vi.fn().mockReturnValue('Tu es un assistant PRISM développé par KOREV AI.'),
+      generate: vi.fn().mockResolvedValue({
+        content: `Réponse pour ${taskType}`,
+        metadata: { persona: taskType, format: 'text' }
+      })
+    }))
+  }))
+}));
+
+vi.mock('../../src/core/JarvisPersonality.js', () => ({
+  JarvisPersonality: vi.fn().mockImplementation(() => ({
+    enrichBasePrompt: vi.fn().mockImplementation((prompt, options) => {
+      return `[JARVIS] ${prompt} [USER: ${options?.userName || 'Unknown'}]`;
+    }),
+    generateSystemPrompt: vi.fn().mockReturnValue('Tu es JARVIS, assistant PRISM développé par KOREV AI.'),
+    enrichResponse: vi.fn().mockImplementation((response) => response),
+    generateGreeting: vi.fn().mockImplementation((name) => `Bonjour ${name}, à votre service.`),
+    shouldMakeSuggestion: vi.fn().mockReturnValue(false),
+    getFormattingInstructions: vi.fn().mockReturnValue('Format JARVIS')
   }))
 }));
 
@@ -62,6 +83,62 @@ vi.mock('../../src/core/RealTimeResearchEngine.js', () => ({
   RealTimeResearchEngine: vi.fn().mockImplementation(() => ({
     search: vi.fn()
   }))
+}));
+
+vi.mock('../../src/core/ConsciousnessLayer.js', () => ({
+  ConsciousnessLayer: vi.fn().mockImplementation(() => ({
+    enrichPromptWithAwareness: vi.fn((prompt) => `[Consciousness] ${prompt}`),
+    reflectOnResponse: vi.fn().mockResolvedValue({ quality: 0.9, improvements: [] }),
+    recordInteraction: vi.fn()
+  }))
+}));
+
+vi.mock('../../src/core/MemoryRetrievalEngine.js', () => ({
+  MemoryRetrievalEngine: vi.fn().mockImplementation(() => ({
+    initialize: vi.fn().mockResolvedValue(true),
+    retrieveRelevantMemories: vi.fn().mockResolvedValue({
+      enrichedContext: '',
+      proactiveSuggestions: [],
+      userInfo: {}
+    }),
+    retrieveMemoriesForResponse: vi.fn().mockResolvedValue({
+      enrichedContext: '',
+      proactiveSuggestions: [],
+      userInfo: {}
+    }),
+    storeInteractionMemory: vi.fn().mockResolvedValue(true)
+  }))
+}));
+
+vi.mock('../../src/core/InterDomainOrchestrator.js', () => ({
+  InterDomainOrchestrator: vi.fn().mockImplementation(() => ({
+    needsCollaboration: vi.fn().mockReturnValue(false),
+    shouldUseMultiDomain: vi.fn().mockReturnValue({ needed: false, domains: [] }),
+    orchestrateCollaboration: vi.fn()
+  }))
+}));
+
+vi.mock('../../src/core/ProjectComplexityManager.js', () => ({
+  ProjectComplexityManager: vi.fn().mockImplementation(() => ({
+    detectComplexProject: vi.fn().mockReturnValue({ isComplex: false }),
+    detectProject: vi.fn().mockReturnValue({ isComplex: false }),
+    findActiveProject: vi.fn().mockReturnValue(null),
+    getActiveProjects: vi.fn().mockReturnValue([]),
+    getProjectContext: vi.fn().mockReturnValue(null)
+  }))
+}));
+
+vi.mock('../../src/core/ServerMemoryStore.js', () => ({
+  ServerMemoryStore: vi.fn().mockImplementation(() => ({
+    storeInteraction: vi.fn().mockReturnValue(true),
+    getUserInfo: vi.fn().mockReturnValue({}),
+    getRecentInteractions: vi.fn().mockReturnValue([])
+  })),
+  serverMemoryStore: {
+    storeInteraction: vi.fn().mockReturnValue(true),
+    getUserInfo: vi.fn().mockReturnValue({}),
+    getRecentInteractions: vi.fn().mockReturnValue([])
+  }
 }));
 
 vi.mock('../../evolution/selfImprovementEngine.js', () => ({
@@ -148,6 +225,7 @@ describe('TaskTypeProcessor', () => {
       mockPersona.activate.mockReturnValue({
         name: 'General',
         buildContext: vi.fn().mockReturnValue('context'),
+        getSystemPrompt: vi.fn().mockReturnValue('Tu es PRISM de KOREV AI'),
         generate: vi.fn().mockResolvedValue({
           content: 'response',
           metadata: {}
@@ -158,7 +236,8 @@ describe('TaskTypeProcessor', () => {
 
       await processor.process('test input', 'general');
 
-      expect(mockClassifier.classify).toHaveBeenCalledWith('test input', undefined);
+      // Le classifier reçoit l'input et un contexte enrichi (pas undefined)
+      expect(mockClassifier.classify).toHaveBeenCalledWith('test input', expect.any(Object));
     });
 
     it('DOIT détecter une requête critique', async () => {
@@ -171,6 +250,7 @@ describe('TaskTypeProcessor', () => {
       mockPersona.activate.mockReturnValue({
         name: 'Strategic',
         buildContext: vi.fn().mockReturnValue('context'),
+        getSystemPrompt: vi.fn().mockReturnValue('Tu es PRISM de KOREV AI'),
         generate: vi.fn().mockResolvedValue({
           content: 'response',
           metadata: {}
@@ -208,6 +288,7 @@ describe('TaskTypeProcessor', () => {
       const mockPersonaInstance = {
         name: 'Strategic Advisor',
         buildContext: vi.fn().mockReturnValue('context'),
+        getSystemPrompt: vi.fn().mockReturnValue('Tu es PRISM de KOREV AI'),
         generate: vi.fn().mockResolvedValue({
           content: 'strategic response',
           metadata: { persona: 'Strategic Advisor' }
@@ -232,6 +313,7 @@ describe('TaskTypeProcessor', () => {
       const mockPersonaInstance = {
         name: 'Financial Advisor',
         buildContext: vi.fn().mockReturnValue('context'),
+        getSystemPrompt: vi.fn().mockReturnValue('Tu es PRISM de KOREV AI'),
         generate: vi.fn().mockResolvedValue({
           content: 'financial response',
           metadata: { persona: 'Financial Advisor' }
@@ -257,6 +339,7 @@ describe('TaskTypeProcessor', () => {
       const mockPersonaInstance = {
         name: 'Strategic Advisor',
         buildContext: vi.fn().mockReturnValue('context'),
+        getSystemPrompt: vi.fn().mockReturnValue('Tu es PRISM de KOREV AI'),
         generate: vi.fn().mockResolvedValue({
           content: 'response',
           metadata: {}
@@ -287,6 +370,7 @@ describe('TaskTypeProcessor', () => {
       const mockPersonaInstance = {
         name: 'Research Analyst',
         buildContext: vi.fn().mockReturnValue('context'),
+        getSystemPrompt: vi.fn().mockReturnValue('Tu es PRISM de KOREV AI'),
         generate: vi.fn().mockResolvedValue({
           content: 'response',
           metadata: {}
@@ -315,6 +399,7 @@ describe('TaskTypeProcessor', () => {
       const mockPersonaInstance = {
         name: 'General',
         buildContext: vi.fn().mockReturnValue('context'),
+        getSystemPrompt: vi.fn().mockReturnValue('Tu es PRISM de KOREV AI'),
         generate: vi.fn().mockResolvedValue({
           content: 'response',
           metadata: {}
@@ -348,6 +433,7 @@ describe('TaskTypeProcessor', () => {
       const mockPersonaInstance = {
         name: 'Strategic Advisor',
         buildContext: vi.fn().mockReturnValue('context'),
+        getSystemPrompt: vi.fn().mockReturnValue('Tu es PRISM de KOREV AI'),
         generate: vi.fn().mockResolvedValue({
           content: 'response',
           metadata: {}
@@ -378,6 +464,7 @@ describe('TaskTypeProcessor', () => {
       const mockPersonaInstance = {
         name: 'General',
         buildContext: vi.fn().mockReturnValue('context'),
+        getSystemPrompt: vi.fn().mockReturnValue('Tu es PRISM de KOREV AI'),
         generate: vi.fn().mockResolvedValue({
           content: 'response',
           metadata: {}
@@ -419,6 +506,7 @@ describe('TaskTypeProcessor', () => {
       const mockPersonaInstance = {
         name: 'General',
         buildContext: vi.fn().mockReturnValue('context'),
+        getSystemPrompt: vi.fn().mockReturnValue('Tu es PRISM de KOREV AI'),
         generate: vi.fn().mockResolvedValue({
           content: 'response',
           metadata: {}
@@ -451,6 +539,7 @@ describe('TaskTypeProcessor', () => {
       const mockPersonaInstance = {
         name: 'General',
         buildContext: vi.fn().mockReturnValue('context'),
+        getSystemPrompt: vi.fn().mockReturnValue('Tu es PRISM de KOREV AI'),
         generate: vi.fn().mockResolvedValue({
           content: 'response',
           metadata: {}
@@ -478,6 +567,7 @@ describe('TaskTypeProcessor', () => {
       mockPersona.activate.mockReturnValue({
         name: 'General',
         buildContext: vi.fn().mockReturnValue('context'),
+        getSystemPrompt: vi.fn().mockReturnValue('Tu es PRISM de KOREV AI'),
         generate: vi.fn()
       });
 
@@ -543,6 +633,7 @@ describe('TaskTypeProcessor', () => {
       mockPersona.activate.mockReturnValue({
         name: 'General',
         buildContext: vi.fn().mockReturnValue('context'),
+        getSystemPrompt: vi.fn().mockReturnValue('Tu es PRISM de KOREV AI'),
         generate: vi.fn()
       });
 
@@ -640,6 +731,7 @@ describe('TaskTypeProcessor', () => {
       const mockPersonaInstance = {
         name: 'General',
         buildContext: vi.fn().mockReturnValue('context'),
+        getSystemPrompt: vi.fn().mockReturnValue('Tu es PRISM de KOREV AI'),
         generate: vi.fn().mockResolvedValue({
           content: 'response',
           metadata: {}

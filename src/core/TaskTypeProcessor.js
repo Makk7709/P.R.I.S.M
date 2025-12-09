@@ -18,6 +18,7 @@ import { MemoryRetrievalEngine } from './MemoryRetrievalEngine.js';
 import { InterDomainOrchestrator } from './InterDomainOrchestrator.js';
 import { ProjectComplexityManager } from './ProjectComplexityManager.js';
 import { serverMemoryStore } from './ServerMemoryStore.js';
+import { JarvisPersonality } from './JarvisPersonality.js';
 
 export class TaskTypeProcessor {
   constructor() {
@@ -35,6 +36,9 @@ export class TaskTypeProcessor {
     this.memoryEngine = new MemoryRetrievalEngine();
     this.interDomainOrchestrator = new InterDomainOrchestrator();
     this.projectManager = new ProjectComplexityManager();
+    
+    // ✨ PERSONNALITÉ JARVIS
+    this.jarvisPersonality = new JarvisPersonality();
     
     // Initialiser MemoryRetrievalEngine
     this.memoryEngine.initialize().catch(err => {
@@ -186,7 +190,13 @@ export class TaskTypeProcessor {
         userContextInfo += `- Si l'utilisateur te demande si tu te souviens, réponds OUI si tu as ces informations, sinon dis que tu es prêt à les apprendre.\n`;
       }
       
-      const enrichedPrompt = consciousnessEnriched + userContextInfo;
+      // ✨ Appliquer la personnalité JARVIS
+      const jarvisEnriched = this.jarvisPersonality.enrichBasePrompt(consciousnessEnriched, {
+        userName: userInfo.prenom || null,
+        taskType
+      });
+      
+      const enrichedPrompt = jarvisEnriched + userContextInfo;
       
       // ✨ ÉTAPE 3: Déterminer si recherche temps réel nécessaire
       const needsResearch = this._needsRealTimeResearch(taskType, userInput);
