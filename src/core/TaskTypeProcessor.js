@@ -491,7 +491,7 @@ export class TaskTypeProcessor {
    */
   async _processWithRouter(input, taskType, persona, contextData) {
     // Construire le contexte enrichi avec mémoires
-    const enrichedContext = persona.buildContext(input, contextData.researchData);
+    let enrichedContext = persona.buildContext(input, contextData.researchData);
     
     // Ajouter le contexte mémoire si disponible
     if (contextData.memoryContext) {
