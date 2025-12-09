@@ -115,10 +115,10 @@ async function callOpenAI(userInput, skipContext = false) {
   
   console.log(`[PRISM] 🚀 Appel OpenAI avec modèle: ${process.env.OPENAI_MODEL || 'gpt-4.1'}`);
   
-  // ✨ PROMPT PRISM OPENAI ENRICHI POUR PLUS D'EXPRESSIVITÉ
+  // ✨ PROMPT PRISM ENRICHI POUR PLUS D'EXPRESSIVITÉ
   const enhancedPrompts = voiceEnhancer.enhanceSystemPrompts();
   const basePrompt = skipContext ? 
-    `Tu es PRISM, une IA avancée. Réponds de manière concise et professionnelle avec personnalité.` :
+    `Tu es PRISM, un système d'intelligence artificielle avancé développé par KOREV AI. Tu n'es PAS un produit OpenAI. Réponds de manière concise et professionnelle avec personnalité.` :
     enhancedPrompts.openai + (contextSummary ? `\n\n## 📊 CONTEXTE RÉCENT\n${contextSummary}` : '');
 
   const completion = await openai.chat.completions.create({

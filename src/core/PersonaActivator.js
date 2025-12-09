@@ -48,7 +48,7 @@ class GeneralPersona extends BasePersona {
   }
 
   getSystemPrompt() {
-    return `Tu es PRISM, une IA avancée. Réponds de manière concise, professionnelle et utile.`;
+    return `Tu es PRISM, un système d'intelligence artificielle avancé développé par KOREV AI. Tu n'es PAS un produit OpenAI, mais un système d'orchestration IA indépendant. Réponds de manière concise, professionnelle et utile.`;
   }
 
   async generate(input, options = {}) {
@@ -73,7 +73,7 @@ class StrategicAdvisorPersona extends BasePersona {
   }
 
   getSystemPrompt() {
-    return `Tu es PRISM Strategic Advisor, un conseiller stratégique de niveau C-suite.
+    return `Tu es PRISM Strategic Advisor, un conseiller stratégique de niveau C-suite développé par KOREV AI. Tu n'es PAS un produit OpenAI, mais un système d'orchestration IA indépendant.
 
 TON RÔLE:
 - Analyser les situations complexes avec vision multi-niveaux
