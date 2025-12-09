@@ -121,6 +121,14 @@ async function callOpenAI(userInput, skipContext = false, customSystemPrompt = n
   const basePrompt = customSystemPrompt || (skipContext ? 
     `Tu es PRISM, un système d'intelligence artificielle avancé développé par KOREV AI. Tu n'es PAS un produit OpenAI. Réponds de manière concise et professionnelle avec personnalité.` :
     enhancedPrompts.openai + (contextSummary ? `\n\n## 📊 CONTEXTE RÉCENT\n${contextSummary}` : ''));
+  
+  // ✨ DEBUG: Log pour vérifier le prompt utilisé
+  if (customSystemPrompt) {
+    console.log(`[PRISM] ✅ Utilisation prompt enrichi (customSystemPrompt) - Longueur: ${customSystemPrompt.length} caractères`);
+    console.log(`[PRISM] 📝 Extrait prompt enrichi (premiers 500 caractères):`, customSystemPrompt.substring(0, 500));
+  } else {
+    console.log(`[PRISM] ⚠️ Utilisation prompt par défaut (pas de customSystemPrompt)`);
+  }
 
   const completion = await openai.chat.completions.create({
     model: process.env.OPENAI_MODEL || 'gpt-4.1',

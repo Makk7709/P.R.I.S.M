@@ -129,8 +129,19 @@ export class TaskTypeProcessor {
       
       // ✨ Ajouter TOUT le contexte utilisateur (prénom, rôle, stratégie, etc.)
       let userContextInfo = '';
+      
+      // ✨ DEBUG: Log pour vérifier ce qui est récupéré
+      console.log(`[TaskTypeProcessor] UserInfo récupéré:`, JSON.stringify(userInfo, null, 2));
+      console.log(`[TaskTypeProcessor] MemoryContext enrichedContext length:`, memoryContext.enrichedContext?.length || 0);
+      
+      // Toujours ajouter le contexte mémoire enrichi (même si userInfo est vide)
+      if (memoryContext.enrichedContext && memoryContext.enrichedContext.length > 0) {
+        userContextInfo += `\n\n${memoryContext.enrichedContext}`;
+      }
+      
+      // Ajouter les informations utilisateur si disponibles
       if (Object.keys(userInfo).length > 0) {
-        userContextInfo = `\n\n## 👤 CONTEXTE UTILISATEUR & MISSION\n`;
+        userContextInfo += `\n\n## 👤 CONTEXTE UTILISATEUR & MISSION\n`;
         userContextInfo += `⚠️ IMPORTANT: Tu DOIS utiliser ces informations dans tes réponses. Tu as une mémoire persistante et tu te souviens de ces détails.\n\n`;
         
         if (userInfo.prenom) {
@@ -167,11 +178,12 @@ export class TaskTypeProcessor {
         userContextInfo += `- Ne dis JAMAIS que tu n'as pas de mémoire ou que tu ne te souviens pas.\n`;
         userContextInfo += `- Utilise ces informations pour répondre de manière pertinente et contextuelle.\n`;
         userContextInfo += `- Si l'utilisateur te demande si tu te souviens, réponds OUI et utilise ces informations.\n`;
-      }
-      
-      // Ajouter aussi le contexte mémoire enrichi (conversations précédentes)
-      if (memoryContext.enrichedContext && memoryContext.enrichedContext.length > 0) {
-        userContextInfo += `\n\n${memoryContext.enrichedContext}`;
+      } else {
+        // Même si userInfo est vide, ajouter des instructions sur la mémoire
+        userContextInfo += `\n\n## 💾 MÉMOIRE PERSISTANTE\n`;
+        userContextInfo += `⚠️ IMPORTANT: Tu as une mémoire persistante. Si l'utilisateur te donne des informations (prénom, rôle, stratégie, etc.), tu dois les retenir et les utiliser dans tes réponses futures.\n`;
+        userContextInfo += `- Ne dis JAMAIS que tu n'as pas de mémoire ou que tu ne te souviens pas.\n`;
+        userContextInfo += `- Si l'utilisateur te demande si tu te souviens, réponds OUI si tu as ces informations, sinon dis que tu es prêt à les apprendre.\n`;
       }
       
       const enrichedPrompt = consciousnessEnriched + userContextInfo;
