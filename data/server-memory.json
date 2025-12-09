@@ -5,9 +5,146 @@
       "PRISM doit utiliser le consensus pour toutes les décisions critiques et stratégiques OK",
       "Les algorithmes sont brevetés et ne doivent pas être modifiés sans autorisation OK"
     ],
-    "prenom": "prêt"
+    "prenom": "Amine"
   },
   "interactions": [
+    {
+      "id": "interaction_1765303671352_2qn2k0dhe",
+      "input": "Quel est mon prénom ?",
+      "response": "💡 Amine, votre prénom est bien enregistré dans ma mémoire. Comment puis-je vous assister aujourd'hui ?",
+      "metadata": {
+        "consensusUsed": false,
+        "model": "openai",
+        "persona": "General",
+        "format": "general",
+        "reflection": {
+          "timestamp": "2025-12-09T18:07:51.352Z",
+          "input": "Quel est mon prénom ?",
+          "taskType": "general",
+          "responseContent": "💡 Amine, votre prénom est bien enregistré dans ma mémoire. Comment puis-je vous assister aujourd'hui ?",
+          "persona": "General",
+          "model": "openai",
+          "responseTime": 2499,
+          "quality": 0.6,
+          "relevance": 0.2,
+          "improvements": [
+            "Persona spécialisé pourrait améliorer la qualité"
+          ],
+          "couldBeBetter": true
+        },
+        "userInfo": {
+          "context": [
+            "PRISM doit utiliser le consensus pour toutes les décisions critiques et stratégiques OK",
+            "Les algorithmes sont brevetés et ne doivent pas être modifiés sans autorisation OK"
+          ],
+          "prenom": "Amine"
+        }
+      },
+      "timestamp": "2025-12-09T18:07:51.352Z"
+    },
+    {
+      "id": "interaction_1765303513035_xzhcaqmh4",
+      "input": "je fais un petit test est-ce que tu te rappelles de mon prénom et à qui je te compare",
+      "response": "🎉 💡 Bien sûr, Prêt. Je me souviens **parfait**ement que votre prénom est Prêt. Quant à la comparaison, vous m'avez comparé à JARVIS, ce qui est tout à fait approprié étant donné mon rôle d'assistant personnel intelligent. Comment puis-je vous être utile aujourd'hui ?",
+      "metadata": {
+        "consensusUsed": false,
+        "model": "openai",
+        "persona": "General",
+        "format": "general",
+        "reflection": {
+          "timestamp": "2025-12-09T18:05:13.035Z",
+          "input": "je fais un petit test est-ce que tu te rappelles de mon prénom et à qui je te compare",
+          "taskType": "general",
+          "responseContent": "🎉 💡 Bien sûr, Prêt. Je me souviens **parfait**ement que votre prénom est Prêt. Quant à la comparaison, vous m'avez comparé à JARVIS, ce qui est tout à fait approprié étant donné mon rôle d'assistant",
+          "persona": "General",
+          "model": "openai",
+          "responseTime": 1,
+          "quality": 0.6,
+          "relevance": 0.05263157894736842,
+          "improvements": [
+            "Persona spécialisé pourrait améliorer la qualité"
+          ],
+          "couldBeBetter": true
+        },
+        "userInfo": {
+          "context": [
+            "PRISM doit utiliser le consensus pour toutes les décisions critiques et stratégiques OK",
+            "Les algorithmes sont brevetés et ne doivent pas être modifiés sans autorisation OK"
+          ],
+          "prenom": "prêt"
+        }
+      },
+      "timestamp": "2025-12-09T18:05:13.035Z"
+    },
+    {
+      "id": "interaction_1765303510184_e4helur0h",
+      "input": "je fais un petit test est-ce que tu te rappelles de mon prénom et à qui je te compare",
+      "response": "🎉 💡 Bien sûr, Prêt. Je me souviens **parfait**ement que votre prénom est Prêt. Quant à la comparaison, vous m'avez comparé à JARVIS, ce qui est tout à fait approprié étant donné mon rôle d'assistant personnel intelligent. Comment puis-je vous être utile aujourd'hui ?",
+      "metadata": {
+        "consensusUsed": false,
+        "model": "openai",
+        "persona": "General",
+        "format": "general",
+        "reflection": {
+          "timestamp": "2025-12-09T18:05:10.184Z",
+          "input": "je fais un petit test est-ce que tu te rappelles de mon prénom et à qui je te compare",
+          "taskType": "general",
+          "responseContent": "🎉 💡 Bien sûr, Prêt. Je me souviens **parfait**ement que votre prénom est Prêt. Quant à la comparaison, vous m'avez comparé à JARVIS, ce qui est tout à fait approprié étant donné mon rôle d'assistant",
+          "persona": "General",
+          "model": "openai",
+          "responseTime": 3520,
+          "quality": 0.6,
+          "relevance": 0.05263157894736842,
+          "improvements": [
+            "Persona spécialisé pourrait améliorer la qualité"
+          ],
+          "couldBeBetter": true
+        },
+        "userInfo": {
+          "context": [
+            "PRISM doit utiliser le consensus pour toutes les décisions critiques et stratégiques OK",
+            "Les algorithmes sont brevetés et ne doivent pas être modifiés sans autorisation OK"
+          ],
+          "prenom": "prêt"
+        }
+      },
+      "timestamp": "2025-12-09T18:05:10.184Z"
+    },
+    {
+      "id": "interaction_1765303489064_ms3c61mca",
+      "input": "salut prisme est-ce que tu m'entends",
+      "response": "🎉 💡 Bonjour Prêt, je vous entends **parfait**ement. Comment puis-je vous assister aujourd'hui ?",
+      "metadata": {
+        "consensusUsed": false,
+        "model": "openai",
+        "persona": "General",
+        "format": "general",
+        "reflection": {
+          "timestamp": "2025-12-09T18:04:49.064Z",
+          "input": "salut prisme est-ce que tu m'entends",
+          "taskType": "general",
+          "responseContent": "🎉 💡 Bonjour Prêt, je vous entends **parfait**ement. Comment puis-je vous assister aujourd'hui ?",
+          "persona": "General",
+          "model": "openai",
+          "responseTime": 3076,
+          "quality": 0.5,
+          "relevance": 0,
+          "improvements": [
+            "Réponse trop courte, pourrait être plus détaillée",
+            "Persona spécialisé pourrait améliorer la qualité"
+          ],
+          "couldBeBetter": true
+        },
+        "userInfo": {
+          "context": [
+            "PRISM doit utiliser le consensus pour toutes les décisions critiques et stratégiques OK",
+            "Les algorithmes sont brevetés et ne doivent pas être modifiés sans autorisation OK"
+          ],
+          "prenom": "prêt"
+        }
+      },
+      "timestamp": "2025-12-09T18:04:49.064Z"
+    },
     {
       "id": "interaction_1765302820472_nlca4cood",
       "input": "Bonjour, comment vas-tu ?",
@@ -56,5 +193,5 @@
       "timestamp": "2025-12-09T17:52:46.721Z"
     }
   ],
-  "lastUpdated": "2025-12-09T17:53:40.475Z"
+  "lastUpdated": "2025-12-09T18:07:51.354Z"
 }

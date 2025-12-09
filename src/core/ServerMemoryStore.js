@@ -256,7 +256,23 @@ export class ServerMemoryStore {
    * Vérifie si un mot est un mot commun (à ignorer)
    */
   _isCommonWord(word) {
-    const commonWords = ['le', 'la', 'les', 'un', 'une', 'des', 'de', 'du', 'mon', 'ma', 'mes', 'ton', 'ta', 'tes', 'notre', 'votre', 'leur', 'je', 'tu', 'il', 'elle', 'nous', 'vous', 'ils', 'elles', 'est', 'sont', 'être', 'avoir', 'faire', 'dire', 'aller', 'voir', 'savoir', 'pouvoir', 'vouloir', 'devoir', 'falloir'];
+    const commonWords = [
+      // Articles et déterminants
+      'le', 'la', 'les', 'un', 'une', 'des', 'de', 'du', 'au', 'aux',
+      // Possessifs
+      'mon', 'ma', 'mes', 'ton', 'ta', 'tes', 'son', 'sa', 'ses', 'notre', 'votre', 'leur',
+      // Pronoms
+      'je', 'tu', 'il', 'elle', 'on', 'nous', 'vous', 'ils', 'elles', 'ce', 'cela', 'ça',
+      // Verbes courants
+      'est', 'sont', 'être', 'avoir', 'faire', 'dire', 'aller', 'voir', 'savoir', 'pouvoir', 'vouloir', 'devoir', 'falloir',
+      // Adjectifs/états courants qui peuvent suivre "je suis"
+      'prêt', 'prête', 'content', 'contente', 'heureux', 'heureuse', 'désolé', 'désolée',
+      'fatigué', 'fatiguée', 'occupé', 'occupée', 'disponible', 'libre', 'bien', 'mal',
+      'là', 'ici', 'parti', 'partie', 'arrivé', 'arrivée', 'rentré', 'rentrée',
+      'certain', 'certaine', 'sûr', 'sûre', 'curieux', 'curieuse', 'intéressé', 'intéressée',
+      // Autres mots courants
+      'oui', 'non', 'peut', 'très', 'aussi', 'plus', 'moins', 'tout', 'rien', 'quelque'
+    ];
     return commonWords.includes(word.toLowerCase());
   }
 
