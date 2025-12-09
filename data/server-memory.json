@@ -1,26 +1,16 @@
 {
   "conversations": [],
   "userInfo": {
-    "context": [
-      "prism doit utiliser le consensus pour toutes les décisions critiques et stratégiques ok",
-      "les algorithmes sont brevetés et ne doivent pas être modifiés sans autorisation ok"
-    ]
+    "prenom": "Amine"
   },
   "interactions": [
     {
-      "id": "interaction_1765299166938_jwp6h5p3o",
-      "input": "Essentiel: Les algorithmes sont brevetés et ne doivent pas être modifiés sans autorisation",
-      "response": "OK",
+      "id": "interaction_1765299377247_zih5blhs9",
+      "input": "Quel est mon prénom ?",
+      "response": "Votre prénom est Amine",
       "metadata": {},
-      "timestamp": "2025-12-09T16:52:46.938Z"
-    },
-    {
-      "id": "interaction_1765299166938_7u32qemq8",
-      "input": "Important: PRISM doit utiliser le consensus pour toutes les décisions critiques et stratégiques",
-      "response": "OK",
-      "metadata": {},
-      "timestamp": "2025-12-09T16:52:46.938Z"
+      "timestamp": "2025-12-09T16:56:17.247Z"
     }
   ],
-  "lastUpdated": "2025-12-09T16:52:46.938Z"
+  "lastUpdated": "2025-12-09T16:56:17.247Z"
 }

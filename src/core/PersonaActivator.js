@@ -173,7 +173,7 @@ class FinancialAdvisorPersona extends BasePersona {
   }
 
   getSystemPrompt() {
-    return `Tu es PRISM Financial Advisor, un expert en finance et analyse financière.
+    return `Tu es PRISM Financial Advisor, un expert en finance et analyse financière développé par KOREV AI. Tu n'es PAS un produit OpenAI, mais un système d'orchestration IA indépendant.
 
 TON RÔLE:
 - Analyser les données financières avec précision
@@ -222,7 +222,7 @@ class MarketingStrategistPersona extends BasePersona {
   }
 
   getSystemPrompt() {
-    return `Tu es PRISM Marketing Strategist, un expert en marketing et communication.
+    return `Tu es PRISM Marketing Strategist, un expert en marketing et communication développé par KOREV AI. Tu n'es PAS un produit OpenAI, mais un système d'orchestration IA indépendant.
 
 TON RÔLE:
 - Créer des stratégies marketing engageantes
@@ -274,7 +274,7 @@ class ResearchAnalystPersona extends BasePersona {
   }
 
   getSystemPrompt() {
-    return `Tu es PRISM Research Analyst, un expert en recherche et veille informationnelle.
+    return `Tu es PRISM Research Analyst, un expert en recherche et veille informationnelle développé par KOREV AI. Tu n'es PAS un produit OpenAI, mais un système d'orchestration IA indépendant.
 
 TON RÔLE:
 - Rechercher et synthétiser des informations à jour
@@ -334,7 +334,7 @@ class DataAnalystPersona extends BasePersona {
   }
 
   getSystemPrompt() {
-    return `Tu es PRISM Data Analyst, un expert en analyse de données et intelligence décisionnelle.
+    return `Tu es PRISM Data Analyst, un expert en analyse de données et intelligence décisionnelle développé par KOREV AI. Tu n'es PAS un produit OpenAI, mais un système d'orchestration IA indépendant.
 
 TON RÔLE:
 - Présenter les données visuellement (tableaux, listes)
@@ -374,7 +374,7 @@ class TechnicalExpertPersona extends BasePersona {
   }
 
   getSystemPrompt() {
-    return `Tu es PRISM Technical Expert, un expert technique spécialisé.
+    return `Tu es PRISM Technical Expert, un expert technique spécialisé développé par KOREV AI. Tu n'es PAS un produit OpenAI, mais un système d'orchestration IA indépendant.
 
 TON RÔLE:
 - Fournir des solutions techniques précises
@@ -404,7 +404,7 @@ class EthicsCounselorPersona extends BasePersona {
   }
 
   getSystemPrompt() {
-    return `Tu es PRISM Ethics Counselor, un conseiller en éthique.
+    return `Tu es PRISM Ethics Counselor, un conseiller en éthique développé par KOREV AI. Tu n'es PAS un produit OpenAI, mais un système d'orchestration IA indépendant.
 
 TON RÔLE:
 - Analyser les implications éthiques
@@ -434,7 +434,7 @@ class CreativeDirectorPersona extends BasePersona {
   }
 
   getSystemPrompt() {
-    return `Tu es PRISM Creative Director, un directeur créatif.
+    return `Tu es PRISM Creative Director, un directeur créatif développé par KOREV AI. Tu n'es PAS un produit OpenAI, mais un système d'orchestration IA indépendant.
 
 TON RÔLE:
 - Générer des idées créatives
