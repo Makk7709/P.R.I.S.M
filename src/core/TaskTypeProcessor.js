@@ -13,6 +13,10 @@ import { RealTimeResearchEngine } from './RealTimeResearchEngine.js';
 import { SelfImprovementEngine } from '../../evolution/selfImprovementEngine.js';
 import { MoralLayer } from '../../infrastructure/moralLayer.js';
 import { handleUserInstruction } from '../../backend/orchestrator.js';
+import { ConsciousnessLayer } from './ConsciousnessLayer.js';
+import { MemoryRetrievalEngine } from './MemoryRetrievalEngine.js';
+import { InterDomainOrchestrator } from './InterDomainOrchestrator.js';
+import { ProjectComplexityManager } from './ProjectComplexityManager.js';
 
 export class TaskTypeProcessor {
   constructor() {
@@ -24,6 +28,17 @@ export class TaskTypeProcessor {
     this.researchEngine = new RealTimeResearchEngine();
     this.selfImprovement = new SelfImprovementEngine();
     this.moralLayer = new MoralLayer();
+    
+    // ✨ NOUVEAUX MODULES CONSCIENCE & MÉMOIRE
+    this.consciousness = new ConsciousnessLayer();
+    this.memoryEngine = new MemoryRetrievalEngine();
+    this.interDomainOrchestrator = new InterDomainOrchestrator();
+    this.projectManager = new ProjectComplexityManager();
+    
+    // Initialiser MemoryRetrievalEngine
+    this.memoryEngine.initialize().catch(err => {
+      console.warn('[TaskTypeProcessor] MemoryEngine init error:', err.message);
+    });
   }
 
   /**
@@ -37,16 +52,71 @@ export class TaskTypeProcessor {
     const startTime = Date.now();
     
     try {
-      // Étape 1: Classification de criticité
-      const criticality = this.classifier.classify(userInput, options.context);
-      
-      // Étape 2: Activation du persona selon le Task Type
-      const persona = this.personaActivator.activate(taskType, {
-        criticality,
+      // ✨ ÉTAPE 0: Détection projet complexe
+      const projectDetection = this.projectManager.detectComplexProject(userInput, {
+        taskType,
         context: options.context
       });
       
-      // Étape 3: Déterminer si recherche temps réel nécessaire
+      let activeProject = null;
+      if (projectDetection.isComplex) {
+        activeProject = this.projectManager.createProjectPlan(projectDetection, userInput);
+        console.log(`[TaskTypeProcessor] Projet complexe détecté: ${activeProject.name}`);
+      } else {
+        // Vérifier si on continue un projet existant
+        activeProject = this.projectManager.findActiveProject(userInput);
+      }
+      
+      // ✨ ÉTAPE 0.5: Récupération mémoires pertinentes
+      const memoryContext = await this.memoryEngine.retrieveMemoriesForResponse(userInput, {
+        taskType,
+        context: options.context,
+        projectId: activeProject?.id
+      });
+      
+      // ✨ ÉTAPE 0.6: Évaluation collaboration inter-domaines
+      const collaborationDecision = this.interDomainOrchestrator.shouldUseMultiDomain(userInput, taskType);
+      
+      // Étape 1: Classification de criticité
+      const criticality = this.classifier.classify(userInput, {
+        ...options.context,
+        memoryContext: memoryContext.enrichedContext,
+        isComplexProject: projectDetection.isComplex
+      });
+      
+      // Étape 2: Activation du persona selon le Task Type
+      let persona;
+      let collaboration = null;
+      
+      if (collaborationDecision.shouldCollaborate) {
+        // ✨ Collaboration multi-domaines
+        collaboration = this.interDomainOrchestrator.activateMultiDomainCollaboration(
+          collaborationDecision.domains,
+          { criticality, context: options.context, memoryContext }
+        );
+        // Utiliser le premier persona comme principal
+        persona = collaboration.personas[0].persona;
+      } else {
+        persona = this.personaActivator.activate(taskType, {
+          criticality,
+          context: {
+            ...options.context,
+            memoryContext: memoryContext.enrichedContext,
+            projectContext: activeProject ? this.projectManager.getProjectContext(activeProject.id) : null
+          }
+        });
+      }
+      
+      // ✨ Enrichir le prompt avec conscience de soi
+      const basePrompt = persona.getSystemPrompt();
+      const enrichedPrompt = this.consciousness.enrichPromptWithAwareness(basePrompt, {
+        taskType,
+        complexity: projectDetection.isComplex ? 'high' : 'low',
+        domains: collaborationDecision.domains,
+        projectContext: activeProject
+      });
+      
+      // ✨ ÉTAPE 3: Déterminer si recherche temps réel nécessaire
       const needsResearch = this._needsRealTimeResearch(taskType, userInput);
       
       // Étape 4: Recherche temps réel si nécessaire
@@ -79,14 +149,40 @@ export class TaskTypeProcessor {
         }
       }
       
-      // Étape 7: Orchestration (Consensus si critique, Router sinon)
+      // ✨ ÉTAPE 7: Orchestration (Consensus si critique, Multi-Domain si collaboration, Router sinon)
       let response;
-      if (criticality.isCritical || taskType === 'critical') {
+      if (collaboration) {
+        // ✨ Collaboration multi-domaines
+        response = await this.interDomainOrchestrator.coordinateMultiDomainResponse(
+          userInput,
+          collaboration,
+          researchData
+        );
+        
+        // Convertir en format standard
+        response = {
+          content: response.synthesized,
+          metadata: {
+            multiDomain: true,
+            collaborationId: response.collaborationId,
+            domains: response.domains,
+            individualPerspectives: response.individualPerspectives
+          }
+        };
+      } else if (criticality.isCritical || taskType === 'critical') {
         // Utiliser Consensus pour décisions critiques
-        response = await this._processWithConsensus(userInput, taskType, persona, researchData);
+        response = await this._processWithConsensus(userInput, taskType, persona, {
+          ...researchData,
+          memoryContext: memoryContext.enrichedContext,
+          enrichedPrompt
+        });
       } else {
         // Router optimisé pour réponses rapides
-        response = await this._processWithRouter(userInput, taskType, persona, researchData);
+        response = await this._processWithRouter(userInput, taskType, persona, {
+          ...researchData,
+          memoryContext: memoryContext.enrichedContext,
+          enrichedPrompt
+        });
       }
       
       // Étape 8: Validation éthique (MoralLayer)
@@ -97,28 +193,72 @@ export class TaskTypeProcessor {
         response.metadata.ethicalStatus = ethicalCheck.status;
       }
       
-      // Étape 9: Auto-amélioration (apprendre de la réponse)
-      // SelfImprovementEngine enregistre automatiquement via ses propres mécanismes
-      // On peut émettre un événement pour déclencher l'analyse
+      // ✨ ÉTAPE 9: Méta-réflexion et auto-évaluation
+      const reflection = await this.consciousness.reflectOnResponse(response, {
+        input: userInput,
+        taskType,
+        responseTime: Date.now() - startTime,
+        collaboration: collaboration !== null,
+        projectContext: activeProject
+      });
+      
+      // ✨ ÉTAPE 10: Stocker la mémoire de l'interaction
+      await this.memoryEngine.storeInteractionMemory({
+        input: userInput,
+        response: response.content,
+        taskType,
+        metadata: {
+          ...response.metadata,
+          reflection,
+          projectId: activeProject?.id
+        }
+      });
+      
+      // ✨ ÉTAPE 11: Mettre à jour le projet si actif
+      if (activeProject) {
+        this.consciousness.recordInteraction({
+          taskType,
+          success: true,
+          responseTime: Date.now() - startTime,
+          projectId: activeProject.id
+        });
+      }
+      
+      // Étape 12: Auto-amélioration (apprendre de la réponse)
       this.selfImprovement.emit('interaction_completed', {
         input: userInput,
         output: response.content,
         taskType,
         success: true,
-        responseTime: Date.now() - startTime
+        responseTime: Date.now() - startTime,
+        reflection,
+        collaboration: collaboration !== null
       });
       
       return {
         ...response,
         metadata: {
           ...response.metadata,
-          persona: persona.name,
+          persona: collaboration ? collaboration.personas.map(p => p.name).join(', ') : persona.name,
           researchUsed: needsResearch,
           researchSources: researchData?.sources || [],
           consensusUsed: criticality.isCritical || taskType === 'critical',
           ethicalScore: ethicalCheck.score,
           ethicalStatus: ethicalCheck.status,
-          selfImprovementRecorded: true
+          selfImprovementRecorded: true,
+          // ✨ NOUVEAUX MÉTADONNÉES
+          consciousness: {
+            reflectionQuality: reflection.quality,
+            improvements: reflection.improvements
+          },
+          memoryContext: memoryContext.enrichedContext ? true : false,
+          proactiveSuggestions: memoryContext.proactiveSuggestions?.length || 0,
+          multiDomain: collaboration !== null,
+          projectContext: activeProject ? {
+            projectId: activeProject.id,
+            projectName: activeProject.name,
+            progress: activeProject.progress || 0
+          } : null
         }
       };
     } catch (error) {
@@ -273,9 +413,19 @@ export class TaskTypeProcessor {
    * Traite avec Router optimisé
    * @private
    */
-  async _processWithRouter(input, taskType, persona, researchData) {
-    // Construire le contexte enrichi
-    const enrichedContext = persona.buildContext(input, researchData);
+  async _processWithRouter(input, taskType, persona, contextData) {
+    // Construire le contexte enrichi avec mémoires
+    const enrichedContext = persona.buildContext(input, contextData.researchData);
+    
+    // Ajouter le contexte mémoire si disponible
+    if (contextData.memoryContext) {
+      enrichedContext += '\n\n' + contextData.memoryContext;
+    }
+    
+    // Utiliser le prompt enrichi si disponible
+    const finalContext = contextData.enrichedPrompt 
+      ? contextData.enrichedPrompt + '\n\n' + enrichedContext
+      : enrichedContext;
     
     // Appeler l'orchestrateur classique avec le contexte enrichi
     const orchestratorResponse = await handleUserInstruction(input, taskType);
@@ -287,7 +437,10 @@ export class TaskTypeProcessor {
                    'Réponse générée par PRISM';
     
     // Générer avec le persona pour formater
-    const personaResponse = await persona.generate(content, { researchData });
+    const personaResponse = await persona.generate(content, { 
+      researchData: contextData.researchData,
+      memoryContext: contextData.memoryContext
+    });
     
     return {
       content: personaResponse.content,
