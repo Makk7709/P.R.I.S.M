@@ -120,17 +120,20 @@ export class TaskTypeProcessor {
       
       // ✨ Enrichir le prompt avec conscience de soi + informations utilisateur
       const basePrompt = persona.getSystemPrompt();
+      const consciousnessEnriched = this.consciousness.enrichPromptWithAwareness(basePrompt, {
+        taskType,
+        complexity: projectDetection.isComplex ? 'high' : 'low',
+        domains: collaborationDecision.domains,
+        projectContext: activeProject
+      });
+      
+      // Ajouter contexte utilisateur si disponible
       let userContextInfo = '';
       if (userInfo.prenom) {
         userContextInfo = `\n\n## 👤 CONTEXTE UTILISATEUR\nL'utilisateur s'appelle ${userInfo.prenom}. Utilise son prénom dans tes réponses quand c'est approprié et naturel.`;
       }
       
-      const enrichedPrompt = this.consciousness.enrichPromptWithAwareness(basePrompt, {
-        taskType,
-        complexity: projectDetection.isComplex ? 'high' : 'low',
-        domains: collaborationDecision.domains,
-        projectContext: activeProject
-      }) + userContextInfo;
+      const enrichedPrompt = consciousnessEnriched + userContextInfo;
       
       // ✨ ÉTAPE 3: Déterminer si recherche temps réel nécessaire
       const needsResearch = this._needsRealTimeResearch(taskType, userInput);
