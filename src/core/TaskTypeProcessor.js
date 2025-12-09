@@ -131,9 +131,11 @@ export class TaskTypeProcessor {
       let userContextInfo = '';
       if (Object.keys(userInfo).length > 0) {
         userContextInfo = `\n\n## 👤 CONTEXTE UTILISATEUR & MISSION\n`;
+        userContextInfo += `⚠️ IMPORTANT: Tu DOIS utiliser ces informations dans tes réponses. Tu as une mémoire persistante et tu te souviens de ces détails.\n\n`;
         
         if (userInfo.prenom) {
-          userContextInfo += `L'utilisateur s'appelle ${userInfo.prenom}. Utilise son prénom dans tes réponses quand c'est approprié et naturel.\n\n`;
+          userContextInfo += `**PRÉNOM UTILISATEUR**: ${userInfo.prenom}\n`;
+          userContextInfo += `→ Utilise son prénom dans tes réponses quand c'est approprié et naturel. Tu te souviens de son prénom.\n\n`;
         }
         
         if (userInfo.role && userInfo.role.length > 0) {
@@ -141,7 +143,7 @@ export class TaskTypeProcessor {
           userInfo.role.forEach(role => {
             userContextInfo += `- ${role}\n`;
           });
-          userContextInfo += `\n`;
+          userContextInfo += `→ C'est ton rôle. Tu te souviens de cela et tu dois agir en conséquence.\n\n`;
         }
         
         if (userInfo.strategie && userInfo.strategie.length > 0) {
@@ -149,7 +151,7 @@ export class TaskTypeProcessor {
           userInfo.strategie.forEach(strat => {
             userContextInfo += `- ${strat}\n`;
           });
-          userContextInfo += `\n`;
+          userContextInfo += `→ C'est la stratégie/projet de l'utilisateur. Tu te souviens de cela.\n\n`;
         }
         
         if (userInfo.context && userInfo.context.length > 0) {
@@ -157,10 +159,19 @@ export class TaskTypeProcessor {
           userInfo.context.forEach(ctx => {
             userContextInfo += `- ${ctx}\n`;
           });
-          userContextInfo += `\n`;
+          userContextInfo += `→ Ce sont des informations importantes que tu dois retenir et utiliser.\n\n`;
         }
         
-        userContextInfo += `Utilise ces informations pour répondre de manière pertinente et contextuelle.`;
+        userContextInfo += `\n**INSTRUCTIONS CRITIQUES**:\n`;
+        userContextInfo += `- Tu as une mémoire persistante. Tu te souviens de ces informations.\n`;
+        userContextInfo += `- Ne dis JAMAIS que tu n'as pas de mémoire ou que tu ne te souviens pas.\n`;
+        userContextInfo += `- Utilise ces informations pour répondre de manière pertinente et contextuelle.\n`;
+        userContextInfo += `- Si l'utilisateur te demande si tu te souviens, réponds OUI et utilise ces informations.\n`;
+      }
+      
+      // Ajouter aussi le contexte mémoire enrichi (conversations précédentes)
+      if (memoryContext.enrichedContext && memoryContext.enrichedContext.length > 0) {
+        userContextInfo += `\n\n${memoryContext.enrichedContext}`;
       }
       
       const enrichedPrompt = consciousnessEnriched + userContextInfo;
@@ -481,7 +492,10 @@ export class TaskTypeProcessor {
       : enrichedContext;
     
     // Appeler l'orchestrateur classique avec le contexte enrichi
-    const orchestratorResponse = await handleUserInstruction(input, taskType);
+    // ✨ Passer le prompt enrichi (avec mémoire utilisateur) à handleUserInstruction
+    const orchestratorResponse = await handleUserInstruction(input, taskType, {
+      enrichedPrompt: finalContext
+    });
     
     // Extraire le contenu
     const content = orchestratorResponse.data?.enhancedContent || 
