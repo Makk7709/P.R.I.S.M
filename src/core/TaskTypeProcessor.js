@@ -17,6 +17,7 @@ import { ConsciousnessLayer } from './ConsciousnessLayer.js';
 import { MemoryRetrievalEngine } from './MemoryRetrievalEngine.js';
 import { InterDomainOrchestrator } from './InterDomainOrchestrator.js';
 import { ProjectComplexityManager } from './ProjectComplexityManager.js';
+import { serverMemoryStore } from './ServerMemoryStore.js';
 
 export class TaskTypeProcessor {
   constructor() {
@@ -67,12 +68,22 @@ export class TaskTypeProcessor {
         activeProject = this.projectManager.findActiveProject(userInput);
       }
       
-      // ✨ ÉTAPE 0.5: Récupération mémoires pertinentes
+      // ✨ ÉTAPE 0.5: Récupération mémoires pertinentes (avec mémoire serveur persistante)
       const memoryContext = await this.memoryEngine.retrieveMemoriesForResponse(userInput, {
         taskType,
         context: options.context,
         projectId: activeProject?.id
       });
+
+      // ✨ Utiliser les informations utilisateur dans le contexte
+      const userInfo = memoryContext.userInfo || {};
+      if (userInfo.prenom) {
+        // Enrichir le contexte avec le prénom
+        options.context = {
+          ...options.context,
+          userPrenom: userInfo.prenom
+        };
+      }
       
       // ✨ ÉTAPE 0.6: Évaluation collaboration inter-domaines
       const collaborationDecision = this.interDomainOrchestrator.shouldUseMultiDomain(userInput, taskType);
@@ -202,7 +213,7 @@ export class TaskTypeProcessor {
         projectContext: activeProject
       });
       
-      // ✨ ÉTAPE 10: Stocker la mémoire de l'interaction
+      // ✨ ÉTAPE 10: Stocker la mémoire de l'interaction (serveur persistant)
       await this.memoryEngine.storeInteractionMemory({
         input: userInput,
         response: response.content,
@@ -210,9 +221,13 @@ export class TaskTypeProcessor {
         metadata: {
           ...response.metadata,
           reflection,
-          projectId: activeProject?.id
+          projectId: activeProject?.id,
+          userInfo // ✨ Stocker aussi les infos utilisateur
         }
       });
+      
+      // ✨ Extraire et stocker informations personnelles (prénom, etc.)
+      // Déjà fait dans ServerMemoryStore.storeInteraction()
       
       // ✨ ÉTAPE 11: Mettre à jour le projet si actif
       if (activeProject) {

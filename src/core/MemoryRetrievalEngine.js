@@ -5,6 +5,7 @@
 
 import { ASIMemorySystem } from '../../asi/asiMemorySystem.js';
 import { prismMemory } from '../../prismMemory.js';
+import { serverMemoryStore } from './ServerMemoryStore.js';
 
 export class MemoryRetrievalEngine {
   constructor() {
@@ -147,8 +148,23 @@ export class MemoryRetrievalEngine {
       return cached.data;
     }
 
+    // ✨ NOUVEAU: Récupérer contexte mémoire serveur (persistant)
+    const serverMemoryContext = serverMemoryStore.buildMemoryContext(query);
+    const userInfo = serverMemoryStore.getUserInfo();
+
     // Rechercher conversations liées
     const relatedConversations = await this.findRelatedConversations(query, { limit: 5 });
+
+    // ✨ NOUVEAU: Ajouter conversations serveur
+    const serverConversations = serverMemoryStore.searchConversations(query, 3);
+    relatedConversations.push(...serverConversations.map(conv => ({
+      id: conv.id,
+      content: conv.input,
+      timestamp: conv.timestamp,
+      similarityScore: conv.relevance || 0.5,
+      context: {},
+      source: 'server'
+    })));
 
     // Rechercher cross-domain si plusieurs domaines identifiés
     const domains = this._identifyDomainsFromQuery(query, context);
@@ -159,12 +175,14 @@ export class MemoryRetrievalEngine {
     // Suggérer mémoires pertinentes
     const proactiveSuggestions = await this.suggestRelevantMemories(query, context);
 
-    // Construire le contexte enrichi
+    // Construire le contexte enrichi avec mémoire serveur
     const enrichedContext = this._buildEnrichedContext(
       query,
       relatedConversations,
       crossDomainResults,
-      context
+      context,
+      serverMemoryContext,
+      userInfo
     );
 
     const result = {
@@ -172,6 +190,7 @@ export class MemoryRetrievalEngine {
       enrichedContext,
       proactiveSuggestions: proactiveSuggestions.map(s => s.memory),
       domains,
+      userInfo, // ✨ NOUVEAU: Informations utilisateur
       timestamp: new Date().toISOString()
     };
 
@@ -198,9 +217,20 @@ export class MemoryRetrievalEngine {
       type: this._classifyMemoryType(interaction)
     };
 
-    // Stocker dans PrismMemory (local)
-    if (prismMemory && prismMemory.appendMemoryEntry) {
-      prismMemory.appendMemoryEntry(memoryEntry);
+    // ✨ NOUVEAU: Stocker dans mémoire serveur (persistante)
+    serverMemoryStore.storeInteraction(
+      interaction.input,
+      interaction.response,
+      interaction.metadata
+    );
+
+    // Stocker dans PrismMemory (local - côté client si disponible)
+    if (typeof window !== 'undefined' && prismMemory && prismMemory.appendMemoryEntry) {
+      try {
+        prismMemory.appendMemoryEntry(memoryEntry);
+      } catch (error) {
+        // Ignorer si localStorage non disponible (côté serveur)
+      }
     }
 
     // Stocker dans ASI Memory si disponible
@@ -314,8 +344,15 @@ export class MemoryRetrievalEngine {
            `liée à "${query.substring(0, 50)}" dans le contexte ${taskType}`;
   }
 
-  _buildEnrichedContext(query, relatedConversations, crossDomainResults, context) {
-    let enriched = `## 📚 CONTEXTE DES CONVERSATIONS PRÉCÉDENTES\n\n`;
+  _buildEnrichedContext(query, relatedConversations, crossDomainResults, context, serverMemoryContext = '', userInfo = {}) {
+    let enriched = '';
+
+    // ✨ NOUVEAU: Ajouter contexte mémoire serveur en premier (informations utilisateur)
+    if (serverMemoryContext) {
+      enriched += serverMemoryContext + '\n\n';
+    }
+
+    enriched += `## 📚 CONTEXTE DES CONVERSATIONS PRÉCÉDENTES\n\n`;
 
     if (relatedConversations.length > 0) {
       enriched += `J'ai trouvé ${relatedConversations.length} conversation(s) précédente(s) liée(s) à votre question.\n\n`;
@@ -335,7 +372,7 @@ export class MemoryRetrievalEngine {
       });
     }
 
-    if (relatedConversations.length === 0 && crossDomainResults.length === 0) {
+    if (relatedConversations.length === 0 && crossDomainResults.length === 0 && !serverMemoryContext) {
       enriched += `Aucune conversation précédente directement liée trouvée. `;
       enriched += `Je vais utiliser mes connaissances générales pour répondre.`;
     }
