@@ -2374,7 +2374,6 @@
                 
                 try {
                     console.log('[Chat] Sending message:', message.substring(0, 50) + '...');
-                    this.showProcessingIndicator();
                     
                     // Ajouter le message utilisateur à l'interface
                     this.addUserMessage(message);
@@ -2388,10 +2387,15 @@
                     // ✨ NOUVEAU: Détecter si c'est une demande d'image
                     if (this.isImageRequest(message)) {
                         console.log('[Chat] 🖼️ Image request detected, generating image...');
+                        // ✅ Timeout adaptatif pour les images (90s)
+                        this.showProcessingIndicator('image', message);
                         await this.handleImageGeneration(message, finalTaskType);
                         this.hideProcessingIndicator();
                         return;
                     }
+                    
+                    // ✅ Timeout adaptatif selon le type de message
+                    this.showProcessingIndicator('general', message);
                     
                     // Obtenir la voix sélectionnée
                     const selectedVoice = this.getSelectedVoice();
@@ -2590,7 +2594,8 @@
             
             // ✨ NOUVEAU: Régénérer une image
             async regenerateImage(prompt, taskType) {
-                this.showProcessingIndicator();
+                // ✅ Timeout adaptatif pour les images (90s)
+                this.showProcessingIndicator('image', prompt);
                 await this.handleImageGeneration(prompt, taskType);
                 this.hideProcessingIndicator();
             }
@@ -3244,19 +3249,38 @@
                 });
             }
 
-            showProcessingIndicator() {
+            // ✅ Configuration des timeouts adaptatifs par type d'opération
+            getAdaptiveTimeout(operationType = 'general', message = '') {
+                const TIMEOUTS = {
+                    general: 30000,        // 30s pour chat normal
+                    image: 90000,          // 90s pour génération d'images
+                    consensus: 120000,     // 120s pour consensus multi-modèles
+                    voice: 45000,          // 45s pour synthèse vocale
+                    api_long: 60000        // 60s pour requêtes API longues
+                };
+                
+                const baseTimeout = TIMEOUTS[operationType] || TIMEOUTS.general;
+                // Ajouter 10ms par caractère pour les messages longs (plafonné à 5 minutes)
+                const adaptiveBonus = Math.min(message.length * 10, 300000 - baseTimeout);
+                
+                return baseTimeout + adaptiveBonus;
+            }
+
+            showProcessingIndicator(operationType = 'general', message = '') {
                 if (this.processingIndicator) {
                     this.processingIndicator.style.display = 'flex';
                     this.processingIndicator.style.opacity = '1';
                     this.processingIndicator.classList.add('active');
-                    console.log('[UI] Processing indicator shown');
                     
-                    // ✅ SÉCURITÉ: Timeout automatique après 30 secondes
+                    // ✅ TIMEOUT ADAPTATIF selon le type d'opération
+                    const adaptiveTimeout = this.getAdaptiveTimeout(operationType, message);
+                    console.log(`[UI] Processing indicator shown (timeout: ${adaptiveTimeout/1000}s for ${operationType})`);
+                    
                     this.processingTimeout = setTimeout(() => {
-                        console.warn('[UI] Processing indicator timeout - auto-hiding');
+                        console.warn(`[UI] Processing timeout (${operationType}) - auto-hiding after ${adaptiveTimeout/1000}s`);
                         this.hideProcessingIndicator();
                         this.addSystemMessage('⚠️ Délai de traitement dépassé - Veuillez réessayer');
-                    }, 30000);
+                    }, adaptiveTimeout);
                 }
             }
 
