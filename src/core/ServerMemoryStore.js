@@ -124,23 +124,51 @@ export class ServerMemoryStore {
       }
     }
 
+    // ✨ 1.5. Détecter prénom depuis la réponse si présent
+    if (response && response.length > 0) {
+      const responsePrenomPatterns = [
+        /(?:votre|ton) prénom est ([A-Za-zÀ-ÿ]+)/i,
+        /(?:vous vous appelez|tu t'appelles) ([A-Za-zÀ-ÿ]+)/i,
+        /(?:prénom|appelle)[\s:]+([A-Za-zÀ-ÿ]+)/i
+      ];
+      
+      for (const pattern of responsePrenomPatterns) {
+        const match = response.match(pattern);
+        if (match && match[1]) {
+          const prenom = match[1].trim();
+          if (prenom.length > 1 && prenom.length < 30 && !this._isCommonWord(prenom)) {
+            this.memory.userInfo.prenom = prenom;
+            console.log(`[ServerMemoryStore] Prénom extrait de réponse: ${prenom}`);
+            break;
+          }
+        }
+      }
+    }
+
     // ✨ 2. Détecter rôle/mission de PRISM
     const rolePatterns = [
       /(?:ton|votre) rôle est (?:de |d'|de )?([^.!?]+)/i,
+      /(?:ton|votre) rôle est d'([^.!?]+)/i, // Cas spécifique "d'X"
       /(?:tu es|vous êtes) (?:un|une|mon|ma) ([^.!?]+)/i,
-      /(?:mission|objectif|stratégie)[:\s]+([^.!?]+)/i,
+      /(?:mission|objectif|stratégie)[:\s]+([^.!?]+)/i, // "mission: X", "objectif: X", "stratégie: X" (peut être rôle OU stratégie)
       /(?:explique|définis|définir) (?:ton|votre) (?:rôle|mission|stratégie)[:\s]+([^.!?]+)/i
     ];
-
+    
+    // Essayer chaque pattern (sans break pour permettre plusieurs rôles)
+    // Utiliser input+response originaux (pas fullText en minuscules) pour préserver la casse
+    const originalText = input + ' ' + response;
     for (const pattern of rolePatterns) {
-      const match = fullText.match(pattern);
+      const match = originalText.match(pattern);
       if (match && match[1]) {
         const role = match[1].trim();
         if (role.length > 10 && role.length < 500) {
           if (!this.memory.userInfo.role) {
             this.memory.userInfo.role = [];
           }
-          if (!this.memory.userInfo.role.includes(role)) {
+          // Vérifier si le rôle n'est pas déjà présent (comparaison insensible à la casse)
+          const roleLower = role.toLowerCase();
+          const exists = this.memory.userInfo.role.some(r => r.toLowerCase() === roleLower);
+          if (!exists) {
             this.memory.userInfo.role.push(role);
             console.log(`[ServerMemoryStore] Rôle détecté: ${role.substring(0, 50)}...`);
           }
@@ -148,22 +176,30 @@ export class ServerMemoryStore {
       }
     }
 
+
     // ✨ 3. Détecter stratégie/projet
     const strategyPatterns = [
-      /(?:notre|ma|mon) (?:stratégie|projet|vision|objectif|plan)[:\s]+([^.!?]+)/i,
-      /(?:stratégie|projet|vision)[:\s]+([^.!?]+)/i,
-      /(?:on|nous) (?:veut|souhaite|cherche|développe|crée) (?:de |d'|un|une) ([^.!?]+)/i
+      /(?:notre|ma|mon) (?:stratégie|projet|vision|objectif|plan) (?:est (?:de |d'|)|: )([^.!?]+)/i, // "notre stratégie est X", "notre projet est de X"
+      /(?:notre|ma|mon) (?:stratégie|projet|vision|objectif|plan)[:\s]+([^.!?]+)/i, // "notre stratégie: X"
+      /(?:stratégie|projet|vision|plan)[:\s]+([^.!?]+)/i, // "stratégie: X", "projet: X" (peut être aussi dans rôle, mais on l'ajoute aussi ici)
+      /(?:on|nous) (?:veut|veulent|souhaite|souhaitons|cherche|cherchons|développe|développons|crée|créons) (?:de |d'|un|une|le|la|les )([^.!?]+)/i, // "on veut de X", "nous souhaitons créer X" (avec article)
+      /(?:on|nous) (?:veut|veulent|souhaite|souhaitons|cherche|cherchons|développe|développons|crée|créons) ([^.!?]+)/i // "on veut X", "nous souhaitons X" (sans article, doit être en dernier)
     ];
 
+    // Essayer chaque pattern (sans break pour permettre plusieurs stratégies)
+    // Utiliser input+response originaux (pas fullText en minuscules) pour préserver la casse
     for (const pattern of strategyPatterns) {
-      const match = fullText.match(pattern);
+      const match = originalText.match(pattern);
       if (match && match[1]) {
         const strategy = match[1].trim();
         if (strategy.length > 10 && strategy.length < 500) {
           if (!this.memory.userInfo.strategie) {
             this.memory.userInfo.strategie = [];
           }
-          if (!this.memory.userInfo.strategie.includes(strategy)) {
+          // Vérifier si la stratégie n'est pas déjà présente (comparaison insensible à la casse)
+          const strategyLower = strategy.toLowerCase();
+          const exists = this.memory.userInfo.strategie.some(s => s.toLowerCase() === strategyLower);
+          if (!exists) {
             this.memory.userInfo.strategie.push(strategy);
             console.log(`[ServerMemoryStore] Stratégie détectée: ${strategy.substring(0, 50)}...`);
           }
@@ -173,21 +209,26 @@ export class ServerMemoryStore {
 
     // ✨ 4. Détecter informations contextuelles importantes
     const contextPatterns = [
-      /(?:important|essentiel|crucial|clé)[:\s]+([^.!?]+)/i,
-      /(?:souviens-toi|retiens|note|mémorise)[:\s]+([^.!?]+)/i,
-      /(?:contexte|situation|projet)[:\s]+([^.!?]{20,200})/i
+      /(?:important|essentiel|crucial|clé)[:\s]+([^.!?]+)/i, // "important: X", "essentiel: X"
+      /(?:souviens-toi|retiens|note|mémorise)[:\s]+([^.!?]+)/i, // "souviens-toi: X", "retiens: X"
+      /(?:contexte|situation|projet)[:\s]+([^.!?]{10,500})/i // "contexte: X" (10-500 caractères, réduit de 20 à 10)
     ];
 
+    // Utiliser input+response originaux (pas fullText en minuscules) pour préserver la casse
     for (const pattern of contextPatterns) {
-      const matches = fullText.matchAll(new RegExp(pattern.source, 'gi'));
+      const matches = originalText.matchAll(new RegExp(pattern.source, 'gi'));
       for (const match of matches) {
         if (match && match[1]) {
           const context = match[1].trim();
-          if (context.length > 20 && context.length < 500) {
+          // Réduire le minimum de 20 à 10 caractères pour capturer plus de contextes
+          if (context.length >= 10 && context.length < 500) {
             if (!this.memory.userInfo.context) {
               this.memory.userInfo.context = [];
             }
-            if (!this.memory.userInfo.context.includes(context)) {
+            // Vérifier si le contexte n'est pas déjà présent (comparaison insensible à la casse)
+            const contextLower = context.toLowerCase();
+            const exists = this.memory.userInfo.context.some(c => c.toLowerCase() === contextLower);
+            if (!exists) {
               this.memory.userInfo.context.push(context);
               console.log(`[ServerMemoryStore] Contexte important détecté: ${context.substring(0, 50)}...`);
             }

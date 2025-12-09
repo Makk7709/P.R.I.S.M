@@ -1,26 +1,26 @@
 {
   "conversations": [],
   "userInfo": {
-    "role": [
-      "m'aider à créer des projets complexes et innovants ok",
-      "aussi de coordonner plusieurs modèles ia pour des décisions critiques ok"
+    "context": [
+      "prism doit utiliser le consensus pour toutes les décisions critiques et stratégiques ok",
+      "les algorithmes sont brevetés et ne doivent pas être modifiés sans autorisation ok"
     ]
   },
   "interactions": [
     {
-      "id": "interaction_1765298684492_11szkgcap",
-      "input": "Ton rôle est aussi de coordonner plusieurs modèles IA pour des décisions critiques",
+      "id": "interaction_1765299166938_jwp6h5p3o",
+      "input": "Essentiel: Les algorithmes sont brevetés et ne doivent pas être modifiés sans autorisation",
       "response": "OK",
       "metadata": {},
-      "timestamp": "2025-12-09T16:44:44.492Z"
+      "timestamp": "2025-12-09T16:52:46.938Z"
     },
     {
-      "id": "interaction_1765298684491_bkdc2nl9l",
-      "input": "Ton rôle est de m'aider à créer des projets complexes et innovants",
+      "id": "interaction_1765299166938_7u32qemq8",
+      "input": "Important: PRISM doit utiliser le consensus pour toutes les décisions critiques et stratégiques",
       "response": "OK",
       "metadata": {},
-      "timestamp": "2025-12-09T16:44:44.491Z"
+      "timestamp": "2025-12-09T16:52:46.938Z"
     }
   ],
-  "lastUpdated": "2025-12-09T16:44:44.492Z"
+  "lastUpdated": "2025-12-09T16:52:46.938Z"
 }
