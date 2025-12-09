@@ -11,6 +11,7 @@
 import PDFDocument from 'pdfkit';
 import fs from 'fs';
 import path from 'path';
+import { InfographicGenerator } from '../infographic/InfographicGenerator.js';
 
 // ============================================================================
 // TYPES ET INTERFACES
@@ -155,6 +156,9 @@ export class PdfExportService {
     if (config.theme?.name && THEMES[config.theme.name]) {
       this.config.theme = { ...THEMES[config.theme.name], ...config.theme };
     }
+    
+    // ✨ Générateur d'infographies
+    this.infographicGenerator = new InfographicGenerator();
   }
 
   // ============ API PUBLIQUE ============
@@ -329,6 +333,17 @@ export class PdfExportService {
         result.hasTableOfContents = true;
       }
 
+      // ✨ Page Infographie (si activé)
+      if (options.includeInfographic && options.taskType) {
+        try {
+          await this._addInfographicPage(doc, messages, options);
+          result.hasInfographic = true;
+        } catch (error) {
+          console.warn('[PdfExport] Infographic generation failed:', error.message);
+          result.infographicError = error.message;
+        }
+      }
+
       // Contenu principal
       this._addMessages(doc, messages, options);
 
@@ -488,6 +503,167 @@ export class PdfExportService {
       doc.moveDown(0.5);
       tocIndex++;
     }
+  }
+
+  /**
+   * Ajoute une page avec infographie générée
+   * @param {PDFDocument} doc
+   * @param {Array} messages
+   * @param {Object} options
+   */
+  async _addInfographicPage(doc, messages, options) {
+    const theme = this.config.theme;
+    const pageWidth = doc.page.width;
+    const margins = this.config.layout.margins;
+    
+    doc.addPage();
+    
+    // Titre de la page
+    doc.fontSize(24)
+       .fillColor(theme.primaryColor)
+       .font('Helvetica-Bold')
+       .text('📊 Synthèse Visuelle', { align: 'center' });
+    
+    doc.moveDown(0.5);
+    
+    // Sous-titre avec type de tâche
+    const taskTypeLabels = {
+      finance: 'Analyse Financière',
+      strategie: 'Vision Stratégique',
+      marketing: 'Performance Marketing',
+      recherche: 'Résultats de Recherche',
+      technique: 'Rapport Technique',
+      general: 'Synthèse Générale'
+    };
+    
+    const taskType = options.taskType || 'general';
+    const taskLabel = taskTypeLabels[taskType] || taskTypeLabels.general;
+    
+    doc.fontSize(14)
+       .fillColor(theme.accentColor)
+       .font('Helvetica')
+       .text(taskLabel, { align: 'center' });
+    
+    doc.moveDown(2);
+    
+    try {
+      // Générer l'infographie
+      const infographic = await this.infographicGenerator.generateForPdf({
+        messages,
+        taskType,
+        metadata: options.metadata
+      });
+      
+      if (infographic && infographic.buffer) {
+        // Centrer l'image
+        const imageX = (pageWidth - infographic.width) / 2;
+        
+        // Insérer l'image SVG
+        if (infographic.format === 'svg') {
+          // PDFKit ne supporte pas directement SVG, donc on affiche un placeholder élégant
+          this._drawInfographicPlaceholder(doc, taskType, messages, imageX, infographic);
+        } else {
+          doc.image(infographic.buffer, imageX, doc.y, {
+            width: infographic.width,
+            height: infographic.height
+          });
+        }
+        
+        doc.moveDown(1);
+        
+        // Légende
+        doc.fontSize(10)
+           .fillColor('#6B7280')
+           .font('Helvetica-Oblique')
+           .text('Infographie générée automatiquement par PRISM / KOREV AI', { 
+             align: 'center' 
+           });
+      }
+    } catch (error) {
+      console.warn('[PdfExport] Infographic insertion failed:', error.message);
+      
+      // Afficher un message d'erreur élégant
+      doc.fontSize(12)
+         .fillColor('#9CA3AF')
+         .text('Infographie non disponible', { align: 'center' });
+    }
+  }
+
+  /**
+   * Dessine un placeholder d'infographie élégant
+   * @private
+   */
+  _drawInfographicPlaceholder(doc, taskType, messages, x, infographic) {
+    const theme = this.config.theme;
+    const width = infographic.width;
+    const height = infographic.height;
+    const y = doc.y;
+    
+    // Fond avec dégradé simulé
+    doc.rect(x, y, width, height)
+       .fill('#F8FAFC');
+    
+    doc.rect(x, y, width, 4)
+       .fill(theme.accentColor);
+    
+    // Titre dans le placeholder
+    doc.fontSize(18)
+       .fillColor(theme.primaryColor)
+       .font('Helvetica-Bold')
+       .text('PRISM Analytics', x, y + 30, { 
+         width, 
+         align: 'center' 
+       });
+    
+    // Type de rapport
+    const taskLabels = {
+      finance: '💰 Rapport Financier',
+      strategie: '🎯 Analyse Stratégique',
+      marketing: '📈 Métriques Marketing',
+      recherche: '🔬 Données de Recherche',
+      technique: '⚙️ Rapport Technique',
+      general: '📋 Synthèse Générale'
+    };
+    
+    doc.fontSize(14)
+       .fillColor(theme.accentColor)
+       .font('Helvetica')
+       .text(taskLabels[taskType] || taskLabels.general, x, y + 60, { 
+         width, 
+         align: 'center' 
+       });
+    
+    // Extraire quelques métriques du chat
+    const extractedData = this.infographicGenerator.extractDataFromChat(messages, taskType);
+    
+    if (extractedData.metrics && extractedData.metrics.length > 0) {
+      doc.moveDown(2);
+      
+      // Afficher les métriques clés
+      doc.fontSize(12)
+         .fillColor(theme.textColor)
+         .font('Helvetica-Bold')
+         .text('Métriques Clés:', x + 20, y + 100, { width: width - 40 });
+      
+      doc.font('Helvetica');
+      let metricY = y + 120;
+      
+      for (const metric of extractedData.metrics.slice(0, 4)) {
+        doc.text(`• ${metric.value}`, x + 30, metricY, { width: width - 60 });
+        metricY += 18;
+      }
+    }
+    
+    // Footer KOREV AI
+    doc.fontSize(10)
+       .fillColor('#9CA3AF')
+       .text('KOREV AI', x, y + height - 25, { 
+         width, 
+         align: 'center' 
+       });
+    
+    // Mettre à jour la position Y
+    doc.y = y + height + 10;
   }
 
   _addMessages(doc, messages, options) {

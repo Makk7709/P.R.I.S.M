@@ -476,6 +476,10 @@
                   <input type="checkbox" id="export-pages" checked>
                   Numéros de page
                 </label>
+                <label class="prism-export-option prism-export-infographic">
+                  <input type="checkbox" id="export-infographic" checked>
+                  📊 Infographie synthèse
+                </label>
               </div>
             </div>
           </div>
@@ -558,12 +562,19 @@
       exportBtn.disabled = true;
       
       try {
+        // Récupérer le taskType depuis le chat si disponible
+        const taskType = this.chat?.currentTaskType || 
+                         document.querySelector('.prism-task-select')?.value || 
+                         'general';
+        
         const options = {
           title: document.getElementById('export-title').value || 'Conversation PRISM',
           theme: this.modal.querySelector('input[name="export-theme"]:checked').value,
           includeCoverPage: document.getElementById('export-cover').checked,
           includeSummaryPage: document.getElementById('export-summary').checked,
           includePageNumbers: document.getElementById('export-pages').checked,
+          includeInfographic: document.getElementById('export-infographic').checked,
+          taskType: taskType,
           includeHeader: true,
           includeFooter: true
         };
