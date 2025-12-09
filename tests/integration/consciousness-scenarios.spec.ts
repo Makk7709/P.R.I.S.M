@@ -67,6 +67,16 @@ vi.mock('../../src/core/RealTimeResearchEngine.js', () => ({
   }))
 }));
 
+vi.mock('../../src/core/JarvisPersonality.js', () => ({
+  JarvisPersonality: vi.fn().mockImplementation(() => ({
+    enrichBasePrompt: vi.fn().mockImplementation((prompt) => `[JARVIS] ${prompt}`),
+    generateSystemPrompt: vi.fn().mockReturnValue('Tu es JARVIS'),
+    enrichResponse: vi.fn().mockImplementation((response) => response),
+    generateGreeting: vi.fn().mockImplementation((name) => `Bonjour ${name}`),
+    shouldMakeSuggestion: vi.fn().mockReturnValue(false)
+  }))
+}));
+
 vi.mock('../../evolution/selfImprovementEngine.js', () => ({
   SelfImprovementEngine: vi.fn().mockImplementation(() => ({
     emit: vi.fn()
