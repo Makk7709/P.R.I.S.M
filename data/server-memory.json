@@ -4,9 +4,79 @@
     "context": [
       "PRISM doit utiliser le consensus pour toutes les décisions critiques et stratégiques OK",
       "Les algorithmes sont brevetés et ne doivent pas être modifiés sans autorisation OK"
-    ]
+    ],
+    "prenom": "Amine"
   },
   "interactions": [
+    {
+      "id": "interaction_1765301384652_2oq2fyt3v",
+      "input": "Quel est mon prénom ?",
+      "response": "Réponse générale pour: 💡 Ton prénom est Amine.",
+      "metadata": {
+        "consensusUsed": false,
+        "model": "openai",
+        "persona": "General",
+        "format": "general",
+        "reflection": {
+          "timestamp": "2025-12-09T17:29:44.652Z",
+          "input": "Quel est mon prénom ?",
+          "taskType": "general",
+          "responseContent": "Réponse générale pour: 💡 Ton prénom est Amine.",
+          "persona": "General",
+          "model": "openai",
+          "responseTime": 2145,
+          "quality": 0.5,
+          "relevance": 0.2,
+          "improvements": [
+            "Réponse trop courte, pourrait être plus détaillée",
+            "Persona spécialisé pourrait améliorer la qualité"
+          ],
+          "couldBeBetter": true
+        },
+        "userInfo": {
+          "context": [
+            "PRISM doit utiliser le consensus pour toutes les décisions critiques et stratégiques OK",
+            "Les algorithmes sont brevetés et ne doivent pas être modifiés sans autorisation OK"
+          ],
+          "prenom": "Amine"
+        }
+      },
+      "timestamp": "2025-12-09T17:29:44.652Z"
+    },
+    {
+      "id": "interaction_1765301366828_vd54jw88t",
+      "input": "Mon prénom est Amine",
+      "response": "Réponse générale pour: 💡 Bonjour Amine ! Comment puis-je vous aider aujourd'hui ?",
+      "metadata": {
+        "consensusUsed": false,
+        "model": "openai",
+        "persona": "General",
+        "format": "general",
+        "reflection": {
+          "timestamp": "2025-12-09T17:29:26.828Z",
+          "input": "Mon prénom est Amine",
+          "taskType": "general",
+          "responseContent": "Réponse générale pour: 💡 Bonjour Amine ! Comment puis-je vous aider aujourd'hui ?",
+          "persona": "General",
+          "model": "openai",
+          "responseTime": 3185,
+          "quality": 0.5,
+          "relevance": 0.25,
+          "improvements": [
+            "Réponse trop courte, pourrait être plus détaillée",
+            "Persona spécialisé pourrait améliorer la qualité"
+          ],
+          "couldBeBetter": true
+        },
+        "userInfo": {
+          "context": [
+            "PRISM doit utiliser le consensus pour toutes les décisions critiques et stratégiques OK",
+            "Les algorithmes sont brevetés et ne doivent pas être modifiés sans autorisation OK"
+          ]
+        }
+      },
+      "timestamp": "2025-12-09T17:29:26.828Z"
+    },
     {
       "id": "interaction_1765299793471_dxi7skkgg",
       "input": "Essentiel: Les algorithmes sont brevetés et ne doivent pas être modifiés sans autorisation",
@@ -22,5 +92,5 @@
       "timestamp": "2025-12-09T17:03:13.471Z"
     }
   ],
-  "lastUpdated": "2025-12-09T17:03:13.472Z"
+  "lastUpdated": "2025-12-09T17:29:44.655Z"
 }
