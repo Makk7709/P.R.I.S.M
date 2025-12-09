@@ -2443,16 +2443,9 @@
                             data.metadata?.orchestration  // ✨ Info orchestration hybride
                         );
                         
-                        // Lecture vocale automatique si activée
-                        if (this.speechEnabled) {
-                            if (data.audioUrl) {
-                                console.log('[Audio] Playing ElevenLabs audio...');
-                                await this.playElevenLabsAudio(data.audioUrl, data.content);
-                            } else if (data.fallbackToTTS) {
-                                console.log('[Audio] Using browser TTS fallback...');
-                                this.speak(this.cleanTextForSpeech(data.content));
-                            }
-                        }
+                        // ✨ CORRECTION: Ne pas déclencher la lecture vocale ici
+                        // La lecture sera gérée par addPrismMessage pour éviter les doublons
+                        // La lecture vocale est déjà gérée dans addPrismMessage()
                         
                     } else {
                         throw new Error(data.error || 'Erreur inconnue du serveur');
