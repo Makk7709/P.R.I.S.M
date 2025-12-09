@@ -297,7 +297,7 @@ async function callClaude(userInput, skipContext = false) {
   return data;
 }
 
-async function callPerplexity(userInput, skipContext = false) {
+export async function callPerplexity(userInput, skipContext = false) {
   if (!process.env.PERPLEXITY_API_KEY || process.env.PERPLEXITY_API_KEY === 'test_perplexity_key_placeholder') {
     throw new Error('Perplexity API key non configurée');
   }
