@@ -15,6 +15,10 @@ import { TaskTypeProcessor } from './src/core/TaskTypeProcessor.js';
 // Initialiser l'orchestrateur hybride (routing + consensus)
 const hybridOrchestrator = new HybridOrchestrator();
 
+// ✨ NOUVEAU: Initialiser le TaskTypeProcessor (orchestration AGI complète avec mémoire)
+const taskTypeProcessor = new TaskTypeProcessor();
+console.log('[INIT] ✅ TaskTypeProcessor initialisé - Mémoire persistante et orchestration AGI activées');
+
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
