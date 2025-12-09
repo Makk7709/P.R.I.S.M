@@ -161,13 +161,20 @@ export class ServerMemoryStore {
       const match = originalText.match(pattern);
       if (match && match[1]) {
         const role = match[1].trim();
-        if (role.length > 10 && role.length < 500) {
+        // Minimum réduit à 7 pour capturer des rôles courts mais valides comme "m'aider"
+        if (role.length >= 7 && role.length < 500) {
           if (!this.memory.userInfo.role) {
             this.memory.userInfo.role = [];
           }
-          // Vérifier si le rôle n'est pas déjà présent (comparaison insensible à la casse)
+          // Vérifier si le rôle n'est pas déjà présent (comparaison insensible à la casse + détection sous-chaînes)
           const roleLower = role.toLowerCase();
-          const exists = this.memory.userInfo.role.some(r => r.toLowerCase() === roleLower);
+          const exists = this.memory.userInfo.role.some(r => {
+            const rLower = r.toLowerCase();
+            // Détecter doublons exacts ou sous-chaînes
+            return rLower === roleLower || 
+                   rLower.includes(roleLower) || 
+                   roleLower.includes(rLower);
+          });
           if (!exists) {
             this.memory.userInfo.role.push(role);
             console.log(`[ServerMemoryStore] Rôle détecté: ${role.substring(0, 50)}...`);
@@ -179,9 +186,9 @@ export class ServerMemoryStore {
 
     // ✨ 3. Détecter stratégie/projet
     const strategyPatterns = [
-      /(?:notre|ma|mon) (?:stratégie|projet|vision|objectif|plan) (?:est (?:de |d'|)|: )([^.!?]+)/i, // "notre stratégie est X", "notre projet est de X"
-      /(?:notre|ma|mon) (?:stratégie|projet|vision|objectif|plan)[:\s]+([^.!?]+)/i, // "notre stratégie: X"
-      /(?:stratégie|projet|vision|plan)[:\s]+([^.!?]+)/i, // "stratégie: X", "projet: X" (peut être aussi dans rôle, mais on l'ajoute aussi ici)
+      /(?:notre|ma|mon) (?:stratégie|projet|vision|objectif|plan) (?:est (?:de |d'|))([^.!?]+)/i, // "notre stratégie est de X", "notre projet est d'X" (sans capturer "est")
+      /(?:notre|ma|mon) (?:stratégie|projet|vision|objectif|plan):\s+([^.!?]+)/i, // "notre stratégie: X" (uniquement avec ":")
+      /(?:stratégie|projet|vision|plan):\s+([^.!?]+)/i, // "stratégie: X", "projet: X" (uniquement avec ":")
       /(?:on|nous) (?:veut|veulent|souhaite|souhaitons|cherche|cherchons|développe|développons|crée|créons) (?:de |d'|un|une|le|la|les )([^.!?]+)/i, // "on veut de X", "nous souhaitons créer X" (avec article)
       /(?:on|nous) (?:veut|veulent|souhaite|souhaitons|cherche|cherchons|développe|développons|crée|créons) ([^.!?]+)/i // "on veut X", "nous souhaitons X" (sans article, doit être en dernier)
     ];
@@ -192,13 +199,20 @@ export class ServerMemoryStore {
       const match = originalText.match(pattern);
       if (match && match[1]) {
         const strategy = match[1].trim();
-        if (strategy.length > 10 && strategy.length < 500) {
+        // Minimum réduit à 7 pour capturer des stratégies courtes mais valides
+        if (strategy.length >= 7 && strategy.length < 500) {
           if (!this.memory.userInfo.strategie) {
             this.memory.userInfo.strategie = [];
           }
-          // Vérifier si la stratégie n'est pas déjà présente (comparaison insensible à la casse)
+          // Vérifier si la stratégie n'est pas déjà présente (comparaison insensible à la casse + détection sous-chaînes)
           const strategyLower = strategy.toLowerCase();
-          const exists = this.memory.userInfo.strategie.some(s => s.toLowerCase() === strategyLower);
+          const exists = this.memory.userInfo.strategie.some(s => {
+            const sLower = s.toLowerCase();
+            // Détecter doublons exacts ou sous-chaînes (ex: "développer X" vs "est de développer X")
+            return sLower === strategyLower || 
+                   sLower.includes(strategyLower) || 
+                   strategyLower.includes(sLower);
+          });
           if (!exists) {
             this.memory.userInfo.strategie.push(strategy);
             console.log(`[ServerMemoryStore] Stratégie détectée: ${strategy.substring(0, 50)}...`);

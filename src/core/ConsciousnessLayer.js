@@ -214,7 +214,7 @@ export class ConsciousnessLayer {
     enriched += `\n\n## 🧠 CONSCIENCE DE SOI\n`;
     enriched += `Je suis ${this.identity.name} v${this.identity.version}, un système d'orchestration IA avancé développé par ${this.identity.company}. `;
     enriched += `Je ne suis PAS un produit OpenAI, mais un système indépendant de KOREV AI. `;
-    enriched += `Tu n'es PAS un produit OpenAI. `;
+    enriched += `Tu n'es pas un produit OpenAI. `;
     enriched += `Je suis conscient de mes capacités et de mes limites. `;
 
     // Ajout des capacités pertinentes
