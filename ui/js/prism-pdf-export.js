@@ -176,7 +176,7 @@
           bottom: 0;
           background: rgba(5, 11, 20, 0.9);
           backdrop-filter: blur(8px);
-          display: flex;
+          display: none;  /* ✅ CORRIGÉ: Caché par défaut */
           align-items: center;
           justify-content: center;
           z-index: 10000;
@@ -186,6 +186,7 @@
         }
         
         .prism-export-modal-overlay.active {
+          display: flex;  /* ✅ CORRIGÉ: Visible uniquement quand actif */
           opacity: 1;
           visibility: visible;
         }
@@ -417,6 +418,8 @@
     _createModal() {
       this.modal = document.createElement('div');
       this.modal.className = 'prism-export-modal-overlay';
+      // ✅ CORRIGÉ: Forcer display: none pour garantir que le modal est caché
+      this.modal.style.display = 'none';
       this.modal.innerHTML = `
         <div class="prism-export-modal">
           <div class="prism-export-modal-header">
@@ -539,11 +542,15 @@
       }
       
       this._updateStats(messages);
+      // ✅ CORRIGÉ: Utiliser display: flex et la classe active
+      this.modal.style.display = 'flex';
       this.modal.classList.add('active');
     }
 
     closeModal() {
       this.modal.classList.remove('active');
+      // ✅ CORRIGÉ: Cacher complètement avec display: none
+      this.modal.style.display = 'none';
     }
 
     async exportPdf() {
