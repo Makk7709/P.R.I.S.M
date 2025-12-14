@@ -37,8 +37,21 @@ describe('TrustContext - Tests de Régression', () => {
 
     await fs.writeFile(path.join(testKeyDir, `${approverKeyId}.pub`), publicKey, { mode: 0o644 });
 
+    // Setup KeyRegistry
+    const registryPath = path.join(testBase, 'key-registry.json');
+    try {
+      await fs.unlink(registryPath);
+    } catch (error) {
+      if (error.code !== 'ENOENT') throw error;
+    }
+    
+    const keyRegistry = new KeyRegistryClass({ registryPath });
+    await keyRegistry.initialize();
+    await keyRegistry.registerKey(approverKeyId, approverPublicKey, ['owner', 'security'], approverPrivateKey);
+
     trustContext = new TrustContext({
       keyDir: testKeyDir,
+      keyRegistry: keyRegistry,
       governancePolicy: {
         [CriticalityLevel.LOW]: ['lead', 'security', 'owner'],
         [CriticalityLevel.MEDIUM]: ['lead', 'security', 'owner'],
