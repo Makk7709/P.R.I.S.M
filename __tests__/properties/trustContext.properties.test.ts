@@ -250,7 +250,7 @@ describe('TrustContext - Property-Based Tests (Invariants Critiques)', () => {
             };
 
             // Vérification doit échouer (signature ne match plus)
-            const verification = (trustContext as any).verifyApproval(tamperedApproval, decision);
+            const verification = await (trustContext as any).verifyApproval(tamperedApproval, decision);
             expect(verification.valid).toBe(false);
             expect(verification.errorCode).toBe('SIGNATURE_INVALID');
           }
@@ -290,7 +290,7 @@ describe('TrustContext - Property-Based Tests (Invariants Critiques)', () => {
             });
 
             // Vérification doit échouer (digest mismatch)
-            const verification = (trustContext as any).verifyApproval(invalidApproval, decision);
+            const verification = await (trustContext as any).verifyApproval(invalidApproval, decision);
             expect(verification.valid).toBe(false);
             expect(verification.errorCode).toBe('DIGEST_MISMATCH');
           }
@@ -379,7 +379,7 @@ describe('TrustContext - Property-Based Tests (Invariants Critiques)', () => {
             expect(result).toBe(false);
 
             // Vérifier code d'erreur
-            const verification = (trustContext as any).verifyApproval(unknownRoleApproval, decision);
+            const verification = await (trustContext as any).verifyApproval(unknownRoleApproval, decision);
             expect(verification.valid).toBe(false);
             expect(verification.errorCode).toBe('AUTHORIZATION_FAILED');
           }
