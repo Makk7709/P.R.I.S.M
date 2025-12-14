@@ -71,8 +71,7 @@ describe('TrustContext E2E Workflow - TRL 5', () => {
     // Setup KeyRegistry (créer nouvelle instance pour éviter singleton)
     const registryPath = path.join(testBase, 'key-registry.json');
     // Utiliser KeyRegistry directement (pas getKeyRegistry singleton)
-    const keyRegistryModule = await import('../../src/core/KeyRegistry.js');
-    keyRegistry = new keyRegistryModule.KeyRegistry({ registryPath });
+    keyRegistry = new KeyRegistryClass({ registryPath });
     await keyRegistry.initialize();
     
     // Enregistrer clé avec vérification keypair
