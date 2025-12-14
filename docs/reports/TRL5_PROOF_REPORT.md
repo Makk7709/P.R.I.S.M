@@ -1,6 +1,6 @@
 # TrustContext TRL 5 Proof Report
 
-**Date**: 2025-12-14T14:11:22.334Z  
+**Date**: 2025-12-14T14:16:59.553Z  
 **Environment**: Staging  
 **Node Version**: v18.20.8  
 **PRISM Mode**: TEST
@@ -15,21 +15,24 @@ Ce rapport documente la validation de TrustContext en environnement staging (TRL
 
 Démontrer que TrustContext fonctionne correctement en environnement pertinent (staging) avec:
 - ✅ Workflow E2E complet
-- ✅ Vérification cryptographique Ed25519
+- ✅ Vérification cryptographique Ed25519 (signature base64/hex unifiée)
 - ✅ Dégradations fail-closed (timeouts, signatures invalides, approvers non autorisés)
 - ✅ Métriques de performance (latence p50/p95/p99)
 - ✅ Gestion de clés (registry, révocation, rotation)
+- ✅ Preuve keypair match (fingerprints + verification)
 
 ### 1.2 Scénarios Testés
 
 | Scénario | Description | Résultat |
 |----------|-------------|----------|
-| **S1** | Nominal HIGH avec approval valide | ✅ APPROVED |
+| **S1** | Nominal HIGH avec approval valide | ✅ APPROVED (signature Ed25519 vérifiée) |
 | **S2** | CRITICAL sans approval | ✅ REJECT (fail-closed) |
 | **S3** | Approval avec signature invalide | ✅ REJECT |
 | **S4** | Digest mismatch | ✅ REJECT |
 | **S5** | Provider timeout/down | ✅ Handled gracefully |
 | **S6** | Approver non autorisé | ✅ REJECT |
+
+**Status**: ✅ **6/6 scénarios PASS**
 
 ---
 
@@ -90,6 +93,9 @@ Toutes les vérifications suivantes sont **passées** :
 - **KeyRegistry**: Default
 - **Tests**: Vitest
 - **Cryptographie**: Ed25519 (Node.js crypto)
+- **Signature Encoding**: hex (unifié sign/verify)
+- **Canonicalization**: fonction partagée (garantit identité sign/verify)
+- **Keypair Verification**: signature/vérification test message (fingerprint + crypto.verify)
 
 ---
 
@@ -111,7 +117,20 @@ Toutes les vérifications suivantes sont **passées** :
 ⚠️ **Rotation automatique** : Rotation manuelle uniquement  
 ⚠️ **Monitoring production** : Pas de métriques en production réelle  
 
-### 7.3 Recommandations
+### 7.3 Security Notes
+
+**Cryptographie**:
+- Signature Ed25519: format hex unifié (sign/verify)
+- Canonicalisation: fonction partagée garantit identité sign/verify
+- Keypair verification: méthode signature/vérification test message (plus fiable que fingerprint seul)
+- Fingerprints: SHA-256(SPKI DER) stockés dans KeyRegistry pour traçabilité
+
+**Preuves**:
+- ✅ Canonicalisation identique: même payload JSON (même ordre clés, même champs) pour sign et verify
+- ✅ Keypair match: vérification automatique lors de registerKey (prevent mismatched keys)
+- ✅ Encoding unifié: hex partout (pas de mélange base64/hex)
+
+### 7.4 Recommandations
 
 **Court terme (TRL 5 → TRL 6)**:
 1. Pilotes contrôlés avec utilisateurs finaux (2-3 partenaires)
@@ -126,7 +145,7 @@ Toutes les vérifications suivantes sont **passées** :
 
 ---
 
-**Document généré le**: 2025-12-14T14:11:22.334Z  
-**Version**: 1.0.0  
-**Status**: ✅ **TRL 5 Validé**
+**Document généré le**: 2025-12-14T14:16:59.553Z  
+**Version**: 1.1.0  
+**Status**: ✅ **TRL 5 Validé** (6/6 E2E PASS)
 
