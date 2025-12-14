@@ -283,4 +283,5 @@ export function getKeyRegistry(options = {}) {
   return keyRegistryInstance;
 }
 
+export { KeyRegistry };
 export default KeyRegistry;
