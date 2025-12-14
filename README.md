@@ -5,6 +5,8 @@
 [![License](https://img.shields.io/badge/License-AGPL%20v3-red)](./LICENSE)
 [![Version](https://img.shields.io/badge/Version-2.4.0-blue)](https://github.com/Makk7709/P.R.I.S.M)
 [![Node.js](https://img.shields.io/badge/Node.js-18%2B-green)](https://nodejs.org/)
+[![Quality Gate](https://github.com/Makk7709/P.R.I.S.M/workflows/%F0%9F%8E%AF%20Quality%20Gates/badge.svg)](https://github.com/Makk7709/P.R.I.S.M/actions/workflows/quality.yml)
+[![Security](https://github.com/Makk7709/P.R.I.S.M/workflows/%F0%9F%9B%A1%EF%B8%8F%20Security%20Scan/badge.svg)](https://github.com/Makk7709/P.R.I.S.M/actions/workflows/security.yml)
 [![Tests](https://img.shields.io/badge/Tests-Vitest-success)](./tests/)
 [![Coverage](https://img.shields.io/badge/Coverage-85%5C%25-+-brightgreen)](./coverage/)
 

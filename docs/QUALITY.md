@@ -152,9 +152,27 @@ npm run typecheck
 
 ---
 
+## 📊 Technical Debt Baseline
+
+### Legacy Test Failures
+**Baseline (2025-12-14)**: 392 failures  
+**Target**: <100 failures (by end of Q1 2026)  
+**Progress**: Tracked weekly
+
+**Rules**:
+- ✅ Core tests remain **blocking** (100% pass required)
+- ⚠️  Legacy tests in **quarantine** (non-blocking, but tracked)
+- 🎯 Weekly reduction goal: ~20 failures/week
+
+**Current Status**:
+- Core tests: **61/61 passing** ✅ (100% green)
+- Legacy tests: **392 failures** ⚠️  (quarantine mode)
+
+---
+
 ## 🎯 Next Steps
 
-### Short Term
+### Short Term (Q1 2026)
 - [ ] Reduce legacy test failures (392 → <100)
 - [ ] Enable strict typecheck (currently warnings)
 - [ ] Add coverage gates to CI
