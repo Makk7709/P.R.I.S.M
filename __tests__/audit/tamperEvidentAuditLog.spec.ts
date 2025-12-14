@@ -19,8 +19,9 @@ describe('TamperEvidentAuditLog - Tamper Detection', () => {
   let testKeyDir: string;
 
   beforeEach(async () => {
-    // Créer répertoires de test
-    const testBase = path.join(__dirname, '../../test-audit-temp');
+    // Créer répertoires de test avec ID unique pour isolation complète
+    const testId = crypto.randomUUID().substring(0, 8);
+    const testBase = path.join(__dirname, `../../test-audit-temp-${testId}`);
     testLogDir = path.join(testBase, 'logs');
     testKeyDir = path.join(testBase, 'keys');
 
