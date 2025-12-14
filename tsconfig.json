@@ -1,0 +1,45 @@
+{
+  "compilerOptions": {
+    "target": "ES2022",
+    "module": "ESNext",
+    "lib": ["ES2022"],
+    "moduleResolution": "node",
+    "allowJs": true,
+    "checkJs": true,
+    "noEmit": true,
+    "strict": false,
+    "skipLibCheck": true,
+    "esModuleInterop": true,
+    "allowSyntheticDefaultImports": true,
+    "forceConsistentCasingInFileNames": true,
+    "resolveJsonModule": true,
+    "isolatedModules": true,
+    "baseUrl": ".",
+    "paths": {
+      "@/*": ["./*"],
+      "@core/*": ["./src/core/*"],
+      "@security/*": ["./src/security/*"],
+      "@audit/*": ["./src/audit/*"],
+      "@orchestrator/*": ["./src/orchestrator/*"],
+      "@excel/*": ["./src/excel/*"]
+    },
+    "typeRoots": ["./node_modules/@types"]
+  },
+  "include": [
+    "src/**/*.js",
+    "src/**/*.ts",
+    "tests/**/*.ts",
+    "__tests__/**/*.ts",
+    "*.js"
+  ],
+  "exclude": [
+    "node_modules",
+    "dist",
+    "coverage",
+    "__tests_legacy__",
+    "legacy_tests",
+    "**/*.min.js",
+    "**/*.config.js",
+    "**/*.config.mjs"
+  ]
+}
