@@ -879,7 +879,7 @@ export class TrustContext extends EventEmitter {
       return {
         valid: false,
         error: 'Decision ID mismatch',
-        errorCode: 'DIGEST_MISMATCH'
+        errorCode: 'DECISION_ID_MISMATCH'
       };
     }
 
