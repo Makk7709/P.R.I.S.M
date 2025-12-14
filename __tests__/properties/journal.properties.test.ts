@@ -8,6 +8,7 @@ import fc from 'fast-check';
 import fs from 'fs/promises';
 import path from 'path';
 import { fileURLToPath } from 'url';
+import crypto from 'node:crypto';
 import { TamperEvidentAuditLog } from '../../src/audit/TamperEvidentAuditLog.js';
 import { SecureJournalManager } from '../../src/core/SecureJournalManager.js';
 
@@ -73,14 +74,12 @@ describe('Journal / Audit Log - Property-Based Tests', () => {
     });
     
     it('DOIT retourner OK après N appends valides', async () => {
-      let runIndex = 0; // Index de run pour isoler chaque test property
       await fc.assert(
         fc.asyncProperty(
           fc.integer({ min: 1, max: 50 }), // N events
           async (numEvents) => {
-            const currentRun = runIndex++;
-            // Use deterministic directory names with run index to ensure isolation
-            const testId = `test-${numEvents}-run${currentRun}`;
+            // Use unique test ID per run (crypto.randomUUID for isolation even in parallel tests)
+            const testId = `test-${numEvents}-${crypto.randomUUID().substring(0, 8)}`;
             const logDir = path.join(testBaseDir, testId, 'log');
             const keyDir = path.join(testBaseDir, testId, 'keys');
             
@@ -134,8 +133,8 @@ describe('Journal / Audit Log - Property-Based Tests', () => {
           fc.integer({ min: 0 }), // Index du record à corrompre
           fc.string(), // Nouvelle valeur (corruption)
           async (numEvents, corruptIndex, corruptValue) => {
-            // Use deterministic directory names - already unique via corruptIndex
-            const testId = `tamper-${numEvents}-${corruptIndex}-${corruptValue.substring(0, 10)}`;
+            // Use unique test ID per run (isolation even in parallel tests)
+            const testId = `tamper-${numEvents}-${corruptIndex}-${crypto.randomUUID().substring(0, 8)}`;
             const logDir = path.join(testBaseDir, testId, 'log');
             const keyDir = path.join(testBaseDir, testId, 'keys');
             
@@ -197,14 +196,12 @@ describe('Journal / Audit Log - Property-Based Tests', () => {
   describe('H) Rotation', () => {
     
     it('DOIT gérer rotation et verify sur tous segments => OK', async () => {
-      let runIndex = 0; // Index de run pour isoler chaque test property
       await fc.assert(
         fc.asyncProperty(
           fc.integer({ min: 10, max: 30 }), // N events (suffisant pour rotation si maxFileSize petit)
           async (numEvents) => {
-            const currentRun = runIndex++;
-            // Use deterministic directory names with run index to ensure isolation
-            const testId = `rotation-${numEvents}-run${currentRun}`;
+            // Use unique test ID per run (isolation even in parallel tests)
+            const testId = `rotation-${numEvents}-${crypto.randomUUID().substring(0, 8)}`;
             const logDir = path.join(testBaseDir, testId, 'log');
             const keyDir = path.join(testBaseDir, testId, 'keys');
             
