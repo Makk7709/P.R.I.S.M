@@ -341,3 +341,9 @@ BREVET_PRISM_*.doc
 data/server-memory.json
 test_orchestration_journal/checkpoint.json
 test_journal/checkpoint.json
+
+# Test temporary directories and staging metrics
+test-trustcontext-*/
+test-*-temp/
+test-*-staging/
+staging/metrics/e2e-metrics-*.json
