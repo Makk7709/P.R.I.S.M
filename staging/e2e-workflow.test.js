@@ -15,7 +15,7 @@ import { fileURLToPath } from 'url';
 import { performance } from 'perf_hooks';
 import { TrustContext, CriticalityLevel, createSignedApproval } from '../src/core/TrustContext.js';
 import { HybridOrchestrator } from '../src/orchestrator/HybridOrchestrator.js';
-import { getKeyRegistry } from '../src/core/KeyRegistry.js';
+import { KeyRegistry } from '../src/core/KeyRegistry.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -71,8 +71,8 @@ describe('TrustContext E2E Workflow - TRL 5', () => {
     // Setup KeyRegistry (créer nouvelle instance pour éviter singleton)
     const registryPath = path.join(testBase, 'key-registry.json');
     // Utiliser KeyRegistry directement (pas getKeyRegistry singleton)
-    const { KeyRegistry } = await import('../../src/core/KeyRegistry.js');
-    keyRegistry = new KeyRegistry({ registryPath });
+    const keyRegistryModule = await import('../../src/core/KeyRegistry.js');
+    keyRegistry = new keyRegistryModule.KeyRegistry({ registryPath });
     await keyRegistry.initialize();
     
     // Enregistrer clé avec vérification keypair
