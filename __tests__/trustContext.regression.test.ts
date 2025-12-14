@@ -254,11 +254,14 @@ describe('TrustContext - Tests de Régression', () => {
         privateKeyPem: approverPrivateKey
       });
 
+      // Vérifier directement verifyApproval (avant approveDecision qui peut modifier l'état)
+      const verification = await (trustContext as any).verifyApproval(wrongDigestApproval, decision);
+      expect(verification.valid).toBe(false);
+      expect(verification.errorCode).toBe('DIGEST_MISMATCH');
+      
+      // Ensuite vérifier que approveDecision rejette aussi
       const result = await trustContext.approveDecision(wrongDigestApproval);
       expect(result).toBe(false);
-
-      const verification = (trustContext as any).verifyApproval(wrongDigestApproval, decision);
-      expect(verification.errorCode).toBe('DIGEST_MISMATCH');
     });
   });
 

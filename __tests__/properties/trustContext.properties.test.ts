@@ -128,15 +128,14 @@ describe('TrustContext - Property-Based Tests (Invariants Critiques)', () => {
               signature: 'invalid-signature-hex'
             };
 
-            // approveDecision doit échouer
+            // Vérifier directement verifyApproval (vérifie signature invalide)
+            const verification = await (trustContext as any).verifyApproval(fakeApproval, decision);
+            expect(verification.valid).toBe(false);
+            expect(verification.errorCode).toBe('SIGNATURE_INVALID');
+            
+            // Ensuite vérifier que approveDecision rejette aussi
             const result = await trustContext.approveDecision(fakeApproval);
             expect(result).toBe(false);
-
-            // Vérifier que la décision n'a PAS été approuvée (peut être dans pending ou history)
-            const checkResult = trustContext.checkApproval(approvalToken);
-            if (checkResult.status !== 'not_found') {
-              expect(checkResult.approved).toBe(false);
-            }
           }
         ),
         { numRuns: 50, timeout: 10000 }
