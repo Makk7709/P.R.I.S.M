@@ -1,5 +1,21 @@
 #!/bin/sh
 . "$(dirname "$0")/_/husky.sh"
 
-echo "🔍 Running PRISM SelfHeal pre-commit checks..."
-node ci/selfHealHook.js 
+echo "🔍 Running PRISM Quality Gates (pre-commit)..."
+
+# Format and lint staged files
+echo "📝 Formatting and linting staged files..."
+npx lint-staged
+
+# Typecheck (non-blocking for now, but will show errors)
+echo "🔍 Type checking..."
+npm run typecheck || echo "⚠️  Typecheck warnings (non-blocking)"
+
+# Run core tests (blocking - must pass)
+echo "🧪 Running core tests..."
+npm test || {
+  echo "❌ Core tests failed. Commit aborted."
+  exit 1
+}
+
+echo "✅ All quality checks passed!" 
