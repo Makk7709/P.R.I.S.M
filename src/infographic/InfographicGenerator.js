@@ -598,3 +598,5 @@ FORMAT: Image haute résolution, ratio 16:9, optimisée pour insertion PDF`;
 // Export singleton
 export const infographicGenerator = new InfographicGenerator();
 
+
+

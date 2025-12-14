@@ -12,6 +12,8 @@ import { handleUserInstruction } from './backend/orchestrator.js';
 import { HybridOrchestrator } from './src/orchestrator/HybridOrchestrator.js';
 import { TaskTypeProcessor } from './src/core/TaskTypeProcessor.js';
 import { ImageGenerator } from './src/infographic/ImageGenerator.js';
+import { ResponseModeManager, InputMode, ResponseMode } from './src/voice/ResponseModeManager.js';
+import { getTrustContext, CriticalityLevel } from './src/core/TrustContext.js';
 
 // Initialiser l'orchestrateur hybride (routing + consensus)
 const hybridOrchestrator = new HybridOrchestrator();
@@ -23,6 +25,15 @@ console.log('[INIT] ✅ TaskTypeProcessor initialisé - Mémoire persistante et 
 // ✨ NOUVEAU: Initialiser le ImageGenerator (Nano Banana Pro + Gemini 2.0 Flash)
 const imageGenerator = new ImageGenerator();
 console.log('[INIT] ✅ ImageGenerator initialisé - Nano Banana Pro prêt pour génération d\'images');
+
+// ✨ NOUVEAU: Initialiser le ResponseModeManager (logique écrit/vocal intelligente)
+const responseModeManager = new ResponseModeManager({
+  elevenLabsApiKey: config.config.CONFIG.ELEVENLABS?.API_KEY,
+  defaultVoiceId: config.config.CONFIG.ELEVENLABS?.VOICE_ID || 'm5SBIR8kR76fbA5dP2rU',
+  voiceConfidenceThreshold: 0.6,
+  maxAudioLength: 4000
+});
+console.log('[INIT] ✅ ResponseModeManager initialisé - Logique écrit/vocal intelligente active');
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -43,6 +54,16 @@ try {
   console.warn('[INIT] Enterprise export route disabled:', err.message);
 }
 
+// ✨ NOUVEAU: Charger le module d'upload Excel pour le chat
+let chatUploadRouter = null;
+try {
+  const chatUploadModule = await import('./backend/routes/chatUpload.js');
+  chatUploadRouter = chatUploadModule.default ?? chatUploadModule.chatUploadRouter ?? null;
+  console.log('[INIT] ✅ Module Excel/Chat Upload chargé');
+} catch (err) {
+  console.warn('[INIT] Chat upload route disabled:', err.message);
+}
+
 // Initialiser l'enhancer vocal
 const voiceEnhancer = new VoicePersonalityEnhancer();
 
@@ -61,7 +82,16 @@ app.post('/api/chat', async (req, res) => {
   const pipelineSessionId = Math.random().toString(36).slice(2) + '-' + Date.now();
 
   try {
-    const { message, taskType = 'general', model = 'auto-select', voiceConfig } = req.body;
+    const { 
+      message, 
+      taskType = 'general', 
+      model = 'auto-select', 
+      voiceConfig,
+      // ✨ NOUVEAU: Paramètres pour la détection du mode d'entrée
+      inputSource = 'keyboard', // 'keyboard', 'voice', 'paste'
+      voiceConfidence = null,   // Confiance de reconnaissance vocale
+      hasAttachment = false     // Fichier attaché
+    } = req.body;
     
     if (!message || message.trim().length === 0) {
       return res.status(400).json({
@@ -70,11 +100,74 @@ app.post('/api/chat', async (req, res) => {
       });
     }
 
-    pipelineLog('RECEIVE_REQUEST', { pipelineSessionId, message, taskType, voiceConfig });
+    // ✨ ÉTAPE 0: Validation TrustContext pour requêtes critiques
+    const messageUpper = message.toUpperCase();
+    const isCriticalRequest = 
+      taskType === 'critical' ||
+      messageUpper.includes('DELETE') ||
+      messageUpper.includes('SHUTDOWN') ||
+      messageUpper.includes('RESET') ||
+      messageUpper.includes('DESTROY') ||
+      messageUpper.includes('FORMAT');
+    
+    if (isCriticalRequest) {
+      try {
+        const trustContext = getTrustContext();
+        const approval = await trustContext.validateCriticalDecision({
+          action: 'api_chat_request',
+          message: message,
+          taskType: taskType,
+          criticality: CriticalityLevel.HIGH,
+          metadata: {
+            inputSource: req.body.inputSource,
+            ip: req.ip || req.connection.remoteAddress,
+            timestamp: new Date().toISOString()
+          }
+        });
+        
+        if (!approval.approved) {
+          return res.status(403).json({
+            success: false,
+            error: 'Request requires human approval',
+            approvalRequired: true,
+            reason: approval.reason || 'Critical operation requires supervisor approval'
+          });
+        }
+      } catch (error) {
+        console.error('[server.js] TrustContext validation error:', error.message);
+        return res.status(500).json({
+          success: false,
+          error: 'Security validation failed',
+          details: process.env.NODE_ENV === 'development' ? error.message : undefined
+        });
+      }
+    }
+
+    // ✨ NOUVEAU: Détecter le mode d'entrée avec ResponseModeManager
+    const inputMode = responseModeManager.detectInputMode({
+      message,
+      source: inputSource,
+      confidence: voiceConfidence,
+      hasAttachment
+    });
+    
+    // ✨ NOUVEAU: Déterminer le mode de réponse approprié
+    const responseModeConfig = responseModeManager.determineResponseMode({
+      inputMode,
+      userPreferences: {
+        forceVoice: voiceConfig?.forceVoice,
+        forceText: voiceConfig?.forceText,
+        disableAudio: voiceConfig?.disableAudio
+      },
+      context: { hasFileAttachment: hasAttachment }
+    });
+
+    pipelineLog('RECEIVE_REQUEST', { pipelineSessionId, message, taskType, voiceConfig, inputMode, responseMode: responseModeConfig.mode });
 
     console.log('[PRISM API] Nouvelle requête chat reçue');
     console.log(`[PRISM API] Message: "${message.substring(0, 50)}..."`);
     console.log(`[PRISM API] Type de tâche: ${taskType}`);
+    console.log(`[PRISM API] 🎯 Mode d'entrée: ${inputMode} → Mode de réponse: ${responseModeConfig.mode}`);
     if (voiceConfig) {
       console.log(`[PRISM API] Voix demandée: ${voiceConfig.name} (${voiceConfig.provider})`);
     }
@@ -159,24 +252,41 @@ app.post('/api/chat', async (req, res) => {
     const logContent = typeof responseContent === 'string' ? responseContent.substring(0, 100) : JSON.stringify(responseContent).substring(0, 100);
     console.log('[PRISM] Réponse orchestrée:', logContent + '...');
     
-    // ✨ GÉNÉRATION AUDIO ELEVENLABS OPTIMISÉE
+    // ✨ NOUVEAU: GÉNÉRATION AUDIO INTELLIGENTE SELON LE MODE D'ENTRÉE
     let audioUrl = null;
     let audioError = null;
     
-    if (config.config.CONFIG.ELEVENLABS.API_KEY && 
+    // ✨ LOGIQUE CLÉ: Audio SEULEMENT si input vocal ou forceVoice
+    const shouldGenerateAudio = responseModeConfig.generateAudio;
+    
+    console.log(`[PRISM API] 🔊 Génération audio: ${shouldGenerateAudio ? 'OUI' : 'NON'} (mode: ${responseModeConfig.mode})`);
+    
+    if (shouldGenerateAudio && 
+        config.config.CONFIG.ELEVENLABS.API_KEY && 
         config.config.CONFIG.ELEVENLABS.API_KEY !== 'ta_clef_api_ici') {
       try {
+        // ✨ NOUVEAU: Utiliser VoiceOptimizer pour nettoyer le texte
+        const textForVoice = responseModeManager.voiceOptimizer.cleanForSpeech(
+          enhancedResponse.enhancedText || responseContent
+        );
+        const truncatedText = responseModeManager.voiceOptimizer.truncateForVoice(textForVoice, {
+          maxLength: responseModeConfig.formatOptions?.maxAudioLength || 4000,
+          addContinuationHint: textForVoice.length > 4000
+        });
+        
         audioUrl = await generateElevenLabsAudio(
-          enhancedResponse.enhancedText || responseContent,
+          truncatedText,
           enhancedResponse.voiceConfig,
           voiceConfig // Passer la voix sélectionnée
         );
-        console.log('[PRISM API] Audio ElevenLabs généré avec succès');
+        console.log('[PRISM API] ✅ Audio ElevenLabs généré avec succès');
       } catch (audioErrorCatch) {
-        console.warn('[PRISM API] ElevenLabs indisponible:', audioErrorCatch.message);
+        console.warn('[PRISM API] ⚠️ ElevenLabs indisponible:', audioErrorCatch.message);
         audioError = audioErrorCatch.message;
-        // On continue sans audio - l'interface utilisera le TTS du navigateur
+        // On continue sans audio - l'interface utilisera le TTS du navigateur si mode vocal
       }
+    } else if (!shouldGenerateAudio) {
+      console.log('[PRISM API] 📝 Mode texte - pas de génération audio (économie de ressources)');
     }
 
     const result = {
@@ -186,7 +296,11 @@ app.post('/api/chat', async (req, res) => {
       responseTime: responseTime,
       voiceConfig: enhancedResponse.voiceConfig,
       audioUrl: audioUrl,
-      fallbackToTTS: !audioUrl, // ✨ Nouveau flag pour indiquer à l'interface d'utiliser le TTS
+      // ✨ NOUVEAU: Logique intelligente écrit/vocal
+      inputMode: inputMode,                    // Mode d'entrée détecté (text, voice, hybrid)
+      responseMode: responseModeConfig.mode,   // Mode de réponse (text_only, voice_with_text, hybrid)
+      shouldPlayAudio: responseModeConfig.generateAudio && !!audioUrl, // Doit-on jouer l'audio?
+      fallbackToTTS: responseModeConfig.generateAudio && !audioUrl, // TTS navigateur si audio demandé mais échec
       metadata: {
         enhanced: !!enhancedResponse.voiceConfig,
         voiceMode: enhancedResponse.voiceMetadata?.mode,
@@ -595,6 +709,12 @@ app.use('/demo', express.static(path.join(__dirname, 'demo')));
 
 // Route pour les assets
 app.use('/assets', express.static(path.join(__dirname, 'assets')));
+
+// ✨ NOUVEAU: Routes pour l'upload de fichiers Excel dans le chat
+if (chatUploadRouter) {
+  app.use('/api/chat', chatUploadRouter);
+  console.log('[ROUTES] ✅ /api/chat/upload route active');
+}
 
 // API pour les métriques du dashboard
 app.get('/api/metrics', (req, res) => {

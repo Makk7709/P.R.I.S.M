@@ -209,6 +209,28 @@ Ce projet est sous licence AGPL v3, garantissant l'open source avec protection c
 
 ## 📧 Contribution & Contact
 
+## 🧪 Tests
+
+### Exécution des Tests
+
+**Commande unique pour exécuter tous les tests:**
+
+```bash
+npm test
+```
+
+**Note:** Si vous rencontrez des problèmes avec les espaces dans le chemin du projet, voir `docs/VAGUE0_VITEST_FIX.md` pour la solution.
+
+### Tests Spécifiques
+
+```bash
+# Tests d'intégration TrustContext
+npm test -- __tests__/integration/trustContext-*.spec.ts
+
+# Tests avec coverage
+npm run coverage
+```
+
 ### Guidelines Contribution
 - Fork & Pull Request workflow
 - Tests requis : `npm test` (100% green)

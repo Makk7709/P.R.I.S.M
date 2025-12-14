@@ -10,6 +10,12 @@ import { getTrustContext } from './TrustContext.js';
 import OpenAIAdapter from './providers/OpenAIAdapter.js';
 import AnthropicAdapter from './providers/AnthropicAdapter.js';
 import PerplexityAdapter from './providers/PerplexityAdapter.js';
+import { 
+  validateStrict, 
+  DecisionProposalSchema, 
+  VoteSchema,
+  ConsensusResultSchema 
+} from '../security/contracts/consensus.js';
 
 /**
  * Types de décisions critiques
@@ -207,6 +213,23 @@ export class ConsensusManager extends EventEmitter {
       throw new Error('Maximum concurrent proposals reached');
     }
 
+    // VALIDATION FAIL-CLOSED: Vérifier que l'input est conforme au schéma
+    try {
+      validateStrict({ decisionHash, payload, type }, DecisionProposalSchema);
+    } catch (error) {
+      // Log structuré du rejet
+      const logEntry = {
+        timestamp: Date.now(),
+        event: 'schema_validation_failed',
+        module: 'ConsensusManager.propose',
+        error: error.message,
+        decisionHash,
+        type
+      };
+      console.error('🚫 FAIL-CLOSED: Decision proposal rejected (schema validation):', logEntry);
+      throw error; // Fail-closed: rejeter explicitement
+    }
+
     // Créer la proposition
     const proposal = new DecisionProposal(decisionHash, payload, type);
     this.proposals.set(proposal.id, proposal);
@@ -255,23 +278,88 @@ export class ConsensusManager extends EventEmitter {
 
   /**
    * Demande un vote à un fournisseur d'IA spécifique
+   * Utilise ProviderResult strict (fail-closed) et respecte "No False-Approve"
    * @param {string} provider - Fournisseur d'IA
    * @param {DecisionProposal} proposal - Proposition à voter
    */
   async requestVoteFromProvider(provider, proposal) {
+    const correlationId = crypto.randomUUID();
+    
     try {
-      let vote;
+      let providerResult;
+      
       if (this.providerAdapters && this.providerAdapters[provider]) {
-        vote = await this.providerAdapters[provider].evaluate({ type: proposal.type, payload: proposal.payload });
+        // Utiliser adapter qui retourne ProviderResult strict
+        providerResult = await this.providerAdapters[provider].evaluate(
+          { type: proposal.type, payload: proposal.payload },
+          correlationId
+        );
       } else {
-        // Fallback simulation
-        vote = await this.simulateAIVote(provider, proposal);
+        // Fallback simulation (convertir en ProviderResult)
+        const simulatedVote = await this.simulateAIVote(provider, proposal);
+        providerResult = {
+          provider: provider.toLowerCase(),
+          status: 'OK',
+          verdict: simulatedVote.decision ? 'approve' : 'reject',
+          rationale: simulatedVote.reasoning,
+          latencyMs: 100,
+          correlationId
+        };
       }
-      this.submitVote(proposal.id, provider, vote.decision, vote.reasoning);
+      
+      // Mapper ProviderResult vers VoteType selon "No False-Approve" invariant
+      // Si status !== OK, jamais APPROVE (abstain ou unavailable)
+      if (providerResult.status === 'OK' && providerResult.verdict) {
+        // Succès: mapper verdict directement
+        const voteType = providerResult.verdict === 'approve' ? VoteType.APPROVE :
+                        providerResult.verdict === 'reject' ? VoteType.REJECT :
+                        VoteType.ABSTAIN;
+        this.submitVote(
+          proposal.id, 
+          provider, 
+          voteType, 
+          providerResult.rationale || ''
+        );
+      } else {
+        // Échec provider: abstain (jamais approve) - No False-Approve
+        const errorReason = providerResult.error?.message || `Provider ${providerResult.status}`;
+        this.submitVote(
+          proposal.id, 
+          provider, 
+          VoteType.UNAVAILABLE, 
+          `Provider error: ${errorReason}`
+        );
+        
+        // Log structuré
+        console.warn({
+          timestamp: Date.now(),
+          event: 'provider_error_excluded',
+          module: 'ConsensusManager.requestVoteFromProvider',
+          provider,
+          status: providerResult.status,
+          proposalId: proposal.id,
+          correlationId,
+          reason: 'No False-Approve: status != OK => excluded from consensus'
+        });
+      }
     } catch (error) {
-      console.error(`Error getting vote from ${provider}:`, error);
-      // En cas d'erreur, considérer comme un vote de rejet
-      this.submitVote(proposal.id, provider, false, 'Provider error');
+      // Erreur fatale: exclure du consensus (abstain, jamais approve)
+      console.error({
+        timestamp: Date.now(),
+        event: 'provider_fatal_error',
+        module: 'ConsensusManager.requestVoteFromProvider',
+        provider,
+        proposalId: proposal.id,
+        correlationId,
+        error: error.message
+      });
+      
+      this.submitVote(
+        proposal.id, 
+        provider, 
+        VoteType.UNAVAILABLE, 
+        `Fatal error: ${error.message}`
+      );
     }
   }
 
@@ -318,7 +406,7 @@ export class ConsensusManager extends EventEmitter {
    * Soumet un vote pour une proposition
    * @param {string} proposalId - ID de la proposition
    * @param {string} provider - Fournisseur d'IA votant
-   * @param {boolean} vote - Vote (true = approve, false = reject)
+   * @param {boolean|string} vote - Vote (boolean ou VoteType: 'approve'/'reject'/'abstain'/'unavailable')
    * @param {string} reasoning - Raisonnement du vote
    */
   submitVote(proposalId, provider, vote, reasoning = '') {
@@ -327,7 +415,54 @@ export class ConsensusManager extends EventEmitter {
       return false;
     }
 
-    proposal.addVote(provider, vote, reasoning);
+    // VALIDATION FAIL-CLOSED: Vérifier que le vote est conforme au schéma
+    try {
+      // Convertir vote boolean en VoteType si nécessaire (rétrocompatibilité)
+      let voteType;
+      if (typeof vote === 'boolean') {
+        voteType = vote ? 'approve' : 'reject';
+      } else if (vote === true || vote === 'approve' || vote === VoteType.APPROVE) {
+        voteType = 'approve';
+      } else if (vote === false || vote === 'reject' || vote === VoteType.REJECT) {
+        voteType = 'reject';
+      } else if (vote === 'abstain' || vote === VoteType.ABSTAIN) {
+        voteType = 'abstain';
+      } else if (vote === 'unavailable' || vote === VoteType.UNAVAILABLE) {
+        voteType = 'unavailable';
+      } else {
+        voteType = vote; // Utiliser tel quel
+      }
+      
+      validateStrict({
+        vote: voteType,
+        reasoning: reasoning || '',
+        timestamp: Date.now(),
+        provider: provider || 'unknown'
+      }, VoteSchema);
+    } catch (error) {
+      // Log structuré du rejet
+      const logEntry = {
+        timestamp: Date.now(),
+        event: 'schema_validation_failed',
+        module: 'ConsensusManager.submitVote',
+        error: error.message,
+        proposalId,
+        provider
+      };
+      console.error('🚫 FAIL-CLOSED: Vote rejected (schema validation):', logEntry);
+      throw error; // Fail-closed: rejeter explicitement
+    }
+
+    // Utiliser voteType normalisé
+    const finalVoteType = typeof vote === 'boolean' 
+      ? (vote ? VoteType.APPROVE : VoteType.REJECT)
+      : (vote === 'approve' ? VoteType.APPROVE :
+         vote === 'reject' ? VoteType.REJECT :
+         vote === 'abstain' ? VoteType.ABSTAIN :
+         vote === 'unavailable' ? VoteType.UNAVAILABLE :
+         vote);
+    
+    proposal.addVote(provider, finalVoteType, reasoning);
 
     this.emit('voteSubmitted', {
       proposalId,

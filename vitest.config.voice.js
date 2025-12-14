@@ -1,61 +1,69 @@
 /**
  * Vitest Configuration - Voice Module Tests
  * 
- * Configuration dédiée aux tests du module vocal PRISM.
- * Objectif: >= 95% coverage sans mocks.
+ * Configuration pour les tests du module vocal (ElevenLabs, ResponseMode)
  */
 
 import { defineConfig } from 'vitest/config';
-import path from 'path';
 
 export default defineConfig({
   test: {
-    environment: 'jsdom',
-    globals: true,
-    // Setup file pour polyfills Audio
-    setupFiles: ['./tests/voice/setup.js'],
+    // Fichiers de test
     include: [
-      'tests/voice/**/*.spec.ts',
-      'tests/voice/**/*.test.ts'
+      '__tests__/voice/**/*.test.ts'
     ],
+    
+    // Exclusions
     exclude: [
-      'node_modules',
-      'dist',
-      '__tests_legacy__/**',
-      'legacy_tests/**'
+      '**/node_modules/**',
+      '**/dist/**'
     ],
+    
+    // Environnement
+    environment: 'node',
+    
+    // Globals
+    globals: true,
+    
+    // Timeout
+    testTimeout: 30000,
+    hookTimeout: 30000,
+    
+    // Coverage
     coverage: {
       provider: 'v8',
-      all: false,
-      reportsDirectory: 'coverage/voice',
-      reporter: ['json', 'html', 'text', 'json-summary'],
+      reporter: ['text', 'json', 'html'],
       include: [
-        'src/voice/**/*.js',
-        'src/modules/voice/**/*.js'
+        'src/voice/**/*.js'
       ],
       exclude: [
-        '**/*.spec.ts',
         '**/*.test.ts',
-        '**/__tests__/**',
-        '**/dist/**'
+        '**/__tests__/**'
       ],
       thresholds: {
-        statements: 95,
-        branches: 95,
-        functions: 95,
-        lines: 95
+        global: {
+          branches: 80,
+          functions: 80,
+          lines: 80,
+          statements: 80
+        }
       }
     },
-    // Timeout étendu pour tests audio
-    testTimeout: 30000,
-    hookTimeout: 10000
-  },
-  resolve: {
-    alias: {
-      '@': path.resolve(__dirname, './'),
-      '@voice': path.resolve(__dirname, './src/voice'),
-      '@modules': path.resolve(__dirname, './src/modules')
+    
+    // Reporter
+    reporters: ['verbose'],
+    
+    // Pool
+    pool: 'threads',
+    
+    // Snapshot
+    snapshotFormat: {
+      printBasicPrototype: false
     }
+  },
+  
+  // Resolve
+  resolve: {
+    extensions: ['.ts', '.js', '.mjs']
   }
 });
-

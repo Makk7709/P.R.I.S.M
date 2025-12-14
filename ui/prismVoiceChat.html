@@ -194,7 +194,7 @@
             min-width: 120px;
         }
 
-        .send-button, .voice-button {
+        .send-button, .voice-button, .upload-button {
             background: linear-gradient(45deg, #4CAF50, #8BC34A);
             border: none;
             border-radius: 8px;
@@ -203,10 +203,10 @@
             font-weight: bold;
             cursor: pointer;
             transition: all 0.3s ease;
-            min-width: 100px;
+            min-width: 60px;
         }
 
-        .send-button:hover, .voice-button:hover {
+        .send-button:hover, .voice-button:hover, .upload-button:hover {
             transform: translateY(-2px);
             box-shadow: 0 5px 15px rgba(76, 175, 80, 0.4);
         }
@@ -214,6 +214,108 @@
         .voice-button.active {
             background: linear-gradient(45deg, #f44336, #ff5722);
             animation: pulse 1s infinite;
+        }
+
+        .upload-button {
+            background: linear-gradient(45deg, #2196F3, #03A9F4);
+            min-width: 50px;
+            font-size: 1.2em;
+        }
+
+        .upload-button:hover {
+            box-shadow: 0 5px 15px rgba(33, 150, 243, 0.4);
+        }
+
+        .upload-button.has-file {
+            background: linear-gradient(45deg, #FF9800, #FFC107);
+        }
+
+        .file-input-hidden {
+            display: none;
+        }
+
+        .file-preview {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            background: rgba(33, 150, 243, 0.2);
+            border: 1px solid rgba(33, 150, 243, 0.4);
+            border-radius: 8px;
+            padding: 8px 12px;
+            margin-bottom: 10px;
+            font-size: 0.9em;
+        }
+
+        .file-preview .file-icon {
+            font-size: 1.5em;
+        }
+
+        .file-preview .file-info {
+            flex: 1;
+        }
+
+        .file-preview .file-name {
+            color: #81D4FA;
+            font-weight: bold;
+        }
+
+        .file-preview .file-size {
+            color: #90CAF9;
+            font-size: 0.8em;
+            margin-left: 8px;
+        }
+
+        .file-preview .remove-file {
+            background: rgba(244, 67, 54, 0.3);
+            border: none;
+            border-radius: 50%;
+            width: 24px;
+            height: 24px;
+            color: #FFCDD2;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .file-preview .remove-file:hover {
+            background: rgba(244, 67, 54, 0.5);
+        }
+
+        .analysis-result {
+            background: rgba(33, 150, 243, 0.1);
+            border: 1px solid rgba(33, 150, 243, 0.3);
+            border-radius: 8px;
+            padding: 15px;
+            margin-top: 10px;
+        }
+
+        .analysis-result h4 {
+            color: #64B5F6;
+            margin-bottom: 10px;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+            gap: 10px;
+            margin-top: 10px;
+        }
+
+        .stat-item {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 6px;
+            padding: 10px;
+            text-align: center;
+        }
+
+        .stat-value {
+            font-size: 1.3em;
+            font-weight: bold;
+            color: #4CAF50;
+        }
+
+        .stat-label {
+            font-size: 0.75em;
+            color: #BDBDBD;
         }
 
         .controls-panel {
@@ -345,12 +447,30 @@
             </div>
             
             <div class="chat-input-area">
+                <!-- Zone de prévisualisation du fichier -->
+                <div class="file-preview" id="filePreview" style="display: none;">
+                    <span class="file-icon" id="fileIcon">📊</span>
+                    <div class="file-info">
+                        <span class="file-name" id="fileName">fichier.xlsx</span>
+                        <span class="file-size" id="fileSize">0 KB</span>
+                    </div>
+                    <button class="remove-file" id="removeFile" title="Retirer le fichier">✕</button>
+                </div>
+                
                 <div class="input-row">
+                    <!-- Bouton d'upload caché -->
+                    <input 
+                        type="file" 
+                        id="fileInput" 
+                        class="file-input-hidden" 
+                        accept=".xlsx,.xls,.csv,.ods"
+                    >
+                    <button class="upload-button" id="uploadButton" title="Joindre un fichier Excel/CSV">📎</button>
                     <input 
                         type="text" 
                         class="text-input" 
                         id="textInput" 
-                        placeholder="Tapez votre message ici..." 
+                        placeholder="Tapez votre message ou uploadez un fichier Excel..." 
                         maxlength="1000"
                     >
                     <select class="task-type-select" id="taskTypeSelect">
@@ -359,6 +479,7 @@
                         <option value="strategie">🎯 Stratégie</option>
                         <option value="marketing">📈 Marketing</option>
                         <option value="finance">💰 Finance</option>
+                        <option value="analyse">📊 Analyse</option>
                         <option value="email">📧 Email</option>
                         <option value="ethique">⚖️ Éthique</option>
                         <option value="recherche">🔍 Recherche</option>
@@ -451,6 +572,17 @@
                 this.voiceButton = document.getElementById('voiceButton');
                 this.taskTypeSelect = document.getElementById('taskTypeSelect');
                 this.processingIndicator = document.getElementById('processingIndicator');
+                
+                // ✨ NOUVEAU: Elements upload fichier
+                this.uploadButton = document.getElementById('uploadButton');
+                this.fileInput = document.getElementById('fileInput');
+                this.filePreview = document.getElementById('filePreview');
+                this.fileName = document.getElementById('fileName');
+                this.fileSize = document.getElementById('fileSize');
+                this.fileIcon = document.getElementById('fileIcon');
+                this.removeFileBtn = document.getElementById('removeFile');
+                this.selectedFile = null;
+                this.sessionId = 'session-' + Math.random().toString(36).substr(2, 9);
                 
                 // Control elements
                 this.micStatus = document.getElementById('micStatus');
@@ -566,6 +698,106 @@
                 this.textInput.addEventListener('keypress', (e) => {
                     if (e.key === 'Enter' && !this.isProcessing) this.sendTextMessage();
                 });
+                
+                // ✨ NOUVEAU: Events pour l'upload de fichiers
+                this.uploadButton.addEventListener('click', () => this.fileInput.click());
+                this.fileInput.addEventListener('change', (e) => this.handleFileSelect(e));
+                this.removeFileBtn.addEventListener('click', () => this.removeSelectedFile());
+                
+                // Drag & Drop sur la zone de chat
+                this.chatMessages.addEventListener('dragover', (e) => {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    this.chatMessages.style.background = 'rgba(33, 150, 243, 0.1)';
+                    this.chatMessages.style.border = '2px dashed rgba(33, 150, 243, 0.5)';
+                });
+                
+                this.chatMessages.addEventListener('dragleave', (e) => {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    this.chatMessages.style.background = '';
+                    this.chatMessages.style.border = '';
+                });
+                
+                this.chatMessages.addEventListener('drop', (e) => {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    this.chatMessages.style.background = '';
+                    this.chatMessages.style.border = '';
+                    
+                    const files = e.dataTransfer.files;
+                    if (files.length > 0) {
+                        this.handleFileSelect({ target: { files } });
+                    }
+                });
+            }
+            
+            // ✨ NOUVEAU: Gestion de la sélection de fichier
+            handleFileSelect(event) {
+                const file = event.target.files[0];
+                if (!file) return;
+                
+                // Vérifier le type de fichier
+                const allowedTypes = [
+                    'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+                    'application/vnd.ms-excel',
+                    'text/csv',
+                    'application/csv'
+                ];
+                const allowedExtensions = ['.xlsx', '.xls', '.csv', '.ods'];
+                const ext = '.' + file.name.split('.').pop().toLowerCase();
+                
+                if (!allowedTypes.includes(file.type) && !allowedExtensions.includes(ext)) {
+                    this.addErrorMessage('Type de fichier non supporté. Formats acceptés: Excel (.xlsx, .xls), CSV');
+                    return;
+                }
+                
+                // Vérifier la taille (50MB max)
+                if (file.size > 50 * 1024 * 1024) {
+                    this.addErrorMessage('Fichier trop volumineux (max 50MB)');
+                    return;
+                }
+                
+                this.selectedFile = file;
+                this.showFilePreview(file);
+                this.uploadButton.classList.add('has-file');
+            }
+            
+            showFilePreview(file) {
+                // Déterminer l'icône selon le type
+                const ext = file.name.split('.').pop().toLowerCase();
+                const icons = {
+                    'xlsx': '📊',
+                    'xls': '📊',
+                    'csv': '📄',
+                    'ods': '📊'
+                };
+                this.fileIcon.textContent = icons[ext] || '📎';
+                
+                // Afficher le nom et la taille
+                this.fileName.textContent = file.name;
+                this.fileSize.textContent = this.formatFileSize(file.size);
+                
+                // Afficher la preview
+                this.filePreview.style.display = 'flex';
+                
+                // Focus sur l'input de message
+                this.textInput.placeholder = 'Décrivez ce que vous voulez analyser...';
+                this.textInput.focus();
+            }
+            
+            removeSelectedFile() {
+                this.selectedFile = null;
+                this.fileInput.value = '';
+                this.filePreview.style.display = 'none';
+                this.uploadButton.classList.remove('has-file');
+                this.textInput.placeholder = 'Tapez votre message ou uploadez un fichier Excel...';
+            }
+            
+            formatFileSize(bytes) {
+                if (bytes < 1024) return bytes + ' B';
+                if (bytes < 1024 * 1024) return (bytes / 1024).toFixed(1) + ' KB';
+                return (bytes / (1024 * 1024)).toFixed(1) + ' MB';
             }
 
             toggleListening() {
@@ -588,9 +820,94 @@
 
             sendTextMessage() {
                 const message = this.textInput.value.trim();
+                
+                // Si un fichier est sélectionné, envoyer avec le fichier
+                if (this.selectedFile) {
+                    this.sendMessageWithFile(message || 'Analyse ce fichier et donne-moi les statistiques principales');
+                    return;
+                }
+                
                 if (message && !this.isProcessing) {
                     this.sendMessage(message);
                     this.textInput.value = '';
+                }
+            }
+            
+            // ✨ NOUVEAU: Envoyer un message avec un fichier
+            async sendMessageWithFile(message) {
+                if (this.isProcessing) {
+                    this.addSystemMessage('⏳ Traitement en cours, veuillez patienter...');
+                    return;
+                }
+                
+                const file = this.selectedFile;
+                this.addUserMessage(`📎 ${file.name} - "${message}"`);
+                this.isProcessing = true;
+                this.showProcessingIndicator();
+                
+                // Disable inputs
+                this.textInput.disabled = true;
+                this.sendButton.disabled = true;
+                this.voiceButton.disabled = true;
+                this.uploadButton.disabled = true;
+                
+                try {
+                    const startTime = Date.now();
+                    
+                    // Créer le FormData
+                    const formData = new FormData();
+                    formData.append('file', file);
+                    formData.append('message', message);
+                    formData.append('sessionId', this.sessionId);
+                    
+                    // Appeler l'API d'upload
+                    const response = await fetch('/api/chat/upload', {
+                        method: 'POST',
+                        body: formData
+                    });
+                    
+                    const endTime = Date.now();
+                    const responseTime = endTime - startTime;
+                    
+                    const data = await response.json();
+                    
+                    if (!data.success) {
+                        throw new Error(data.error?.message || data.userMessage || 'Erreur d\'analyse');
+                    }
+                    
+                    this.updateMetrics(responseTime, 'EXCEL', true);
+                    
+                    // Afficher la réponse avec les métadonnées du fichier
+                    let responseContent = data.data.response || data.data.aiInsights?.content || 'Analyse terminée';
+                    
+                    // Ajouter les métadonnées du fichier
+                    if (data.data.metadata) {
+                        const meta = data.data.metadata;
+                        responseContent = `📊 **Fichier analysé:** ${meta.fileName}\n` +
+                            `📁 ${meta.rowCount || '?'} lignes × ${meta.columnCount || '?'} colonnes\n\n` +
+                            responseContent;
+                    }
+                    
+                    this.addPrismMessage(responseContent, { model: 'EXCEL-ANALYZER' });
+                    
+                    // Nettoyer le fichier sélectionné
+                    this.removeSelectedFile();
+                    this.textInput.value = '';
+                    
+                } catch (error) {
+                    console.error('[PRISM] Erreur upload:', error);
+                    this.updateMetrics(0, null, false);
+                    this.addErrorMessage(`Erreur d'analyse: ${error.message}`);
+                } finally {
+                    this.isProcessing = false;
+                    this.hideProcessingIndicator();
+                    
+                    // Re-enable inputs
+                    this.textInput.disabled = false;
+                    this.sendButton.disabled = false;
+                    this.voiceButton.disabled = false;
+                    this.uploadButton.disabled = false;
+                    this.textInput.focus();
                 }
             }
 

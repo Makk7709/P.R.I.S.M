@@ -8,6 +8,10 @@ import { EventEmitter } from 'events';
 import crypto from 'crypto';
 import fs from 'fs/promises';
 import path from 'path';
+import {
+  validateJournalEntryInput,
+  validateJournalEntryOutput
+} from '../security/contracts/journal.js';
 
 /**
  * Types d'événements journalisés
@@ -315,9 +319,34 @@ export class SecureJournalManager extends EventEmitter {
       throw new Error('Journal is recovering, cannot add entries');
     }
     
+    // VALIDATION FAIL-CLOSED: Vérifier que l'input est conforme au schéma
+    let validatedInput;
     try {
-      // Créer l'entrée
-      const entry = new JournalEntry(eventType, payload, metadata);
+      validatedInput = validateJournalEntryInput({
+        eventType,
+        payload,
+        metadata
+      });
+    } catch (error) {
+      // Log structuré du rejet
+      const logEntry = {
+        timestamp: Date.now(),
+        event: 'schema_validation_failed',
+        module: 'SecureJournalManager.addEntry',
+        error: error.message,
+        eventType
+      };
+      console.error('🚫 FAIL-CLOSED: Journal entry rejected (schema validation):', logEntry);
+      throw error; // Fail-closed: rejeter explicitement
+    }
+    
+    try {
+      // Créer l'entrée avec données validées
+      const entry = new JournalEntry(
+        validatedInput.eventType,
+        validatedInput.payload,
+        validatedInput.metadata || {}
+      );
       entry.sequence = ++this.currentSequence;
       entry.hash = entry.calculateHash();
       
@@ -339,6 +368,24 @@ export class SecureJournalManager extends EventEmitter {
         sequence: entry.sequence,
         timestamp: entry.timestamp
       });
+      
+      // VALIDATION FAIL-CLOSED: Vérifier que la sortie est conforme
+      try {
+        const output = {
+          id: entry.id,
+          timestamp: entry.timestamp,
+          eventType: entry.eventType,
+          payload: entry.payload,
+          metadata: entry.metadata,
+          sequence: entry.sequence,
+          hash: entry.hash,
+          signature: entry.signature
+        };
+        validateJournalEntryOutput(output);
+      } catch (error) {
+        // Log mais ne pas bloquer (sortie déjà générée)
+        console.warn('⚠️ Journal entry output validation warning:', error.message);
+      }
       
       return entry.id;
       

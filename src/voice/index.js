@@ -1,14 +1,14 @@
 /**
- * PRISM Voice Module - Exports
+ * Voice Module - Exports
  * 
- * Point d'entrée pour tous les modules audio/voix.
- * 
- * @module voice
+ * @module src/voice
  */
 
-export { VoiceController, AudioState, AudioEvent } from './VoiceController.js';
-export { AudioMutex } from './AudioMutex.js';
-export { MessageTracker } from './MessageTracker.js';
-export { AudioQueue } from './AudioQueue.js';
-export { ElevenLabsClient } from './ElevenLabsClient.js';
+export { 
+  ResponseModeManager, 
+  VoiceOptimizer,
+  InputMode, 
+  ResponseMode 
+} from './ResponseModeManager.js';
 
+export { ResponseModeManager as default } from './ResponseModeManager.js';
