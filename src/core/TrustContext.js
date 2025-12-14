@@ -17,6 +17,7 @@ import {
   validateSignedApproval,
   SignedApprovalSchema
 } from '../security/contracts/trustcontext.js';
+import { getKeyRegistry } from './KeyRegistry.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -60,10 +61,16 @@ export class TrustContext extends EventEmitter {
         'admin_master_key_hash'
       ],
       
-      // Répertoire pour clés publiques des approvers
+      // Répertoire pour clés publiques des approvers (legacy: fichiers .pub)
       keyDir: config.keyDir || path.join(process.cwd(), 'keys', 'approvers'),
       
-      // Mapping approver keyId → clé publique PEM (peut être chargé depuis fichiers)
+      // KeyRegistry (TRL 5: gestion centralisée avec révocation)
+      keyRegistry: config.keyRegistry || getKeyRegistry({
+        registryPath: process.env.TRUSTCONTEXT_KEYREGISTRY_PATH || 
+          path.join(process.cwd(), 'data', 'key-registry.json')
+      }),
+      
+      // Mapping approver keyId → clé publique PEM (legacy, fallback si KeyRegistry non disponible)
       approverPublicKeys: config.approverPublicKeys || new Map(),
       
       // Politique de gouvernance: criticité → rôles autorisés
@@ -152,26 +159,49 @@ export class TrustContext extends EventEmitter {
   }
 
   /**
-   * Charge les clés publiques des approvers depuis le répertoire keyDir
+   * Charge les clés publiques des approvers (KeyRegistry prioritaire, fallback fichiers)
    * @private
    */
   async _loadApproverPublicKeys() {
     try {
-      await fs.mkdir(this.config.keyDir, { recursive: true });
-      const files = await fs.readdir(this.config.keyDir).catch(() => []);
-      
-      for (const file of files) {
-        if (file.endsWith('.pub')) {
-          const keyId = path.basename(file, '.pub');
-          const keyPath = path.join(this.config.keyDir, file);
-          try {
-            const publicKeyPem = await fs.readFile(keyPath, 'utf8');
-            this.config.approverPublicKeys.set(keyId, publicKeyPem);
-            console.log(`[TrustContext] Loaded public key for approver: ${keyId}`);
-          } catch (error) {
-            console.warn(`[TrustContext] Failed to load key ${keyId}:`, error.message);
+      // 1. Initialiser KeyRegistry (TRL 5)
+      try {
+        await this.config.keyRegistry.initialize();
+        const activeKeys = this.config.keyRegistry.listActiveKeys();
+        for (const key of activeKeys) {
+          const publicKeyPem = this.config.keyRegistry.getPublicKey(key.keyId);
+          if (publicKeyPem) {
+            this.config.approverPublicKeys.set(key.keyId, publicKeyPem);
+            console.log(`[TrustContext] Loaded key from registry: ${key.keyId} (roles: ${key.roleBindings.join(', ')})`);
           }
         }
+      } catch (error) {
+        console.warn('[TrustContext] KeyRegistry initialization failed, falling back to file-based keys:', error.message);
+      }
+      
+      // 2. Fallback: charger depuis fichiers .pub (legacy)
+      try {
+        await fs.mkdir(this.config.keyDir, { recursive: true });
+        const files = await fs.readdir(this.config.keyDir).catch(() => []);
+        
+        for (const file of files) {
+          if (file.endsWith('.pub')) {
+            const keyId = path.basename(file, '.pub');
+            // Ne pas écraser si déjà chargé depuis registry
+            if (!this.config.approverPublicKeys.has(keyId)) {
+              const keyPath = path.join(this.config.keyDir, file);
+              try {
+                const publicKeyPem = await fs.readFile(keyPath, 'utf8');
+                this.config.approverPublicKeys.set(keyId, publicKeyPem);
+                console.log(`[TrustContext] Loaded public key from file: ${keyId}`);
+              } catch (error) {
+                console.warn(`[TrustContext] Failed to load key ${keyId}:`, error.message);
+              }
+            }
+          }
+        }
+      } catch (error) {
+        console.warn('[TrustContext] Failed to load keys from directory:', error.message);
       }
     } catch (error) {
       console.warn('[TrustContext] Failed to load approver keys:', error.message);
@@ -347,7 +377,7 @@ export class TrustContext extends EventEmitter {
     }
 
     // Vérifier l'approbation signée (signature + digest + autorisation)
-    const verification = this.verifyApproval(validatedApproval, decision);
+    const verification = await this.verifyApproval(validatedApproval, decision);
     
     if (!verification.valid) {
       // Audit entry explicite pour rejet
@@ -441,7 +471,7 @@ export class TrustContext extends EventEmitter {
     }
 
     // Vérifier l'approbation signée (signature + digest + autorisation)
-    const verification = this.verifyApproval(validatedApproval, decision);
+    const verification = await this.verifyApproval(validatedApproval, decision);
     
     if (!verification.valid) {
       // Audit entry explicite pour rejet
@@ -821,9 +851,9 @@ export class TrustContext extends EventEmitter {
    * Fail-closed: toute erreur => rejet explicite
    * @param {Object} signedApproval - Approval signée (format SignedApprovalSchema)
    * @param {Object} decision - Décision en attente
-   * @returns {Object} { valid: boolean, error?: string, errorCode?: string }
+   * @returns {Promise<Object>} { valid: boolean, error?: string, errorCode?: string }
    */
-  verifyApproval(signedApproval, decision) {
+  async verifyApproval(signedApproval, decision) {
     // 1. Validation Zod stricte
     try {
       validateSignedApproval(signedApproval);
@@ -872,7 +902,7 @@ export class TrustContext extends EventEmitter {
     }
 
     // 6. Vérifier signature cryptographique Ed25519
-    const verificationResult = this._verifySignature(signedApproval);
+    const verificationResult = await this._verifySignature(signedApproval);
     if (!verificationResult.valid) {
       return verificationResult;
     }
@@ -881,19 +911,75 @@ export class TrustContext extends EventEmitter {
   }
 
   /**
+   * Canonicalise le payload d'une approbation pour signature/vérification
+   * RÈGLE: Même canonicalisation pour sign ET verify (même ordre, même champs)
+   * @private
+   * @param {Object} approval - Approval (sans signature)
+   * @returns {string} Payload canonique JSON
+   */
+  _canonicalizeApprovalPayload(approval) {
+    // Ne jamais inclure 'signature' dans le payload signé
+    // Ne pas inclure 'nonce' si undefined/null (pour correspondre à createSignedApproval)
+    const payload = {
+      approvalId: approval.approvalId,
+      decisionId: approval.decisionId,
+      decisionDigest: approval.decisionDigest,
+      approver: approval.approver,
+      verdict: approval.verdict,
+      reason: approval.reason,
+      issuedAt: approval.issuedAt,
+      expiresAt: approval.expiresAt
+      // nonce: omis si undefined/null (comme dans createSignedApproval)
+    };
+    
+    // Si nonce est présent et défini, l'inclure
+    if (approval.nonce !== undefined && approval.nonce !== null) {
+      payload.nonce = approval.nonce;
+    }
+    
+    // Tri stable des clés pour canonicalisation
+    return JSON.stringify(payload, Object.keys(payload).sort());
+  }
+
+  /**
    * Vérifie la signature Ed25519 d'une approbation
    * @private
    * @param {Object} signedApproval - Approval signée
    * @returns {Object} { valid: boolean, error?: string, errorCode?: string }
    */
-  _verifySignature(signedApproval) {
+  async _verifySignature(signedApproval) {
     // En mode TEST, accepter signatures de test (pour tests unitaires)
     if (this.config.mode === 'TEST' && signedApproval.approver.id.startsWith('test_')) {
       return { valid: true };
     }
 
-    // Récupérer la clé publique
-    const publicKeyPem = this.config.approverPublicKeys.get(signedApproval.approver.keyId);
+    // Récupérer la clé publique (KeyRegistry prioritaire)
+    let publicKeyPem = null;
+    
+    // 1. Essayer KeyRegistry (TRL 5)
+    if (this.config.keyRegistry) {
+      try {
+        await this.config.keyRegistry.initialize();
+        if (this.config.keyRegistry.isActive(signedApproval.approver.keyId)) {
+          publicKeyPem = this.config.keyRegistry.getPublicKey(signedApproval.approver.keyId);
+        } else {
+          // Clé révoquée ou inactive
+          return {
+            valid: false,
+            error: `Key ${signedApproval.approver.keyId} is revoked or inactive`,
+            errorCode: 'KEY_UNKNOWN'
+          };
+        }
+      } catch (error) {
+        // Fallback sur approverPublicKeys Map
+        console.warn('[TrustContext] KeyRegistry lookup failed, using fallback:', error.message);
+      }
+    }
+    
+    // 2. Fallback: Map legacy
+    if (!publicKeyPem) {
+      publicKeyPem = this.config.approverPublicKeys.get(signedApproval.approver.keyId);
+    }
     
     if (!publicKeyPem) {
       return {
@@ -904,22 +990,6 @@ export class TrustContext extends EventEmitter {
     }
 
     try {
-      // Canonicaliser le payload (sans signature)
-      const payload = {
-        approvalId: signedApproval.approvalId,
-        decisionId: signedApproval.decisionId,
-        decisionDigest: signedApproval.decisionDigest,
-        approver: signedApproval.approver,
-        verdict: signedApproval.verdict,
-        reason: signedApproval.reason,
-        issuedAt: signedApproval.issuedAt,
-        expiresAt: signedApproval.expiresAt,
-        nonce: signedApproval.nonce
-      };
-      
-      const canonicalPayload = JSON.stringify(payload, Object.keys(payload).sort());
-      const messageBuffer = Buffer.from(canonicalPayload, 'utf8');
-      
       // Vérifier que la signature est présente
       if (!signedApproval.signature || typeof signedApproval.signature !== 'string') {
         return {
@@ -929,6 +999,12 @@ export class TrustContext extends EventEmitter {
         };
       }
 
+      // Canonicaliser le payload (même logique que createSignedApproval)
+      // Utiliser la fonction partagée pour garantir identité
+      const canonicalPayload = this._canonicalizeApprovalPayload(signedApproval);
+      const messageBuffer = Buffer.from(canonicalPayload, 'utf8');
+      
+      // Signature en hex (unifié avec createSignedApproval)
       const signatureBuffer = Buffer.from(signedApproval.signature, 'hex');
 
       // Vérifier signature Ed25519
@@ -1142,6 +1218,33 @@ export function getTrustContext(config = {}) {
  * @param {string} params.privateKeyPem - Clé privée PEM pour signer
  * @returns {Object} SignedApproval avec signature
  */
+/**
+ * Canonicalise le payload d'une approbation (fonction partagée)
+ * @param {Object} approval - Approval (sans signature)
+ * @returns {string} Payload canonique JSON
+ */
+function canonicalizeApprovalPayload(approval) {
+  // Même logique que _canonicalizeApprovalPayload dans TrustContext
+  const payload = {
+    approvalId: approval.approvalId,
+    decisionId: approval.decisionId,
+    decisionDigest: approval.decisionDigest,
+    approver: approval.approver,
+    verdict: approval.verdict,
+    reason: approval.reason,
+    issuedAt: approval.issuedAt,
+    expiresAt: approval.expiresAt
+  };
+  
+  // Si nonce est présent et défini, l'inclure
+  if (approval.nonce !== undefined && approval.nonce !== null) {
+    payload.nonce = approval.nonce;
+  }
+  
+  // Tri stable des clés pour canonicalisation
+  return JSON.stringify(payload, Object.keys(payload).sort());
+}
+
 export function createSignedApproval({
   approvalId,
   decisionId,
@@ -1151,9 +1254,10 @@ export function createSignedApproval({
   reason,
   issuedAt,
   expiresAt,
+  nonce,
   privateKeyPem
 }) {
-  // Créer payload canonique (sans signature)
+  // Créer payload (sans signature)
   const payload = {
     approvalId,
     decisionId,
@@ -1162,15 +1266,17 @@ export function createSignedApproval({
     verdict,
     reason,
     issuedAt,
-    expiresAt
+    expiresAt,
+    nonce
   };
 
-  // Canonicaliser
-  const canonicalPayload = JSON.stringify(payload, Object.keys(payload).sort());
+  // Canonicaliser (MÊME fonction que verify)
+  const canonicalPayload = canonicalizeApprovalPayload(payload);
   const messageBuffer = Buffer.from(canonicalPayload, 'utf8');
 
-  // Signer avec Ed25519
+  // Signer avec Ed25519 (algo NULL pour Ed25519)
   const signature = crypto.sign(null, messageBuffer, privateKeyPem);
+  // Signature en hex (unifié avec verify)
   const signatureHex = signature.toString('hex');
 
   return {
