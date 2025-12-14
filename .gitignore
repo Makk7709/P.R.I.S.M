@@ -336,3 +336,8 @@ BREVET_PRISM_*.doc
 *.patent
 *_INPI_*.docx
 *_INPI_*.pdf
+
+# Runtime state files (initialized from .sample files)
+data/server-memory.json
+test_orchestration_journal/checkpoint.json
+test_journal/checkpoint.json
