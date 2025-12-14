@@ -15,7 +15,7 @@ import { fileURLToPath } from 'url';
 import { performance } from 'perf_hooks';
 import { TrustContext, CriticalityLevel, createSignedApproval } from '../src/core/TrustContext.js';
 import { HybridOrchestrator } from '../src/orchestrator/HybridOrchestrator.js';
-import { KeyRegistry } from '../src/core/KeyRegistry.js';
+import { KeyRegistry as KeyRegistryClass } from '../src/core/KeyRegistry.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
