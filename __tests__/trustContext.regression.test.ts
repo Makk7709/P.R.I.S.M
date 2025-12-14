@@ -243,7 +243,7 @@ describe('TrustContext - Tests de Régression', () => {
       const result = await trustContext.approveDecision(wrongDigestApproval);
       expect(result).toBe(false);
 
-      const verification = (trustContext as any).verifyApproval(wrongDigestApproval, decision);
+      const verification = await (trustContext as any).verifyApproval(wrongDigestApproval, decision);
       expect(verification.errorCode).toBe('DIGEST_MISMATCH');
     });
   });
