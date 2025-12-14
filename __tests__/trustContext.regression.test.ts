@@ -122,7 +122,7 @@ describe('TrustContext - Tests de Régression', () => {
       expect(result).toBe(false);
 
       // Vérifier code d'erreur
-      const verification = (trustContext as any).verifyApproval(unknownKeyApproval, decision);
+      const verification = await (trustContext as any).verifyApproval(unknownKeyApproval, decision);
       expect(verification.errorCode).toBe('KEY_UNKNOWN');
     });
   });
