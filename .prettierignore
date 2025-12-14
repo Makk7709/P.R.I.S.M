@@ -1,0 +1,10 @@
+node_modules/
+dist/
+coverage/
+.prism-snapshots/
+*.min.js
+package-lock.json
+pnpm-lock.yaml
+yarn.lock
+**/legacy_tests/**
+__tests_legacy__/**
