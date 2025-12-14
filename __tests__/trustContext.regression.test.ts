@@ -302,7 +302,7 @@ describe('TrustContext - Tests de Régression', () => {
       expect(result).toBe(false);
 
       const verification = await (trustContext as any).verifyApproval(wrongIdApproval, decision1);
-      expect(verification.errorCode).toBe('DIGEST_MISMATCH');
+      expect(verification.errorCode).toBe('DECISION_ID_MISMATCH');
     });
   });
 });
