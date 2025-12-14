@@ -9,6 +9,7 @@ import fs from 'fs/promises';
 import path from 'path';
 import { fileURLToPath } from 'url';
 import { TrustContext, CriticalityLevel, createSignedApproval } from '../src/core/TrustContext.js';
+import { KeyRegistry as KeyRegistryClass } from '../src/core/KeyRegistry.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -243,7 +244,7 @@ describe('TrustContext - Tests de Régression', () => {
       const result = await trustContext.approveDecision(wrongDigestApproval);
       expect(result).toBe(false);
 
-      const verification = await (trustContext as any).verifyApproval(wrongDigestApproval, decision);
+      const verification = (trustContext as any).verifyApproval(wrongDigestApproval, decision);
       expect(verification.errorCode).toBe('DIGEST_MISMATCH');
     });
   });
@@ -284,7 +285,7 @@ describe('TrustContext - Tests de Régression', () => {
       const result = await trustContext.approveDecision(wrongIdApproval);
       expect(result).toBe(false);
 
-      const verification = (trustContext as any).verifyApproval(wrongIdApproval, decision1);
+      const verification = await (trustContext as any).verifyApproval(wrongIdApproval, decision1);
       expect(verification.errorCode).toBe('DIGEST_MISMATCH');
     });
   });
