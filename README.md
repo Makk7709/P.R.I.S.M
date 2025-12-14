@@ -109,6 +109,54 @@ npm run start:monitoring
 
 ---
 
+## 👨‍💻 Development
+
+### Quality Standards
+PRISM enforces strict quality gates via automated checks. See [Quality Contract](./docs/QUALITY.md) for details.
+
+**Commands**:
+```bash
+# Format code
+npm run format
+
+# Lint code
+npm run lint
+npm run lint:fix  # Auto-fix issues
+
+# Type check (checkJs)
+npm run typecheck
+
+# Run core tests (CI-blocking)
+npm test
+
+# Run legacy tests (quarantine, non-blocking)
+npm run test:legacy
+
+# Run property-based tests
+npm run test:properties
+```
+
+**Pre-commit hooks** automatically:
+- Format staged files
+- Lint staged files
+- Run core tests (must pass)
+
+**CI/CD** runs quality gates on every push/PR:
+- ✅ Format check (blocking)
+- ✅ Lint check (blocking)
+- ⚠️  Type check (warnings)
+- ✅ Core tests (blocking)
+- ⚠️  Legacy tests (quarantine, non-blocking)
+
+### Runtime Files
+Runtime state files are **untracked** (auto-initialized from samples):
+- `data/server-memory.json` → uses `data/server-memory.sample.json`
+- `test_orchestration_journal/checkpoint.json` → auto-initialized
+
+See [Quality Contract](./docs/QUALITY.md) for full policy.
+
+---
+
 ## 🔑 Usage
 
 ### API Consensus
