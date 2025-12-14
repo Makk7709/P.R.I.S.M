@@ -11,6 +11,7 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
 const MEMORY_FILE = path.join(__dirname, '../../data/server-memory.json');
+const MEMORY_SAMPLE = path.join(__dirname, '../../data/server-memory.sample.json');
 const MEMORY_DIR = path.dirname(MEMORY_FILE);
 
 export class ServerMemoryStore {
@@ -36,6 +37,7 @@ export class ServerMemoryStore {
 
   /**
    * Charge la mémoire depuis le fichier
+   * Crée automatiquement le fichier depuis le sample si absent
    */
   _loadMemory() {
     try {
@@ -43,6 +45,24 @@ export class ServerMemoryStore {
         const data = fs.readFileSync(MEMORY_FILE, 'utf8');
         this.memory = JSON.parse(data);
         console.log(`[ServerMemoryStore] Mémoire chargée: ${this.memory.conversations.length} conversations`);
+      } else {
+        // Fichier absent : initialiser depuis sample ou defaults
+        if (fs.existsSync(MEMORY_SAMPLE)) {
+          const sampleData = fs.readFileSync(MEMORY_SAMPLE, 'utf8');
+          this.memory = JSON.parse(sampleData);
+          fs.writeFileSync(MEMORY_FILE, JSON.stringify(this.memory, null, 2), 'utf8');
+          console.log('[ServerMemoryStore] Fichier mémoire initialisé depuis sample');
+        } else {
+          // Pas de sample : utiliser defaults
+          this.memory = {
+            conversations: [],
+            userInfo: {},
+            interactions: [],
+            lastUpdated: null
+          };
+          fs.writeFileSync(MEMORY_FILE, JSON.stringify(this.memory, null, 2), 'utf8');
+          console.log('[ServerMemoryStore] Fichier mémoire initialisé avec defaults');
+        }
       }
     } catch (error) {
       console.warn('[ServerMemoryStore] Erreur chargement mémoire:', error.message);
