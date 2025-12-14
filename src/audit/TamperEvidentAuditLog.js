@@ -310,18 +310,24 @@ export class TamperEvidentAuditLog extends EventEmitter {
       .update(payloadStr, 'utf8')
       .digest('hex');
     
-    // Vérifier rotation
+    // Vérifier rotation (seulement si currentFile existe déjà)
     if (this.currentFile && this.config.rotationStrategy === 'size') {
       try {
         const stats = await fs.stat(this.currentFile);
         if (stats.size >= this.config.maxFileSize) {
-          // Rotation nécessaire
+          // Rotation nécessaire: créer nouveau fichier mais CONSERVER lastHash pour chaîner
           this.currentFile = this._getCurrentLogFilePath();
-          this.lastHash = 'GENESIS'; // Nouveau segment commence avec GENESIS
+          // NOTE: Ne PAS réinitialiser lastHash à 'GENESIS' ici
+          // Le premier record du nouveau fichier doit continuer la chaîne avec prevHash = this.lastHash
         }
       } catch (error) {
-        // Fichier n'existe pas encore, utiliser le chemin
+        // Fichier n'existe pas encore, c'est OK - currentFile sera utilisé pour le premier append
       }
+    }
+    
+    // Si currentFile n'est pas défini, l'initialiser
+    if (!this.currentFile) {
+      this.currentFile = this._getCurrentLogFilePath();
     }
     
     // Créer le record (sans hash et sig pour l'instant)
