@@ -38,13 +38,51 @@ describe('Journal / Audit Log - Property-Based Tests', () => {
   
   describe('F) Append→Verify Invariant', () => {
     
+    // Test de régression avec counterexample connu
+    it('REGRESSION: DOIT passer avec numEvents=18 (counterexample seed 424242)', async () => {
+      const numEvents = 18;
+      const testId = `test-${numEvents}`;
+      const logDir = path.join(testBaseDir, testId, 'log');
+      const keyDir = path.join(testBaseDir, testId, 'keys');
+      
+      await fs.mkdir(logDir, { recursive: true });
+      await fs.mkdir(keyDir, { recursive: true });
+      
+      const auditLog = new TamperEvidentAuditLog({
+        logDir,
+        keyDir,
+        pubKeyId: 'test-key'
+      });
+      
+      await auditLog.initialize();
+      
+      // Append N events
+      for (let i = 0; i < numEvents; i++) {
+        await auditLog.appendAuditEvent({
+          correlationId: `test-${i}`,
+          eventType: 'test_event',
+          payload: { index: i, data: `test data ${i}` }
+        });
+      }
+      
+      // Verify doit retourner OK
+      const verifyResult = await auditLog.verifyAuditLog();
+      
+      expect(verifyResult.ok).toBe(true);
+      expect(verifyResult.stats.checked).toBe(numEvents);
+    });
+    
     it('DOIT retourner OK après N appends valides', async () => {
+      let runIndex = 0; // Index de run pour isoler chaque test property
       await fc.assert(
         fc.asyncProperty(
           fc.integer({ min: 1, max: 50 }), // N events
           async (numEvents) => {
-            const logDir = path.join(testBaseDir, `test-${Date.now()}-${Math.random()}`);
-            const keyDir = path.join(testBaseDir, `keys-${Date.now()}`);
+            const currentRun = runIndex++;
+            // Use deterministic directory names with run index to ensure isolation
+            const testId = `test-${numEvents}-run${currentRun}`;
+            const logDir = path.join(testBaseDir, testId, 'log');
+            const keyDir = path.join(testBaseDir, testId, 'keys');
             
             // Créer répertoires
             await fs.mkdir(logDir, { recursive: true });
@@ -58,7 +96,7 @@ describe('Journal / Audit Log - Property-Based Tests', () => {
             
             await auditLog.initialize();
             
-            // Append N events
+            // Append N events (séquentiellement pour éviter race conditions)
             for (let i = 0; i < numEvents; i++) {
               await auditLog.appendAuditEvent({
                 correlationId: `test-${i}`,
@@ -66,6 +104,9 @@ describe('Journal / Audit Log - Property-Based Tests', () => {
                 payload: { index: i, data: `test data ${i}` }
               });
             }
+            
+            // Ensure all writes are flushed before verification
+            // (appendAuditEvent should already await, but explicit flush if needed)
             
             // Verify doit retourner OK
             const verifyResult = await auditLog.verifyAuditLog();
@@ -93,8 +134,10 @@ describe('Journal / Audit Log - Property-Based Tests', () => {
           fc.integer({ min: 0 }), // Index du record à corrompre
           fc.string(), // Nouvelle valeur (corruption)
           async (numEvents, corruptIndex, corruptValue) => {
-            const logDir = path.join(testBaseDir, `test-${Date.now()}-${Math.random()}`);
-            const keyDir = path.join(testBaseDir, `keys-${Date.now()}`);
+            // Use deterministic directory names - already unique via corruptIndex
+            const testId = `tamper-${numEvents}-${corruptIndex}-${corruptValue.substring(0, 10)}`;
+            const logDir = path.join(testBaseDir, testId, 'log');
+            const keyDir = path.join(testBaseDir, testId, 'keys');
             
             const auditLog = new TamperEvidentAuditLog({
               logDir,
@@ -144,7 +187,8 @@ describe('Journal / Audit Log - Property-Based Tests', () => {
         ),
         {
           numRuns: 50, // Réduire car modification de fichiers
-          timeout: 30000
+          timeout: 30000,
+          seed: 424242 // Seed fixe pour reproductibilité
         }
       );
     });
@@ -153,12 +197,16 @@ describe('Journal / Audit Log - Property-Based Tests', () => {
   describe('H) Rotation', () => {
     
     it('DOIT gérer rotation et verify sur tous segments => OK', async () => {
+      let runIndex = 0; // Index de run pour isoler chaque test property
       await fc.assert(
         fc.asyncProperty(
           fc.integer({ min: 10, max: 30 }), // N events (suffisant pour rotation si maxFileSize petit)
           async (numEvents) => {
-            const logDir = path.join(testBaseDir, `test-${Date.now()}-${Math.random()}`);
-            const keyDir = path.join(testBaseDir, `keys-${Date.now()}`);
+            const currentRun = runIndex++;
+            // Use deterministic directory names with run index to ensure isolation
+            const testId = `rotation-${numEvents}-run${currentRun}`;
+            const logDir = path.join(testBaseDir, testId, 'log');
+            const keyDir = path.join(testBaseDir, testId, 'keys');
             
             // Créer log avec maxFileSize très petit pour forcer rotation
             const auditLog = new TamperEvidentAuditLog({
@@ -171,7 +219,7 @@ describe('Journal / Audit Log - Property-Based Tests', () => {
             
             await auditLog.initialize();
             
-            // Append N events avec payloads volumineux
+            // Append N events avec payloads volumineux (séquentiellement)
             for (let i = 0; i < numEvents; i++) {
               await auditLog.appendAuditEvent({
                 correlationId: `test-${i}`,
@@ -179,6 +227,8 @@ describe('Journal / Audit Log - Property-Based Tests', () => {
                 payload: { index: i, largeData: 'x'.repeat(200) } // Payload volumineux
               });
             }
+            
+            // Ensure all writes are flushed before verification
             
             // Verify sur tous segments doit retourner OK
             const verifyResult = await auditLog.verifyAuditLog();
@@ -191,7 +241,8 @@ describe('Journal / Audit Log - Property-Based Tests', () => {
         ),
         {
           numRuns: 30, // Réduire car rotation de fichiers
-          timeout: 40000
+          timeout: 40000,
+          seed: 424242 // Seed fixe pour reproductibilité
         }
       );
     });
