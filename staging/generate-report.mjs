@@ -229,7 +229,7 @@ Toutes les vérifications suivantes sont **passées** :
 
 **Cryptographie**:
 - Signature Ed25519: format hex unifié (sign/verify)
-- Canonicalisation: fonction partagée `_canonicalizeApprovalPayload()` garantit identité sign/verify
+- Canonicalisation: fonction partagée garantit identité sign/verify
 - Keypair verification: méthode signature/vérification test message (plus fiable que fingerprint seul)
 - Fingerprints: SHA-256(SPKI DER) stockés dans KeyRegistry pour traçabilité
 
