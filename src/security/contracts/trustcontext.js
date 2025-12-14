@@ -63,6 +63,43 @@ export const ApprovalResponseSchema = z.object({
 }).strict();
 
 /**
+ * Schéma pour approbation signée (format canonique pour signature)
+ * Fail-closed: structure stricte pour non-répudiation
+ */
+export const SignedApprovalSchema = z.object({
+  approvalId: z.string().uuid(),
+  decisionId: z.string().min(1).max(200), // Token d'approbation
+  decisionDigest: z.string().length(64), // SHA-256 hex (64 chars)
+  approver: z.object({
+    id: z.string().min(1).max(200),
+    role: z.string().min(1).max(100), // Ex: 'lead', 'security', 'owner'
+    keyId: z.string().min(1).max(200) // Identifiant de la clé publique
+  }).strict(),
+  verdict: z.enum(['approve', 'reject']),
+  reason: z.string().max(5000).optional(),
+  issuedAt: z.number().int().positive(),
+  expiresAt: z.number().int().positive().optional(),
+  nonce: z.string().min(1).max(100).optional(), // Protection replay
+  signature: z.string().min(1).max(200) // Signature Ed25519 hex (requis)
+}).strict();
+
+/**
+ * Schéma pour résultat de vérification d'approbation
+ */
+export const ApprovalVerificationResultSchema = z.object({
+  valid: z.boolean(),
+  error: z.string().optional(),
+  errorCode: z.enum([
+    'SIGNATURE_INVALID',
+    'DIGEST_MISMATCH',
+    'AUTHORIZATION_FAILED',
+    'EXPIRED',
+    'KEY_UNKNOWN',
+    'SCHEMA_INVALID'
+  ]).optional()
+}).strict();
+
+/**
  * Validateur fail-closed pour TrustContext
  */
 export function validateCriticalDecisionRequest(data) {
@@ -96,6 +133,18 @@ export function validateApprovalResponse(data) {
     if (error instanceof z.ZodError) {
       const details = error.errors.map(e => `${e.path.join('.')}: ${e.message}`).join('; ');
       throw new Error(`ApprovalResponse validation failed (fail-closed): ${details}`);
+    }
+    throw error;
+  }
+}
+
+export function validateSignedApproval(data) {
+  try {
+    return SignedApprovalSchema.parse(data);
+  } catch (error) {
+    if (error instanceof z.ZodError) {
+      const details = error.errors.map(e => `${e.path.join('.')}: ${e.message}`).join('; ');
+      throw new Error(`SignedApproval validation failed (fail-closed): ${details}`);
     }
     throw error;
   }

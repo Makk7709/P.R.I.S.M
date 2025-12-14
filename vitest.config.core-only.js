@@ -24,6 +24,8 @@ export default defineConfig({
       // Audit/log tests
       '__tests__/audit/**/*.test.ts',
       '__tests__/audit/**/*.spec.ts',
+      // TrustContext regression tests
+      '__tests__/trustContext.regression.test.ts',
       // Core consensus tests
       'tests/consensus/**/*.spec.ts',
       // Security contracts tests (if any)

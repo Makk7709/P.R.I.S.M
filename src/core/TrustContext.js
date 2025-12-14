@@ -5,13 +5,21 @@
  * @author PRISM Security Team
  */
 
-import crypto from 'crypto';
+import crypto from 'node:crypto';
+import fs from 'fs/promises';
+import path from 'path';
+import { fileURLToPath } from 'url';
 import { EventEmitter } from 'events';
 import {
   validateCriticalDecisionRequest,
   validateApprovalRequest,
-  validateApprovalResponse
+  validateApprovalResponse,
+  validateSignedApproval,
+  SignedApprovalSchema
 } from '../security/contracts/trustcontext.js';
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
 /**
  * Niveaux de criticité des décisions
@@ -52,6 +60,20 @@ export class TrustContext extends EventEmitter {
         'admin_master_key_hash'
       ],
       
+      // Répertoire pour clés publiques des approvers
+      keyDir: config.keyDir || path.join(process.cwd(), 'keys', 'approvers'),
+      
+      // Mapping approver keyId → clé publique PEM (peut être chargé depuis fichiers)
+      approverPublicKeys: config.approverPublicKeys || new Map(),
+      
+      // Politique de gouvernance: criticité → rôles autorisés
+      governancePolicy: config.governancePolicy || {
+        [CriticalityLevel.LOW]: ['lead', 'security', 'owner'],
+        [CriticalityLevel.MEDIUM]: ['lead', 'security', 'owner'],
+        [CriticalityLevel.HIGH]: ['security', 'owner'],
+        [CriticalityLevel.CRITICAL]: ['owner'] // Option double-approval désactivable
+      },
+      
       // Délai d'expiration pour les approbations (30 minutes par défaut)
       approvalTimeoutMs: config.approvalTimeoutMs || 30 * 60 * 1000,
       
@@ -74,6 +96,10 @@ export class TrustContext extends EventEmitter {
     // Dernière auto-amélioration
     this.lastSelfImprovement = null;
     
+    // Intervalles (pour cleanup)
+    this._cleanupInterval = null;
+    this._metricsInterval = null;
+    
     // Métriques de sécurité
     this.securityMetrics = {
       totalDecisions: 0,
@@ -84,26 +110,72 @@ export class TrustContext extends EventEmitter {
       averageApprovalTime: 0
     };
 
-    // Initialisation
-    this.initialize();
+    // Initialisation (async, mais constructeur sync - initialisation différée)
+    this._initialized = false;
+    // Note: initialize() est async mais appelé depuis constructeur sync
+    // L'initialisation complète se fait au premier appel (lazy init si nécessaire)
   }
 
   /**
-   * Initialise le TrustContext
+   * Initialise le TrustContext (lazy init)
    * @private
    */
-  initialize() {
-    // Nettoyage périodique des décisions expirées
-    setInterval(() => {
-      this.cleanupExpiredDecisions();
-    }, 60000); // Toutes les minutes
+  async _ensureInitialized() {
+    if (this._initialized) return;
+    
+    // Charger clés publiques des approvers si disponible
+    await this._loadApproverPublicKeys();
+    
+    // Nettoyage périodique des décisions expirées (seulement une fois)
+    if (!this._cleanupInterval) {
+      this._cleanupInterval = setInterval(() => {
+        this.cleanupExpiredDecisions();
+      }, 60000);
+    }
 
-    // Mise à jour des métriques
-    setInterval(() => {
-      this.updateMetrics();
-    }, 5000); // Toutes les 5 secondes
+    // Mise à jour des métriques (seulement une fois)
+    if (!this._metricsInterval) {
+      this._metricsInterval = setInterval(() => {
+        this.updateMetrics();
+      }, 5000);
+    }
 
+    this._initialized = true;
     console.log('🔒 TrustContext initialized with security level:', this.config.minApprovalLevel);
+  }
+
+  /**
+   * Initialise le TrustContext (public, peut être appelé explicitement)
+   */
+  async initialize() {
+    await this._ensureInitialized();
+  }
+
+  /**
+   * Charge les clés publiques des approvers depuis le répertoire keyDir
+   * @private
+   */
+  async _loadApproverPublicKeys() {
+    try {
+      await fs.mkdir(this.config.keyDir, { recursive: true });
+      const files = await fs.readdir(this.config.keyDir).catch(() => []);
+      
+      for (const file of files) {
+        if (file.endsWith('.pub')) {
+          const keyId = path.basename(file, '.pub');
+          const keyPath = path.join(this.config.keyDir, file);
+          try {
+            const publicKeyPem = await fs.readFile(keyPath, 'utf8');
+            this.config.approverPublicKeys.set(keyId, publicKeyPem);
+            console.log(`[TrustContext] Loaded public key for approver: ${keyId}`);
+          } catch (error) {
+            console.warn(`[TrustContext] Failed to load key ${keyId}:`, error.message);
+          }
+        }
+      }
+    } catch (error) {
+      console.warn('[TrustContext] Failed to load approver keys:', error.message);
+    }
   }
 
   /**
@@ -142,16 +214,25 @@ export class TrustContext extends EventEmitter {
    * @returns {Promise<string>} Token d'approbation unique
    */
   async requireHumanApproval(decisionType, criticalityLevel, decisionData, context = {}) {
-    // Générer un hash unique pour cette décision
-    const decisionHash = this.generateDecisionHash(decisionType, decisionData, context);
-    
+    // Lazy init si nécessaire
+    await this._ensureInitialized();
     // Créer le token d'approbation
     const approvalToken = this.generateApprovalToken();
+    
+    // Calculer le DecisionDigest stable (sans timestamp)
+    // Le digest doit être calculable de manière identique lors de la vérification
+    const decisionDigest = this.computeDecisionDigest(
+      approvalToken,
+      decisionType,
+      criticalityLevel,
+      decisionData,
+      context
+    );
     
     // Enregistrer la décision en attente
     const decision = {
       token: approvalToken,
-      hash: decisionHash,
+      decisionDigest, // Digest stable pour vérification signature
       type: decisionType,
       criticality: criticalityLevel,
       data: decisionData,
@@ -172,6 +253,7 @@ export class TrustContext extends EventEmitter {
       token: approvalToken,
       type: decisionType,
       criticality: criticalityLevel,
+      decisionDigest,
       summary: this.generateDecisionSummary(decision),
       expiresAt: decision.expiresAt
     });
@@ -179,7 +261,7 @@ export class TrustContext extends EventEmitter {
     // Logger la demande
     console.log(`🔐 Human approval requested for ${decisionType} (${criticalityLevel})`, {
       token: approvalToken,
-      hash: decisionHash,
+      decisionDigest,
       expiresAt: new Date(decision.expiresAt).toISOString()
     });
 
@@ -226,106 +308,187 @@ export class TrustContext extends EventEmitter {
   }
 
   /**
-   * Approuve une décision (appelé par un superviseur autorisé)
-   * @param {string} approvalToken - Token d'approbation
-   * @param {string} supervisorId - ID du superviseur
-   * @param {string} supervisorSignature - Signature cryptographique
+   * Approuve une décision avec une approbation signée (fail-closed)
+   * @param {Object} signedApproval - Approval signée (format SignedApprovalSchema avec signature)
    * @returns {boolean} True si approuvé avec succès
    */
-  approveDecision(approvalToken, supervisorId, supervisorSignature) {
-    // Vérifier l'autorisation du superviseur
-    if (!this.verifySupervisor(supervisorId, supervisorSignature)) {
-      console.warn('🚫 Unauthorized approval attempt', { supervisorId, token: approvalToken });
+  async approveDecision(signedApproval) {
+    // Lazy init si nécessaire
+    await this._ensureInitialized();
+    // Fail-closed: validation stricte
+    let validatedApproval;
+    try {
+      validatedApproval = validateSignedApproval(signedApproval);
+    } catch (error) {
+      console.warn('🚫 FAIL-CLOSED: Invalid signed approval schema', {
+        error: error.message,
+        decisionId: signedApproval?.decisionId
+      });
       return false;
     }
 
-    const decision = this.pendingDecisions.get(approvalToken);
+    const decision = this.pendingDecisions.get(validatedApproval.decisionId);
     
     if (!decision || decision.status !== ApprovalStatus.PENDING) {
-      console.warn('🚫 Invalid approval attempt', { token: approvalToken, status: decision?.status });
+      console.warn('🚫 Invalid approval attempt', {
+        decisionId: validatedApproval.decisionId,
+        status: decision?.status
+      });
       return false;
     }
 
-    // Vérifier l'expiration
+    // Vérifier l'expiration de la demande
     if (Date.now() > decision.expiresAt) {
       decision.status = ApprovalStatus.EXPIRED;
       this.securityMetrics.expiredDecisions++;
       this.moveToHistory(decision);
-      this.pendingDecisions.delete(approvalToken);
+      this.pendingDecisions.delete(validatedApproval.decisionId);
+      return false;
+    }
+
+    // Vérifier l'approbation signée (signature + digest + autorisation)
+    const verification = this.verifyApproval(validatedApproval, decision);
+    
+    if (!verification.valid) {
+      // Audit entry explicite pour rejet
+      const auditEntry = {
+        timestamp: Date.now(),
+        event: 'approval_rejected',
+        decisionId: validatedApproval.decisionId,
+        decisionType: decision.type,
+        criticality: decision.criticality,
+        approverId: validatedApproval.approver.id,
+        approverRole: validatedApproval.approver.role,
+        errorCode: verification.errorCode,
+        error: verification.error
+      };
+      
+      console.warn('🚫 FAIL-CLOSED: Approval verification failed', auditEntry);
+      
+      // Émettre événement audit
+      this.emit('approval_verification_failed', auditEntry);
+      
       return false;
     }
 
     // Approuver la décision
     decision.status = ApprovalStatus.APPROVED;
-    decision.approvedBy = supervisorId;
+    decision.approvedBy = validatedApproval.approver.id;
     decision.approvalTimestamp = Date.now();
+    decision.signedApproval = validatedApproval; // Stocker l'approbation complète pour audit
     
     this.securityMetrics.approvedDecisions++;
     this.moveToHistory(decision);
-    this.pendingDecisions.delete(approvalToken);
+    this.pendingDecisions.delete(validatedApproval.decisionId);
 
     // Émettre l'événement d'approbation
     this.emit('decision_approved', {
-      token: approvalToken,
+      token: validatedApproval.decisionId,
       type: decision.type,
-      approvedBy: supervisorId,
-      timestamp: decision.approvalTimestamp
+      approvedBy: validatedApproval.approver.id,
+      approverRole: validatedApproval.approver.role,
+      timestamp: decision.approvalTimestamp,
+      decisionDigest: decision.decisionDigest
     });
 
-    console.log(`✅ Decision approved by ${supervisorId}`, {
-      token: approvalToken,
+    console.log(`✅ Decision approved by ${validatedApproval.approver.id} (${validatedApproval.approver.role})`, {
+      token: validatedApproval.decisionId,
       type: decision.type,
-      criticality: decision.criticality
+      criticality: decision.criticality,
+      decisionDigest: decision.decisionDigest
     });
 
     return true;
   }
 
   /**
-   * Rejette une décision
-   * @param {string} approvalToken - Token d'approbation
-   * @param {string} supervisorId - ID du superviseur
-   * @param {string} supervisorSignature - Signature cryptographique
-   * @param {string} reason - Raison du rejet
+   * Rejette une décision avec une approbation signée (fail-closed)
+   * @param {Object} signedApproval - Approval signée avec verdict='reject' (format SignedApprovalSchema avec signature)
    * @returns {boolean} True si rejeté avec succès
    */
-  rejectDecision(approvalToken, supervisorId, supervisorSignature, reason = '') {
-    // Vérifier l'autorisation du superviseur
-    if (!this.verifySupervisor(supervisorId, supervisorSignature)) {
-      console.warn('🚫 Unauthorized rejection attempt', { supervisorId, token: approvalToken });
+  async rejectDecision(signedApproval) {
+    // Lazy init si nécessaire
+    await this._ensureInitialized();
+    // Fail-closed: validation stricte
+    let validatedApproval;
+    try {
+      validatedApproval = validateSignedApproval(signedApproval);
+    } catch (error) {
+      console.warn('🚫 FAIL-CLOSED: Invalid signed rejection schema', {
+        error: error.message,
+        decisionId: signedApproval?.decisionId
+      });
       return false;
     }
 
-    const decision = this.pendingDecisions.get(approvalToken);
+    // Vérifier que verdict est 'reject'
+    if (validatedApproval.verdict !== 'reject') {
+      console.warn('🚫 FAIL-CLOSED: Invalid verdict for rejection', {
+        decisionId: validatedApproval.decisionId,
+        verdict: validatedApproval.verdict
+      });
+      return false;
+    }
+
+    const decision = this.pendingDecisions.get(validatedApproval.decisionId);
     
     if (!decision || decision.status !== ApprovalStatus.PENDING) {
-      console.warn('🚫 Invalid rejection attempt', { token: approvalToken, status: decision?.status });
+      console.warn('🚫 Invalid rejection attempt', {
+        decisionId: validatedApproval.decisionId,
+        status: decision?.status
+      });
+      return false;
+    }
+
+    // Vérifier l'approbation signée (signature + digest + autorisation)
+    const verification = this.verifyApproval(validatedApproval, decision);
+    
+    if (!verification.valid) {
+      // Audit entry explicite pour rejet
+      const auditEntry = {
+        timestamp: Date.now(),
+        event: 'rejection_verification_failed',
+        decisionId: validatedApproval.decisionId,
+        decisionType: decision.type,
+        criticality: decision.criticality,
+        approverId: validatedApproval.approver.id,
+        approverRole: validatedApproval.approver.role,
+        errorCode: verification.errorCode,
+        error: verification.error
+      };
+      
+      console.warn('🚫 FAIL-CLOSED: Rejection verification failed', auditEntry);
+      this.emit('approval_verification_failed', auditEntry);
+      
       return false;
     }
 
     // Rejeter la décision
     decision.status = ApprovalStatus.REJECTED;
-    decision.approvedBy = supervisorId;
+    decision.approvedBy = validatedApproval.approver.id;
     decision.approvalTimestamp = Date.now();
-    decision.rejectionReason = reason;
+    decision.rejectionReason = validatedApproval.reason || '';
+    decision.signedApproval = validatedApproval; // Stocker pour audit
     
     this.securityMetrics.rejectedDecisions++;
     this.moveToHistory(decision);
-    this.pendingDecisions.delete(approvalToken);
+    this.pendingDecisions.delete(validatedApproval.decisionId);
 
     // Émettre l'événement de rejet
     this.emit('decision_rejected', {
-      token: approvalToken,
+      token: validatedApproval.decisionId,
       type: decision.type,
-      rejectedBy: supervisorId,
-      reason: reason,
-      timestamp: decision.approvalTimestamp
+      rejectedBy: validatedApproval.approver.id,
+      approverRole: validatedApproval.approver.role,
+      reason: validatedApproval.reason || '',
+      timestamp: decision.approvalTimestamp,
+      decisionDigest: decision.decisionDigest
     });
 
-    console.log(`❌ Decision rejected by ${supervisorId}`, {
-      token: approvalToken,
+    console.log(`❌ Decision rejected by ${validatedApproval.approver.id} (${validatedApproval.approver.role})`, {
+      token: validatedApproval.decisionId,
       type: decision.type,
-      reason: reason
+      reason: validatedApproval.reason
     });
 
     return true;
@@ -559,7 +722,51 @@ export class TrustContext extends EventEmitter {
   }
 
   /**
-   * Génère un hash unique pour une décision
+   * Calcule un DecisionDigest stable (immutable) pour une décision
+   * Le digest est stable : même décision => même digest (sans timestamp)
+   * @param {string} decisionId - ID/token de la décision
+   * @param {string} decisionType - Type de décision
+   * @param {string} criticality - Niveau de criticité
+   * @param {Object} decisionData - Données de la décision
+   * @param {Object} context - Contexte (optionnel)
+   * @returns {string} DecisionDigest (SHA-256 hex, 64 chars)
+   */
+  computeDecisionDigest(decisionId, decisionType, criticality, decisionData, context = {}) {
+    // Canonicalisation stable : ordre des clés fixe, sans timestamp
+    const canonical = {
+      decisionId,
+      type: decisionType,
+      criticality,
+      data: this._canonicalizeObject(decisionData),
+      context: this._canonicalizeObject(context)
+    };
+    
+    // JSON.stringify avec replacer pour garantir ordre stable
+    const canonicalString = JSON.stringify(canonical, Object.keys(canonical).sort());
+    
+    return crypto.createHash('sha256').update(canonicalString, 'utf8').digest('hex');
+  }
+
+  /**
+   * Canonicalise un objet (ordre des clés stable, récursif)
+   * @private
+   */
+  _canonicalizeObject(obj) {
+    if (obj === null || obj === undefined) return obj;
+    if (typeof obj !== 'object') return obj;
+    if (Array.isArray(obj)) {
+      return obj.map(item => this._canonicalizeObject(item));
+    }
+    
+    const sorted = {};
+    for (const key of Object.keys(obj).sort()) {
+      sorted[key] = this._canonicalizeObject(obj[key]);
+    }
+    return sorted;
+  }
+
+  /**
+   * Génère un hash unique pour une décision (legacy, avec timestamp)
    * @private
    * @param {string} decisionType - Type de décision
    * @param {Object} decisionData - Données de la décision
@@ -587,26 +794,167 @@ export class TrustContext extends EventEmitter {
   }
 
   /**
-   * Vérifie l'autorisation d'un superviseur
-   * @private
-   * @param {string} supervisorId - ID du superviseur
-   * @param {string} signature - Signature cryptographique
+   * Vérifie si un approver est autorisé selon la politique de gouvernance
+   * @param {Object} approver - { id, role }
+   * @param {string} criticality - Niveau de criticité de la décision
    * @returns {boolean} True si autorisé
    */
-  verifySupervisor(supervisorId, signature) {
-    // En mode TEST, accepter les superviseurs de test
-    if (this.config.mode === 'TEST' && supervisorId.startsWith('test_supervisor_')) {
-      return true;
-    }
-
-    // Vérifier si le superviseur est dans la liste autorisée
-    if (!this.config.allowedSupervisors.includes(supervisorId)) {
+  isApproverAuthorized(approver, criticality) {
+    // Default deny: si role absent ou inconnu => rejet
+    if (!approver.role) {
       return false;
     }
 
-    // TODO: Implémenter la vérification cryptographique de la signature
-    // Pour l'instant, on accepte si l'ID est autorisé
-    return signature && signature.length > 0;
+    // Récupérer les rôles autorisés pour cette criticité
+    const allowedRoles = this.config.governancePolicy[criticality] || [];
+    
+    // Si aucune politique définie pour cette criticité => default deny
+    if (allowedRoles.length === 0) {
+      return false;
+    }
+
+    return allowedRoles.includes(approver.role);
+  }
+
+  /**
+   * Vérifie une approbation signée (signature + digest + autorisation)
+   * Fail-closed: toute erreur => rejet explicite
+   * @param {Object} signedApproval - Approval signée (format SignedApprovalSchema)
+   * @param {Object} decision - Décision en attente
+   * @returns {Object} { valid: boolean, error?: string, errorCode?: string }
+   */
+  verifyApproval(signedApproval, decision) {
+    // 1. Validation Zod stricte
+    try {
+      validateSignedApproval(signedApproval);
+    } catch (error) {
+      return {
+        valid: false,
+        error: `Schema validation failed: ${error.message}`,
+        errorCode: 'SCHEMA_INVALID'
+      };
+    }
+
+    // 2. Vérifier decisionDigest match
+    if (signedApproval.decisionDigest !== decision.decisionDigest) {
+      return {
+        valid: false,
+        error: 'Decision digest mismatch',
+        errorCode: 'DIGEST_MISMATCH'
+      };
+    }
+
+    // 3. Vérifier decisionId match
+    if (signedApproval.decisionId !== decision.token) {
+      return {
+        valid: false,
+        error: 'Decision ID mismatch',
+        errorCode: 'DIGEST_MISMATCH'
+      };
+    }
+
+    // 4. Vérifier expiration (si expiresAt présent)
+    if (signedApproval.expiresAt && Date.now() > signedApproval.expiresAt) {
+      return {
+        valid: false,
+        error: 'Approval signature expired',
+        errorCode: 'EXPIRED'
+      };
+    }
+
+    // 5. Vérifier autorisation (gouvernance policy)
+    if (!this.isApproverAuthorized(signedApproval.approver, decision.criticality)) {
+      return {
+        valid: false,
+        error: `Approver role '${signedApproval.approver.role}' not authorized for criticality '${decision.criticality}'`,
+        errorCode: 'AUTHORIZATION_FAILED'
+      };
+    }
+
+    // 6. Vérifier signature cryptographique Ed25519
+    const verificationResult = this._verifySignature(signedApproval);
+    if (!verificationResult.valid) {
+      return verificationResult;
+    }
+
+    return { valid: true };
+  }
+
+  /**
+   * Vérifie la signature Ed25519 d'une approbation
+   * @private
+   * @param {Object} signedApproval - Approval signée
+   * @returns {Object} { valid: boolean, error?: string, errorCode?: string }
+   */
+  _verifySignature(signedApproval) {
+    // En mode TEST, accepter signatures de test (pour tests unitaires)
+    if (this.config.mode === 'TEST' && signedApproval.approver.id.startsWith('test_')) {
+      return { valid: true };
+    }
+
+    // Récupérer la clé publique
+    const publicKeyPem = this.config.approverPublicKeys.get(signedApproval.approver.keyId);
+    
+    if (!publicKeyPem) {
+      return {
+        valid: false,
+        error: `Public key not found for keyId: ${signedApproval.approver.keyId}`,
+        errorCode: 'KEY_UNKNOWN'
+      };
+    }
+
+    try {
+      // Canonicaliser le payload (sans signature)
+      const payload = {
+        approvalId: signedApproval.approvalId,
+        decisionId: signedApproval.decisionId,
+        decisionDigest: signedApproval.decisionDigest,
+        approver: signedApproval.approver,
+        verdict: signedApproval.verdict,
+        reason: signedApproval.reason,
+        issuedAt: signedApproval.issuedAt,
+        expiresAt: signedApproval.expiresAt,
+        nonce: signedApproval.nonce
+      };
+      
+      const canonicalPayload = JSON.stringify(payload, Object.keys(payload).sort());
+      const messageBuffer = Buffer.from(canonicalPayload, 'utf8');
+      
+      // Vérifier que la signature est présente
+      if (!signedApproval.signature || typeof signedApproval.signature !== 'string') {
+        return {
+          valid: false,
+          error: 'Signature missing or invalid format',
+          errorCode: 'SIGNATURE_INVALID'
+        };
+      }
+
+      const signatureBuffer = Buffer.from(signedApproval.signature, 'hex');
+
+      // Vérifier signature Ed25519
+      const isValid = crypto.verify(
+        null, // Ed25519 n'utilise pas de hash algorithm
+        messageBuffer,
+        publicKeyPem,
+        signatureBuffer
+      );
+
+      if (!isValid) {
+        return {
+          valid: false,
+          error: 'Ed25519 signature verification failed',
+          errorCode: 'SIGNATURE_INVALID'
+        };
+      }
+
+      return { valid: true };
+    } catch (error) {
+      return {
+        valid: false,
+        error: `Signature verification error: ${error.message}`,
+        errorCode: 'SIGNATURE_INVALID'
+      };
+    }
   }
 
   /**
@@ -777,6 +1125,58 @@ export function getTrustContext(config = {}) {
     trustContextInstance = new TrustContext(config);
   }
   return trustContextInstance;
+}
+
+/**
+ * Helper: Crée et signe une approbation (pour tests et clients externes)
+ * Cette fonction est utilisée par les approvers pour créer une SignedApproval valide
+ * @param {Object} params
+ * @param {string} params.approvalId - UUID de l'approbation
+ * @param {string} params.decisionId - Token de la décision
+ * @param {string} params.decisionDigest - Digest de la décision (64 chars hex)
+ * @param {Object} params.approver - { id, role, keyId }
+ * @param {'approve'|'reject'} params.verdict
+ * @param {string} params.reason - Raison optionnelle
+ * @param {number} params.issuedAt - Timestamp
+ * @param {number} params.expiresAt - Timestamp optionnel
+ * @param {string} params.privateKeyPem - Clé privée PEM pour signer
+ * @returns {Object} SignedApproval avec signature
+ */
+export function createSignedApproval({
+  approvalId,
+  decisionId,
+  decisionDigest,
+  approver,
+  verdict,
+  reason,
+  issuedAt,
+  expiresAt,
+  privateKeyPem
+}) {
+  // Créer payload canonique (sans signature)
+  const payload = {
+    approvalId,
+    decisionId,
+    decisionDigest,
+    approver,
+    verdict,
+    reason,
+    issuedAt,
+    expiresAt
+  };
+
+  // Canonicaliser
+  const canonicalPayload = JSON.stringify(payload, Object.keys(payload).sort());
+  const messageBuffer = Buffer.from(canonicalPayload, 'utf8');
+
+  // Signer avec Ed25519
+  const signature = crypto.sign(null, messageBuffer, privateKeyPem);
+  const signatureHex = signature.toString('hex');
+
+  return {
+    ...payload,
+    signature: signatureHex
+  };
 }
 
 export default TrustContext; 
