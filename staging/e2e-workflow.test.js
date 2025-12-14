@@ -60,17 +60,7 @@ describe('TrustContext E2E Workflow - TRL 5', () => {
     approverPrivateKey = privateKey;
     approverPublicKey = publicKey;
 
-    // Setup KeyRegistry
-    const registryPath = path.join(testBase, 'key-registry.json');
-    
-    // WIPE registry pour tests isolés (chaque test a ses propres clés)
-    try {
-      await fs.unlink(registryPath);
-    } catch (error) {
-      if (error.code !== 'ENOENT') throw error;
-    }
-    
-    // WIPE aussi le répertoire de test au complet pour éviter pollution
+    // WIPE répertoire de test au complet pour éviter pollution
     try {
       await fs.rm(testBase, { recursive: true, force: true });
     } catch (error) {
@@ -78,7 +68,11 @@ describe('TrustContext E2E Workflow - TRL 5', () => {
     }
     await fs.mkdir(testKeyDir, { recursive: true });
     
-    keyRegistry = getKeyRegistry({ registryPath });
+    // Setup KeyRegistry (créer nouvelle instance pour éviter singleton)
+    const registryPath = path.join(testBase, 'key-registry.json');
+    // Utiliser KeyRegistry directement (pas getKeyRegistry singleton)
+    const { KeyRegistry } = await import('../../src/core/KeyRegistry.js');
+    keyRegistry = new KeyRegistry({ registryPath });
     await keyRegistry.initialize();
     
     // Enregistrer clé avec vérification keypair
