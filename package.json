@@ -53,13 +53,22 @@
     "test:infographic": "vitest run --config vitest.config.infographic.js",
     "test:infographic:watch": "vitest --config vitest.config.infographic.js",
     "test:core:coverage": "vitest run --config vitest.config.core.js --coverage",
-    "test:scenarios": "node tests/integration/final-scenarios-test.js"
+    "test:scenarios": "node tests/integration/final-scenarios-test.js",
+    "test:excel": "vitest run --config vitest.config.excel.js",
+    "test:excel:watch": "vitest --config vitest.config.excel.js",
+    "test:excel:coverage": "vitest run --config vitest.config.excel.js --coverage",
+    "test:properties": "vitest run __tests__/properties --reporter=verbose --testTimeout=60000",
+    "test:fuzz": "vitest run __tests__/fuzz --reporter=verbose --testTimeout=30000",
+    "test:providers": "vitest run __tests__/properties/providers.properties.test.ts __tests__/adversarial/providers.adversarial.test.ts --reporter=verbose --testTimeout=60000",
+    "test:proof": "npm run test:properties && npm run test:fuzz",
+    "test:proof:full": "npm run test:proof && npm run test:providers"
   },
   "dependencies": {
     "@anthropic-ai/sdk": "^0.26.0",
     "@apidevtools/swagger-parser": "^10.1.1",
     "@apollo/client": "^3.9.5",
     "@fal-ai/client": "^1.7.2",
+    "@google/genai": "^1.0.0",
     "@supabase/supabase-js": "^2.49.4",
     "autocannon": "^8.0.0",
     "benchmark": "^2.1.4",
@@ -67,6 +76,7 @@
     "chalk": "^5.4.1",
     "cors": "^2.8.5",
     "dotenv": "^16.5.0",
+    "exceljs": "^4.4.0",
     "express": "^5.1.0",
     "express-rate-limit": "^7.5.0",
     "express-slow-down": "^2.1.0",
@@ -77,7 +87,9 @@
     "jest-junit": "^16.0.0",
     "joi": "^17.13.3",
     "jsonwebtoken": "^9.0.2",
+    "mathjs": "^15.1.0",
     "morgan": "^1.10.0",
+    "multer": "^2.0.2",
     "natural": "^8.1.0",
     "node-fetch": "^3.3.2",
     "nyc": "^15.1.0",
@@ -85,10 +97,12 @@
     "pdfkit": "^0.17.1",
     "prom-client": "^14.2.0",
     "redis-mock": "^0.56.3",
+    "simple-statistics": "^7.8.8",
     "socket.io": "^4.8.1",
     "three": "^0.176.0",
     "validator": "^13.15.15",
-    "winston": "^3.11.0"
+    "winston": "^3.11.0",
+    "xlsx": "^0.18.5"
   },
   "devDependencies": {
     "@apidevtools/swagger-parser": "^10.1.1",
@@ -102,6 +116,7 @@
     "express": "^5.1.0",
     "express-rate-limit": "^7.5.0",
     "express-slow-down": "^2.1.0",
+    "fast-check": "^4.4.0",
     "helmet": "^8.1.0",
     "isomorphic-dompurify": "^2.25.0",
     "jest-canvas-mock": "^2.5.2",
@@ -114,7 +129,8 @@
     "redis-mock": "^0.56.3",
     "supertest": "^7.1.4",
     "validator": "^13.15.15",
-    "vitest": "^3.2.4"
+    "vitest": "^3.2.4",
+    "zod": "^4.1.13"
   },
   "engines": {
     "node": ">=16.0.0"

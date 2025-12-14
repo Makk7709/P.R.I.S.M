@@ -7,6 +7,11 @@
 
 import crypto from 'crypto';
 import { EventEmitter } from 'events';
+import {
+  validateCriticalDecisionRequest,
+  validateApprovalRequest,
+  validateApprovalResponse
+} from '../security/contracts/trustcontext.js';
 
 /**
  * Niveaux de criticité des décisions
@@ -364,6 +369,161 @@ export class TrustContext extends EventEmitter {
       timestamp: this.lastSelfImprovement.timestamp,
       type: improvementData.type || 'unknown'
     });
+  }
+
+  /**
+   * Valide une décision critique (wrapper avec validation fail-closed)
+   * @param {Object} request - Requête de validation
+   * @returns {Promise<Object>} Réponse d'approbation
+   */
+  async validateCriticalDecision(request) {
+    // VALIDATION FAIL-CLOSED: Vérifier que l'input est conforme au schéma
+    let validatedRequest;
+    try {
+      validatedRequest = validateCriticalDecisionRequest(request);
+    } catch (error) {
+      // Log structuré du rejet
+      const logEntry = {
+        timestamp: Date.now(),
+        event: 'schema_validation_failed',
+        module: 'TrustContext.validateCriticalDecision',
+        error: error.message,
+        action: request?.action,
+        criticality: request?.criticality
+      };
+      console.error('🚫 FAIL-CLOSED: Critical decision request rejected (schema validation):', logEntry);
+      throw error; // Fail-closed: rejeter explicitement
+    }
+
+    // Vérifier si approbation humaine requise
+    const requiresApproval = this.requiresHumanApproval(
+      validatedRequest.action,
+      validatedRequest.criticality,
+      validatedRequest
+    );
+
+    if (!requiresApproval) {
+      // Auto-approbation pour niveaux faibles
+      const response = {
+        approved: true,
+        reason: 'Auto-approved (low criticality)',
+        timestamp: Date.now()
+      };
+      
+      // VALIDATION FAIL-CLOSED: Vérifier la réponse
+      try {
+        return validateApprovalResponse(response);
+      } catch (error) {
+        console.error('🚫 FAIL-CLOSED: Invalid approval response generated:', error.message);
+        throw new Error('Internal error: invalid approval response');
+      }
+    }
+
+    // Demander approbation humaine
+    const approvalToken = await this.requireHumanApproval(
+      validatedRequest.action,
+      validatedRequest.criticality,
+      validatedRequest,
+      validatedRequest
+    );
+
+    // Vérifier l'approbation (immédiatement, peut être pending)
+    const approvalStatus = this.checkApproval(approvalToken);
+
+    const response = {
+      approved: approvalStatus.approved,
+      reason: approvalStatus.message || (approvalStatus.approved ? 'Approved' : 'Requires human approval'),
+      timestamp: Date.now(),
+      approvalId: approvalToken
+    };
+
+    // VALIDATION FAIL-CLOSED: Vérifier la réponse
+    try {
+      return validateApprovalResponse(response);
+    } catch (error) {
+      console.error('🚫 FAIL-CLOSED: Invalid approval response generated:', error.message);
+      throw new Error('Internal error: invalid approval response');
+    }
+  }
+
+  /**
+   * Demande une approbation (wrapper avec validation fail-closed)
+   * @param {Object} request - Requête d'approbation
+   * @returns {Promise<Object>} Réponse d'approbation
+   */
+  async requestApproval(request) {
+    // VALIDATION FAIL-CLOSED: Vérifier que l'input est conforme au schéma
+    let validatedRequest;
+    try {
+      validatedRequest = validateApprovalRequest(request);
+    } catch (error) {
+      // Log structuré du rejet
+      const logEntry = {
+        timestamp: Date.now(),
+        event: 'schema_validation_failed',
+        module: 'TrustContext.requestApproval',
+        error: error.message,
+        action: request?.action
+      };
+      console.error('🚫 FAIL-CLOSED: Approval request rejected (schema validation):', logEntry);
+      throw error; // Fail-closed: rejeter explicitement
+    }
+
+    // Déterminer le niveau de criticité si non fourni
+    const criticality = validatedRequest.criticality || 
+      (validatedRequest.fileSize && validatedRequest.fileSize >= 20 * 1024 * 1024 
+        ? CriticalityLevel.HIGH 
+        : CriticalityLevel.MEDIUM);
+
+    // Vérifier si approbation humaine requise
+    const requiresApproval = this.requiresHumanApproval(
+      validatedRequest.action,
+      criticality,
+      validatedRequest
+    );
+
+    if (!requiresApproval) {
+      // Auto-approbation
+      const response = {
+        approved: true,
+        reason: 'Auto-approved',
+        timestamp: Date.now()
+      };
+      
+      // VALIDATION FAIL-CLOSED: Vérifier la réponse
+      try {
+        return validateApprovalResponse(response);
+      } catch (error) {
+        console.error('🚫 FAIL-CLOSED: Invalid approval response generated:', error.message);
+        throw new Error('Internal error: invalid approval response');
+      }
+    }
+
+    // Demander approbation humaine
+    const approvalToken = await this.requireHumanApproval(
+      validatedRequest.action,
+      criticality,
+      validatedRequest,
+      validatedRequest
+    );
+
+    // Vérifier l'approbation
+    const approvalStatus = this.checkApproval(approvalToken);
+
+    const response = {
+      approved: approvalStatus.approved,
+      reason: approvalStatus.message || (approvalStatus.approved ? 'Approved' : 'Requires human approval'),
+      timestamp: Date.now(),
+      approvalId: approvalToken
+    };
+
+    // VALIDATION FAIL-CLOSED: Vérifier la réponse
+    try {
+      return validateApprovalResponse(response);
+    } catch (error) {
+      console.error('🚫 FAIL-CLOSED: Invalid approval response generated:', error.message);
+      throw new Error('Internal error: invalid approval response');
+    }
   }
 
   /**

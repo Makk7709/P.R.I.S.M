@@ -18,6 +18,7 @@
 
 import { CriticalityClassifier, CriticalityLevel } from './CriticalityClassifier.js';
 import { ConsensusManager, ConsensusStatus, VoteType } from '../core/ConsensusManager.js';
+import { getTrustContext, CriticalityLevel as TrustCriticalityLevel } from '../core/TrustContext.js';
 import { handleUserInstruction } from '../../backend/orchestrator.js';
 
 /**
@@ -37,6 +38,7 @@ export class HybridOrchestrator {
     this.classifier = new CriticalityClassifier(options.classifierOptions);
     this.consensusManager = new ConsensusManager(options.consensusOptions);
     this.router = { process: handleUserInstruction };
+    this.trustContext = options.trustContext || getTrustContext();
     
     this.consensusTimeout = options.consensusTimeout || 30000;
     
@@ -82,6 +84,35 @@ export class HybridOrchestrator {
       } else if (classification.isCritical || taskType === 'critical') {
         mode = OrchestrationMode.CONSENSUS;
         autoDetected = !options.forceConsensus && classification.isCritical;
+      }
+      
+      // Étape 2.5: Validation TrustContext pour requêtes critiques/consensus
+      if (mode === OrchestrationMode.CONSENSUS || classification.isCritical || taskType === 'critical') {
+        try {
+          const approval = await this.trustContext.validateCriticalDecision({
+            action: 'consensus_request',
+            input: input,
+            taskType: taskType,
+            criticality: classification.isCritical 
+              ? TrustCriticalityLevel.CRITICAL 
+              : classification.score > 0.8 
+                ? TrustCriticalityLevel.HIGH 
+                : TrustCriticalityLevel.MEDIUM,
+            classification: classification
+          });
+          
+          if (!approval.approved) {
+            throw new Error(`Request rejected by TrustContext: ${approval.reason || 'Requires human approval'}`);
+          }
+        } catch (error) {
+          // Si erreur TrustContext, rejeter la requête
+          if (error.message.includes('rejected') || error.message.includes('approval')) {
+            throw error;
+          }
+          // Autres erreurs (unavailable, etc.) - logger et rejeter par sécurité
+          console.error('[HybridOrchestrator] TrustContext error:', error.message);
+          throw new Error('Security validation failed - request rejected');
+        }
       }
       
       // Étape 3: Exécuter selon le mode

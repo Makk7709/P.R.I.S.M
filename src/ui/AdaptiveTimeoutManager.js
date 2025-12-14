@@ -240,3 +240,4 @@ export const TimeoutConfig = {};
 // Export par défaut d'une instance singleton
 export const timeoutManager = new AdaptiveTimeoutManager();
 
+

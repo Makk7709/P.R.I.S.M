@@ -332,3 +332,5 @@ describe('InfographicGenerator - Tests de Performance', () => {
   });
 });
 
+
+

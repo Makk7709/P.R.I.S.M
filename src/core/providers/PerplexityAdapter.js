@@ -4,11 +4,15 @@ import OpenAI from 'openai';
 // Perplexity has an OpenAI-compatible API in many setups
 export default class PerplexityAdapter extends ProviderAdapter {
   constructor(opts = {}) {
-    super(opts);
+    super({ ...opts, providerName: 'perplexity' });
     this.client = new OpenAI({ apiKey: process.env.PERPLEXITY_API_KEY, baseURL: process.env.PERPLEXITY_BASE_URL });
     this.model = process.env.PERPLEXITY_MODEL || 'pplx-7b-online';
   }
 
+  /**
+   * Évalue une décision - retourne la réponse brute du provider
+   * La normalisation sera faite par AdapterGuard dans evaluate()
+   */
   async _evaluate({ type, payload }) {
     const content = this.#buildPrompt(type, payload);
     const resp = await this.client.chat.completions.create({
@@ -19,24 +23,21 @@ export default class PerplexityAdapter extends ProviderAdapter {
       ],
       temperature: 0
     });
+    
+    // Retourner la réponse brute - AdapterGuard va normaliser
     const text = resp.choices?.[0]?.message?.content || '';
-    return this.#parseDecision(text);
+    
+    // Retourner un objet avec texte et métadonnées
+    return {
+      text,
+      usage: resp.usage,
+      requestId: resp.id
+    };
   }
 
   #buildPrompt(type, payload) {
     return `Vote on decision based on evidence. Context: ${JSON.stringify({ type, payload })}. ` +
       `Return strict JSON {"decision": true|false, "reasoning": "short"}.`;
-  }
-
-  #parseDecision(text) {
-    try {
-      const jsonStart = text.indexOf('{');
-      const jsonEnd = text.lastIndexOf('}');
-      const json = JSON.parse(text.slice(jsonStart, jsonEnd + 1));
-      return { decision: !!json.decision, reasoning: String(json.reasoning || '') };
-    } catch {
-      return { decision: false, reasoning: 'parse_error' };
-    }
   }
 }
 

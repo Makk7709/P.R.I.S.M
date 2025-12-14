@@ -1115,6 +1115,157 @@
             box-shadow: 0 0 0 2px var(--prism-overlay-light);
         }
 
+        /* === BOUTON UPLOAD FICHIER === */
+        .prism-upload-button {
+            width: 50px !important;
+            min-width: 50px !important;
+            padding: 10px !important;
+            font-size: 1.4rem !important;
+            background: linear-gradient(135deg, rgba(255, 215, 0, 0.1), rgba(184, 134, 11, 0.2)) !important;
+            border: 2px dashed var(--prism-gold-elegant) !important;
+            border-radius: var(--prism-radius-medium) !important;
+            transition: all 0.3s ease !important;
+        }
+        
+        .prism-upload-button:hover {
+            background: linear-gradient(135deg, rgba(255, 215, 0, 0.2), rgba(184, 134, 11, 0.3)) !important;
+            border-style: solid !important;
+            transform: scale(1.05);
+            box-shadow: 0 0 20px rgba(255, 215, 0, 0.3);
+        }
+        
+        .prism-upload-button.has-file {
+            background: linear-gradient(135deg, rgba(16, 185, 129, 0.2), rgba(16, 185, 129, 0.3)) !important;
+            border-color: var(--prism-success) !important;
+            border-style: solid !important;
+        }
+        
+        /* Preview fichier */
+        .prism-file-preview {
+            display: flex;
+            align-items: center;
+            background: linear-gradient(135deg, rgba(255, 215, 0, 0.05), rgba(184, 134, 11, 0.1));
+            border: 1px solid var(--prism-border-light);
+            border-radius: var(--prism-radius-small);
+            padding: 8px 12px;
+            margin-top: 8px;
+            animation: slideIn 0.3s ease-out;
+        }
+        
+        @keyframes slideIn {
+            from { opacity: 0; transform: translateY(-10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        .prism-file-info {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            width: 100%;
+        }
+        
+        .prism-file-icon {
+            font-size: 1.5rem;
+        }
+        
+        .prism-file-name {
+            color: var(--prism-text-primary);
+            font-weight: 500;
+            flex: 1;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+        
+        .prism-file-size {
+            color: var(--prism-text-muted);
+            font-size: 0.85rem;
+        }
+        
+        .prism-file-remove {
+            background: rgba(239, 68, 68, 0.2);
+            border: none;
+            color: var(--prism-error);
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.2s ease;
+        }
+        
+        .prism-file-remove:hover {
+            background: rgba(239, 68, 68, 0.4);
+            transform: scale(1.1);
+        }
+        
+        /* Message avec analyse de fichier */
+        .prism-analysis-result {
+            background: linear-gradient(135deg, rgba(255, 215, 0, 0.05), rgba(184, 134, 11, 0.1));
+            border: 1px solid var(--prism-border-light);
+            border-radius: var(--prism-radius-medium);
+            padding: 15px;
+            margin-top: 10px;
+        }
+        
+        .prism-analysis-header {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 10px;
+            color: var(--prism-gold-primary);
+            font-weight: 600;
+        }
+        
+        .prism-stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+            gap: 10px;
+            margin-top: 10px;
+        }
+        
+        .prism-stat-item {
+            background: rgba(0, 0, 0, 0.2);
+            padding: 10px;
+            border-radius: var(--prism-radius-small);
+            text-align: center;
+        }
+        
+        .prism-stat-value {
+            color: var(--prism-gold-primary);
+            font-size: 1.2rem;
+            font-weight: 700;
+        }
+        
+        .prism-stat-label {
+            color: var(--prism-text-muted);
+            font-size: 0.8rem;
+        }
+        
+        /* Animation de chargement pour l'analyse */
+        .prism-analyzing {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            color: var(--prism-gold-primary);
+            padding: 15px;
+        }
+        
+        .prism-analyzing-spinner {
+            width: 20px;
+            height: 20px;
+            border: 2px solid var(--prism-gold-primary);
+            border-top-color: transparent;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+        
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
         /* Animation d'entrée pour la barre de chat */
         .prism-input-area {
             animation: inputAreaSlideUp 0.6s ease-out;
@@ -1660,12 +1811,31 @@
                 
                 <!-- Ligne principale du chat - Plus d'espace pour le texte -->
                 <div class="prism-input-row prism-main-chat-row">
+                    <!-- Bouton Upload Excel/CSV -->
+                    <button class="prism-button prism-upload-button" id="uploadButton" title="Upload Excel/CSV file">
+                        📎
+                    </button>
+                    <input type="file" 
+                           id="fileInput" 
+                           accept=".xlsx,.xls,.csv,.ods" 
+                           style="display: none;">
+                    
                     <input type="text" 
                            class="prism-text-input" 
                            id="messageInput" 
                            placeholder="Enter your message here..."
                            maxlength="1000">
                     <button class="prism-button" id="sendButton">Send</button>
+                </div>
+                
+                <!-- Preview fichier uploadé -->
+                <div class="prism-file-preview" id="filePreview" style="display: none;">
+                    <div class="prism-file-info">
+                        <span class="prism-file-icon">📊</span>
+                        <span class="prism-file-name" id="fileName"></span>
+                        <span class="prism-file-size" id="fileSize"></span>
+                        <button class="prism-file-remove" id="removeFile">✕</button>
+                    </div>
                 </div>
                 
                 <!-- Ligne des commandes vocales -->
@@ -1860,6 +2030,10 @@
                 this.messageHistory = [];
                 window.prismMessageHistory = this.messageHistory; // Accessible globalement
 
+                // ✨ NOUVEAU: Tracking du mode d'entrée pour la logique écrit/vocal
+                this.lastInputSource = 'keyboard'; // 'keyboard', 'voice', 'paste'
+                this.lastVoiceConfidence = null;   // Confiance de reconnaissance vocale
+
                 // Test ElevenLabs connection
                 this.testElevenLabsConnection();
             }
@@ -1871,6 +2045,19 @@
                 this.voiceButton = document.getElementById('voiceButton');
                 this.stopButton = document.getElementById('stopButton');
                 this.taskTypeSelect = document.getElementById('taskTypeSelect');
+                
+                // ✅ NOUVEAU: Éléments pour l'upload de fichiers
+                this.uploadButton = document.getElementById('uploadButton');
+                this.fileInput = document.getElementById('fileInput');
+                this.filePreview = document.getElementById('filePreview');
+                this.fileName = document.getElementById('fileName');
+                this.fileSize = document.getElementById('fileSize');
+                this.removeFileBtn = document.getElementById('removeFile');
+                this.pendingFile = null; // Fichier en attente d'envoi
+                this.sessionId = 'session-' + Date.now() + '-' + Math.random().toString(36).slice(2);
+                
+                // Initialiser les listeners d'upload
+                this.initializeFileUpload();
                 
                 // ✅ NOUVEAU: Afficher un feedback visuel lors du changement de Task Type
                 if (this.taskTypeSelect) {
@@ -2130,12 +2317,15 @@
                         
                         let finalTranscript = '';
                         let interimTranscript = '';
+                        let maxConfidence = 0;
 
                         for (let i = event.resultIndex; i < event.results.length; i++) {
                             const transcript = event.results[i][0].transcript;
+                            const confidence = event.results[i][0].confidence || 0;
                             
                             if (event.results[i].isFinal) {
                                 finalTranscript += transcript;
+                                maxConfidence = Math.max(maxConfidence, confidence);
                             } else {
                                 interimTranscript += transcript;
                             }
@@ -2146,8 +2336,13 @@
                         
                         // ✅ NOUVEAU: Détection fin naturelle et gestion intelligente
                         if (finalTranscript.trim().length > 0) {
-                            console.log('[Voice] Final transcript:', finalTranscript);
+                            console.log('[Voice] Final transcript:', finalTranscript, 'confidence:', maxConfidence);
                             this.messageInput.value = finalTranscript.trim();
+                            
+                            // ✨ NOUVEAU: Marquer comme input vocal pour la logique écrit/vocal
+                            this.lastInputSource = 'voice';
+                            this.lastVoiceConfidence = maxConfidence;
+                            console.log('[Voice] 🎤 Input source set to VOICE with confidence:', maxConfidence);
                             
                             // ✅ NOUVEAU: Vérifier fin naturelle de phrase
                             if (this.checkForNaturalEnd(finalTranscript.trim())) {
@@ -2357,13 +2552,25 @@
                 // Si aucun message n'est fourni, utiliser le contenu de l'input
                 if (!message) {
                     message = this.messageInput.value.trim();
-                    if (!message) {
-                        console.log('[Chat] No message to send');
-                        return;
-                    }
-                    // Vider l'input si on l'utilise
-                    this.messageInput.value = '';
                 }
+                
+                // ✅ NOUVEAU: Vérifier si un fichier est en attente
+                if (this.pendingFile) {
+                    console.log('[Chat] File pending, using file upload flow');
+                    const fileMessage = message || 'Analyse ce fichier';
+                    this.messageInput.value = '';
+                    await this.sendMessageWithFile(fileMessage, this.pendingFile);
+                    return;
+                }
+                
+                // Vérifier qu'il y a un message
+                if (!message) {
+                    console.log('[Chat] No message to send');
+                    return;
+                }
+                
+                // Vider l'input si on l'utilise
+                this.messageInput.value = '';
                 
                 // Si aucun type de tâche n'est fourni, utiliser celui sélectionné
                 if (!taskType) {
@@ -2404,6 +2611,12 @@
                     const abortController = new AbortController();
                     this.currentApiRequest = abortController;
                     
+                    // ✨ NOUVEAU: Détecter la source de l'input pour la logique écrit/vocal
+                    const inputSource = this.lastInputSource || 'keyboard';
+                    const voiceConfidence = this.lastVoiceConfidence || null;
+                    
+                    console.log(`[Chat] 🎯 Mode d'entrée: ${inputSource}${voiceConfidence ? ` (confiance: ${voiceConfidence})` : ''}`);
+                    
                     // Appel API vers le backend PRISM
                     const response = await fetch('/api/chat', {
                         method: 'POST',
@@ -2414,10 +2627,18 @@
                             message: message,
                             taskType: finalTaskType,
                             model: 'auto-select', // Laisser l'orchestrateur choisir
-                            voiceConfig: selectedVoice
+                            voiceConfig: selectedVoice,
+                            // ✨ NOUVEAU: Paramètres pour la logique écrit/vocal intelligente
+                            inputSource: inputSource,    // 'keyboard', 'voice', 'paste'
+                            voiceConfidence: voiceConfidence, // Confiance si reconnaissance vocale
+                            hasAttachment: !!this.pendingFile // Fichier en attente?
                         }),
                         signal: abortController.signal  // ✅ NOUVEAU : Signal d'interruption
                     });
+                    
+                    // ✨ Réinitialiser la source après utilisation
+                    this.lastInputSource = 'keyboard';
+                    this.lastVoiceConfidence = null;
                     
                     if (!response.ok) {
                         throw new Error(`HTTP ${response.status}: ${response.statusText}`);
@@ -2455,15 +2676,22 @@
                             data.metadata?.orchestration  // ✨ Info orchestration hybride
                         );
                         
-                        // ✨ Lecture vocale automatique si activée
-                        if (this.speechEnabled) {
-                            if (data.audioUrl) {
-                                console.log('[Audio] Playing ElevenLabs audio...');
-                                await this.playElevenLabsAudio(data.audioUrl, data.content);
-                            } else if (data.fallbackToTTS) {
-                                console.log('[Audio] Using browser TTS fallback...');
-                                this.speak(this.cleanTextForSpeech(data.content));
-                            }
+                        // ✨ NOUVEAU: Lecture vocale INTELLIGENTE selon le mode d'entrée
+                        // Si input écrit → pas de lecture vocale automatique
+                        // Si input vocal → lecture vocale avec ElevenLabs ou TTS
+                        console.log(`[Audio] Mode de réponse: ${data.responseMode}, shouldPlayAudio: ${data.shouldPlayAudio}`);
+                        
+                        if (data.shouldPlayAudio && data.audioUrl) {
+                            // ✨ Input VOCAL → Lecture ElevenLabs
+                            console.log('[Audio] 🔊 Playing ElevenLabs audio (mode vocal)...');
+                            await this.playElevenLabsAudio(data.audioUrl, data.content);
+                        } else if (data.fallbackToTTS && this.speechEnabled) {
+                            // ✨ Input VOCAL mais ElevenLabs échoué → Fallback TTS
+                            console.log('[Audio] 🔊 Using browser TTS fallback (mode vocal)...');
+                            this.speak(this.cleanTextForSpeech(data.content));
+                        } else if (data.responseMode === 'text_only') {
+                            // ✨ Input ÉCRIT → PAS de lecture vocale
+                            console.log('[Audio] 📝 Mode texte - pas de lecture vocale automatique');
                         }
                         
                     } else {
@@ -2829,24 +3057,10 @@
                 this.messageHistory.push(historyEntry);
                 console.log('[Chat] PRISM message added:', message.substring(0, 50) + '... | History:', this.messageHistory.length);
                 
-                // Trigger speech synthesis if enabled
-                if (this.speechEnabled) {
-                    console.log('[Speech] Attempting to synthesize response...');
-                    
-                    // Check for ElevenLabs audio in response
-                    let audioUrl = null;
-                    if (options.audioUrl) {
-                        audioUrl = options.audioUrl;
-                    }
-                    
-                    if (audioUrl) {
-                        console.log('[Speech] ElevenLabs audio found');
-                        this.playElevenLabsAudio(audioUrl, message);
-                    } else {
-                        console.log('[Speech] No ElevenLabs audio, using browser TTS');
-                        this.speak(this.cleanTextForSpeech(message));
-                    }
-                }
+                // ⛔ SUPPRIMÉ: Plus de lecture vocale automatique ici !
+                // La lecture audio est gérée EXPLICITEMENT par sendMessage() et sendMessageWithFile()
+                // selon le mode d'entrée (keyboard vs voice)
+                // Cela évite que le TTS joue quand l'utilisateur tape au clavier
             }
 
             stopAudio() {
@@ -3092,10 +3306,297 @@
                 setTimeout(() => {
                     this.addPrismMessage(
                         "Bienvenue ! Je suis PRISM, votre assistant IA professionnel. " +
-                        "Comment puis-je vous aider avec vos besoins métier aujourd'hui ?",
+                        "Comment puis-je vous aider avec vos besoins métier aujourd'hui ?\n\n" +
+                        "💡 **Nouveau**: Vous pouvez maintenant uploader des fichiers Excel/CSV (📎) pour une analyse statistique complète !",
                         { model: 'system' }
                     );
                 }, 1000);
+            }
+            
+            // ═══════════════════════════════════════════════════════════════════
+            // MODULE UPLOAD DE FICHIERS EXCEL/CSV
+            // ═══════════════════════════════════════════════════════════════════
+            
+            initializeFileUpload() {
+                if (!this.uploadButton || !this.fileInput) {
+                    console.warn('[Upload] Elements not found, skipping initialization');
+                    return;
+                }
+                
+                console.log('[Upload] Initializing file upload module');
+                
+                // Clic sur le bouton upload → ouvrir le sélecteur de fichier
+                this.uploadButton.addEventListener('click', () => {
+                    this.fileInput.click();
+                });
+                
+                // Fichier sélectionné
+                this.fileInput.addEventListener('change', (e) => {
+                    const file = e.target.files[0];
+                    if (file) {
+                        this.handleFileSelection(file);
+                    }
+                });
+                
+                // Bouton supprimer fichier
+                if (this.removeFileBtn) {
+                    this.removeFileBtn.addEventListener('click', () => {
+                        this.clearPendingFile();
+                    });
+                }
+                
+                // Drag & Drop sur la zone de chat
+                this.chatMessages.addEventListener('dragover', (e) => {
+                    e.preventDefault();
+                    this.chatMessages.classList.add('drag-over');
+                });
+                
+                this.chatMessages.addEventListener('dragleave', (e) => {
+                    e.preventDefault();
+                    this.chatMessages.classList.remove('drag-over');
+                });
+                
+                this.chatMessages.addEventListener('drop', (e) => {
+                    e.preventDefault();
+                    this.chatMessages.classList.remove('drag-over');
+                    const file = e.dataTransfer.files[0];
+                    if (file) {
+                        this.handleFileSelection(file);
+                    }
+                });
+                
+                console.log('[Upload] File upload module initialized');
+            }
+            
+            handleFileSelection(file) {
+                // Vérifier le type de fichier
+                const allowedTypes = [
+                    'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+                    'application/vnd.ms-excel',
+                    'text/csv',
+                    'application/csv'
+                ];
+                const allowedExtensions = ['.xlsx', '.xls', '.csv', '.ods'];
+                
+                const ext = file.name.toLowerCase().match(/\.[^.]+$/)?.[0];
+                const isValidType = allowedTypes.includes(file.type) || allowedExtensions.includes(ext);
+                
+                if (!isValidType) {
+                    this.addSystemMessage('❌ Type de fichier non supporté. Formats acceptés: Excel (.xlsx, .xls), CSV.');
+                    return;
+                }
+                
+                // Vérifier la taille (max 50MB)
+                const maxSize = 50 * 1024 * 1024;
+                if (file.size > maxSize) {
+                    this.addSystemMessage('❌ Fichier trop volumineux. Taille maximum: 50MB.');
+                    return;
+                }
+                
+                // Stocker le fichier en attente
+                this.pendingFile = file;
+                
+                // Afficher la preview
+                this.showFilePreview(file);
+                
+                // Mettre à jour le bouton upload
+                this.uploadButton.classList.add('has-file');
+                
+                console.log('[Upload] File selected:', file.name, file.size, 'bytes');
+            }
+            
+            showFilePreview(file) {
+                if (!this.filePreview) return;
+                
+                // Icône selon le type
+                const ext = file.name.toLowerCase().match(/\.[^.]+$/)?.[0];
+                const iconMap = {
+                    '.xlsx': '📊',
+                    '.xls': '📊',
+                    '.csv': '📄',
+                    '.ods': '📊'
+                };
+                
+                const icon = iconMap[ext] || '📎';
+                
+                // Formater la taille
+                const formatSize = (bytes) => {
+                    if (bytes < 1024) return bytes + ' B';
+                    if (bytes < 1024 * 1024) return (bytes / 1024).toFixed(1) + ' KB';
+                    return (bytes / (1024 * 1024)).toFixed(1) + ' MB';
+                };
+                
+                // Afficher
+                document.querySelector('.prism-file-icon').textContent = icon;
+                this.fileName.textContent = file.name;
+                this.fileSize.textContent = formatSize(file.size);
+                this.filePreview.style.display = 'flex';
+                
+                // Suggérer un message
+                if (!this.messageInput.value.trim()) {
+                    this.messageInput.placeholder = 'Décrivez ce que vous voulez analyser dans ce fichier...';
+                }
+            }
+            
+            clearPendingFile() {
+                this.pendingFile = null;
+                this.fileInput.value = '';
+                this.filePreview.style.display = 'none';
+                this.uploadButton.classList.remove('has-file');
+                this.messageInput.placeholder = 'Enter your message here...';
+                console.log('[Upload] Pending file cleared');
+            }
+            
+            async sendMessageWithFile(message, file) {
+                // ✨ NOUVEAU: Capturer le mode d'entrée AVANT de réinitialiser
+                const inputSource = this.lastInputSource || 'keyboard';
+                const voiceConfidence = this.lastVoiceConfidence;
+                
+                console.log(`[Upload] Input mode: ${inputSource}, confidence: ${voiceConfidence}`);
+                
+                // Créer le FormData
+                const formData = new FormData();
+                formData.append('file', file);
+                formData.append('message', message || 'Analyse ce fichier et donne-moi les statistiques principales');
+                formData.append('sessionId', this.sessionId);
+                // ✨ NOUVEAU: Envoyer le mode d'entrée pour la logique écrit/vocal
+                formData.append('inputSource', inputSource);
+                if (voiceConfidence) {
+                    formData.append('voiceConfidence', voiceConfidence.toString());
+                }
+                
+                // Réinitialiser le mode d'entrée après utilisation
+                this.lastInputSource = 'keyboard';
+                this.lastVoiceConfidence = null;
+                
+                // Afficher le message utilisateur avec le fichier
+                this.addUserMessage(message || 'Analyse ce fichier', {
+                    file: { name: file.name, size: file.size }
+                });
+                
+                // Afficher l'indicateur d'analyse
+                const loadingId = this.addAnalyzingIndicator();
+                
+                try {
+                    console.log('[Upload] Sending file to server:', file.name);
+                    
+                    const response = await fetch('/api/chat/upload', {
+                        method: 'POST',
+                        body: formData
+                    });
+                    
+                    const data = await response.json();
+                    
+                    // Supprimer l'indicateur de chargement
+                    this.removeAnalyzingIndicator(loadingId);
+                    
+                    if (data.success) {
+                        console.log('[Upload] Analysis successful:', data);
+                        console.log('[Upload] Response mode:', data.data?.responseMode, 'shouldPlayAudio:', data.data?.shouldPlayAudio);
+                        
+                        // Afficher la réponse avec les statistiques
+                        this.displayAnalysisResult(data.data);
+                        
+                        // ✨ NOUVEAU: Jouer l'audio si mode vocal
+                        if (data.data?.shouldPlayAudio && data.data?.audioUrl) {
+                            console.log('[Upload] 🔊 Playing ElevenLabs audio for analysis...');
+                            await this.playElevenLabsAudio(data.data.audioUrl, data.data.response);
+                        } else if (data.data?.fallbackToTTS && this.speechEnabled) {
+                            console.log('[Upload] 🔊 Using TTS fallback for analysis...');
+                            // Lire juste un résumé court
+                            const summary = `Analyse terminée. ${data.data.metadata?.rowCount || 0} lignes et ${data.data.metadata?.columnCount || 0} colonnes analysées.`;
+                            this.speak(summary);
+                        } else {
+                            console.log('[Upload] 📝 Text mode - no audio playback');
+                        }
+                        
+                        // Mettre à jour les métriques
+                        this.updateMetrics(
+                            data.data.metadata?.analysisTimeMs || 0,
+                            'Excel Analyzer',
+                            null,
+                            null,
+                            !!data.data.audioUrl,
+                            { consensusUsed: false }
+                        );
+                    } else {
+                        console.error('[Upload] Analysis failed:', data.error);
+                        this.addPrismMessage(
+                            `❌ Erreur lors de l'analyse: ${data.error?.message || data.userMessage || 'Erreur inconnue'}`,
+                            { model: 'error' }
+                        );
+                    }
+                    
+                } catch (error) {
+                    console.error('[Upload] Request failed:', error);
+                    this.removeAnalyzingIndicator(loadingId);
+                    this.addPrismMessage(
+                        '❌ Erreur de connexion. Vérifiez que le serveur est démarré.',
+                        { model: 'error' }
+                    );
+                }
+                
+                // Nettoyer le fichier en attente
+                this.clearPendingFile();
+            }
+            
+            addAnalyzingIndicator() {
+                const id = 'analyzing-' + Date.now();
+                const div = document.createElement('div');
+                div.id = id;
+                div.className = 'prism-message prism-message-ai';
+                div.innerHTML = `
+                    <div class="prism-message-header">
+                        <span class="prism-agent-name">PRISM Excel Analyzer</span>
+                    </div>
+                    <div class="prism-analyzing">
+                        <div class="prism-analyzing-spinner"></div>
+                        <span>Analyse du fichier en cours...</span>
+                    </div>
+                `;
+                this.chatMessages.appendChild(div);
+                this.scrollToBottom();
+                return id;
+            }
+            
+            removeAnalyzingIndicator(id) {
+                const element = document.getElementById(id);
+                if (element) {
+                    element.remove();
+                }
+            }
+            
+            displayAnalysisResult(data) {
+                const response = data.response || '';
+                const metadata = data.metadata || {};
+                const aiInsights = data.aiInsights;
+                
+                // Construire le contenu enrichi
+                let content = '';
+                
+                // En-tête avec métadonnées
+                if (metadata.fileName) {
+                    content += `📊 **Analyse de ${metadata.fileName}**\n`;
+                    content += `📁 ${metadata.rowCount || '?'} lignes × ${metadata.columnCount || '?'} colonnes\n\n`;
+                }
+                
+                // Réponse principale
+                content += response;
+                
+                // Insights IA si disponibles
+                if (aiInsights && aiInsights.content) {
+                    content += '\n\n---\n\n**🤖 Insights IA:**\n' + aiInsights.content;
+                }
+                
+                // Afficher le message
+                this.addPrismMessage(content, {
+                    model: 'Excel Analyzer',
+                    isAnalysis: true
+                });
+                
+                // ⛔ PAS de lecture vocale ici - gérée par sendMessageWithFile selon le mode d'entrée
+                // L'audio est joué UNIQUEMENT si l'input était vocal (mode voice ou hybrid)
+                console.log('[DisplayAnalysis] Mode de réponse:', data.responseMode, '- Audio géré par sendMessageWithFile');
             }
 
             updateMetrics(responseTime, model, voiceMode = null, emotion = null, hasElevenLabsAudio = false, orchestration = null) {
