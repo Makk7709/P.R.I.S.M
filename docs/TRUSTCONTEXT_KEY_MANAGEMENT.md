@@ -9,6 +9,7 @@
 ## 1. Vue d'Ensemble
 
 KeyRegistry est un registre centralisé pour gérer les clés publiques des approvers TrustContext. Il permet:
+
 - Enregistrement de clés Ed25519
 - Statut actif/révoqué
 - Révocation de clés
@@ -53,7 +54,7 @@ KeyRegistry est un registre centralisé pour gérer les clés publiques des appr
 import { getKeyRegistry } from './src/core/KeyRegistry.js';
 
 const registry = getKeyRegistry({
-  registryPath: './data/key-registry.json'
+  registryPath: './data/key-registry.json',
 });
 
 await registry.initialize();
@@ -65,7 +66,7 @@ await registry.initialize();
 // Générer paire de clés Ed25519
 const { publicKey, privateKey } = crypto.generateKeyPairSync('ed25519', {
   publicKeyEncoding: { type: 'spki', format: 'pem' },
-  privateKeyEncoding: { type: 'pkcs8', format: 'pem' }
+  privateKeyEncoding: { type: 'pkcs8', format: 'pem' },
 });
 
 // Enregistrer clé publique
@@ -87,19 +88,21 @@ await registry.revokeKey('owner-001', 'admin-001');
 
 ```javascript
 // 1. Générer nouvelle paire de clés
-const { publicKey: newPublicKey, privateKey: newPrivateKey } = 
-  crypto.generateKeyPairSync('ed25519', {
+const { publicKey: newPublicKey, privateKey: newPrivateKey } = crypto.generateKeyPairSync(
+  'ed25519',
+  {
     publicKeyEncoding: { type: 'spki', format: 'pem' },
-    privateKeyEncoding: { type: 'pkcs8', format: 'pem' }
-  });
+    privateKeyEncoding: { type: 'pkcs8', format: 'pem' },
+  }
+);
 
 // 2. Rotater (révoque ancienne + enregistre nouvelle)
 await registry.rotateKey(
-  'owner-001',      // Ancienne clé
-  'owner-002',      // Nouvelle clé
-  newPublicKey,     // Nouvelle clé publique
-  ['owner'],        // Rôles (copiés si null)
-  'admin-001'       // Qui effectue la rotation
+  'owner-001', // Ancienne clé
+  'owner-002', // Nouvelle clé
+  newPublicKey, // Nouvelle clé publique
+  ['owner'], // Rôles (copiés si null)
+  'admin-001' // Qui effectue la rotation
 );
 
 // 3. Toutes nouvelles approbations doivent utiliser owner-002
@@ -134,8 +137,8 @@ TrustContext utilise KeyRegistry automatiquement (prioritaire sur fichiers .pub 
 ```javascript
 const trustContext = new TrustContext({
   keyRegistry: getKeyRegistry({
-    registryPath: process.env.TRUSTCONTEXT_KEYREGISTRY_PATH || './data/key-registry.json'
-  })
+    registryPath: process.env.TRUSTCONTEXT_KEYREGISTRY_PATH || './data/key-registry.json',
+  }),
 });
 
 await trustContext.initialize();
@@ -143,6 +146,7 @@ await trustContext.initialize();
 ```
 
 **Priorité de chargement**:
+
 1. KeyRegistry (clés actives uniquement)
 2. Fichiers .pub dans `keyDir` (fallback legacy)
 
@@ -161,6 +165,7 @@ Une clé révoquée ne peut plus être utilisée pour vérifier des signatures. 
 ### 5.3 Rotation
 
 Rotation manuelle recommandée:
+
 - **Fréquence**: Selon politique sécurité (ex: tous les 90 jours)
 - **Processus**:
   1. Générer nouvelle paire
@@ -187,9 +192,9 @@ Pour intégrer KMS/HSM (AWS KMS, Azure Key Vault, HashiCorp Vault), créer une i
 
 ```javascript
 class KeyProvider {
-  async getPublicKey(keyId) { }
-  async isActive(keyId) { }
-  async revokeKey(keyId) { }
+  async getPublicKey(keyId) {}
+  async isActive(keyId) {}
+  async revokeKey(keyId) {}
 }
 
 class KMSKeyProvider extends KeyProvider {
@@ -203,7 +208,7 @@ class KMSKeyProvider extends KeyProvider {
 const trustContext = new TrustContext({
   keyProvider: new KMSKeyProvider({
     // Config KMS
-  })
+  }),
 });
 ```
 
@@ -220,12 +225,14 @@ npm run staging:setup
 ```
 
 Ce script génère:
+
 - 3 clés de test: `owner-001`, `security-001`, `lead-001`
 - Enregistre dans KeyRegistry
 - Sauvegarde clés privées dans `keys/approvers/` (ne jamais commiter!)
 
 ---
 
-**Document généré le**: 2025-12-14  
-**Version**: 1.0.0  
-**Status**: ✅ **TRL 5 Validé**
+**Document généré le**: 2025-12-14
+**Document révisé le**: 2026-05-15 (révision PRISM_02B — footer aligné avec l'audit `docs/valuation/PRISM_02A_TRL_CLAIM_AUDIT.md`)
+**Version**: 1.0.0
+**Status**: ⚠️ **Démonstration interne partielle compatible TRL 5** sur KeyRegistry / clés Ed25519 — **TRL global PRISM = TRL 4 avancé** (verdict `PRISM_02A`, Option B). Pas de HSM/KMS, pas de rotation automatique, pas d'audit indépendant.

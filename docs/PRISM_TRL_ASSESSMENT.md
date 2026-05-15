@@ -1,8 +1,23 @@
 # PRISM — Technical Readiness Level (TRL) Assessment
 
-**Date**: 2025-12-14  
-**Tag de référence**: `v0.1.0-quality-baseline`  
+**Date**: 2025-12-14
+**Tag de référence**: `v0.1.0-quality-baseline`
 **Méthodologie**: Évaluation factuelle basée sur état du code, tests, et preuves disponibles
+
+> **Note de révision PRISM_02A — 2026-05-15**
+>
+> Le présent document est **cohérent avec le verdict prudent retenu par l'audit `docs/valuation/PRISM_02A_TRL_CLAIM_AUDIT.md` : TRL 4 avancé**, avec démonstration partielle TRL 5 sur certains sous-systèmes critiques (TrustContext, journal cryptographique, contrats, adapters providers — invariants prouvés par tests property-based reproductibles).
+>
+> Mises à jour factuelles applicables depuis la rédaction initiale (à intégrer dans une future v2 de ce document) :
+>
+> 1. **Core suite** : la suite déclarée ici à « 61/61 tests passants » (§2.7) est désormais observée à **76/76 tests rejoués** (`npm test`, ~65 s, run sous HEAD `618cd8b`). Sur ces 76 tests, **24 sont property-based** via `fast-check` (consensus, providers, trustContext I1/I2/I3, journal) ; les 52 autres sont unit / regression / adversarial / fuzz / micro-tests. La progression 61 → 76 renforce le niveau laboratoire (TRL 4) **sans suffire à établir une validation TRL 5 complète** (qui exigerait staging réel exécuté, métriques consolidées n ≥ 50, providers IA réels, et reproductibilité indépendante).
+> 2. **TrustContext — vérification cryptographique** (§2.4) : le TODO mentionné « TODO: Implémenter la vérification cryptographique de la signature » est **résolu** depuis la série de commits Ed25519 (`e78a177` → `7e6b704` → `888e574`). `verifyApproval()` utilise désormais Ed25519 avec canonicalisation partagée et encoding hex unifié (cf. `docs/reports/TRL5_PROOF_REPORT.md` §6 révisé).
+> 3. **DECISION_ID_MISMATCH** : le commit `888e574` introduit la distinction `DIGEST_MISMATCH` (digest tampered) / `DECISION_ID_MISMATCH` (decisionId tampered). La doc devra refléter ce séparateur.
+> 4. **Reproductibilité** : `npm ci` échoue actuellement (`ERESOLVE` zod 3 vs zod 4 via `openai@4.104.0` ↔ `@modelcontextprotocol/sdk@1.29.0`) ; reproduction des 76/76 requiert `npm install --legacy-peer-deps`. À résoudre dans `PRISM_03_REPO_HYGIENE_CLEANUP`.
+> 5. **`npm run typecheck`** : 511 erreurs TS volontairement neutralisées par `.husky/pre-commit` (`|| echo "warnings"`). Quality gate à statuer explicitement dans `PRISM_03_TYPECHECK_AND_TEST_STABILIZATION`.
+> 6. **Verdict global inchangé** : **TRL 4 avancé**. Aucun reclassement à la hausse n'est défendable en l'état (cf. `PRISM_02A_TRL_CLAIM_AUDIT.md` §7, grille 17/45).
+>
+> Le contenu original ci-dessous est **conservé tel quel** pour traçabilité historique. Toute future actualisation doit citer ce préambule.
 
 ---
 
