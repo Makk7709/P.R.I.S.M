@@ -99,11 +99,11 @@ Tester: Astraea (Rigor Guardian)
 
 ### Scenario 1: AdaptiveCyclerWidget - "Lire" Button
 
-- [ ] Response Time: ___ ms
-- [ ] Interface Fluidity: ___/10
-- [ ] Stability: ___/10
-- [ ] Voice Relevance: ___/10
-- [ ] Accessibility: ___/10
+- [ ] Response Time: \_\_\_ ms
+- [ ] Interface Fluidity: \_\_\_/10
+- [ ] Stability: \_\_\_/10
+- [ ] Voice Relevance: \_\_\_/10
+- [ ] Accessibility: \_\_\_/10
 
 Notes:
 
@@ -115,11 +115,11 @@ Notes:
 
 ### Scenario 2: InsightCenter - "Lire Snapshot" Button
 
-- [ ] Response Time: ___ ms
-- [ ] Interface Fluidity: ___/10
-- [ ] Stability: ___/10
-- [ ] Voice Relevance: ___/10
-- [ ] Accessibility: ___/10
+- [ ] Response Time: \_\_\_ ms
+- [ ] Interface Fluidity: \_\_\_/10
+- [ ] Stability: \_\_\_/10
+- [ ] Voice Relevance: \_\_\_/10
+- [ ] Accessibility: \_\_\_/10
 
 Notes:
 
@@ -131,11 +131,11 @@ Notes:
 
 ### Scenario 3: Keyboard Navigation (Tab + Enter)
 
-- [ ] AdaptiveCyclerWidget Focus Order: ___/10
-- [ ] InsightCenter Focus Order: ___/10
-- [ ] Button Activation: ___/10
-- [ ] Visual Feedback: ___/10
-- [ ] ARIA Support: ___/10
+- [ ] AdaptiveCyclerWidget Focus Order: \_\_\_/10
+- [ ] InsightCenter Focus Order: \_\_\_/10
+- [ ] Button Activation: \_\_\_/10
+- [ ] Visual Feedback: \_\_\_/10
+- [ ] ARIA Support: \_\_\_/10
 
 Notes:
 
@@ -147,11 +147,11 @@ Notes:
 
 ### Scenario 4: API Fallback Test
 
-- [ ] Fallback Detection Time: ___ ms
-- [ ] TTS Activation: ___/10
-- [ ] Error Handling: ___/10
-- [ ] User Feedback: ___/10
-- [ ] Recovery: ___/10
+- [ ] Fallback Detection Time: \_\_\_ ms
+- [ ] TTS Activation: \_\_\_/10
+- [ ] Error Handling: \_\_\_/10
+- [ ] User Feedback: \_\_\_/10
+- [ ] Recovery: \_\_\_/10
 
 Notes:
 
@@ -163,11 +163,11 @@ Notes:
 
 ### Scenario 5: Error Handling
 
-- [ ] Error Detection: ___/10
-- [ ] Interface Stability: ___/10
-- [ ] Error Messages: ___/10
-- [ ] Recovery Process: ___/10
-- [ ] User Guidance: ___/10
+- [ ] Error Detection: \_\_\_/10
+- [ ] Interface Stability: \_\_\_/10
+- [ ] Error Messages: \_\_\_/10
+- [ ] Recovery Process: \_\_\_/10
+- [ ] User Guidance: \_\_\_/10
 
 Notes:
 
@@ -267,11 +267,11 @@ Key Findings:
 
 ### Scenario 1 Results: AdaptiveCyclerWidget - "Lire" Button
 
-- [ ] Response Time: ___ ms
-- [ ] Interface Fluidity: ___/10
-- [ ] Stability: ___/10
-- [ ] Voice Relevance: ___/10
-- [ ] Accessibility: ___/10
+- [ ] Response Time: \_\_\_ ms
+- [ ] Interface Fluidity: \_\_\_/10
+- [ ] Stability: \_\_\_/10
+- [ ] Voice Relevance: \_\_\_/10
+- [ ] Accessibility: \_\_\_/10
 
 Notes:
 
@@ -283,11 +283,11 @@ Notes:
 
 ### Scenario 2 Results: InsightCenter - "Lire Snapshot" Button
 
-- [ ] Response Time: ___ ms
-- [ ] Interface Fluidity: ___/10
-- [ ] Stability: ___/10
-- [ ] Voice Relevance: ___/10
-- [ ] Accessibility: ___/10
+- [ ] Response Time: \_\_\_ ms
+- [ ] Interface Fluidity: \_\_\_/10
+- [ ] Stability: \_\_\_/10
+- [ ] Voice Relevance: \_\_\_/10
+- [ ] Accessibility: \_\_\_/10
 
 Notes:
 
@@ -299,11 +299,11 @@ Notes:
 
 ### Scenario 3 Results: Keyboard Navigation (Tab + Enter)
 
-- [ ] AdaptiveCyclerWidget Focus Order: ___/10
-- [ ] InsightCenter Focus Order: ___/10
-- [ ] Button Activation: ___/10
-- [ ] Visual Feedback: ___/10
-- [ ] ARIA Support: ___/10
+- [ ] AdaptiveCyclerWidget Focus Order: \_\_\_/10
+- [ ] InsightCenter Focus Order: \_\_\_/10
+- [ ] Button Activation: \_\_\_/10
+- [ ] Visual Feedback: \_\_\_/10
+- [ ] ARIA Support: \_\_\_/10
 
 Notes:
 
@@ -315,11 +315,11 @@ Notes:
 
 ### Scenario 4 Results: API Fallback Test
 
-- [ ] Fallback Detection Time: ___ ms
-- [ ] TTS Activation: ___/10
-- [ ] Error Handling: ___/10
-- [ ] User Feedback: ___/10
-- [ ] Recovery: ___/10
+- [ ] Fallback Detection Time: \_\_\_ ms
+- [ ] TTS Activation: \_\_\_/10
+- [ ] Error Handling: \_\_\_/10
+- [ ] User Feedback: \_\_\_/10
+- [ ] Recovery: \_\_\_/10
 
 Notes:
 
@@ -331,11 +331,11 @@ Notes:
 
 ### Scenario 5 Results: Error Handling
 
-- [ ] Error Detection: ___/10
-- [ ] Interface Stability: ___/10
-- [ ] Error Messages: ___/10
-- [ ] Recovery Process: ___/10
-- [ ] User Guidance: ___/10
+- [ ] Error Detection: \_\_\_/10
+- [ ] Interface Stability: \_\_\_/10
+- [ ] Error Messages: \_\_\_/10
+- [ ] Recovery Process: \_\_\_/10
+- [ ] User Guidance: \_\_\_/10
 
 Notes:
 

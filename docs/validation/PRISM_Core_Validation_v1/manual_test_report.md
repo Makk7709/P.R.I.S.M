@@ -56,12 +56,12 @@ Statut: Validé
 
 ## 4. Résultats des Tests
 
-| Catégorie | Tests | Passés | Échecs | Taux de réussite |
-|-----------|-------|--------|---------|------------------|
-| Fonctionnel | 24 | 24 | 0 | 100% |
-| Performance | 12 | 12 | 0 | 100% |
-| Accessibilité | 8 | 8 | 0 | 100% |
-| Intégration | 16 | 16 | 0 | 100% |
+| Catégorie     | Tests | Passés | Échecs | Taux de réussite |
+| ------------- | ----- | ------ | ------ | ---------------- |
+| Fonctionnel   | 24    | 24     | 0      | 100%             |
+| Performance   | 12    | 12     | 0      | 100%             |
+| Accessibilité | 8     | 8      | 0      | 100%             |
+| Intégration   | 16    | 16     | 0      | 100%             |
 
 ## 5. Observations et Recommandations
 
