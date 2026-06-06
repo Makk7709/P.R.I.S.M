@@ -656,33 +656,54 @@ export class StatisticalEngine {
     const matrix = {};
     const strongestPositive = { columns: null, value: -1 };
     const strongestNegative = { columns: null, value: 1 };
-    
+
     for (const col1 of colNames) {
       matrix[col1] = {};
       for (const col2 of colNames) {
-        if (col1 === col2) {
-          matrix[col1][col2] = 1;
-        } else if (matrix[col2]?.[col1] !== undefined) {
-          matrix[col1][col2] = matrix[col2][col1];
-        } else {
-          const corr = this.correlation(columns[col1], columns[col2]);
-          matrix[col1][col2] = corr.pearson;
-          
-          if (col1 !== col2) {
-            if (corr.pearson > strongestPositive.value) {
-              strongestPositive.value = corr.pearson;
-              strongestPositive.columns = [col1, col2];
-            }
-            if (corr.pearson < strongestNegative.value) {
-              strongestNegative.value = corr.pearson;
-              strongestNegative.columns = [col1, col2];
-            }
-          }
-        }
+        matrix[col1][col2] = this._correlationCell(
+          columns,
+          matrix,
+          col1,
+          col2,
+          strongestPositive,
+          strongestNegative
+        );
       }
     }
-    
+
     return { matrix, strongestPositive, strongestNegative };
+  }
+
+  /**
+   * Calcule (ou réutilise par symétrie) la corrélation d'une cellule et met à jour
+   * les extrêmes. Préserve l'ordre/sémantique de l'ancienne triple condition.
+   * @private
+   */
+  _correlationCell(columns, matrix, col1, col2, strongestPositive, strongestNegative) {
+    if (col1 === col2) {
+      return 1;
+    }
+    if (matrix[col2]?.[col1] !== undefined) {
+      return matrix[col2][col1];
+    }
+    const corr = this.correlation(columns[col1], columns[col2]);
+    this._trackStrongestCorrelation(corr.pearson, col1, col2, strongestPositive, strongestNegative);
+    return corr.pearson;
+  }
+
+  /**
+   * Met à jour les corrélations les plus fortes (positive/négative). Mutation in-place.
+   * @private
+   */
+  _trackStrongestCorrelation(pearson, col1, col2, strongestPositive, strongestNegative) {
+    if (pearson > strongestPositive.value) {
+      strongestPositive.value = pearson;
+      strongestPositive.columns = [col1, col2];
+    }
+    if (pearson < strongestNegative.value) {
+      strongestNegative.value = pearson;
+      strongestNegative.columns = [col1, col2];
+    }
   }
 
   // ============================================================================
@@ -1312,65 +1333,18 @@ export class StatisticalEngine {
    */
   analyzeDataset(dataset) {
     const { columns, rows } = dataset;
-    
-    const numericColumns = [];
-    const categoricalColumns = [];
-    const statistics = {};
-    const categoricalSummary = {};
-    
-    // Classifier et analyser chaque colonne
-    for (const col of columns) {
-      const values = rows.map(r => r[col]);
-      const numericValues = values.filter(v => typeof v === 'number' && !isNaN(v));
-      
-      if (numericValues.length > values.length * 0.5) {
-        numericColumns.push(col);
-        statistics[col] = this.descriptiveStats(numericValues);
-      } else {
-        categoricalColumns.push(col);
-        const unique = new Set(values.filter(v => v !== null));
-        categoricalSummary[col] = {
-          uniqueValues: unique.size,
-          mode: this.categoricalMode(values.filter(v => v !== null)),
-          frequency: this.frequencyTable(values.filter(v => v !== null), { sortBy: 'count' })
-        };
-      }
-    }
-    
+
+    // Classifier et analyser chaque colonne (numérique vs catégorielle)
+    const { numericColumns, categoricalColumns, statistics, categoricalSummary } =
+      this._classifyDatasetColumns(columns, rows);
+
     // Corrélations entre colonnes numériques
-    let correlations = null;
-    if (numericColumns.length >= 2) {
-      const numericData = {};
-      for (const col of numericColumns) {
-        numericData[col] = rows.map(r => r[col]).filter(v => !isNaN(v));
-      }
-      correlations = this.correlationMatrix(numericData).matrix;
-    }
-    
+    const correlations = this._computeDatasetCorrelations(numericColumns, rows);
+
     // Qualité des données
-    let nullCount = 0;
-    const outlierWarnings = [];
-    
-    for (const row of rows) {
-      for (const col of columns) {
-        if (row[col] === null || row[col] === undefined) {
-          nullCount++;
-        }
-      }
-    }
-    
-    for (const col of numericColumns) {
-      const values = rows.map(r => r[col]).filter(v => !isNaN(v));
-      const outliers = this.detectOutliers(values);
-      if (outliers.hasOutliers) {
-        outlierWarnings.push({
-          column: col,
-          outlierCount: outliers.outlierCount,
-          percentage: outliers.outlierPercentage
-        });
-      }
-    }
-    
+    const nullCount = this._countNullCells(columns, rows);
+    const outlierWarnings = this._collectOutlierWarnings(numericColumns, rows);
+
     // Résumé exécutif
     const executiveSummary = {
       totalRows: rows.length,
@@ -1396,30 +1370,126 @@ export class StatisticalEngine {
   }
 
   /**
+   * Classifie chaque colonne (numérique vs catégorielle) et calcule ses stats/résumés.
+   * @private
+   */
+  _classifyDatasetColumns(columns, rows) {
+    const numericColumns = [];
+    const categoricalColumns = [];
+    const statistics = {};
+    const categoricalSummary = {};
+
+    for (const col of columns) {
+      const values = rows.map((r) => r[col]);
+      const numericValues = values.filter((v) => typeof v === 'number' && !isNaN(v));
+
+      if (numericValues.length > values.length * 0.5) {
+        numericColumns.push(col);
+        statistics[col] = this.descriptiveStats(numericValues);
+      } else {
+        categoricalColumns.push(col);
+        const nonNull = values.filter((v) => v !== null);
+        const unique = new Set(nonNull);
+        categoricalSummary[col] = {
+          uniqueValues: unique.size,
+          mode: this.categoricalMode(nonNull),
+          frequency: this.frequencyTable(nonNull, { sortBy: 'count' }),
+        };
+      }
+    }
+
+    return { numericColumns, categoricalColumns, statistics, categoricalSummary };
+  }
+
+  /**
+   * Matrice de corrélation entre colonnes numériques (null si < 2 colonnes).
+   * @private
+   */
+  _computeDatasetCorrelations(numericColumns, rows) {
+    if (numericColumns.length < 2) {
+      return null;
+    }
+    const numericData = {};
+    for (const col of numericColumns) {
+      numericData[col] = rows.map((r) => r[col]).filter((v) => !isNaN(v));
+    }
+    return this.correlationMatrix(numericData).matrix;
+  }
+
+  /**
+   * Compte les cellules null/undefined sur tout le dataset.
+   * @private
+   */
+  _countNullCells(columns, rows) {
+    let nullCount = 0;
+    for (const row of rows) {
+      for (const col of columns) {
+        if (row[col] === null || row[col] === undefined) {
+          nullCount++;
+        }
+      }
+    }
+    return nullCount;
+  }
+
+  /**
+   * Avertissements d'outliers par colonne numérique.
+   * @private
+   */
+  _collectOutlierWarnings(numericColumns, rows) {
+    const outlierWarnings = [];
+    for (const col of numericColumns) {
+      const values = rows.map((r) => r[col]).filter((v) => !isNaN(v));
+      const outliers = this.detectOutliers(values);
+      if (outliers.hasOutliers) {
+        outlierWarnings.push({
+          column: col,
+          outlierCount: outliers.outlierCount,
+          percentage: outliers.outlierPercentage,
+        });
+      }
+    }
+    return outlierWarnings;
+  }
+
+  /**
    * Génère les insights clés
    * @private
    */
   _generateKeyInsights(statistics, categoricalSummary, correlations) {
+    return [...this._skewnessInsights(statistics), ...this._correlationInsights(correlations)];
+  }
+
+  /**
+   * Insights de skewness (|skewness| > 1). Préserve l'ordre d'itération.
+   * @private
+   */
+  _skewnessInsights(statistics) {
     const insights = [];
-    
-    // Insights sur les stats numériques
     for (const [col, stats] of Object.entries(statistics)) {
       if (Math.abs(stats.skewness) > 1) {
         insights.push(`${col} shows ${stats.skewness > 0 ? 'positive' : 'negative'} skewness`);
       }
     }
-    
-    // Insights sur les corrélations
-    if (correlations) {
-      for (const col1 of Object.keys(correlations)) {
-        for (const col2 of Object.keys(correlations[col1])) {
-          if (col1 < col2 && Math.abs(correlations[col1][col2]) > 0.7) {
-            insights.push(`Strong correlation between ${col1} and ${col2}`);
-          }
+    return insights;
+  }
+
+  /**
+   * Insights de corrélation forte (|r| > 0.7, col1 < col2). Préserve l'ordre.
+   * @private
+   */
+  _correlationInsights(correlations) {
+    const insights = [];
+    if (!correlations) {
+      return insights;
+    }
+    for (const col1 of Object.keys(correlations)) {
+      for (const col2 of Object.keys(correlations[col1])) {
+        if (col1 < col2 && Math.abs(correlations[col1][col2]) > 0.7) {
+          insights.push(`Strong correlation between ${col1} and ${col2}`);
         }
       }
     }
-    
     return insights;
   }
 
