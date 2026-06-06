@@ -132,6 +132,85 @@ const PRISM_STYLE = {
   },
 };
 
+/** Regex d'extraction de métriques chiffrées depuis un texte de chat. */
+const CHAT_METRIC_PATTERNS = [
+  /(\d+(?:[.,]\d+)?)\s*([KMB]?€|%|\s*(?:euros?|dollars?|unités?|ventes?))/gi,
+  /([+-]?\d+(?:[.,]\d+)?)\s*%/gi,
+  /(\d+(?:[.,]\d+)?)\s*[KMB]€/gi,
+];
+
+/** Mots-clés signalant une phrase « insight » pertinente. */
+const CHAT_INSIGHT_KEYWORDS = [
+  'hausse',
+  'baisse',
+  'croissance',
+  'performance',
+  'résultat',
+  'objectif',
+];
+
+/**
+ * Extrait toutes les métriques chiffrées d'un contenu (ordre préservé). Pur.
+ * @param {string} content
+ * @returns {Array<{label: string, value: string}>}
+ */
+function extractChatMetrics(content) {
+  const metrics = [];
+  for (const pattern of CHAT_METRIC_PATTERNS) {
+    for (const match of content.matchAll(pattern)) {
+      metrics.push({ label: `Métrique`, value: match[0].trim() });
+    }
+  }
+  return metrics;
+}
+
+/**
+ * Extrait les phrases « insight » (parmi les 3 premières phrases >20 car.). Pur.
+ * @param {string} content
+ * @returns {string[]}
+ */
+function extractChatInsights(content) {
+  const sentences = content.split(/[.!?]+/).filter((s) => s.trim().length > 20);
+  const insights = [];
+  for (const sentence of sentences.slice(0, 3)) {
+    if (CHAT_INSIGHT_KEYWORDS.some((keyword) => sentence.includes(keyword))) {
+      insights.push(sentence.trim());
+    }
+  }
+  return insights;
+}
+
+/**
+ * Dérive un titre depuis le premier message utilisateur (5 mots, max 30 car.). Pur.
+ * @param {Array<{role: string, content?: string}>} messages
+ * @returns {string}
+ */
+function deriveChatTitle(messages) {
+  const userMessage = messages.find((m) => m.role === 'user');
+  if (userMessage && userMessage.content) {
+    const firstWords = userMessage.content.split(' ').slice(0, 5).join(' ');
+    return firstWords.length > 30 ? `${firstWords.substring(0, 30)}...` : firstWords;
+  }
+  return 'Rapport PRISM';
+}
+
+/**
+ * Déduplique les métriques par valeur (première occurrence conservée). Pur.
+ * @param {Array<{label: string, value: string}>} metrics
+ * @returns {Array<{label: string, value: string}>}
+ */
+function dedupeMetricsByValue(metrics) {
+  const uniqueMetrics = [];
+  const seenValues = new Set();
+  for (const m of metrics) {
+    if (!seenValues.has(m.value)) {
+      seenValues.add(m.value);
+      uniqueMetrics.push(m);
+    }
+  }
+  return uniqueMetrics;
+}
+
 export class InfographicGenerator {
   constructor(options = {}) {
     this.apiKey = process.env.NANOBANANA_API_KEY || process.env.GEMINI_API_KEY || options.apiKey;
@@ -512,68 +591,18 @@ FORMAT: Image haute résolution, ratio 16:9, optimisée pour insertion PDF`;
   extractDataFromChat(messages, taskType) {
     const metrics = [];
     const insights = [];
-    let title = 'Rapport PRISM';
-
-    // Regex pour extraire des métriques
-    const metricPatterns = [
-      /(\d+(?:[.,]\d+)?)\s*([KMB]?€|%|\s*(?:euros?|dollars?|unités?|ventes?))/gi,
-      /([+-]?\d+(?:[.,]\d+)?)\s*%/gi,
-      /(\d+(?:[.,]\d+)?)\s*[KMB]€/gi,
-    ];
 
     // Analyser les messages assistant
     const assistantMessages = messages.filter((m) => m.role === 'assistant');
-
     for (const msg of assistantMessages) {
       const content = msg.content || '';
-
-      // Extraire les métriques
-      for (const pattern of metricPatterns) {
-        const matches = content.matchAll(pattern);
-        for (const match of matches) {
-          metrics.push({
-            label: `Métrique`,
-            value: match[0].trim(),
-          });
-        }
-      }
-
-      // Extraire les insights (phrases clés)
-      const sentences = content.split(/[.!?]+/).filter((s) => s.trim().length > 20);
-      for (const sentence of sentences.slice(0, 3)) {
-        if (
-          sentence.includes('hausse') ||
-          sentence.includes('baisse') ||
-          sentence.includes('croissance') ||
-          sentence.includes('performance') ||
-          sentence.includes('résultat') ||
-          sentence.includes('objectif')
-        ) {
-          insights.push(sentence.trim());
-        }
-      }
-    }
-
-    // Générer un titre basé sur le premier message utilisateur
-    const userMessage = messages.find((m) => m.role === 'user');
-    if (userMessage && userMessage.content) {
-      const firstWords = userMessage.content.split(' ').slice(0, 5).join(' ');
-      title = firstWords.length > 30 ? `${firstWords.substring(0, 30)}...` : firstWords;
-    }
-
-    // Dédupliquer les métriques
-    const uniqueMetrics = [];
-    const seenValues = new Set();
-    for (const m of metrics) {
-      if (!seenValues.has(m.value)) {
-        seenValues.add(m.value);
-        uniqueMetrics.push(m);
-      }
+      metrics.push(...extractChatMetrics(content));
+      insights.push(...extractChatInsights(content));
     }
 
     return {
-      title,
-      metrics: uniqueMetrics.slice(0, 6), // Max 6 métriques
+      title: deriveChatTitle(messages),
+      metrics: dedupeMetricsByValue(metrics).slice(0, 6), // Max 6 métriques
       insights: insights.slice(0, 3), // Max 3 insights
       taskType,
     };
