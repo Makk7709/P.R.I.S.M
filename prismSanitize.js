@@ -7,6 +7,9 @@ const sanitizeText = (input) => {
   if (typeof input !== 'string') return '';
   
   // Remove null bytes and control characters
+  // Intentional: this sanitizer must match raw control characters (null bytes,
+  // C0/C1 controls) in order to strip them — matching them is the goal.
+  // eslint-disable-next-line no-control-regex
   let sanitized = input.replace(/[\0-\x1F\x7F-\x9F]/g, '');
   
   // Remove potential script tags and their content

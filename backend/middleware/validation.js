@@ -289,6 +289,9 @@ function performSecurityChecks(data) {
   }
 
   // Vérification de caractères suspects
+  // Intentional: this security check must detect raw control characters in
+  // user content, so matching them is the whole point (not a typo).
+  // eslint-disable-next-line no-control-regex
   const suspiciousChars = /[\x00-\x08\x0B\x0C\x0E-\x1F\x7F]/g;
   if (suspiciousChars.test(contentToCheck)) {
     checks.passed = false;
@@ -314,12 +317,16 @@ const sanitizeInput = (req, res, next) => {
     
     // Sanitisation basique du contenu
     data.content = data.content
+      // Intentional: strip raw control characters from user content.
+      // eslint-disable-next-line no-control-regex
       .replace(/[\x00-\x08\x0B\x0C\x0E-\x1F\x7F]/g, '') // Supprime caractères de contrôle
       .replace(/\s+/g, ' ') // Normalise les espaces
       .trim();
     
     // Sanitisation du titre - replace control chars with space, then normalize spaces
     data.metadata.title = data.metadata.title
+      // Intentional: replace raw control characters in the title with spaces.
+      // eslint-disable-next-line no-control-regex
       .replace(/[\x00-\x08\x0B\x0C\x0E-\x1F\x7F]/g, ' ') // Replace control chars with space
       .replace(/\s+/g, ' ') // Normalize multiple spaces to single space
       .trim();
