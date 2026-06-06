@@ -1,0 +1,116 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`InfographicGenerator — characterization (extractDataFromChat) > dedupes metrics and caps at 6 metrics / 3 insights (golden master) 1`] = `
+{
+  "insights": [
+    "Bonne performance ainsi",
+  ],
+  "metrics": [
+    {
+      "label": "Métrique",
+      "value": "10€",
+    },
+    {
+      "label": "Métrique",
+      "value": "20€",
+    },
+    {
+      "label": "Métrique",
+      "value": "30€",
+    },
+    {
+      "label": "Métrique",
+      "value": "40€",
+    },
+    {
+      "label": "Métrique",
+      "value": "50€",
+    },
+    {
+      "label": "Métrique",
+      "value": "60€",
+    },
+  ],
+  "taskType": "finance",
+  "title": "Rapport PRISM",
+}
+`;
+
+exports[`InfographicGenerator — characterization (extractDataFromChat) > extracts metrics/insights/title from a rich conversation (golden master) 1`] = `
+{
+  "insights": [
+    "Le chiffre est de 1 250 000€ avec une hausse de +15%",
+    "La croissance est notable cette année",
+    "On note une baisse de -5% sur un segment",
+  ],
+  "metrics": [
+    {
+      "label": "Métrique",
+      "value": "000€",
+    },
+    {
+      "label": "Métrique",
+      "value": "15%",
+    },
+    {
+      "label": "Métrique",
+      "value": "250K€",
+    },
+    {
+      "label": "Métrique",
+      "value": "30%",
+    },
+    {
+      "label": "Métrique",
+      "value": "+15%",
+    },
+    {
+      "label": "Métrique",
+      "value": "5%",
+    },
+  ],
+  "taskType": "finance",
+  "title": "Analyse les ventes du trimestr...",
+}
+`;
+
+exports[`InfographicGenerator — characterization (extractDataFromChat) > handles empty / user-only / no-metric conversations (golden master) 1`] = `
+[
+  {
+    "output": {
+      "insights": [],
+      "metrics": [],
+      "taskType": "general",
+      "title": "Rapport PRISM",
+    },
+    "taskType": "general",
+  },
+  {
+    "output": {
+      "insights": [],
+      "metrics": [],
+      "taskType": "strategie",
+      "title": "Bonjour, peux-tu maider avec u...",
+    },
+    "taskType": "strategie",
+  },
+  {
+    "output": {
+      "insights": [],
+      "metrics": [],
+      "taskType": "general",
+      "title": "Rapport PRISM",
+    },
+    "taskType": "general",
+  },
+  {
+    "output": {
+      "insights": [],
+      "metrics": [],
+      "taskType": "marketing",
+      "title": "court",
+    },
+    "taskType": "marketing",
+  },
+]
+`;
