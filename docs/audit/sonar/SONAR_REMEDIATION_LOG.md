@@ -631,3 +631,64 @@ La 2ᵉ définition écrase silencieusement la 1ʳᵉ (jamais sur le prototype).
 
 Après Volet 2 : `npm run lint` = **0 erreur / 898 warnings**, `npm test` =
 **76/76**.
+
+## Final lint sweep — 898 warnings nettoyés (Volet 3)
+
+Warnings ramenés de **898 à 1** (0 erreur). Méthode : autofix par lots de
+répertoires + codemod `_`-prefix sûr + config plugin, `npm test` = 76/76 après
+chaque lot, commits par lot.
+
+### 1. Activation autofix imports (config)
+
+`eslint-plugin-unused-imports` n'était câblé que pour `.ts`. Ajout d'un bloc
+flat-config scope JS/MJS/CJS : `unused-imports/no-unused-imports` (auto-supprime
+les imports réellement inutilisés sur `--fix`) + `unused-imports/no-unused-vars`
+(convention `^_`). Ajout de `caughtErrors: 'all'` +
+`caughtErrorsIgnorePattern: '^_'` aux deux règles (JS et TS) pour que les
+`catch (_error)` intentionnels cessent d'être signalés. Config-only.
+
+### 2. Autofix par lots (122 imports + 110 prefer-template + 2 divers = 234)
+
+`eslint <dirs> --fix` par groupes (source ; root+scripts+divers ; tests+ui).
+Supprime les imports inutilisés et convertit la concaténation en template
+literals. Aucun import à effet de bord retiré (les `import './x.js'` nus n'ont
+pas de binding et sont préservés). 898 → 664.
+
+### 3. Codemod `_`-prefix des variables inutilisées (≈ 618)
+
+Les `no-unused-vars` restants (variables, non auto-supprimables) ont été
+traités par un codemod *renommant* l'identifiant inutilisé en `_<nom>` (jamais
+de suppression) — convention « intentionnellement inutilisé », 100 %
+iso-comportement. Appliqué par lots (non-test/ui, puis tests/ui), `npm test`
+76/76 après chaque lot.
+
+Cas particuliers (variables write-only réparties entre déclaration et écriture)
+corrigés à la main :
+- `src/core/KeyRegistry.js` : binding `publicKey` mort retiré mais l'appel
+  `crypto.createPublicKey(pem)` (validation → throw) **conservé**.
+- `prismContinuum.js`, `prismRetry.js`, `staging/e2e-workflow.test.js`,
+  `tests/security/trustContext.simple.spec.js`, `tests/voice/voice-controller.spec.ts`,
+  `ui/prismUITests.test.js` : déclaration + site d'écriture renommés ensemble.
+
+### 4. Warning laissé volontairement (1) + bug latent documenté
+
+- `server.js:54` — `enterpriseExportRouter` est chargé (`await import(...)`) puis
+  **jamais monté** (`app.use` absent) → route enterprise export morte au runtime.
+  C'est un **vrai bug latent pré-existant** ; le câblage (monter la route) est une
+  décision produit, pas du cosmétique lint. Le rename de la variable a été
+  **annulé** (pas de `_` trompeur) et le warning **laissé en place comme signal**.
+  À trancher côté produit.
+
+Après Volet 3 : `npm run lint` = **0 erreur / 1 warning**, `npm test` = **76/76**.
+
+## Bilan global du final lint sweep
+
+| Étape    | Erreurs | Warnings |
+| -------- | ------- | -------- |
+| Avant    | 42      | 899      |
+| Volet 1  | 38      | 898      |
+| Volet 2  | 0       | 898      |
+| Volet 3  | 0       | 1        |
+
+Tests : **76/76** maintenus à chaque lot. Bug latent restant (à arbitrer) :
+route `enterpriseExportRouter` jamais montée (`server.js`).

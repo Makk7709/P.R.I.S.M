@@ -235,6 +235,8 @@ export default [
           varsIgnorePattern: '^_',
           args: 'after-used',
           argsIgnorePattern: '^_',
+          caughtErrors: 'all',
+          caughtErrorsIgnorePattern: '^_',
         },
       ],
     },
@@ -268,7 +270,12 @@ export default [
       'no-unused-vars': 'off',
       '@typescript-eslint/no-unused-vars': [
         'warn',
-        { argsIgnorePattern: '^_', varsIgnorePattern: '^_' },
+        {
+          argsIgnorePattern: '^_',
+          varsIgnorePattern: '^_',
+          caughtErrors: 'all',
+          caughtErrorsIgnorePattern: '^_',
+        },
       ],
       // Auto-removable on --fix; addresses Sonar S1128 (unused imports). Only
       // genuinely-unused imports are removed (scope analysis, type-aware of
