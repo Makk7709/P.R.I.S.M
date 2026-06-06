@@ -167,51 +167,68 @@ export class TrustContext extends EventEmitter {
   async _loadApproverPublicKeys() {
     try {
       // 1. Initialiser KeyRegistry (TRL 5)
-      try {
-        await this.config.keyRegistry.initialize();
-        const activeKeys = this.config.keyRegistry.listActiveKeys();
-        for (const key of activeKeys) {
-          const publicKeyPem = this.config.keyRegistry.getPublicKey(key.keyId);
-          if (publicKeyPem) {
-            this.config.approverPublicKeys.set(key.keyId, publicKeyPem);
-            console.log(
-              `[TrustContext] Loaded key from registry: ${key.keyId} (roles: ${key.roleBindings.join(', ')})`
-            );
-          }
-        }
-      } catch (error) {
-        console.warn(
-          '[TrustContext] KeyRegistry initialization failed, falling back to file-based keys:',
-          error.message
-        );
-      }
-
+      await this._loadApproverKeysFromRegistry();
       // 2. Fallback: charger depuis fichiers .pub (legacy)
-      try {
-        await fs.mkdir(this.config.keyDir, { recursive: true });
-        const files = await fs.readdir(this.config.keyDir).catch(() => []);
-
-        for (const file of files) {
-          if (file.endsWith('.pub')) {
-            const keyId = path.basename(file, '.pub');
-            // Ne pas écraser si déjà chargé depuis registry
-            if (!this.config.approverPublicKeys.has(keyId)) {
-              const keyPath = path.join(this.config.keyDir, file);
-              try {
-                const publicKeyPem = await fs.readFile(keyPath, 'utf8');
-                this.config.approverPublicKeys.set(keyId, publicKeyPem);
-                console.log(`[TrustContext] Loaded public key from file: ${keyId}`);
-              } catch (error) {
-                console.warn(`[TrustContext] Failed to load key ${keyId}:`, error.message);
-              }
-            }
-          }
-        }
-      } catch (error) {
-        console.warn('[TrustContext] Failed to load keys from directory:', error.message);
-      }
+      await this._loadApproverKeysFromFiles();
     } catch (error) {
       console.warn('[TrustContext] Failed to load approver keys:', error.message);
+    }
+  }
+
+  /**
+   * Charge les clés depuis le KeyRegistry (TRL 5). Échec non bloquant (fallback fichiers).
+   * @private
+   */
+  async _loadApproverKeysFromRegistry() {
+    try {
+      await this.config.keyRegistry.initialize();
+      const activeKeys = this.config.keyRegistry.listActiveKeys();
+      for (const key of activeKeys) {
+        const publicKeyPem = this.config.keyRegistry.getPublicKey(key.keyId);
+        if (publicKeyPem) {
+          this.config.approverPublicKeys.set(key.keyId, publicKeyPem);
+          console.log(
+            `[TrustContext] Loaded key from registry: ${key.keyId} (roles: ${key.roleBindings.join(', ')})`
+          );
+        }
+      }
+    } catch (error) {
+      console.warn(
+        '[TrustContext] KeyRegistry initialization failed, falling back to file-based keys:',
+        error.message
+      );
+    }
+  }
+
+  /**
+   * Charge les clés depuis les fichiers .pub (legacy), sans écraser celles du registry.
+   * @private
+   */
+  async _loadApproverKeysFromFiles() {
+    try {
+      await fs.mkdir(this.config.keyDir, { recursive: true });
+      const files = await fs.readdir(this.config.keyDir).catch(() => []);
+
+      for (const file of files) {
+        if (!file.endsWith('.pub')) {
+          continue;
+        }
+        const keyId = path.basename(file, '.pub');
+        // Ne pas écraser si déjà chargé depuis registry
+        if (this.config.approverPublicKeys.has(keyId)) {
+          continue;
+        }
+        const keyPath = path.join(this.config.keyDir, file);
+        try {
+          const publicKeyPem = await fs.readFile(keyPath, 'utf8');
+          this.config.approverPublicKeys.set(keyId, publicKeyPem);
+          console.log(`[TrustContext] Loaded public key from file: ${keyId}`);
+        } catch (error) {
+          console.warn(`[TrustContext] Failed to load key ${keyId}:`, error.message);
+        }
+      }
+    } catch (error) {
+      console.warn('[TrustContext] Failed to load keys from directory:', error.message);
     }
   }
 

@@ -57,6 +57,55 @@ export const AIProvider = {
 };
 
 /**
+ * Normalise une valeur de vote vers la chaîne attendue par le schéma de validation.
+ * Rétrocompatibilité boolean/VoteType. Fonction pure (iso-comportement).
+ * @param {boolean|string} vote
+ * @returns {string}
+ */
+function normalizeVoteForValidation(vote) {
+  if (typeof vote === 'boolean') {
+    return vote ? 'approve' : 'reject';
+  }
+  if (vote === true || vote === 'approve' || vote === VoteType.APPROVE) {
+    return 'approve';
+  }
+  if (vote === false || vote === 'reject' || vote === VoteType.REJECT) {
+    return 'reject';
+  }
+  if (vote === 'abstain' || vote === VoteType.ABSTAIN) {
+    return 'abstain';
+  }
+  if (vote === 'unavailable' || vote === VoteType.UNAVAILABLE) {
+    return 'unavailable';
+  }
+  return vote;
+}
+
+/**
+ * Résout la valeur de vote finale (VoteType normalisé). Fonction pure (iso-comportement).
+ * @param {boolean|string} vote
+ * @returns {string}
+ */
+function resolveFinalVoteType(vote) {
+  if (typeof vote === 'boolean') {
+    return vote ? VoteType.APPROVE : VoteType.REJECT;
+  }
+  if (vote === 'approve') {
+    return VoteType.APPROVE;
+  }
+  if (vote === 'reject') {
+    return VoteType.REJECT;
+  }
+  if (vote === 'abstain') {
+    return VoteType.ABSTAIN;
+  }
+  if (vote === 'unavailable') {
+    return VoteType.UNAVAILABLE;
+  }
+  return vote;
+}
+
+/**
  * Classe représentant une proposition de décision
  */
 class DecisionProposal {
@@ -421,20 +470,7 @@ export class ConsensusManager extends EventEmitter {
     // VALIDATION FAIL-CLOSED: Vérifier que le vote est conforme au schéma
     try {
       // Convertir vote boolean en VoteType si nécessaire (rétrocompatibilité)
-      let voteType;
-      if (typeof vote === 'boolean') {
-        voteType = vote ? 'approve' : 'reject';
-      } else if (vote === true || vote === 'approve' || vote === VoteType.APPROVE) {
-        voteType = 'approve';
-      } else if (vote === false || vote === 'reject' || vote === VoteType.REJECT) {
-        voteType = 'reject';
-      } else if (vote === 'abstain' || vote === VoteType.ABSTAIN) {
-        voteType = 'abstain';
-      } else if (vote === 'unavailable' || vote === VoteType.UNAVAILABLE) {
-        voteType = 'unavailable';
-      } else {
-        voteType = vote; // Utiliser tel quel
-      }
+      const voteType = normalizeVoteForValidation(vote);
 
       validateStrict(
         {
@@ -460,20 +496,7 @@ export class ConsensusManager extends EventEmitter {
     }
 
     // Utiliser voteType normalisé
-    const finalVoteType =
-      typeof vote === 'boolean'
-        ? vote
-          ? VoteType.APPROVE
-          : VoteType.REJECT
-        : vote === 'approve'
-          ? VoteType.APPROVE
-          : vote === 'reject'
-            ? VoteType.REJECT
-            : vote === 'abstain'
-              ? VoteType.ABSTAIN
-              : vote === 'unavailable'
-                ? VoteType.UNAVAILABLE
-                : vote;
+    const finalVoteType = resolveFinalVoteType(vote);
 
     proposal.addVote(provider, finalVoteType, reasoning);
 
