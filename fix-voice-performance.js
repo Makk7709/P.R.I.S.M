@@ -6,7 +6,6 @@
  */
 
 import fs from 'fs/promises';
-import path from 'path';
 
 class VoicePerformanceFixer {
   constructor() {
@@ -90,7 +89,7 @@ class VoicePerformanceFixer {
     // Insérer la méthode avant la dernière accolade
     const updatedContent = content.replace(
       /(\s*})(\s*)$/,
-      quickEnhanceMethod + '$1$2'
+      `${quickEnhanceMethod  }$1$2`
     );
 
     await fs.writeFile(enhancerPath, updatedContent);
@@ -117,7 +116,7 @@ class VoicePerformanceFixer {
 
     const updatedContent = content.replace(
       /(\s*detectQuickEmotion.*?\n\s*})/s,
-      '$1\n' + compactPrompts
+      `$1\n${  compactPrompts}`
     );
 
     await fs.writeFile(enhancerPath, updatedContent);
@@ -140,7 +139,7 @@ class VoicePerformanceFixer {
     
     let updatedContent = content.replace(
       /(import.*from.*orchestrator.*;\n)/,
-      '$1' + newImports + '\n'
+      `$1${  newImports  }\n`
     );
 
     // Modifier la route API pour utiliser le mode rapide

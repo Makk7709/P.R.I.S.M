@@ -3,7 +3,6 @@
  * @module prismCodexAnalyzer
  */
 
-import kernelBus from 'core/KernelBus.js';
 import prismEventGuard from './security/prismEventGuard.js';
 
 /**

@@ -3,7 +3,6 @@
  * @module prismStrategicLayer
  */
 
-import kernelBus from './core/KernelBus.js';
 import PrismStateStore from './persistence/prismStateStore.js';
 import prismPredictiveOptimization from './monitoring/prismPredictiveOptimization.js';
 import prismCircuitBreaker from './monitoring/prismCircuitBreaker.js';

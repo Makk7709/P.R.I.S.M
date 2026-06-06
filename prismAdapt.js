@@ -2,7 +2,6 @@
 // Monitors and adjusts system behavior based on user interaction patterns
 
 import prismBus from './prismBus.js';
-import prismPredictiveOptimization from './monitoring/prismPredictiveOptimization.js';
 import prismCircuitBreaker from './monitoring/prismCircuitBreaker.js';
 import prismLoadBalancer from './monitoring/prismLoadBalancer.js';
 import prismLogger from './monitoring/prismLogger.js';

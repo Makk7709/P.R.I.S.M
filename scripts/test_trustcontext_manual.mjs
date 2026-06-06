@@ -6,7 +6,7 @@
 
 import { HybridOrchestrator, OrchestrationMode } from '../src/orchestrator/HybridOrchestrator.js';
 import { ExcelAnalyzer } from '../src/excel/ExcelAnalyzer.js';
-import { getTrustContext, CriticalityLevel } from '../src/core/TrustContext.js';
+import { CriticalityLevel } from '../src/core/TrustContext.js';
 
 console.log('🧪 Test manuel TrustContext Integration\n');
 
@@ -126,7 +126,7 @@ async function main() {
   results.push(await testHybridOrchestrator());
   results.push(await testExcelAnalyzer());
   
-  console.log('\n' + '='.repeat(60));
+  console.log(`\n${  '='.repeat(60)}`);
   console.log(`📊 Résultats: ${results.filter(r => r).length}/${results.length} tests réussis`);
   
   if (results.every(r => r)) {

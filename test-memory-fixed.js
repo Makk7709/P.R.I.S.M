@@ -6,10 +6,8 @@
  */
 
 import { ASIMemorySystem } from './asi/asiMemorySystem.js';
-import { loadContextSnapshots, formatContextForPrompt } from './backend/contextMemory.js';
 import { analyzeMemoryPerformance } from './backend/memoryAnalyzer.js';
 import OpenAI from 'openai';
-import { randomUUID } from 'crypto';
 import 'dotenv/config';
 
 console.log('🧠 TEST SYSTÈME MÉMOIRES PRISM (VERSION CORRIGÉE)');

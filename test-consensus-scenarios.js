@@ -5,7 +5,6 @@
 
 import { KernelBus } from './core/KernelBus.js';
 import ConsensusManager, { DecisionType, ConsensusStatus } from './src/core/ConsensusManager.js';
-import { PriorityQueue, Priority } from './src/core/PriorityQueue.js';
 import { SelfImprovementEngine } from './evolution/selfImprovementEngine.js';
 import PrismVitals from './prismVitals.js';
 

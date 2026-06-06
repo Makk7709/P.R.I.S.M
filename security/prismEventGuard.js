@@ -4,7 +4,6 @@
  */
 
 import PrismHMAC from './prismHMAC.js';
-import prismBus from '../prismBus.js';
 
 const RATE_LIMIT_WINDOW = 10000; // 10 secondes
 const RATE_LIMIT_MAX = 20; // 20 événements par fenêtre

@@ -7,7 +7,7 @@ import { initializeAudio } from './audio.js';
 import PrismAuroraConsciousness from './monitoring/prismAuroraConsciousness.js';
 import PrismElysiumMode from './regulation/prismElysiumMode.js';
 import PrismCodex from './memory/prismCodex.js';
-import { generateDirectives, hydrate as hydrateStrategicLayer } from './prismStrategicLayer.js';
+import { hydrate as hydrateStrategicLayer } from './prismStrategicLayer.js';
 import PrismStateStore from './persistence/prismStateStore.js';
 
 // Autres imports...

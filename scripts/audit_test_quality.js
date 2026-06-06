@@ -194,9 +194,9 @@ function analyzeTestFile(filePath) {
 }
 
 function generateReport() {
-  console.log('\n' + '='.repeat(80));
+  console.log(`\n${  '='.repeat(80)}`);
   console.log('📊 AUDIT QUALITÉ TESTS VITEST - TDD STRICT');
-  console.log('='.repeat(80) + '\n');
+  console.log(`${'='.repeat(80)  }\n`);
   
   let totalScore = 0;
   let fileCount = 0;
@@ -259,7 +259,7 @@ function generateReport() {
   }
   
   // Recommandations
-  console.log('\n' + '='.repeat(80));
+  console.log(`\n${  '='.repeat(80)}`);
   console.log('💡 RECOMMANDATIONS');
   console.log('='.repeat(80));
   
@@ -294,7 +294,7 @@ function generateReport() {
     recommendations.forEach(r => console.log(`   - ${r}`));
   }
   
-  console.log('\n' + '='.repeat(80));
+  console.log(`\n${  '='.repeat(80)}`);
   
   return avgScore >= 70; // Seuil de qualité acceptable
 }

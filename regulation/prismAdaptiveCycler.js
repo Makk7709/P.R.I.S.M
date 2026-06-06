@@ -3,7 +3,6 @@
  * @module regulation/prismAdaptiveCycler
  */
 
-import kernelBus from '../core/KernelBus.js';
 import { CircularDeque } from './CircularDeque.js';
 import PrismStorage from '../prismStorage.js';
 import { PrismHMAC } from '../security/prismHMAC.js';

@@ -20,17 +20,7 @@
  */
 
 // Core modules
-import { initializePRISM } from './prismInit.js';
-import { initializeLoading } from './prismLoading.js';
-import { initializeUI } from './prismUI.js';
 import KernelBus from './core/KernelBus.js';
-import { initializeNotifications } from './prismNotify.js';
-import { initializePerformance } from './prismPerf.js';
-import { initializeSystemCheck } from './prismCheck.js';
-import { initializeUpdateCheck } from './prismUpdate.js';
-import { initializeRetry } from './prismRetry.js';
-import { initializeSession } from './prismSession.js';
-import { PrismLegacyCore } from './prismLegacyCore.js';
 import { InformationManagementLayer } from './infrastructure/informationManagementLayer.js';
 import SafetyRunner from './infrastructure/safetyRunner.js';
 import SelfMonitor from './monitoring/selfMonitor.js';
@@ -38,38 +28,13 @@ import { MoralLayer } from './infrastructure/moralLayer.js';
 import logger from './utils/logger.js';
 
 // Security and utilities
-import { sanitizeText, validateInput, escapeHTML } from './prismSanitize.js';
-import { updateUIState, logFailsafeEvent, incrementRetryCount } from './prismObserver.js';
-import { PrismValidator } from './prismValidator.js';
 
 // Core PRISM modules
-import PrismMeta from './prismMeta.js';
-import PrismPriority from './prismPriority.js';
-import PrismBond from './prismBond.js';
 import PrismMood from './prismMood.js';
 import PrismSoul from './prismSoul.js';
-import PrismEnergy from './prismEnergy.js';
-import PrismPulse from './prismPulse.js';
-import PrismLegacy from './prismLegacy.js';
-import PrismMuse from './prismMuse.js';
-import { PrismGhost } from './prismGhost.js';
-import PrismSleep from './prismSleep.js';
-import PrismContinuum from './prismContinuum.js';
-import PrismHarmony from './prismHarmony.js';
-import PrismAudit from './prismAudit.js';
-import PrismAscension from './prismAscension.js';
-import PrismHeartSync from './prismHeartSync.js';
-import PrismVitals from './prismVitals.js';
-import PrismAwareness from './prismAwareness.js';
-import PrismHyperConsciousness from './prismHyperConsciousness.js';
-import PrismSovereignty from './prismSovereignty.js';
-import { PrismNoesis } from './prismNoesis.js';
-import { PrismForecast } from './prismForecast.js';
-import { PrismInstinct } from './prismInstinct.js';
 import { SelfImprovementEngine } from './evolution/selfImprovementEngine.js';
 
 // Nouveaux modules d'auto-guérison et d'adaptabilité prédictive
-import prismPredictiveOptimization from './monitoring/prismPredictiveOptimization.js';
 import prismCircuitBreaker from './monitoring/prismCircuitBreaker.js';
 import prismLoadBalancer from './monitoring/prismLoadBalancer.js';
 import prismLogger from './monitoring/prismLogger.js';
@@ -78,7 +43,6 @@ import prismLogger from './monitoring/prismLogger.js';
 import { prismBus } from './prismBus.js';
 
 // Resilience module
-import { Resilience, handleEmergency, triggerEmergencyProtocol } from './infrastructure/resilience.js';
 
 /**
  * @typedef {Object} PRISMState

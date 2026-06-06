@@ -191,7 +191,7 @@ class ConsensusDemoLive extends EventEmitter {
     this.updateMetrics(decisionTime);
     this.activeProposals.delete(data.proposalId);
     
-    console.log(chalk.cyan('\n' + '═'.repeat(50) + '\n'));
+    console.log(chalk.cyan(`\n${  '═'.repeat(50)  }\n`));
   }
 
   handleConsensusTimeout(data) {
@@ -203,7 +203,7 @@ class ConsensusDemoLive extends EventEmitter {
     this.metrics.timeoutProposals++;
     this.activeProposals.delete(data.proposalId);
     
-    console.log(chalk.cyan('\n' + '═'.repeat(50) + '\n'));
+    console.log(chalk.cyan(`\n${  '═'.repeat(50)  }\n`));
   }
 
   displayVotingProgress(proposalId) {

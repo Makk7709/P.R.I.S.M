@@ -1,4 +1,3 @@
-import { handleUserInstruction } from './backend/orchestrator.js';
 import fetch from 'node-fetch';
 
 // Configuration pour tests
@@ -388,7 +387,7 @@ class VoiceAPIIntegrationTester {
         const duration = Date.now() - this.startTime;
         const successRate = (this.results.passedTests / this.results.totalTests * 100).toFixed(1);
 
-        console.log('\n' + '='.repeat(80));
+        console.log(`\n${  '='.repeat(80)}`);
         console.log('🎯 PRISM VOICE API INTEGRATION TEST REPORT');
         console.log('='.repeat(80));
         console.log(`⏱️  Total Duration: ${duration}ms`);
@@ -438,7 +437,7 @@ class VoiceAPIIntegrationTester {
 
     async runAllTests() {
         this.log('🚀 Starting PRISM Voice API Integration Tests', 'info');
-        this.log('Testing API endpoint: ' + API_ENDPOINT, 'info');
+        this.log(`Testing API endpoint: ${  API_ENDPOINT}`, 'info');
 
         try {
             await this.testAPIEndpointResponse();

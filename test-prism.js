@@ -24,7 +24,7 @@ async function testPRISM() {
     
     const result = await prism.processEvent(testEvent);
     console.log('✅ Event processed successfully:');
-    console.log('  - Response time:', result.responseTime + 'ms');
+    console.log('  - Response time:', `${result.responseTime  }ms`);
     console.log('  - Model used:', result.modelUsed);
     console.log('  - Temperature:', result.temperature);
     

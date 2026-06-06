@@ -20,7 +20,6 @@ const CORE_DIRECTIVES = [
 
 // PRISM Sovereignty Module
 import { Resilience } from './core/Resilience.js';
-import PrismSelfHeal from './prismSelfHeal.js';
 import PrismHeartSync from './prismHeartSync.js';
 
 /**

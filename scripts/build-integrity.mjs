@@ -96,7 +96,7 @@ async function buildIntegrity() {
     console.log('📋 Rapports vérifiés:');
     Object.entries(integrity.reports).forEach(([name, report]) => {
       const status = report.exists ? '✅' : '❌';
-      const hash = report.sha256 ? report.sha256.substring(0, 12) + '...' : 'N/A';
+      const hash = report.sha256 ? `${report.sha256.substring(0, 12)  }...` : 'N/A';
       console.log(`   ${status} ${name}: ${hash}`);
     });
     

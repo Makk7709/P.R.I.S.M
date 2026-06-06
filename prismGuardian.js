@@ -1,6 +1,5 @@
 import { PrismHeartSync } from './prismHeartSync.js';
 import { PrismValidator } from './prismValidator.js';
-import kernelBus from 'core/KernelBus.js';
 
 class PrismGuardian {
   constructor() {

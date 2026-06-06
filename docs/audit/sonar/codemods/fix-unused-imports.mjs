@@ -51,7 +51,7 @@ let removed = 0;
 for (const r of results) {
   if (r.output !== undefined) {
     fixedFiles++;
-    console.log(`  ${r.filePath.replace(process.cwd() + '/', '')}`);
+    console.log(`  ${r.filePath.replace(`${process.cwd()  }/`, '')}`);
   }
   removed += r.messages.filter(
     (m) => m.ruleId === 'unused-imports/no-unused-imports'

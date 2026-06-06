@@ -208,7 +208,7 @@ function analyzeCapabilitiesUsage() {
 }
 
 function generateReport() {
-  console.log('\n' + '='.repeat(80));
+  console.log(`\n${  '='.repeat(80)}`);
   console.log('📊 RAPPORT D\'AUDIT TRUSTCONTEXT & CAPACITÉS');
   console.log('='.repeat(80));
   
@@ -260,7 +260,7 @@ function generateReport() {
     console.log(`  4. Vérifier pourquoi ${unusedCapabilities.length} capacités ne sont pas utilisées`);
   }
   
-  console.log('\n' + '='.repeat(80));
+  console.log(`\n${  '='.repeat(80)}`);
 }
 
 // Exécution

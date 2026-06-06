@@ -18,7 +18,7 @@ import { ConsensusBenchmark } from './perf/benchmark.js';
 import { BENCHMARK_CONFIG } from './perf/benchmark.js';
 import dotenv from 'dotenv';
 import { fileURLToPath } from 'url';
-import { dirname, join } from 'path';
+import { dirname } from 'path';
 
 // Load environment variables
 dotenv.config();

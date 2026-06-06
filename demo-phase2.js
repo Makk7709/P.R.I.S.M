@@ -126,7 +126,7 @@ class Phase2Demo {
     }
 
     generateReport() {
-        this.log('\n' + '='.repeat(70), 'info');
+        this.log(`\n${  '='.repeat(70)}`, 'info');
         this.log('🎯 RAPPORT DE DÉMONSTRATION PHASE 2', 'info');
         this.log('='.repeat(70), 'info');
         

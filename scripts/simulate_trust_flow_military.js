@@ -74,7 +74,7 @@ function warning(message) {
 // ============================================================================
 
 async function testHybridOrchestratorTrustContext() {
-  log('\n' + '='.repeat(80), 'TEST');
+  log(`\n${  '='.repeat(80)}`, 'TEST');
   log('SCÉNARIO 1: HybridOrchestrator + TrustContext', 'TEST');
   log('='.repeat(80), 'TEST');
   
@@ -143,7 +143,7 @@ async function testHybridOrchestratorTrustContext() {
     // Pour requêtes normales, TrustContext ne devrait pas être appelé
     // (ou seulement si classification détecte HIGH)
     
-    log('Test 1.3: TrustContext appelé: ' + trustContextCalled, 'INFO');
+    log(`Test 1.3: TrustContext appelé: ${  trustContextCalled}`, 'INFO');
     
     return true;
   } catch (error) {
@@ -158,7 +158,7 @@ async function testHybridOrchestratorTrustContext() {
 // ============================================================================
 
 async function testExcelAnalyzerTrustContext() {
-  log('\n' + '='.repeat(80), 'TEST');
+  log(`\n${  '='.repeat(80)}`, 'TEST');
   log('SCÉNARIO 2: ExcelAnalyzer + TrustContext', 'TEST');
   log('='.repeat(80), 'TEST');
   
@@ -249,7 +249,7 @@ async function testExcelAnalyzerTrustContext() {
 // ============================================================================
 
 async function testServerTrustContext() {
-  log('\n' + '='.repeat(80), 'TEST');
+  log(`\n${  '='.repeat(80)}`, 'TEST');
   log('SCÉNARIO 3: server.js + TrustContext (Simulation)', 'TEST');
   log('='.repeat(80), 'TEST');
   
@@ -325,7 +325,7 @@ async function testServerTrustContext() {
 // ============================================================================
 
 async function testEndToEndFlow() {
-  log('\n' + '='.repeat(80), 'TEST');
+  log(`\n${  '='.repeat(80)}`, 'TEST');
   log('SCÉNARIO 4: Flux End-to-End Complet', 'TEST');
   log('='.repeat(80), 'TEST');
   
@@ -383,7 +383,7 @@ async function testEndToEndFlow() {
 // ============================================================================
 
 async function testMetricsAndAudit() {
-  log('\n' + '='.repeat(80), 'TEST');
+  log(`\n${  '='.repeat(80)}`, 'TEST');
   log('SCÉNARIO 5: Métriques et Audit Trail', 'TEST');
   log('='.repeat(80), 'TEST');
   
@@ -438,9 +438,9 @@ async function testMetricsAndAudit() {
 // ============================================================================
 
 async function main() {
-  console.log('\n' + '🎯'.repeat(40));
+  console.log(`\n${  '🎯'.repeat(40)}`);
   console.log('   SIMULATION FLUX COMPLET TRUSTCONTEXT - MILITARY GRADE');
-  console.log('🎯'.repeat(40) + '\n');
+  console.log(`${'🎯'.repeat(40)  }\n`);
   
   const scenarios = [
     { name: 'HybridOrchestrator', fn: testHybridOrchestratorTrustContext },
@@ -460,7 +460,7 @@ async function main() {
   }
   
   // Rapport final
-  console.log('\n' + '='.repeat(80));
+  console.log(`\n${  '='.repeat(80)}`);
   console.log('📊 RAPPORT FINAL');
   console.log('='.repeat(80));
   console.log(`✅ Tests passés: ${RESULTS.passed}`);

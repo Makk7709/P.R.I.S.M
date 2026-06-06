@@ -287,16 +287,16 @@ function displayDashboard() {
   
   Object.entries(SERVICES).forEach(([key, service]) => {
     const status = processes.has(key) ? '🟢 ACTIF' : '🔴 ARRÊTÉ';
-    console.log(chalk.green('│') + ` ${service.name.padEnd(25)} │ ${status.padEnd(15)} │ ${service.url.padEnd(25)} ` + chalk.green('│'));
+    console.log(`${chalk.green('│')  } ${service.name.padEnd(25)} │ ${status.padEnd(15)} │ ${service.url.padEnd(25)} ${  chalk.green('│')}`);
   });
   
   console.log(chalk.green('├─────────────────────────────────────────────────────────────┤'));
   console.log(chalk.green('│') + chalk.yellow(' 📊 Monitoring Stack:                                    ') + chalk.green('│'));
-  console.log(chalk.green('│') + `   • Prometheus Metrics: ${SERVICES.prometheus.url.padEnd(25)} ` + chalk.green('│'));
-  console.log(chalk.green('│') + `   • Grafana Dashboards: ${SERVICES.grafana.url.padEnd(24)} ` + chalk.green('│'));
+  console.log(`${chalk.green('│')  }   • Prometheus Metrics: ${SERVICES.prometheus.url.padEnd(25)} ${  chalk.green('│')}`);
+  console.log(`${chalk.green('│')  }   • Grafana Dashboards: ${SERVICES.grafana.url.padEnd(24)} ${  chalk.green('│')}`);
   console.log(chalk.green('│') + chalk.yellow(' 🎯 Applications:                                        ') + chalk.green('│'));
-  console.log(chalk.green('│') + `   • PRISM Backend API: ${SERVICES.prism_backend.url.padEnd(26)} ` + chalk.green('│'));
-  console.log(chalk.green('│') + `   • Corporate Frontend: ${SERVICES.prism_corporate.url.padEnd(25)} ` + chalk.green('│'));
+  console.log(`${chalk.green('│')  }   • PRISM Backend API: ${SERVICES.prism_backend.url.padEnd(26)} ${  chalk.green('│')}`);
+  console.log(`${chalk.green('│')  }   • Corporate Frontend: ${SERVICES.prism_corporate.url.padEnd(25)} ${  chalk.green('│')}`);
   console.log(chalk.green('└─────────────────────────────────────────────────────────────┘'));
   
   console.log(chalk.blue('\n📋 Commandes:'));

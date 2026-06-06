@@ -34,7 +34,7 @@ export default function fixPathsPlugin() {
       }
       // Essayer avec .js si ce n'est pas déjà le cas
       if (!id.endsWith('.js') && !id.endsWith('.ts')) {
-        const withJs = id + '.js';
+        const withJs = `${id  }.js`;
         if (existsSync(withJs)) {
           return null; // Vite devrait le résoudre
         }

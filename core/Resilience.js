@@ -6,9 +6,6 @@
 import kernelBus from './KernelBus.js';
 import PrismHeartSync from '../prismHeartSync.js';
 import { PrismLegacyCore } from '../prismLegacyCore.js';
-import PrismVitals from '../prismVitals.js';
-import PRISM from '../prismCore.js';
-import PrismEnergy from '../prismEnergy.js';
 
 /**
  * Types d'incidents système

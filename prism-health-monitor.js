@@ -58,7 +58,7 @@ class PrismHealthMonitor {
     }
 
     async runFullCheck() {
-        console.log(chalk.cyan('\n🔍 PRISM HEALTH CHECK - ' + new Date().toLocaleTimeString()));
+        console.log(chalk.cyan(`\n🔍 PRISM HEALTH CHECK - ${  new Date().toLocaleTimeString()}`));
         console.log(chalk.cyan('=' .repeat(50)));
 
         // Vérifications critiques
@@ -107,7 +107,7 @@ class PrismHealthMonitor {
         const healthScore = Math.round((passedChecks / totalChecks) * 100);
         
         console.log(chalk.cyan('\n📊 RÉSUMÉ'));
-        console.log(`Score de santé: ${healthScore >= 80 ? chalk.green(healthScore + '%') : chalk.red(healthScore + '%')}`);
+        console.log(`Score de santé: ${healthScore >= 80 ? chalk.green(`${healthScore  }%`) : chalk.red(`${healthScore  }%`)}`);
         console.log(`Tests réussis: ${passedChecks}/${totalChecks}`);
         
         if (healthScore === 100) {

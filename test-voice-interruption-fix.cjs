@@ -295,7 +295,7 @@ class PRISMInterruptionTester {
     }
 
     displayResults() {
-        console.log('\n' + '='.repeat(60));
+        console.log(`\n${  '='.repeat(60)}`);
         console.log('📊 RÉSULTATS DES TESTS D\'INTERRUPTION PRISM');
         console.log('='.repeat(60));
         

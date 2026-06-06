@@ -196,7 +196,7 @@ export class AudioManager {
     const timeoutId = setTimeout(() => controller.abort(), config.ELEVENLABS.TIMEOUT);
 
     try {
-      const response = await fetch('https://api.elevenlabs.io/v1/text-to-speech/' + this.voiceSettings.voiceId, {
+      const response = await fetch(`https://api.elevenlabs.io/v1/text-to-speech/${  this.voiceSettings.voiceId}`, {
         method: 'POST',
         headers: {
           'Accept': 'audio/mpeg',

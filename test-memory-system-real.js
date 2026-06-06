@@ -5,10 +5,8 @@
  * Analyse comment PRISM stocke, récupère et utilise ses souvenirs
  */
 
-import fs from 'fs';
 import { ASIMemorySystem } from './asi/asiMemorySystem.js';
 import { prismMemory } from './prismMemory.js';
-import { loadContextSnapshots, formatContextForPrompt } from './backend/contextMemory.js';
 import { analyzeMemoryPerformance } from './backend/memoryAnalyzer.js';
 import OpenAI from 'openai';
 import 'dotenv/config';

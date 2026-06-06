@@ -109,10 +109,10 @@ export class PrismUI {
         b: parseInt(result[3], 16)
       } : null;
     };
-    const rgbToHex = (r, g, b) => '#' + [r, g, b].map(x => {
+    const rgbToHex = (r, g, b) => `#${  [r, g, b].map(x => {
       const hex = clamp(x).toString(16);
-      return hex.length === 1 ? '0' + hex : hex;
-    }).join('');
+      return hex.length === 1 ? `0${  hex}` : hex;
+    }).join('')}`;
 
     const rgb = hexToRgb(hex);
     if (!rgb) return hex;

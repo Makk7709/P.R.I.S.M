@@ -7,7 +7,6 @@
 import { TamperEvidentAuditLog } from '../src/audit/TamperEvidentAuditLog.js';
 import fs from 'fs/promises';
 import path from 'path';
-import crypto from 'crypto';
 
 const TEST_DIR = path.join(process.cwd(), 'test-audit-manual');
 
@@ -77,7 +76,7 @@ async function testCorruption() {
   const record = JSON.parse(lines[1]);
   record.eventType = 'CORRUPTED';
   lines[1] = JSON.stringify(record);
-  await fs.writeFile(logFile, lines.join('\n') + '\n', 'utf8');
+  await fs.writeFile(logFile, `${lines.join('\n')  }\n`, 'utf8');
   
   const verify = await log.verifyAuditLog();
   
@@ -112,7 +111,7 @@ async function testSuppression() {
   const content = await fs.readFile(logFile, 'utf8');
   const lines = content.split('\n').filter(l => l.trim());
   lines.splice(2, 1); // Supprimer ligne 2 (3ème record)
-  await fs.writeFile(logFile, lines.join('\n') + '\n', 'utf8');
+  await fs.writeFile(logFile, `${lines.join('\n')  }\n`, 'utf8');
   
   const verify = await log.verifyAuditLog();
   
@@ -151,7 +150,7 @@ async function testReorder() {
   const temp = lines[1];
   lines[1] = lines[2];
   lines[2] = temp;
-  await fs.writeFile(logFile, lines.join('\n') + '\n', 'utf8');
+  await fs.writeFile(logFile, `${lines.join('\n')  }\n`, 'utf8');
   
   const verify = await log.verifyAuditLog();
   
@@ -172,7 +171,7 @@ async function main() {
   results.push(await testSuppression());
   results.push(await testReorder());
   
-  console.log('\n' + '='.repeat(60));
+  console.log(`\n${  '='.repeat(60)}`);
   console.log(`📊 Résultats: ${results.filter(r => r).length}/${results.length} tests réussis`);
   
   if (results.every(r => r)) {

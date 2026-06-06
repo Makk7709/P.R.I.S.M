@@ -77,7 +77,7 @@ function displayComparison(original, enhanced, context) {
   
   improvements.forEach(improvement => console.log(`   ${improvement}`));
   
-  console.log('\n' + '='.repeat(70) + '\n');
+  console.log(`\n${  '='.repeat(70)  }\n`);
 }
 
 // Tests des prompts système améliorés

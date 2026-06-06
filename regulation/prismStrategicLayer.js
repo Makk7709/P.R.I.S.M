@@ -3,7 +3,6 @@
  * @module regulation/prismStrategicLayer
  */
 
-import kernelBus from '../core/KernelBus.js';
 import { PrismValidator } from '../prismValidator.js';
 import PrismHMAC from '../security/prismHMAC.js';
 import { PrismProfiler } from '../perf/prismProfiler.js';

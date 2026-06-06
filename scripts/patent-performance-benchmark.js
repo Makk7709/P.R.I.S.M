@@ -6,7 +6,7 @@
  * Valide les revendications de performances : -40% latence, -25% coût, 99.9% disponibilité, <50ms récupération
  */
 
-import { AdaptiveWeightingEngine, ContextType, WeightCriteria } from '../src/core/AdaptiveWeightingEngine.js';
+import { AdaptiveWeightingEngine, ContextType } from '../src/core/AdaptiveWeightingEngine.js';
 import { ConsensusManager, DecisionType, VoteType } from '../src/core/ConsensusManager.js';
 import { SecureJournalManager, JournalEventType } from '../src/core/SecureJournalManager.js';
 import { performance } from 'perf_hooks';

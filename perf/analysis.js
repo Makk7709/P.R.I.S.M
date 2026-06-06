@@ -3,8 +3,6 @@
  * Statistical analysis and reporting for benchmark results
  */
 
-import fs from 'fs/promises';
-import path from 'path';
 
 /**
  * Statistical analysis utilities

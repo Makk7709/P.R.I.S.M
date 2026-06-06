@@ -1,4 +1,3 @@
-import kernelBus from 'core/KernelBus.js';
 import { PrismHeartSync } from './prismHeartSync.js';
 
 class PrismCleanup {

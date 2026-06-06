@@ -12,7 +12,7 @@ import { handleUserInstruction } from './backend/orchestrator.js';
 import { HybridOrchestrator } from './src/orchestrator/HybridOrchestrator.js';
 import { TaskTypeProcessor } from './src/core/TaskTypeProcessor.js';
 import { ImageGenerator } from './src/infographic/ImageGenerator.js';
-import { ResponseModeManager, InputMode, ResponseMode } from './src/voice/ResponseModeManager.js';
+import { ResponseModeManager } from './src/voice/ResponseModeManager.js';
 import { getTrustContext, CriticalityLevel } from './src/core/TrustContext.js';
 
 // Initialiser l'orchestrateur hybride (routing + consensus)

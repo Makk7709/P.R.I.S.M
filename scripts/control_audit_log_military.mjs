@@ -102,7 +102,7 @@ await testScenario('Corruption: Modification champ → HASH_MISMATCH', async () 
   const originalEventType = record.eventType;
   record.eventType = 'CORRUPTED';
   lines[1] = JSON.stringify(record);
-  await fs.writeFile(logFile, lines.join('\n') + '\n', 'utf8');
+  await fs.writeFile(logFile, `${lines.join('\n')  }\n`, 'utf8');
   
   const verify = await log.verifyAuditLog();
   
@@ -135,7 +135,7 @@ await testScenario('Suppression: Ligne supprimée → SEQ_GAP', async () => {
   
   const deletedSeq = JSON.parse(lines[2]).seq;
   lines.splice(2, 1);
-  await fs.writeFile(logFile, lines.join('\n') + '\n', 'utf8');
+  await fs.writeFile(logFile, `${lines.join('\n')  }\n`, 'utf8');
   
   const verify = await log.verifyAuditLog();
   
@@ -179,7 +179,7 @@ await testScenario('Insertion: Ligne insérée → SEQ_GAP', async () => {
   };
   
   lines.splice(2, 0, JSON.stringify(fakeRecord));
-  await fs.writeFile(logFile, lines.join('\n') + '\n', 'utf8');
+  await fs.writeFile(logFile, `${lines.join('\n')  }\n`, 'utf8');
   
   const verify = await log.verifyAuditLog();
   
@@ -215,7 +215,7 @@ await testScenario('Reorder: Permutation → PREVHASH_MISMATCH', async () => {
   const temp = lines[1];
   lines[1] = lines[2];
   lines[2] = temp;
-  await fs.writeFile(logFile, lines.join('\n') + '\n', 'utf8');
+  await fs.writeFile(logFile, `${lines.join('\n')  }\n`, 'utf8');
   
   const verify = await log.verifyAuditLog();
   
@@ -262,7 +262,7 @@ await testScenario('Signature Invalid: Autre clé → SIG_INVALID', async () => 
   const wrongSig = crypto.sign(null, Buffer.from(canonical, 'utf8'), otherPriv);
   record.sig = wrongSig.toString('hex');
   lines[0] = JSON.stringify(record);
-  await fs.writeFile(logFile, lines.join('\n') + '\n', 'utf8');
+  await fs.writeFile(logFile, `${lines.join('\n')  }\n`, 'utf8');
   
   const verify = await log.verifyAuditLog();
   
@@ -274,7 +274,7 @@ await testScenario('Signature Invalid: Autre clé → SIG_INVALID', async () => 
 });
 
 // Résumé
-console.log('\n' + '='.repeat(80));
+console.log(`\n${  '='.repeat(80)}`);
 console.log('📊 RÉSUMÉ DES TESTS');
 console.log('='.repeat(80));
 
@@ -303,7 +303,7 @@ if (allTestsPassed) {
 }
 
 // Risques résiduels
-console.log('\n' + '='.repeat(80));
+console.log(`\n${  '='.repeat(80)}`);
 console.log('⚠️  RISQUES RÉSIDUELS');
 console.log('='.repeat(80));
 console.log('1. Effacement total des fichiers');
@@ -314,7 +314,7 @@ console.log('3. Compression/encodage malveillant');
 console.log('   → Mitigation: Compression optionnelle avec hash pré-compression');
 
 // Next Steps
-console.log('\n' + '='.repeat(80));
+console.log(`\n${  '='.repeat(80)}`);
 console.log('🎯 NEXT STEPS');
 console.log('='.repeat(80));
 console.log('1. Anchoring externe (optionnel) - Merkle root → registre');

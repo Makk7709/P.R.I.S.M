@@ -146,7 +146,7 @@ async function testConsensusSimulation() {
 
     // Créer une proposition test
     await manager.propose(
-      'test-hash-' + Date.now(),
+      `test-hash-${  Date.now()}`,
       {
         riskLevel: 0.3,
         evidenceQuality: 0.8,

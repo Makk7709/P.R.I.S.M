@@ -63,7 +63,7 @@ runCommand(
 );
 
 // Résumé
-console.log('\n' + '='.repeat(80));
+console.log(`\n${  '='.repeat(80)}`);
 console.log('📊 RÉSUMÉ DES TESTS');
 console.log('='.repeat(80));
 
@@ -90,7 +90,7 @@ if (allTestsPassed) {
 }
 
 // Invariants couverts
-console.log('\n' + '='.repeat(80));
+console.log(`\n${  '='.repeat(80)}`);
 console.log('✅ INVARIANTS COUVERTS');
 console.log('='.repeat(80));
 console.log('A) Invariance à l\'ordre (Consensus)');
@@ -104,7 +104,7 @@ console.log('H) Rotation (Journal/AuditLog)');
 console.log('I) Fuzzing Contracts (Fail-Closed sur entrées hostiles)');
 
 // Invariants non couverts (futurs)
-console.log('\n' + '='.repeat(80));
+console.log(`\n${  '='.repeat(80)}`);
 console.log('⏳ INVARIANTS NON COUVERTS (Futurs)');
 console.log('='.repeat(80));
 console.log('- Robustesse aux abstain/timeouts (consensus edge cases)');
@@ -113,7 +113,7 @@ console.log('- Concurrent access invariants (thread-safety)');
 console.log('- Recovery invariants (crash recovery)');
 
 // Next Steps
-console.log('\n' + '='.repeat(80));
+console.log(`\n${  '='.repeat(80)}`);
 console.log('🎯 NEXT STEPS');
 console.log('='.repeat(80));
 console.log('1. CI Job: Ajouter job "property-tests" (< 2 minutes)');

@@ -82,7 +82,7 @@ class VoicePerformanceTest {
         success: true,
         totalTime,
         breakdown,
-        response: response?.data?.enhancedContent?.substring(0, 100) + '...'
+        response: `${response?.data?.enhancedContent?.substring(0, 100)  }...`
       };
 
     } catch (error) {

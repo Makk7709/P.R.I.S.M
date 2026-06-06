@@ -3,7 +3,6 @@
  * Gestion avancée des modes comportementaux basée sur le niveau d'éveil
  */
 
-import kernelBus from '../core/KernelBus.js';
 
 class PrismElysiumMode {
   constructor() {

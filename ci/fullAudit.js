@@ -148,7 +148,7 @@ async function runAudit() {
     // Inject break
     const strategicLayerPath = path.join(__dirname, '../regulation/prismStrategicLayer.js');
     const strategicLayerContent = fs.readFileSync(strategicLayerPath, 'utf8');
-    fs.writeFileSync(strategicLayerPath, strategicLayerContent + '\n//BREAK');
+    fs.writeFileSync(strategicLayerPath, `${strategicLayerContent  }\n//BREAK`);
     
     execCommand('npm run selfheal:hook');
     
