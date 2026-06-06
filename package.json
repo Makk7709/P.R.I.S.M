@@ -146,6 +146,8 @@
     "prettier": "^3.7.4",
     "redis-mock": "^0.56.3",
     "supertest": "^7.1.4",
+    "typescript": "~5.9",
+    "typescript-eslint": "^8.60.1",
     "validator": "^13.15.15",
     "vitest": "^3.2.4",
     "zod": "^4.1.13"

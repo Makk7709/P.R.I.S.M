@@ -1,6 +1,7 @@
 import js from '@eslint/js';
 import prettier from 'eslint-config-prettier';
 import globals from 'globals';
+import tseslint from 'typescript-eslint';
 
 export default [
   js.configs.recommended,
@@ -68,6 +69,38 @@ export default [
         vitest: 'readonly',
         jest: 'readonly',
       },
+    },
+  },
+  {
+    // TypeScript files. We register the typescript-eslint parser so `.ts`
+    // stops failing with "Parsing error: Unexpected token". This is a
+    // SYNTACTIC setup only: we deliberately do NOT enable type-aware linting
+    // (`projectService`/`project`) to avoid surfacing the ~511 pre-existing
+    // `tsc` type errors and to keep linting fast. Mechanical `--fix` rules
+    // (prefer-const, node: protocol, etc.) work without type information.
+    files: ['**/*.ts'],
+    languageOptions: {
+      parser: tseslint.parser,
+      parserOptions: {
+        ecmaVersion: 2022,
+        sourceType: 'module',
+      },
+    },
+    plugins: {
+      '@typescript-eslint': tseslint.plugin,
+    },
+    rules: {
+      // The core `no-undef` rule misfires on TypeScript type references and
+      // ambient globals; the compiler already enforces this. Disable it for
+      // `.ts` to avoid drowning real findings in false positives.
+      'no-undef': 'off',
+      // Defer unused-variable reporting to the TS-aware rule, which understands
+      // type-only usage, enums and interfaces (the core rule misfires on them).
+      'no-unused-vars': 'off',
+      '@typescript-eslint/no-unused-vars': [
+        'warn',
+        { argsIgnorePattern: '^_', varsIgnorePattern: '^_' },
+      ],
     },
   },
   prettier, // Must be last to override other configs
