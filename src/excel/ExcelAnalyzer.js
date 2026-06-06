@@ -1876,12 +1876,32 @@ IMPORTANT: Réponds en utilisant UNIQUEMENT les données ci-dessus. Ne jamais in
     const sheet = analysis.sheets?.[0];
     const dataQuality = analysis.dataQuality || {};
 
-    let text = `# 📊 Analyse Détaillée du Fichier\n\n`;
+    const text = [
+      `# 📊 Analyse Détaillée du Fichier\n\n`,
+      this._chatOverviewSection(analysis, summary, dataQuality),
+      this._chatColumnStructureSection(sheet),
+      this._chatNumericStatsSection(sheet),
+      this._chatCategoricalSection(sheet),
+      this._chatCorrelationsSection(analysis),
+      this._chatOutliersSection(sheet),
+      this._chatDataQualitySection(dataQuality),
+      this._chatInsightsSection(summary),
+    ].join('');
 
-    // ════════════════════════════════════════════════════════════════════════
-    // SECTION 1: Vue d'ensemble
-    // ════════════════════════════════════════════════════════════════════════
-    text += `## 📋 Vue d'ensemble\n\n`;
+    return {
+      text,
+      highlights: summary.keyInsights || [],
+      recommendations: summary.recommendations || [],
+      patterns: summary.patterns || [],
+    };
+  }
+
+  /**
+   * SECTION 1: Vue d'ensemble (exportForChat).
+   * @private
+   */
+  _chatOverviewSection(analysis, summary, dataQuality) {
+    let text = `## 📋 Vue d'ensemble\n\n`;
     text += `| Métrique | Valeur |\n|---|---|\n`;
     text += `| **Lignes** | ${summary.totalRows || analysis.metadata?.totalRows || 0} |\n`;
     text += `| **Colonnes** | ${summary.totalColumns || analysis.metadata?.totalColumns || 0} |\n`;
@@ -1894,218 +1914,245 @@ IMPORTANT: Réponds en utilisant UNIQUEMENT les données ci-dessus. Ne jamais in
       text += `| **Doublons** | ${dataQuality.duplicates.count} |\n`;
     }
     text += `\n`;
+    return text;
+  }
 
-    // ════════════════════════════════════════════════════════════════════════
-    // SECTION 2: Structure des colonnes
-    // ════════════════════════════════════════════════════════════════════════
-    if (sheet?.headers && sheet?.columnTypes) {
-      text += `## 📑 Structure des Colonnes\n\n`;
-      text += `| Colonne | Type | Description |\n|---|---|---|\n`;
+  /**
+   * SECTION 2: Structure des colonnes (exportForChat).
+   * @private
+   */
+  _chatColumnStructureSection(sheet) {
+    if (!(sheet?.headers && sheet?.columnTypes)) return '';
 
-      for (const header of sheet.headers) {
-        const type = sheet.columnTypes[header] || 'unknown';
-        const typeEmoji = this._getTypeEmoji(type);
-        const description = this._getColumnDescription(header, type, sheet);
-        text += `| **${header}** | ${typeEmoji} ${type} | ${description} |\n`;
+    let text = `## 📑 Structure des Colonnes\n\n`;
+    text += `| Colonne | Type | Description |\n|---|---|---|\n`;
+
+    for (const header of sheet.headers) {
+      const type = sheet.columnTypes[header] || 'unknown';
+      const typeEmoji = this._getTypeEmoji(type);
+      const description = this._getColumnDescription(header, type, sheet);
+      text += `| **${header}** | ${typeEmoji} ${type} | ${description} |\n`;
+    }
+    text += `\n`;
+    return text;
+  }
+
+  /**
+   * SECTION 3: Statistiques numériques détaillées (exportForChat).
+   * @private
+   */
+  _chatNumericStatsSection(sheet) {
+    if (!(sheet?.statistics && Object.keys(sheet.statistics).length > 0)) return '';
+
+    let text = `## 📈 Statistiques Numériques\n\n`;
+
+    for (const [col, stats] of Object.entries(sheet.statistics)) {
+      text += `### ${col}\n`;
+      text += `| Mesure | Valeur |\n|---|---|\n`;
+      text += `| Nombre de valeurs | ${stats.count || 0} |\n`;
+      text += `| Moyenne | ${this._formatNumber(stats.mean)} |\n`;
+      text += `| Médiane | ${this._formatNumber(stats.median)} |\n`;
+      text += `| Écart-type | ${this._formatNumber(stats.standardDeviation)} |\n`;
+      text += `| Minimum | ${this._formatNumber(stats.min)} |\n`;
+      text += `| Maximum | ${this._formatNumber(stats.max)} |\n`;
+
+      if (stats.quartiles?.Q1 !== undefined && stats.quartiles?.Q3 !== undefined) {
+        text += `| Q1 (25%) | ${this._formatNumber(stats.quartiles.Q1)} |\n`;
+        text += `| Q3 (75%) | ${this._formatNumber(stats.quartiles.Q3)} |\n`;
+        text += `| IQR | ${this._formatNumber(stats.interquartileRange)} |\n`;
+      }
+
+      if (stats.sum !== undefined) {
+        text += `| Somme totale | ${this._formatNumber(stats.sum)} |\n`;
       }
       text += `\n`;
     }
+    return text;
+  }
 
-    // ════════════════════════════════════════════════════════════════════════
-    // SECTION 3: Statistiques numériques détaillées
-    // ════════════════════════════════════════════════════════════════════════
-    if (sheet?.statistics && Object.keys(sheet.statistics).length > 0) {
-      text += `## 📈 Statistiques Numériques\n\n`;
+  /**
+   * SECTION 4: Analyse catégorielle (exportForChat).
+   * @private
+   */
+  _chatCategoricalSection(sheet) {
+    if (!(sheet?.categoricalAnalysis && Object.keys(sheet.categoricalAnalysis).length > 0)) {
+      return '';
+    }
 
-      for (const [col, stats] of Object.entries(sheet.statistics)) {
-        text += `### ${col}\n`;
-        text += `| Mesure | Valeur |\n|---|---|\n`;
-        text += `| Nombre de valeurs | ${stats.count || 0} |\n`;
-        text += `| Moyenne | ${this._formatNumber(stats.mean)} |\n`;
-        text += `| Médiane | ${this._formatNumber(stats.median)} |\n`;
-        text += `| Écart-type | ${this._formatNumber(stats.standardDeviation)} |\n`;
-        text += `| Minimum | ${this._formatNumber(stats.min)} |\n`;
-        text += `| Maximum | ${this._formatNumber(stats.max)} |\n`;
+    let text = `## 🏷️ Analyse Catégorielle\n\n`;
 
-        if (stats.quartiles?.Q1 !== undefined && stats.quartiles?.Q3 !== undefined) {
-          text += `| Q1 (25%) | ${this._formatNumber(stats.quartiles.Q1)} |\n`;
-          text += `| Q3 (75%) | ${this._formatNumber(stats.quartiles.Q3)} |\n`;
-          text += `| IQR | ${this._formatNumber(stats.interquartileRange)} |\n`;
-        }
+    for (const [col, catData] of Object.entries(sheet.categoricalAnalysis)) {
+      text += `### ${col}\n`;
+      text += `- **Valeurs uniques**: ${catData.uniqueCount || Object.keys(catData.frequencies || {}).length}\n`;
+      text += `- **Valeur dominante**: ${catData.mode || 'N/A'}\n\n`;
 
-        if (stats.sum !== undefined) {
-          text += `| Somme totale | ${this._formatNumber(stats.sum)} |\n`;
+      const frequencies = catData.frequencies || {};
+      const sortedFreq = Object.entries(frequencies)
+        .sort((a, b) => Number(b[1]) - Number(a[1]))
+        .slice(0, 5);
+
+      if (sortedFreq.length > 0) {
+        text += `| Valeur | Fréquence | % |\n|---|---|---|\n`;
+        const total = Object.values(frequencies).reduce((a, b) => Number(a) + Number(b), 0);
+        for (const [val, count] of sortedFreq) {
+          const pct = total > 0 ? ((Number(count) / total) * 100).toFixed(1) : '0';
+          text += `| ${val} | ${count} | ${pct}% |\n`;
         }
         text += `\n`;
       }
     }
+    return text;
+  }
 
-    // ════════════════════════════════════════════════════════════════════════
-    // SECTION 4: Analyse catégorielle
-    // ════════════════════════════════════════════════════════════════════════
-    if (sheet?.categoricalAnalysis && Object.keys(sheet.categoricalAnalysis).length > 0) {
-      text += `## 🏷️ Analyse Catégorielle\n\n`;
+  /**
+   * SECTION 5: Corrélations fortes (exportForChat).
+   * @private
+   */
+  _chatCorrelationsSection(analysis) {
+    if (!(analysis.strongCorrelations?.length > 0)) return '';
 
-      for (const [col, catData] of Object.entries(sheet.categoricalAnalysis)) {
-        text += `### ${col}\n`;
-        text += `- **Valeurs uniques**: ${catData.uniqueCount || Object.keys(catData.frequencies || {}).length}\n`;
-        text += `- **Valeur dominante**: ${catData.mode || 'N/A'}\n\n`;
+    let text = `## 🔗 Corrélations Significatives\n\n`;
+    text += `| Colonne 1 | Colonne 2 | Corrélation | Force |\n|---|---|---|---|\n`;
 
-        // Top valeurs
-        const frequencies = catData.frequencies || {};
-        const sortedFreq = Object.entries(frequencies)
-          .sort((a, b) => Number(b[1]) - Number(a[1]))
-          .slice(0, 5);
-
-        if (sortedFreq.length > 0) {
-          text += `| Valeur | Fréquence | % |\n|---|---|---|\n`;
-          const total = Object.values(frequencies).reduce((a, b) => Number(a) + Number(b), 0);
-          for (const [val, count] of sortedFreq) {
-            const pct = total > 0 ? ((Number(count) / total) * 100).toFixed(1) : '0';
-            text += `| ${val} | ${count} | ${pct}% |\n`;
-          }
-          text += `\n`;
-        }
-      }
+    for (const corr of analysis.strongCorrelations.slice(0, 10)) {
+      const strength =
+        Math.abs(corr.correlation) > 0.8
+          ? '🔴 Très forte'
+          : Math.abs(corr.correlation) > 0.6
+            ? '🟠 Forte'
+            : '🟡 Modérée';
+      text += `| ${corr.column1} | ${corr.column2} | ${corr.correlation.toFixed(3)} | ${strength} |\n`;
     }
+    text += `\n`;
+    return text;
+  }
 
-    // ════════════════════════════════════════════════════════════════════════
-    // SECTION 5: Corrélations fortes
-    // ════════════════════════════════════════════════════════════════════════
-    if (analysis.strongCorrelations?.length > 0) {
-      text += `## 🔗 Corrélations Significatives\n\n`;
-      text += `| Colonne 1 | Colonne 2 | Corrélation | Force |\n|---|---|---|---|\n`;
+  /**
+   * SECTION 6: Valeurs aberrantes détectées (exportForChat).
+   * @private
+   */
+  _chatOutliersSection(sheet) {
+    if (!sheet?.outliers) return '';
 
-      for (const corr of analysis.strongCorrelations.slice(0, 10)) {
-        const strength =
-          Math.abs(corr.correlation) > 0.8
-            ? '🔴 Très forte'
-            : Math.abs(corr.correlation) > 0.6
-              ? '🟠 Forte'
-              : '🟡 Modérée';
-        text += `| ${corr.column1} | ${corr.column2} | ${corr.correlation.toFixed(3)} | ${strength} |\n`;
+    const outlierCols = Object.entries(sheet.outliers).filter(
+      ([_, data]) => data && data.outliers?.length > 0
+    );
+
+    if (outlierCols.length === 0) return '';
+
+    let text = `## ⚠️ Valeurs Aberrantes Détectées\n\n`;
+
+    for (const [col, data] of outlierCols) {
+      const outlierData = data;
+      text += `### ${col}\n`;
+      text += `- **Méthode**: ${outlierData.method || 'IQR'}\n`;
+      text += `- **Nombre d'outliers**: ${outlierData.outliers?.length || 0}\n`;
+
+      if (outlierData.bounds) {
+        text += `- **Limites**: [${this._formatNumber(outlierData.bounds.lower)}, ${this._formatNumber(outlierData.bounds.upper)}]\n`;
+      }
+
+      if (outlierData.outliers?.length > 0) {
+        text += `- **Valeurs**: ${outlierData.outliers
+          .slice(0, 5)
+          .map((v) => this._formatNumber(v.value || v))
+          .join(', ')}${outlierData.outliers.length > 5 ? '...' : ''}\n`;
       }
       text += `\n`;
     }
+    return text;
+  }
 
-    // ════════════════════════════════════════════════════════════════════════
-    // SECTION 6: Outliers détectés
-    // ════════════════════════════════════════════════════════════════════════
-    if (sheet?.outliers) {
-      const outlierCols = Object.entries(sheet.outliers).filter(
-        ([_, data]) => data && data.outliers?.length > 0
+  /**
+   * SECTION 7: Qualité des données (exportForChat).
+   * @private
+   */
+  _chatDataQualitySection(dataQuality) {
+    if (!(dataQuality && Object.keys(dataQuality).length > 0)) return '';
+
+    let text = `## ✅ Qualité des Données\n\n`;
+
+    if (dataQuality.completeness !== undefined) {
+      const qualityIcon =
+        dataQuality.completeness >= 95 ? '🟢' : dataQuality.completeness >= 80 ? '🟡' : '🔴';
+      text += `- **Complétude globale**: ${qualityIcon} ${dataQuality.completeness.toFixed(1)}%\n`;
+    }
+
+    if (dataQuality.missingValues) {
+      const missingCols = Object.entries(dataQuality.missingValues).filter(
+        ([_, count]) => Number(count) > 0
       );
 
-      if (outlierCols.length > 0) {
-        text += `## ⚠️ Valeurs Aberrantes Détectées\n\n`;
-
-        for (const [col, data] of outlierCols) {
-          const outlierData = data;
-          text += `### ${col}\n`;
-          text += `- **Méthode**: ${outlierData.method || 'IQR'}\n`;
-          text += `- **Nombre d'outliers**: ${outlierData.outliers?.length || 0}\n`;
-
-          if (outlierData.bounds) {
-            text += `- **Limites**: [${this._formatNumber(outlierData.bounds.lower)}, ${this._formatNumber(outlierData.bounds.upper)}]\n`;
-          }
-
-          if (outlierData.outliers?.length > 0) {
-            text += `- **Valeurs**: ${outlierData.outliers
-              .slice(0, 5)
-              .map((v) => this._formatNumber(v.value || v))
-              .join(', ')}${outlierData.outliers.length > 5 ? '...' : ''}\n`;
-          }
-          text += `\n`;
+      if (missingCols.length > 0) {
+        text += `- **Valeurs manquantes**:\n`;
+        for (const [col, count] of missingCols) {
+          text += `  - ${col}: ${count} valeurs manquantes\n`;
         }
+      } else {
+        text += `- **Valeurs manquantes**: Aucune ✓\n`;
       }
     }
 
-    // ════════════════════════════════════════════════════════════════════════
-    // SECTION 7: Qualité des données
-    // ════════════════════════════════════════════════════════════════════════
-    if (dataQuality && Object.keys(dataQuality).length > 0) {
-      text += `## ✅ Qualité des Données\n\n`;
-
-      if (dataQuality.completeness !== undefined) {
-        const qualityIcon =
-          dataQuality.completeness >= 95 ? '🟢' : dataQuality.completeness >= 80 ? '🟡' : '🔴';
-        text += `- **Complétude globale**: ${qualityIcon} ${dataQuality.completeness.toFixed(1)}%\n`;
+    if (dataQuality.duplicates) {
+      if (dataQuality.duplicates.count > 0) {
+        text += `- **Doublons détectés**: ${dataQuality.duplicates.count} lignes\n`;
+      } else {
+        text += `- **Doublons**: Aucun ✓\n`;
       }
+    }
+    text += `\n`;
+    return text;
+  }
 
-      if (dataQuality.missingValues) {
-        const missingCols = Object.entries(dataQuality.missingValues).filter(
-          ([_, count]) => Number(count) > 0
-        );
+  /**
+   * SECTION 8: Insights et recommandations (exportForChat).
+   * @private
+   */
+  _chatInsightsSection(summary) {
+    if (
+      !(
+        summary.keyInsights?.length > 0 ||
+        summary.recommendations?.length > 0 ||
+        summary.patterns?.length > 0
+      )
+    ) {
+      return '';
+    }
 
-        if (missingCols.length > 0) {
-          text += `- **Valeurs manquantes**:\n`;
-          for (const [col, count] of missingCols) {
-            text += `  - ${col}: ${count} valeurs manquantes\n`;
-          }
-        } else {
-          text += `- **Valeurs manquantes**: Aucune ✓\n`;
-        }
-      }
+    let text = `## 💡 Insights & Recommandations\n\n`;
 
-      if (dataQuality.duplicates) {
-        if (dataQuality.duplicates.count > 0) {
-          text += `- **Doublons détectés**: ${dataQuality.duplicates.count} lignes\n`;
-        } else {
-          text += `- **Doublons**: Aucun ✓\n`;
-        }
+    if (summary.patterns?.length > 0) {
+      text += `### Patterns identifiés\n`;
+      for (const pattern of summary.patterns) {
+        text += `- ${pattern}\n`;
       }
       text += `\n`;
     }
 
-    // ════════════════════════════════════════════════════════════════════════
-    // SECTION 8: Insights et recommandations
-    // ════════════════════════════════════════════════════════════════════════
-    if (
-      summary.keyInsights?.length > 0 ||
-      summary.recommendations?.length > 0 ||
-      summary.patterns?.length > 0
-    ) {
-      text += `## 💡 Insights & Recommandations\n\n`;
-
-      if (summary.patterns?.length > 0) {
-        text += `### Patterns identifiés\n`;
-        for (const pattern of summary.patterns) {
-          text += `- ${pattern}\n`;
-        }
-        text += `\n`;
+    if (summary.keyInsights?.length > 0) {
+      text += `### Observations clés\n`;
+      for (const insight of summary.keyInsights) {
+        text += `- ${insight}\n`;
       }
-
-      if (summary.keyInsights?.length > 0) {
-        text += `### Observations clés\n`;
-        for (const insight of summary.keyInsights) {
-          text += `- ${insight}\n`;
-        }
-        text += `\n`;
-      }
-
-      if (summary.recommendations?.length > 0) {
-        text += `### Recommandations\n`;
-        for (const rec of summary.recommendations) {
-          text += `- 📌 ${rec}\n`;
-        }
-        text += `\n`;
-      }
-
-      if (summary.topPerformers?.length > 0) {
-        text += `### Top performers\n`;
-        for (const top of summary.topPerformers) {
-          text += `- 🏆 ${top}\n`;
-        }
-        text += `\n`;
-      }
+      text += `\n`;
     }
 
-    return {
-      text,
-      highlights: summary.keyInsights || [],
-      recommendations: summary.recommendations || [],
-      patterns: summary.patterns || [],
-    };
+    if (summary.recommendations?.length > 0) {
+      text += `### Recommandations\n`;
+      for (const rec of summary.recommendations) {
+        text += `- 📌 ${rec}\n`;
+      }
+      text += `\n`;
+    }
+
+    if (summary.topPerformers?.length > 0) {
+      text += `### Top performers\n`;
+      for (const top of summary.topPerformers) {
+        text += `- 🏆 ${top}\n`;
+      }
+      text += `\n`;
+    }
+    return text;
   }
 
   /**

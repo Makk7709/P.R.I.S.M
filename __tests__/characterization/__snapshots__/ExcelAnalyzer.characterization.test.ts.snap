@@ -1,5 +1,222 @@
 // Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
 
+exports[`ExcelAnalyzer export/query formatters — characterization > _interpretQuery — average/mean branch 1`] = `
+{
+  "Revenue": 1350,
+}
+`;
+
+exports[`ExcelAnalyzer export/query formatters — characterization > _interpretQuery — default + no-sheet branches 1`] = `
+{
+  "def": {
+    "message": "Query interpreted but no specific result generated",
+  },
+  "noSheet": null,
+}
+`;
+
+exports[`ExcelAnalyzer export/query formatters — characterization > _interpretQuery — grouped "by" branch 1`] = `
+{
+  "EU": 5300,
+  "US": 200,
+}
+`;
+
+exports[`ExcelAnalyzer export/query formatters — characterization > exportForChat — full rich analysis (all sections) 1`] = `
+{
+  "highlights": [
+    "Revenue is highly variable",
+    "EU dominates",
+  ],
+  "patterns": [
+    "Right-skewed Revenue distribution",
+  ],
+  "recommendations": [
+    "Investigate the 5000 outlier",
+  ],
+  "text": "# 📊 Analyse Détaillée du Fichier
+
+## 📋 Vue d'ensemble
+
+| Métrique | Valeur |
+|---|---|
+| **Lignes** | 4 |
+| **Colonnes** | 3 |
+| **Feuilles** | 1 |
+| **Complétude** | 87.5% |
+| **Doublons** | 1 |
+
+## 📑 Structure des Colonnes
+
+| Colonne | Type | Description |
+|---|---|---|
+| **Revenue** | 📊 number | min=100, max=5 000, moy=1 350 |
+| **Region** | 📝 string | 2 valeurs uniques |
+| **email** | 📧 email |  |
+
+## 📈 Statistiques Numériques
+
+### Revenue
+| Mesure | Valeur |
+|---|---|
+| Nombre de valeurs | 4 |
+| Moyenne | 1 350 |
+| Médiane | 150 |
+| Écart-type | 2 100 |
+| Minimum | 100 |
+| Maximum | 5 000 |
+| Q1 (25%) | 100 |
+| Q3 (75%) | 1 400 |
+| IQR | 1 300 |
+| Somme totale | 5 400 |
+
+## 🏷️ Analyse Catégorielle
+
+### Region
+- **Valeurs uniques**: 2
+- **Valeur dominante**: EU
+
+| Valeur | Fréquence | % |
+|---|---|---|
+| EU | 3 | 75.0% |
+| US | 1 | 25.0% |
+
+## 🔗 Corrélations Significatives
+
+| Colonne 1 | Colonne 2 | Corrélation | Force |
+|---|---|---|---|
+| Revenue | Units | 0.920 | 🔴 Très forte |
+| Revenue | Region | 0.650 | 🟠 Forte |
+| A | B | -0.550 | 🟡 Modérée |
+
+## ⚠️ Valeurs Aberrantes Détectées
+
+### Revenue
+- **Méthode**: IQR
+- **Nombre d'outliers**: 2
+- **Limites**: [0, 3 000]
+- **Valeurs**: 5 000, 4 800
+
+## ✅ Qualité des Données
+
+- **Complétude globale**: 🟡 87.5%
+- **Valeurs manquantes**:
+  - email: 1 valeurs manquantes
+- **Doublons détectés**: 1 lignes
+
+## 💡 Insights & Recommandations
+
+### Patterns identifiés
+- Right-skewed Revenue distribution
+
+### Observations clés
+- Revenue is highly variable
+- EU dominates
+
+### Recommandations
+- 📌 Investigate the 5000 outlier
+
+### Top performers
+- 🏆 EU region
+
+",
+}
+`;
+
+exports[`ExcelAnalyzer export/query formatters — characterization > exportForChat — minimal/empty analysis 1`] = `
+{
+  "highlights": [],
+  "patterns": [],
+  "recommendations": [],
+  "text": "# 📊 Analyse Détaillée du Fichier
+
+## 📋 Vue d'ensemble
+
+| Métrique | Valeur |
+|---|---|
+| **Lignes** | 0 |
+| **Colonnes** | 0 |
+| **Feuilles** | 1 |
+
+",
+}
+`;
+
+exports[`ExcelAnalyzer export/query formatters — characterization > exportForChat — partial (quality only, no stats/categorical) 1`] = `
+{
+  "highlights": [],
+  "patterns": [],
+  "recommendations": [],
+  "text": "# 📊 Analyse Détaillée du Fichier
+
+## 📋 Vue d'ensemble
+
+| Métrique | Valeur |
+|---|---|
+| **Lignes** | 2 |
+| **Colonnes** | 1 |
+| **Feuilles** | 1 |
+| **Complétude** | 100.0% |
+
+## 📑 Structure des Colonnes
+
+| Colonne | Type | Description |
+|---|---|---|
+| **A** | 🔢 integer |  |
+
+## ✅ Qualité des Données
+
+- **Complétude globale**: 🟢 100.0%
+- **Valeurs manquantes**: Aucune ✓
+- **Doublons**: Aucun ✓
+
+",
+}
+`;
+
+exports[`ExcelAnalyzer export/query formatters — characterization > exportToJSON — round-trips analysis 1`] = `
+"{
+  "a": 1,
+  "b": [
+    2,
+    3
+  ]
+}"
+`;
+
+exports[`ExcelAnalyzer export/query formatters — characterization > exportToMarkdown — empty 1`] = `
+"# Rapport d'Analyse Excel
+
+## Résumé
+
+| Métrique | Valeur |
+|---|---|
+| Lignes | 0 |
+| Colonnes | 0 |
+| Feuilles | 1 |
+
+"
+`;
+
+exports[`ExcelAnalyzer export/query formatters — characterization > exportToMarkdown — with stats 1`] = `
+"# Rapport d'Analyse Excel
+
+## Résumé
+
+| Métrique | Valeur |
+|---|---|
+| Lignes | 4 |
+| Colonnes | 3 |
+| Feuilles | 1 |
+
+## Statistiques
+
+| Colonne | Moyenne | Min | Max | Écart-type |
+|---|---|---|---|---|
+| Revenue | 1350.00 | 100 | 5000 | 2100.00 |
+"
+`;
+
 exports[`ExcelAnalyzer insight/quality helpers — characterization > _checkDataQuality 1`] = `
 {
   "completeness": 93.33333333333333,

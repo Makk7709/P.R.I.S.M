@@ -142,3 +142,113 @@ describe('ExcelAnalyzer insight/quality helpers — characterization', () => {
     expect(analyzer._formatForAI({}, 'question')).toMatchSnapshot();
   });
 });
+
+// Rich analysis object exercising every branch/section of exportForChat.
+const richAnalysis = {
+  summary: {
+    totalRows: 4,
+    totalColumns: 3,
+    totalSheets: 1,
+    keyInsights: ['Revenue is highly variable', 'EU dominates'],
+    recommendations: ['Investigate the 5000 outlier'],
+    patterns: ['Right-skewed Revenue distribution'],
+    topPerformers: ['EU region'],
+  },
+  metadata: { totalRows: 4, totalColumns: 3 },
+  dataQuality: {
+    completeness: 87.5,
+    duplicates: { count: 1 },
+    missingValues: { email: 1, Revenue: 0 },
+  },
+  strongCorrelations: [
+    { column1: 'Revenue', column2: 'Units', correlation: 0.92 },
+    { column1: 'Revenue', column2: 'Region', correlation: 0.65 },
+    { column1: 'A', column2: 'B', correlation: -0.55 },
+  ],
+  sheets: [
+    {
+      name: 'Sales',
+      headers: ['Revenue', 'Region', 'email'],
+      columnTypes: { Revenue: 'number', Region: 'string', email: 'email' },
+      statistics: {
+        Revenue: {
+          count: 4,
+          mean: 1350,
+          median: 150,
+          standardDeviation: 2100,
+          min: 100,
+          max: 5000,
+          sum: 5400,
+          quartiles: { Q1: 100, Q3: 1400 },
+          interquartileRange: 1300,
+        },
+      },
+      categoricalAnalysis: {
+        Region: {
+          uniqueCount: 2,
+          mode: 'EU',
+          frequencies: { EU: 3, US: 1 },
+        },
+      },
+      outliers: {
+        Revenue: {
+          method: 'IQR',
+          outliers: [{ value: 5000 }, { value: 4800 }],
+          bounds: { lower: 0, upper: 3000 },
+        },
+      },
+    },
+  ],
+};
+
+describe('ExcelAnalyzer export/query formatters — characterization', () => {
+  it('exportForChat — full rich analysis (all sections)', () => {
+    expect(analyzer.exportForChat(richAnalysis)).toMatchSnapshot();
+  });
+
+  it('exportForChat — minimal/empty analysis', () => {
+    expect(analyzer.exportForChat({})).toMatchSnapshot();
+  });
+
+  it('exportForChat — partial (quality only, no stats/categorical)', () => {
+    expect(
+      analyzer.exportForChat({
+        summary: { totalRows: 2, totalColumns: 1 },
+        dataQuality: { completeness: 100, missingValues: {}, duplicates: { count: 0 } },
+        sheets: [{ headers: ['A'], columnTypes: { A: 'integer' } }],
+      })
+    ).toMatchSnapshot();
+  });
+
+  it('exportToMarkdown — with stats', () => {
+    expect(analyzer.exportToMarkdown(richAnalysis)).toMatchSnapshot();
+  });
+
+  it('exportToMarkdown — empty', () => {
+    expect(analyzer.exportToMarkdown({})).toMatchSnapshot();
+  });
+
+  it('exportToJSON — round-trips analysis', () => {
+    expect(analyzer.exportToJSON({ a: 1, b: [2, 3] })).toMatchSnapshot();
+  });
+
+  it('_interpretQuery — average/mean branch', () => {
+    expect(analyzer._interpretQuery('What is the average revenue?', richAnalysis)).toMatchSnapshot();
+  });
+
+  it('_interpretQuery — grouped "by" branch', () => {
+    expect(
+      analyzer._interpretQuery('revenue by region', {
+        ...richAnalysis,
+        groupedAnalysis: { EU: 5300, US: 200 },
+      })
+    ).toMatchSnapshot();
+  });
+
+  it('_interpretQuery — default + no-sheet branches', () => {
+    expect({
+      def: analyzer._interpretQuery('list everything', richAnalysis),
+      noSheet: analyzer._interpretQuery('average', { sheets: [] }),
+    }).toMatchSnapshot();
+  });
+});
