@@ -627,7 +627,7 @@ describe('Couverture supplémentaire', () => {
       
       // Avec amplificateur "permanent" sur une action moins critique
       const withAmplifier = classifier.classify('Change la configuration de façon permanente');
-      const withoutAmplifier = classifier.classify('Change la configuration');
+      const _withoutAmplifier = classifier.classify('Change la configuration');
       
       // L'amplificateur doit augmenter le score
       expect(withAmplifier.details.amplifierBonus).toBeGreaterThan(0);

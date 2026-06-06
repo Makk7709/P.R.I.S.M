@@ -32,7 +32,7 @@ class MockTrustContext {
     console.log('✅ TrustContext initialized in TEST mode');
   }
 
-  requiresHumanApproval(type, level, data) {
+  requiresHumanApproval(type, level, _data) {
     // En mode TEST, seules les décisions CRITICAL nécessitent une approbation
     const requiresApproval = level === 'CRITICAL';
     console.log(
@@ -433,7 +433,7 @@ runSecurityTests()
 
     // Créer le dossier reports s'il n'existe pas
     const fs = require('node:fs');
-    const path = require('node:path');
+    const _path = require('node:path');
 
     if (!fs.existsSync('reports')) {
       fs.mkdirSync('reports', { recursive: true });

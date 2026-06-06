@@ -216,7 +216,7 @@ Paragraphe 3: Encore plus d'informations.`
       await engine.search('test query', 'recherche');
       
       // Deuxième appel devrait utiliser le cache
-      const result2 = await engine.search('test query', 'recherche');
+      const _result2 = await engine.search('test query', 'recherche');
 
       // Perplexity ne devrait être appelé qu'une fois
       expect(mockCallPerplexity).toHaveBeenCalledTimes(1);

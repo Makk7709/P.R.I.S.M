@@ -204,7 +204,7 @@ describe('Adapters Invariants - Critical Security & Quality Gates', () => {
 
   describe('INV-007: Error Handling Consistency', () => {
     it('should handle errors consistently', async () => {
-      const adapter = new OpenAIAdapter();
+      const _adapter = new OpenAIAdapter();
 
       // Test that all adapters return the same error format
       const errorResponse = {

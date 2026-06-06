@@ -17,7 +17,7 @@ import { ServerMemoryStore } from '../../src/core/ServerMemoryStore.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
-const TEST_MEMORY_FILE = path.join(__dirname, '../../data/test-server-memory.json');
+const _TEST_MEMORY_FILE = path.join(__dirname, '../../data/test-server-memory.json');
 
 describe('ServerMemoryStore - Extraction Données Complètes', () => {
   let store: ServerMemoryStore;

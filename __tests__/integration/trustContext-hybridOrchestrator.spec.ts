@@ -217,13 +217,13 @@ describe('HybridOrchestrator + TrustContext Integration', () => {
 
     it('NE DOIT PAS appeler TrustContext pour requête NORMAL (routed)', async () => {
       const input = 'What is the weather today?';
-      const initialCallCount = mockTrustContext.validateCriticalDecision.mock.calls.length;
+      const _initialCallCount = mockTrustContext.validateCriticalDecision.mock.calls.length;
       
       const result = await orchestrator.process(input, 'general');
 
       // Assertion 1: TrustContext PAS appelé pour requête normale
       // (peut être appelé si classification détecte HIGH, mais pas pour NORMAL)
-      const newCallCount = mockTrustContext.validateCriticalDecision.mock.calls.length;
+      const _newCallCount = mockTrustContext.validateCriticalDecision.mock.calls.length;
       // Si appelé, ce devrait être uniquement si classification détecte HIGH
       
       // Assertion 2: Résultat retourné (routed normalement)
@@ -282,7 +282,7 @@ describe('HybridOrchestrator + TrustContext Integration', () => {
       try {
         await orchestrator.process('Test', 'critical');
         expect.fail('Should have thrown an error');
-      } catch (e) {
+      } catch (_e) {
         // Expected
       }
 
@@ -389,7 +389,7 @@ describe('HybridOrchestrator + TrustContext Integration', () => {
 
       try {
         await orchestrator.process('Test', 'critical');
-      } catch (e) {
+      } catch (_e) {
         // Expected rejection
       }
 
@@ -419,7 +419,7 @@ describe('HybridOrchestrator + TrustContext Integration', () => {
       // Même en cas d'erreur, si taskType='critical', TrustContext devrait être appelé
       try {
         await orchestrator.process('Test', 'critical');
-      } catch (e) {
+      } catch (_e) {
         // Erreur attendue
       }
 

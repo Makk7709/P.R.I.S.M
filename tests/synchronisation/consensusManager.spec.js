@@ -279,7 +279,7 @@ describe('ConsensusManager', () => {
     });
 
     it('should trigger TrustContext on timeout', async () => {
-      const proposalId = await consensusManager.propose(
+      const _proposalId = await consensusManager.propose(
         'test-hash',
         { riskLevel: 0.3, evidenceQuality: 0.8, ethicalConcerns: false },
         DecisionType.CRITICAL
@@ -489,7 +489,7 @@ describe('ConsensusManager', () => {
 
   describe('Cleanup', () => {
     it('should cleanup resources properly', async () => {
-      const proposalId = await consensusManager.propose(
+      const _proposalId = await consensusManager.propose(
         'test-hash',
         { riskLevel: 0.3, evidenceQuality: 0.8, ethicalConcerns: false },
         DecisionType.CRITICAL
@@ -538,7 +538,7 @@ describe('ConsensusManager', () => {
         mockTrustContext.requireHumanApproval.mockRejectedValue(new Error('TrustContext error'));
       }
 
-      const proposalId = await consensusManager.propose(
+      const _proposalId = await consensusManager.propose(
         'test-hash',
         { riskLevel: 0.3, evidenceQuality: 0.8, ethicalConcerns: false },
         DecisionType.CRITICAL

@@ -28,11 +28,11 @@ jest.mock('../utils/prismPurgeScheduler.js', () => ({
 
 describe('PRISM UI Tests', () => {
   let testRunner;
-  let ui;
+  let _ui;
 
   beforeEach(() => {
     testRunner = new PrismUITestRunner();
-    ui = new PrismUI(config.CONFIG.UI);
+    _ui = new PrismUI(config.CONFIG.UI);
   });
 
   afterEach(() => {

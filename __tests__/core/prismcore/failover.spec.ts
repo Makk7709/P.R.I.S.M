@@ -136,7 +136,7 @@ interface SafeDefaults {
 
 describe('PrismCore - Failover et Dépendances Externes', () => {
   let core: FailoverPrismCore;
-  let mockProviderConfig: ProviderConfig;
+  let _mockProviderConfig: ProviderConfig;
 
   beforeEach(async () => {
     vi.clearAllMocks();
@@ -171,7 +171,7 @@ describe('PrismCore - Failover et Dépendances Externes', () => {
     try {
       const { FailoverPrismCore } = await import('../../../src/core/FailoverPrismCore.js');
       core = new FailoverPrismCore();
-    } catch (error) {
+    } catch (_error) {
       // Attendu en Phase RED
       console.log('FailoverPrismCore non implémenté - Phase RED OK');
     }

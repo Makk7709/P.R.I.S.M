@@ -74,7 +74,7 @@ describe('PrismCore - Orchestration Multi-Modules', () => {
         journalManager,
         trustContext
       });
-    } catch (error) {
+    } catch (_error) {
       // Attendu en Phase RED
       console.log('PrismCoreOrchestrator non implémenté - Phase RED OK');
     }

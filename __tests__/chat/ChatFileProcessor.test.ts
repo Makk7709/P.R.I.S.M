@@ -192,7 +192,7 @@ describe('ChatFileProcessor', () => {
         size: testExcelBuffer.length
       };
       
-      const result = await processor.processMessageWithFile(
+      const _result = await processor.processMessageWithFile(
         'What trends do you see?',
         file,
         'session-456'

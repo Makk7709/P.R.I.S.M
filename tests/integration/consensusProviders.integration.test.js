@@ -10,7 +10,7 @@ let OpenAIAdapter, AnthropicAdapter, PerplexityAdapter;
 describe('Real Providers Adapters (conditional)', () => {
   beforeAll(async () => {
     // Import dynamiques pour éviter erreurs si dépendances non requises
-    const base = await import('../../src/core/providers/ProviderAdapter.js');
+    const _base = await import('../../src/core/providers/ProviderAdapter.js');
     try { OpenAIAdapter = (await import('../../src/core/providers/OpenAIAdapter.js')).default; } catch { /* adaptateur optionnel absent */ }
     try { AnthropicAdapter = (await import('../../src/core/providers/AnthropicAdapter.js')).default; } catch { /* adaptateur optionnel absent */ }
     try { PerplexityAdapter = (await import('../../src/core/providers/PerplexityAdapter.js')).default; } catch { /* adaptateur optionnel absent */ }

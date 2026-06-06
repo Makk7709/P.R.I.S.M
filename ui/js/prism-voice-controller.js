@@ -388,7 +388,7 @@
       }
     }
 
-    async _loadAndPlayAudio(audioUrl, metadata = {}) {
+    async _loadAndPlayAudio(audioUrl, _metadata = {}) {
       return new Promise((resolve, reject) => {
         const audio = new Audio(audioUrl);
         this._currentAudio = audio;

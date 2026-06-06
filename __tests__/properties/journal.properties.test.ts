@@ -22,7 +22,7 @@ describe('Journal / Audit Log - Property-Based Tests', () => {
     // Créer le répertoire de base s'il n'existe pas
     try {
       await fs.mkdir(testBaseDir, { recursive: true });
-    } catch (error) {
+    } catch (_error) {
       // Ignore si existe déjà
     }
   });
@@ -31,7 +31,7 @@ describe('Journal / Audit Log - Property-Based Tests', () => {
     // Nettoyer après chaque test
     try {
       await fs.rm(testBaseDir, { recursive: true, force: true });
-    } catch (error) {
+    } catch (_error) {
       // Ignore
     }
   });

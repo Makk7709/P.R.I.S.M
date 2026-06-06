@@ -692,7 +692,7 @@ describe('MessageTracker - Suivi Anti-Répétition', () => {
 
   describe('Enregistrement de Messages', () => {
     it('DOIT enregistrer un nouveau message', () => {
-      const id = tracker.track('msg-001', { audioUrl: 'blob:test' });
+      const _id = tracker.track('msg-001', { audioUrl: 'blob:test' });
       
       expect(tracker.isTracked('msg-001')).toBe(true);
     });
@@ -1287,8 +1287,8 @@ describe('Intégration VoiceController + MessageTracker + AudioQueue', () => {
 
   describe('Interruption Propre', () => {
     it('DOIT interrompre proprement l\'audio précédent lors de nouveau message prioritaire', async () => {
-      let playEndCount = 0;
-      controller.on('playEnd', () => { playEndCount++; });
+      let _playEndCount = 0;
+      controller.on('playEnd', () => { _playEndCount++; });
       
       await controller.enqueue(createTestAudioBlob(5000), 'msg-001');
       await waitForState(controller, AudioState.PLAYING, 5000);

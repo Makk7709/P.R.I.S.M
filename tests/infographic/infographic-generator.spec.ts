@@ -274,7 +274,7 @@ describe('InfographicGenerator - Génération d\'infographies PRISM', () => {
       const data1 = { title: 'Version 1', content: 'A' };
       const data2 = { title: 'Version 2', content: 'B' };
 
-      const result1 = await generator.generateInfographic('finance', data1);
+      const _result1 = await generator.generateInfographic('finance', data1);
       const result2 = await generator.generateInfographic('finance', data2);
 
       expect(result2.fromCache).toBe(false);

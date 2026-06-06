@@ -608,7 +608,7 @@ describe('TaskTypeProcessor', () => {
       });
       
       // Simuler l'événement consensusReached
-      let consensusHandler: any;
+      let _consensusHandler: any;
       mockConsensus.on.mockImplementation((event, handler) => {
         if (event === 'consensusReached') {
           consensusHandler = handler;
@@ -743,7 +743,7 @@ describe('TaskTypeProcessor', () => {
 
       const startTime = Date.now();
       await processor.process('test input', 'general');
-      const responseTime = Date.now() - startTime;
+      const _responseTime = Date.now() - startTime;
 
       expect(mockSelfImprovement.emit).toHaveBeenCalledWith(
         'interaction_completed',

@@ -8,7 +8,7 @@ class PrismStorage {
     try {
       this.storage.set(key, value);
       return true;
-    } catch (error) {
+    } catch (_error) {
       this.fallbackStorage.set(key, value);
       return true;
     }
@@ -17,7 +17,7 @@ class PrismStorage {
   async readSafe(key) {
     try {
       return this.storage.get(key) || this.fallbackStorage.get(key);
-    } catch (error) {
+    } catch (_error) {
       return this.fallbackStorage.get(key);
     }
   }
@@ -27,7 +27,7 @@ class PrismStorage {
       this.storage.delete(key);
       this.fallbackStorage.delete(key);
       return true;
-    } catch (error) {
+    } catch (_error) {
       return false;
     }
   }
@@ -37,7 +37,7 @@ class PrismStorage {
       this.storage.clear();
       this.fallbackStorage.clear();
       return true;
-    } catch (error) {
+    } catch (_error) {
       return false;
     }
   }

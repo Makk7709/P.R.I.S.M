@@ -83,7 +83,7 @@ interface StateComparison {
 
 describe('PrismCore - Idempotence Stricte', () => {
   let core: IdempotentPrismCore;
-  let fixedConfig: CoreConfig;
+  let _fixedConfig: CoreConfig;
 
   beforeEach(async () => {
     vi.clearAllMocks();
@@ -103,7 +103,7 @@ describe('PrismCore - Idempotence Stricte', () => {
     try {
       const { IdempotentPrismCore } = await import('../../../src/core/IdempotentPrismCore.js');
       core = new IdempotentPrismCore();
-    } catch (error) {
+    } catch (_error) {
       // Attendu en Phase RED
       console.log('IdempotentPrismCore non implémenté - Phase RED OK');
     }

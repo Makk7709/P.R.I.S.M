@@ -69,7 +69,7 @@ describe('server.js + TrustContext Integration', () => {
               approvalRequired: true
             });
           }
-        } catch (error) {
+        } catch (_error) {
           return res.status(500).json({
             success: false,
             error: 'Security validation failed'

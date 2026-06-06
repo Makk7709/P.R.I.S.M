@@ -66,7 +66,7 @@ describe('ConsensusManager - Property-Based Tests', () => {
             try {
               proposalId1 = await manager1.propose(decisionHash, payload, type);
               proposalId2 = await manager2.propose(decisionHash, payload, type);
-            } catch (e) {
+            } catch (_e) {
               // Si validation échoue (données invalides), skip ce test
               return true;
             }
@@ -79,7 +79,7 @@ describe('ConsensusManager - Property-Based Tests', () => {
             for (const [provider, vote, reasoning] of votesList) {
               try {
                 manager1.submitVote(proposalId1, provider, vote, reasoning);
-              } catch (e) {
+              } catch (_e) {
                 // Ignore validation errors (testé ailleurs)
               }
             }
@@ -94,7 +94,7 @@ describe('ConsensusManager - Property-Based Tests', () => {
             for (const [provider, vote, reasoning] of shuffledVotes) {
               try {
                 manager2.submitVote(proposalId2, provider, vote, reasoning);
-              } catch (e) {
+              } catch (_e) {
                 // Ignore validation errors (testé ailleurs)
               }
             }
@@ -143,13 +143,13 @@ describe('ConsensusManager - Property-Based Tests', () => {
             let proposalId: string | undefined;
             try {
               proposalId = await manager.propose(decisionHash, payload, DecisionType.CRITICAL);
-            } catch (e) {
+            } catch (_e) {
               return true; // Skip si validation échoue
             }
             if (!proposalId) return true;
             
             const providers = Object.values(AIProvider);
-            const totalVotes = Math.min(numApprovals + numRejections, providers.length);
+            const _totalVotes = Math.min(numApprovals + numRejections, providers.length);
             
             let idx = 0;
             // Ajouter approvals
@@ -218,7 +218,7 @@ describe('ConsensusManager - Property-Based Tests', () => {
             let proposalId: string | undefined;
             try {
               proposalId = await manager.propose(decisionHash, payload, DecisionType.CRITICAL);
-            } catch (e) {
+            } catch (_e) {
               return true; // Skip si validation échoue
             }
             if (!proposalId) return true;
@@ -287,7 +287,7 @@ describe('ConsensusManager - Property-Based Tests', () => {
             try {
               proposalId1 = await manager1.propose(decisionHash, payload, type);
               proposalId2 = await manager2.propose(decisionHash, payload, type);
-            } catch (e) {
+            } catch (_e) {
               return true; // Skip si validation échoue
             }
             if (!proposalId1 || !proposalId2) return true;

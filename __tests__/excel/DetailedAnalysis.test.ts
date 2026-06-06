@@ -352,7 +352,7 @@ describe('Detailed Excel Analysis - TDD', () => {
       const result = await analyzer.analyze(testBuffer, { detectOutliers: true });
       const outliers = result.sheets[0].outliers;
 
-      for (const [col, data] of Object.entries(outliers)) {
+      for (const [_col, data] of Object.entries(outliers)) {
         if (data) {
           expect(data.method).toBeDefined();
           expect(Array.isArray(data.outliers)).toBe(true);

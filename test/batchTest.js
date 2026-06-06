@@ -71,7 +71,7 @@ async function simulateBatch() {
 }
 
 // Run the test
-simulateBatch().then(results => {
+simulateBatch().then(_results => {
     console.log('Test completed successfully');
     console.log('Results available in /logs/selfimprovement/');
 }).catch(error => {

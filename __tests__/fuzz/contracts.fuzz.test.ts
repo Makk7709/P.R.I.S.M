@@ -34,7 +34,7 @@ describe('Contracts - Fuzzing Tests (Fail-Closed)', () => {
               expect(partialObject).toHaveProperty('payload');
               expect(partialObject).toHaveProperty('type');
               return true;
-            } catch (error) {
+            } catch (_error) {
               // Fail-closed: rejet attendu si clés manquantes
               return true; // C'est le comportement attendu
             }
@@ -76,7 +76,7 @@ describe('Contracts - Fuzzing Tests (Fail-Closed)', () => {
               // Si validation passe, c'est un problème (fail-closed)
               expect(false).toBe(true); // Force failure si validation passe
               return false;
-            } catch (error) {
+            } catch (_error) {
               // Fail-closed: rejet attendu
               return true;
             }
@@ -107,7 +107,7 @@ describe('Contracts - Fuzzing Tests (Fail-Closed)', () => {
               // Si validation passe avec clés inconnues, c'est un problème (strict mode)
               expect(false).toBe(true);
               return false;
-            } catch (error) {
+            } catch (_error) {
               // Fail-closed: rejet attendu (strict mode rejette clés inconnues)
               return true;
             }
@@ -138,7 +138,7 @@ describe('Contracts - Fuzzing Tests (Fail-Closed)', () => {
               validateStrict(extremeObject, DecisionProposalSchema);
               // Si validation passe, c'est OK (peut-être que le schéma accepte)
               return true;
-            } catch (error) {
+            } catch (_error) {
               // Si validation échoue, c'est aussi OK (fail-closed sur valeurs extrêmes)
               return true;
             }
@@ -176,7 +176,7 @@ describe('Contracts - Fuzzing Tests (Fail-Closed)', () => {
               validateStrict(invalidVote, VoteSchema);
               expect(false).toBe(true); // Force failure
               return false;
-            } catch (error) {
+            } catch (_error) {
               return true; // Fail-closed attendu
             }
           }
@@ -205,7 +205,7 @@ describe('Contracts - Fuzzing Tests (Fail-Closed)', () => {
               validateCriticalDecisionRequest(invalidRequest);
               expect(false).toBe(true);
               return false;
-            } catch (error) {
+            } catch (_error) {
               return true; // Fail-closed attendu
             }
           }
@@ -244,7 +244,7 @@ describe('Contracts - Fuzzing Tests (Fail-Closed)', () => {
               validateJournalEntryInput(invalidEntry);
               expect(false).toBe(true);
               return false;
-            } catch (error) {
+            } catch (_error) {
               return true; // Fail-closed attendu
             }
           }

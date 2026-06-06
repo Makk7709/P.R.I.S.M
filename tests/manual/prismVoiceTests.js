@@ -272,7 +272,7 @@ export class VoiceTestRunner {
     return (ariaSupport + keyboardSupport) / 2;
   }
 
-  testComponentFocusOrder(component) {
+  testComponentFocusOrder(_component) {
     // Tester l'ordre de focus
     return 8; // Bon ordre de focus
   }

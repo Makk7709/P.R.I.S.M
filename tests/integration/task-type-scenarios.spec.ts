@@ -99,7 +99,7 @@ vi.mock('../../src/core/JarvisPersonality.js', () => ({
       return `[JARVIS] ${prompt} [USER: ${options.userName || 'Unknown'}]`;
     }),
     generateSystemPrompt: vi.fn().mockReturnValue('Tu es JARVIS, assistant PRISM développé par KOREV AI.'),
-    enrichResponse: vi.fn().mockImplementation((response, options) => response),
+    enrichResponse: vi.fn().mockImplementation((response, _options) => response),
     generateGreeting: vi.fn().mockImplementation((name) => `Bonjour ${name}, à votre service.`),
     shouldMakeSuggestion: vi.fn().mockReturnValue(false),
     getFormattingInstructions: vi.fn().mockReturnValue('Format JARVIS')

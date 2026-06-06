@@ -646,7 +646,7 @@
       messageElements.forEach((el, index) => {
         const isUser = el.classList.contains('user');
         const isSystem = el.classList.contains('system');
-        const isPrism = el.classList.contains('prism');
+        const _isPrism = el.classList.contains('prism');
         
         // Extraire le contenu - le texte peut être directement dans l'élément ou dans un sous-élément
         let content = '';

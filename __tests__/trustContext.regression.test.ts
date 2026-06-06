@@ -68,7 +68,7 @@ describe('TrustContext - Tests de Régression', () => {
   afterEach(async () => {
     try {
       await fs.rm(path.dirname(testKeyDir), { recursive: true, force: true });
-    } catch (error) {
+    } catch (_error) {
       // Ignorer
     }
   });
@@ -113,7 +113,7 @@ describe('TrustContext - Tests de Régression', () => {
       const decision = (trustContext as any).pendingDecisions.get(approvalToken);
 
       // Générer autre paire de clés (non enregistrée)
-      const { publicKey: otherPublicKey, privateKey: otherPrivateKey } = crypto.generateKeyPairSync('ed25519', {
+      const { publicKey: _otherPublicKey, privateKey: otherPrivateKey } = crypto.generateKeyPairSync('ed25519', {
         publicKeyEncoding: { type: 'spki', format: 'pem' },
         privateKeyEncoding: { type: 'pkcs8', format: 'pem' }
       });

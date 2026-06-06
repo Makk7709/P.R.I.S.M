@@ -4,7 +4,7 @@ class PrismBus {
     this._typeValidators = new Map();
   }
 
-  on(event, callback, options = {}) {
+  on(event, callback, _options = {}) {
     if (!this._events.has(event)) {
       this._events.set(event, new Set());
     }

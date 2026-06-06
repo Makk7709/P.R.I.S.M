@@ -19,7 +19,7 @@ class SecurityReporter {
   }
 
   generateSecurityReport(results) {
-    const { testResults, coverageMap } = results;
+    const { testResults, _coverageMap } = results;
 
     // Analyser les résultats de couverture
     const coverage = this.analyzeCoverage(results);

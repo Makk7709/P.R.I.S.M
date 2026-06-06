@@ -132,7 +132,7 @@ class TestAudio extends EventTarget {
   }
   
   // Méthodes supplémentaires pour compatibilité
-  canPlayType(type) {
+  canPlayType(_type) {
     return 'probably';
   }
   
@@ -151,7 +151,7 @@ URL.createObjectURL = (blob) => {
   if (originalCreateObjectURL && blob instanceof Blob) {
     try {
       return originalCreateObjectURL(blob);
-    } catch (e) {
+    } catch (_e) {
       // Fallback si échoue
     }
   }
@@ -163,7 +163,7 @@ URL.revokeObjectURL = (url) => {
   if (originalRevokeObjectURL) {
     try {
       return originalRevokeObjectURL(url);
-    } catch (e) {
+    } catch (_e) {
       // Ignore
     }
   }

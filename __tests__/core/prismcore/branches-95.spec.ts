@@ -64,7 +64,7 @@ describe('PrismCore - Branches ≥95% Tests', () => {
       expect(emergencyTriggered).toBe(true);
       
       // Vérifier calcul errorIsolationEfficiency
-      const totalModules = orchestrator.modules.size + orchestrator.isolatedModules.size;
+      const _totalModules = orchestrator.modules.size + orchestrator.isolatedModules.size;
       expect(orchestrator.metrics.errorIsolationEfficiency).toBeLessThan(1.0);
     });
 
@@ -149,7 +149,7 @@ describe('PrismCore - Branches ≥95% Tests', () => {
       await core.initialize({ deterministic: true });
       
       // Mock pour déclencher exception dans processDecision
-      const originalProcessDecisionDeterministic = core._processDecisionDeterministic;
+      const _originalProcessDecisionDeterministic = core._processDecisionDeterministic;
       core._processDecisionDeterministic = vi.fn().mockImplementation(() => {
         throw new Error('Processing failed');
       });
@@ -165,7 +165,7 @@ describe('PrismCore - Branches ≥95% Tests', () => {
       await core.initialize({ deterministic: true });
       
       // Mock pour déclencher exception
-      const originalCalculateExpectedStateHash = core._calculateExpectedStateHash;
+      const _originalCalculateExpectedStateHash = core._calculateExpectedStateHash;
       core._calculateExpectedStateHash = vi.fn().mockRejectedValue(new Error('Hash calculation failed'));
       
       const report = await core.validateStateIntegrity();
@@ -212,7 +212,7 @@ describe('PrismCore - Branches ≥95% Tests', () => {
       const core = new FailoverPrismCore();
       
       // Mock pour simuler succès du premier provider
-      const originalAttemptProviderRequest = core._attemptProviderRequest;
+      const _originalAttemptProviderRequest = core._attemptProviderRequest;
       core._attemptProviderRequest = vi.fn().mockResolvedValue(true);
       
       const config = {
@@ -290,7 +290,7 @@ describe('PrismCore - Branches ≥95% Tests', () => {
       const result = { errors: [] };
       
       // Mock pour simuler délai long
-      const originalSimulateProviderRequest = core._simulateProviderRequest;
+      const _originalSimulateProviderRequest = core._simulateProviderRequest;
       core._simulateProviderRequest = vi.fn().mockImplementation(async () => {
         await new Promise(resolve => setTimeout(resolve, 100)); // Plus long que timeout
         return { success: true };

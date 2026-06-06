@@ -41,7 +41,7 @@ describe('TamperEvidentAuditLog - Tamper Detection', () => {
     try {
       await fs.rm(testLogDir, { recursive: true, force: true });
       await fs.rm(testKeyDir, { recursive: true, force: true });
-    } catch (error) {
+    } catch (_error) {
       // Ignorer erreurs de nettoyage
     }
   });
@@ -218,7 +218,7 @@ describe('TamperEvidentAuditLog - Tamper Detection', () => {
       });
 
       // Générer une autre paire de clés
-      const { publicKey: otherPublicKey, privateKey: otherPrivateKey } = crypto.generateKeyPairSync(
+      const { publicKey: _otherPublicKey, privateKey: otherPrivateKey } = crypto.generateKeyPairSync(
         'ed25519',
         {
           publicKeyEncoding: { type: 'spki', format: 'pem' },

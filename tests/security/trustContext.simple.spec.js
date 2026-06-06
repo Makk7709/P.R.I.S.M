@@ -4,7 +4,7 @@
  */
 
 describe('TrustContext Security Verification - Simplified', () => {
-  let TrustContext, CriticalityLevel, ApprovalStatus;
+  let TrustContext, CriticalityLevel, _ApprovalStatus;
 
   beforeAll(async () => {
     // Mock crypto pour éviter les erreurs d'import
@@ -22,8 +22,8 @@ describe('TrustContext Security Verification - Simplified', () => {
       const trustModule = await import('../../src/core/TrustContext.js');
       TrustContext = trustModule.TrustContext;
       CriticalityLevel = trustModule.CriticalityLevel;
-      ApprovalStatus = trustModule.ApprovalStatus;
-    } catch (error) {
+      _ApprovalStatus = trustModule.ApprovalStatus;
+    } catch (_error) {
       console.warn('Could not import TrustContext, using mock');
       // Mock TrustContext pour les tests
       TrustContext = class MockTrustContext {
@@ -51,7 +51,7 @@ describe('TrustContext Security Verification - Simplified', () => {
           return token;
         }
 
-        approveDecision(token, supervisor, signature) {
+        approveDecision(token, supervisor, _signature) {
           const decision = this.pendingDecisions.get(token);
           if (decision && supervisor.startsWith('test_supervisor_')) {
             decision.status = 'APPROVED';
@@ -80,7 +80,7 @@ describe('TrustContext Security Verification - Simplified', () => {
         CRITICAL: 'CRITICAL'
       };
 
-      ApprovalStatus = {
+      _ApprovalStatus = {
         PENDING: 'PENDING',
         APPROVED: 'APPROVED',
         REJECTED: 'REJECTED',
@@ -176,7 +176,7 @@ describe('TrustContext Security Verification - Simplified', () => {
         { type: 'test1' }
       );
       
-      const token2 = await trustContext.requireHumanApproval(
+      const _token2 = await trustContext.requireHumanApproval(
         'decision_2', 
         CriticalityLevel.CRITICAL,
         { type: 'test2' }

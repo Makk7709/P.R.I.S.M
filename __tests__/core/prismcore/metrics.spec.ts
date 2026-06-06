@@ -240,7 +240,7 @@ interface Alert {
 
 describe('PrismCore - Métriques et Logs', () => {
   let core: MetricsPrismCore;
-  let metricsConfig: MetricsConfig;
+  let _metricsConfig: MetricsConfig;
 
   beforeEach(async () => {
     vi.clearAllMocks();
@@ -262,7 +262,7 @@ describe('PrismCore - Métriques et Logs', () => {
     try {
       const { MetricsPrismCore } = await import('../../../src/core/MetricsPrismCore.js');
       core = new MetricsPrismCore();
-    } catch (error) {
+    } catch (_error) {
       // Attendu en Phase RED
       console.log('MetricsPrismCore non implémenté - Phase RED OK');
     }

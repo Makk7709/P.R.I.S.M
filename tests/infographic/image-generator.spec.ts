@@ -312,7 +312,7 @@ describe('ImageGenerator - Nano Banana Pro + Gemini 2.0 Flash', () => {
     it('DOIT invalider le cache après expiration', async () => {
       generator.setCacheTTL(100); // 100ms
 
-      const result1 = await generator.generateImage('Test cache expire');
+      const _result1 = await generator.generateImage('Test cache expire');
       
       await new Promise(resolve => setTimeout(resolve, 150));
       

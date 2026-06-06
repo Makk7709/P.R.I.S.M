@@ -156,7 +156,7 @@ describe('Flux Mémoire Complet - Tests Stricts', () => {
   describe('ÉTAPE 5: Passage au Modèle via orchestrator', () => {
     it('DOIT passer enrichedPrompt à handleUserInstruction', async () => {
       // Mock handleUserInstruction pour vérifier les arguments
-      const { handleUserInstruction } = await import('../../backend/orchestrator.js');
+      const { _handleUserInstruction } = await import('../../backend/orchestrator.js');
       
       // Stocker des données
       memoryStore.storeInteraction('Mon prénom est Amine', 'OK', {});
@@ -213,10 +213,10 @@ describe('Flux Mémoire Complet - Tests Stricts', () => {
   describe('PROBLÈME IDENTIFIÉ: Prompt enrichi non utilisé', () => {
     it('DOIT vérifier que callOpenAI reçoit customSystemPrompt', async () => {
       // Mock callOpenAI pour vérifier les arguments
-      const orchestratorModule = await import('../../backend/orchestrator.js');
+      const _orchestratorModule = await import('../../backend/orchestrator.js');
       
       // Créer un spy sur callOpenAI (si exporté) ou vérifier via handleUserInstruction
-      const mockCallOpenAI = vi.fn().mockResolvedValue({
+      const _mockCallOpenAI = vi.fn().mockResolvedValue({
         choices: [{ message: { content: 'Mock response' } }]
       });
 

@@ -163,7 +163,7 @@ vi.mock('../../backend/orchestrator.js', () => ({
 }));
 
 describe('Enrichissement Contexte Utilisateur - Intégration', () => {
-  let processor: TaskTypeProcessor;
+  let _processor: TaskTypeProcessor;
   let memoryStore: ServerMemoryStore;
 
   beforeEach(() => {

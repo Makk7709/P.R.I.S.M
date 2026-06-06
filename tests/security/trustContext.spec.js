@@ -603,7 +603,7 @@ describe('TrustContext Security Verification', () => {
     });
 
     test('should prevent modification of security configuration at runtime', () => {
-      const originalConfig = { ...trustContext.config };
+      const _originalConfig = { ...trustContext.config };
       
       // Tenter de modifier la configuration
       expect(() => {

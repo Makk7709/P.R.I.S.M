@@ -248,7 +248,7 @@ describe('JarvisPersonality - Personnalité JARVIS pour PRISM', () => {
         timestamp: new Date()
       });
       
-      const response = jarvis.enrichResponse('Analyse terminée.', {});
+      const _response = jarvis.enrichResponse('Analyse terminée.', {});
       // Devrait potentiellement faire référence au projet fintech
       expect(jarvis.getConversationContext().topics).toContain('fintech');
     });

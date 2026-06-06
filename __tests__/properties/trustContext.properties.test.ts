@@ -89,7 +89,7 @@ describe('TrustContext - Property-Based Tests (Invariants Critiques)', () => {
     // Nettoyer
     try {
       await fs.rm(path.dirname(testKeyDir), { recursive: true, force: true });
-    } catch (error) {
+    } catch (_error) {
       // Ignorer erreurs de nettoyage
     }
   });
@@ -237,7 +237,7 @@ describe('TrustContext - Property-Based Tests (Invariants Critiques)', () => {
         fc.asyncProperty(
           fc.string({ minLength: 1, maxLength: 100 }),
           fc.string({ minLength: 1, maxLength: 50 }), // Modification à injecter
-          async (decisionType, modification) => {
+          async (decisionType, _modification) => {
             const approvalToken = await trustContext.requireHumanApproval(
               decisionType,
               CriticalityLevel.HIGH,

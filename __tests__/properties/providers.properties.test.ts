@@ -89,7 +89,7 @@ describe('ProviderAdapters - Property-Based Tests (Invariants Métier)', () => {
             
             try {
               proposalId = await manager.propose(decisionHash, payload, DecisionType.CRITICAL);
-            } catch (e) {
+            } catch (_e) {
               return true; // Skip si validation échoue
             }
             
@@ -146,7 +146,7 @@ describe('ProviderAdapters - Property-Based Tests (Invariants Métier)', () => {
             try {
               proposalId1 = await manager1.propose(decisionHash, payload, DecisionType.CRITICAL);
               proposalId2 = await manager2.propose(decisionHash, payload, DecisionType.CRITICAL);
-            } catch (e) {
+            } catch (_e) {
               return true;
             }
             
