@@ -1,0 +1,1685 @@
+{
+  "python:S3457": {
+    "TIER3": [
+      "scripts/control_ask_prism.py",
+      "scripts/control_salesops.py",
+      "src/prism_salesops/__main__.py",
+      "src/prism_salesops/qa/composer.py"
+    ]
+  },
+  "javascript:S1128": {
+    "TIER1": [
+      "backend/routes/chatUpload.js",
+      "backend/routes/enterpriseExport.js",
+      "backend/services/enterprisePDFService.js",
+      "server.js",
+      "src/core/ConsensusManager.js",
+      "src/core/TaskTypeProcessor.js",
+      "src/core/providers/AdapterGuard.js",
+      "src/orchestrator/HybridOrchestrator.js"
+    ],
+    "TIER3": [
+      "__tests_legacy__/AdaptiveCyclerWidget.test.js",
+      "__tests_legacy__/AdaptiveWeightingEngine.clamp.test.js",
+      "__tests_legacy__/backend/api/enterpriseExport.test.js",
+      "__tests_legacy__/backend/integration/enterpriseWorkflow.test.js",
+      "__tests_legacy__/backend/schemas/enterpriseExportSchema.test.js",
+      "__tests_legacy__/metricsOverhead.bench.test.js",
+      "__tests_legacy__/migration-gpt41.test.js",
+      "__tests_legacy__/persistence/prismStateStore.sqlite.test.js",
+      "__tests_legacy__/prism-corporate-theme.test.js",
+      "__tests_legacy__/prismAdaptiveCycler.edge.test.js",
+      "__tests_legacy__/prismAdaptiveCycler.perf.test.js",
+      "__tests_legacy__/prismAdaptiveCycler.persist.test.js",
+      "__tests_legacy__/prismAdaptiveCycler.test.js",
+      "__tests_legacy__/prismBehavioralLearner.test.js",
+      "__tests_legacy__/prismCodexAnalyzer.metrics.test.js",
+      "__tests_legacy__/prismCoreStressTest.js",
+      "__tests_legacy__/prismElysiumMode.test.js",
+      "__tests_legacy__/prismEventGuard.test.js",
+      "__tests_legacy__/prismModelRouter.test.js",
+      "__tests_legacy__/prismPerf.bench.test.js",
+      "__tests_legacy__/prismSelfEvolutionCycle.test.js",
+      "__tests_legacy__/prismStrategicLayer.test.js",
+      "__tests_legacy__/stress/prismCoreAdvancedStressTest.js",
+      "__tests_legacy__/stress/prismCorePredictiveTest.js",
+      "__tests_legacy__/stress/prismCoreScalabilityTest.js",
+      "backend/launchSelfEvolutionCycle.js",
+      "core/Resilience.js",
+      "evolution/launchSelfEvolutionCycle.js",
+      "fix-voice-performance.js",
+      "legacy_tests/functional/PRISMCoreRealWorldTests.test.js",
+      "legacy_tests/prism_real_run_test.js",
+      "legacy_tests/tests_old/dashboard/dashboard.test.js",
+      "legacy_tests/tests_old/evolution/selfImprovementEngine.test.js",
+      "legacy_tests/tests_old/manual/prismVoiceTests.html",
+      "legacy_tests/tests_old/prismStrategyExecutor.test.js",
+      "legacy_tests/tests_old/stress/prismCoreExtendedStressTest.js",
+      "legacy_tests/tests_old/stress/prismCoreStressTest.js",
+      "legacy_tests/tests_old/stress/runExtendedStressTest.js",
+      "legacy_tests/tests_old/stress/runStressTest.js",
+      "memory/prismCodex.js",
+      "memory/prismCodexAnalyzer.js",
+      "monitoring/prismAuroraConsciousness.js",
+      "monitoring/prismBehaviorMap.js",
+      "monitoring/prismBehavioralLearner.js",
+      "monitoring/prismCore.js",
+      "monitoring/prismLogger.js",
+      "monitoring/prismPostStressAnalyzer.js",
+      "monitoring/prismReflection.js",
+      "monitoring/prismSentientPulse.js",
+      "monitoring/prismSovereignCycle.js",
+      "monitoring/prismSystemMonitor.js",
+      "perf/analysis.js",
+      "prismAdapt.js",
+      "prismCleanup.js",
+      "prismCodexAnalyzer.js",
+      "prismCore.js",
+      "prismForecast.js",
+      "prismGuardian.js",
+      "prismInit.js",
+      "prismMood.js",
+      "prismPriority.js",
+      "prismSovereignty.js",
+      "prismStrategicLayer.js",
+      "prismVitals-original-buggy.js",
+      "regulation/prismAdaptiveCycler.js",
+      "regulation/prismElysiumMode.js",
+      "regulation/prismStrategicLayer.js",
+      "run-consensus-benchmark.js",
+      "scripts/patent-performance-benchmark.js",
+      "scripts/test_audit_log_manual.mjs",
+      "scripts/test_trustcontext_manual.mjs",
+      "security/prismEventGuard.js",
+      "simple-consensus-test.js",
+      "src/core/AdaptiveWeightingEngine.js",
+      "src/core/FailoverPrismCore.js",
+      "test-consensus-scenarios.js",
+      "test-memory-fixed.js",
+      "test-memory-system-real.js",
+      "tests/manual/prismVoiceTests.html",
+      "ui/AdaptiveCyclerWidget.js",
+      "ui/InsightCenter.js",
+      "ui/prismUITests.js"
+    ],
+    "TIER2": [
+      "test/moralLayer.test.js",
+      "tests/consensus/providerAdapter.spec.js",
+      "tests/load/stressDriver.js",
+      "ui/InsightCenter.test.js",
+      "ui/prismUITests.test.js"
+    ]
+  },
+  "javascript:S3776": {
+    "TIER1": [
+      "backend/orchestrator.js",
+      "backend/services/enterprisePDFService.js",
+      "evolution/selfImprovementEngine.js",
+      "server.js",
+      "src/core/ConsensusManager.js",
+      "src/core/ServerMemoryStore.js",
+      "src/core/TaskTypeProcessor.js",
+      "src/core/TrustContext.js",
+      "src/core/providers/AdapterGuard.js",
+      "src/excel/DataTypeDetector.js",
+      "src/excel/ExcelAnalyzer.js",
+      "src/excel/ExcelParserService.js",
+      "src/excel/StatisticalEngine.js",
+      "src/infographic/InfographicGenerator.js",
+      "src/orchestrator/CriticalityClassifier.js",
+      "src/orchestrator/HybridOrchestrator.js"
+    ],
+    "TIER3": [
+      "analyze-code-coverage.js",
+      "asi/asiMemorySystemFixed.js",
+      "dashboard/consensus-demo.html",
+      "legacy_tests/mutationRunner.js",
+      "memory/prismCodexAnalyzer.js",
+      "monitoring/prismMemento.js",
+      "orchestration/agentRouter.js",
+      "prismSanitize.js",
+      "quick-test-robust.js",
+      "quick-test.js",
+      "scripts/audit_test_quality.js",
+      "scripts/audit_trust_capabilities.js",
+      "scripts/runBatchSimulation.js",
+      "scripts/validate-microstep-0.1.cjs",
+      "scripts/validate-microstep-0.2.cjs",
+      "src/audit/TamperEvidentAuditLog.js",
+      "test-logo-integration.js",
+      "test-memory-comparison-demanding.js",
+      "test-memory-real-api.js",
+      "ui/prismVoiceChatV2-Corporate.html",
+      "utils/lz-string.js",
+      "validate-corporate-dashboard.js"
+    ],
+    "TIER2": ["staging/generate-report.mjs", "tests/security/manual-security-test.js"]
+  },
+  "javascript:S7735": {
+    "TIER1": ["src/core/providers/AdapterGuard.js", "src/excel/StatisticalEngine.js"],
+    "TIER3": [
+      "asi/asiInterface.js",
+      "asi/asiMemorySystemFixed.js",
+      "final-voice-test.js",
+      "monitoring/prismLogger.js",
+      "prismAwareness.js",
+      "prismGuardian.js",
+      "prismHarmony.js",
+      "prismInit.js",
+      "prismNotify.js",
+      "src/voice/VoiceController.js",
+      "test-migration-verification.js",
+      "test-simple-key.js",
+      "ui/prismVoiceChatV2-Corporate.html"
+    ]
+  },
+  "javascript:S6645": {
+    "TIER1": ["src/core/providers/AdapterGuard.js"]
+  },
+  "javascript:S4165": {
+    "TIER1": ["src/core/providers/AdapterGuard.js"],
+    "TIER3": ["src/voice/AudioQueue.js"]
+  },
+  "javascript:S7772": {
+    "TIER2": [
+      "staging/e2e-workflow.test.js",
+      "staging/generate-report.mjs",
+      "staging/scripts/setup-keys.mjs",
+      "test/moralLayer.test.js",
+      "tests/adapters/AnthropicAdapter.spec.js",
+      "tests/adapters/OpenAIAdapter.spec.js",
+      "tests/adapters/PerplexityAdapter.spec.js",
+      "tests/adapters/adapters.invariants.spec.js",
+      "tests/load/stressDriver.js",
+      "tests/prismStateStore.integration.test.js",
+      "tests/security/customReporter.js",
+      "tests/security/manual-security-test.js"
+    ],
+    "TIER3": [
+      "__tests_legacy__/AdaptiveWeightingEngine.clamp.test.js",
+      "__tests_legacy__/backend/api/enterpriseExport.test.js",
+      "__tests_legacy__/backend/schemas/enterpriseExportSchema.test.js",
+      "__tests_legacy__/migration-gpt41.test.js",
+      "__tests_legacy__/persistence/prismStateStore.sqlite.test.js",
+      "__tests_legacy__/prism-corporate-theme.test.js",
+      "__tests_legacy__/prismCodexAnalyzer.metrics.test.js",
+      "__tests_legacy__/prismCoreAdvancedStressTest.js",
+      "__tests_legacy__/prismCoreExtendedStressTest.js",
+      "__tests_legacy__/prismCoreStressTest.js",
+      "__tests_legacy__/prismMetrics.test.js",
+      "__tests_legacy__/stress/autocannon.js",
+      "__tests_legacy__/stress/prismCoreAdvancedStressTest.js",
+      "__tests_legacy__/stress/prismCorePredictiveTest.js",
+      "__tests_legacy__/stress/prismCoreScalabilityTest.js",
+      "analyze-code-coverage.js",
+      "asi/asiCore.js",
+      "asi/asiEthicsModule.js",
+      "asi/asiInterface.js",
+      "asi/asiMemorySystemFixed.js",
+      "asi/asiMetricsCollector.js",
+      "asi/asiReasoningEngine.js",
+      "asi/asiSafetyMonitor.js",
+      "asi/autoSupervisionEngine.js",
+      "asi/dynamicAdaptationEngine.js",
+      "asi/hybridLearningEngine.js",
+      "asi/launchASI.js",
+      "asi/multitaskLearningEngine.js",
+      "backend/manualMemoryInjector.js",
+      "backend/setup_database.js",
+      "ci/createSnapshot.js",
+      "ci/fullAudit.js",
+      "ci/rollbackSnapshot.js",
+      "ci/selfHealHook.js",
+      "core/KernelBus.js",
+      "dashboard/dashboard.js",
+      "demo-consensus-live.js",
+      "evolution/launchSelfEvolutionCycle.js",
+      "evolution/logSummary.js",
+      "fix-voice-performance.js",
+      "generate-control-prompt.js",
+      "infrastructure/informationManagementLayer.js",
+      "infrastructure/safetyRunner.js",
+      "infrastructure/selfMonitor.js",
+      "launch-consensus-demo.js",
+      "launch-dashboard.js",
+      "launch-prism-full-stack.js",
+      "legacy_tests/functional/PRISMCoreFunctionalTests.test.js",
+      "legacy_tests/mutationRunner.js",
+      "legacy_tests/prism_real_run_test.js",
+      "legacy_tests/tests_old/stress/eventGenerator.js",
+      "legacy_tests/tests_old/stress/prismCoreExtendedStressTest.js",
+      "legacy_tests/tests_old/stress/prismCoreStressTest.js",
+      "legacy_tests/tests_old/stress/runExtendedStressTest.js",
+      "legacy_tests/tests_old/test_logSummary.js",
+      "memory/prismCodexAnalyzer.js",
+      "monitoring/batchObserver.js",
+      "monitoring/prismMetrics.js",
+      "monitoring/prismPerformanceMonitor.js",
+      "monitoring/selfMonitor.js",
+      "orchestration/agentRouter.js",
+      "perf/analysis.js",
+      "perf/benchmark.js",
+      "run-consensus-benchmark.js",
+      "scripts/analyze-deps.js",
+      "scripts/analyzeBatchResults.js",
+      "scripts/audit_test_quality.js",
+      "scripts/audit_trust_capabilities.js",
+      "scripts/bench-core.js",
+      "scripts/build-integrity.mjs",
+      "scripts/build-validation-summary.mjs",
+      "scripts/checkConfig.js",
+      "scripts/checkLogs.js",
+      "scripts/checkMetrics.js",
+      "scripts/consensus-invariant-guard.mjs",
+      "scripts/control_audit_log_military.mjs",
+      "scripts/control_proof_suite_military.mjs",
+      "scripts/control_providers_military.mjs",
+      "scripts/deploy.js",
+      "scripts/generate-architecture-docs.js",
+      "scripts/generate-compliance-tests.js",
+      "scripts/generate-mutation-tests.js",
+      "scripts/generate-observability-tests.js",
+      "scripts/generate-performance-tests.js",
+      "scripts/generate-resilience-tests.js",
+      "scripts/generate-security-tests.js",
+      "scripts/patent-performance-benchmark.js",
+      "scripts/runBatchSimulation.js",
+      "scripts/runBatchSimulationBatch3.js",
+      "scripts/runStressTest.js",
+      "scripts/simulate_trust_flow_military.js",
+      "scripts/test_audit_log_manual.mjs",
+      "scripts/update-freeze-manifest.mjs",
+      "scripts/update-imports.js",
+      "scripts/validate-microstep-0.1.cjs",
+      "scripts/validate-microstep-0.2.cjs",
+      "scripts/verifyDeploy.js",
+      "security-verification-final.js",
+      "simple-dashboard-backup.js",
+      "simple-dashboard.js",
+      "simple-server.js",
+      "src/audit/TamperEvidentAuditLog.js",
+      "src/core/AdaptiveWeightingEngine.js",
+      "src/core/FailoverPrismCore.js",
+      "src/core/IdempotentPrismCore.js",
+      "src/core/MetricsPrismCore.js",
+      "src/core/PrismCoreOrchestrator.js",
+      "src/core/SecureJournalManager.js",
+      "telemetry/metricsServer.js",
+      "test-consensus-demo.js",
+      "test-direct-env.js",
+      "test-logo-integration.js",
+      "test-memory-comparison-demanding.js",
+      "test-memory-fixed.js",
+      "test-memory-persistence.js",
+      "test-memory-system-real.js",
+      "test-stress-system.js",
+      "test-voice-fix.js",
+      "validate-voice-deployment.js",
+      "vite-plugin-fix-paths.mjs",
+      "vitest.config.core-only.js",
+      "vitest.config.core.js",
+      "vitest.config.integration.js",
+      "vitest.config.js",
+      "vitest.config.pdf.js",
+      "webpack.config.js"
+    ],
+    "TIER1": [
+      "asi/asiMemorySystem.js",
+      "backend/database.js",
+      "backend/middleware/security.js",
+      "backend/routes/enterpriseExport.js",
+      "config/security.js",
+      "evolution/dynamicProfileManager.js",
+      "evolution/selfImprovementEngine.js",
+      "infrastructure/moralLayer.js",
+      "prismVitals.js",
+      "server.js",
+      "src/chat/ChatFileProcessor.js",
+      "src/chat/FileContextManager.js",
+      "src/core/ConsensusManager.js",
+      "src/core/KeyRegistry.js",
+      "src/core/ServerMemoryStore.js",
+      "src/core/TaskTypeProcessor.js",
+      "src/core/TrustContext.js",
+      "src/core/providers/ProviderAdapter.js",
+      "src/export/PdfExportService.js",
+      "src/infographic/ImageGenerator.js",
+      "src/infographic/InfographicGenerator.js"
+    ]
+  },
+  "javascript:S1481": {
+    "TIER2": [
+      "staging/e2e-workflow.test.js",
+      "tests/adapters/adapters.invariants.spec.js",
+      "tests/integration/consensusProviders.integration.test.js",
+      "tests/security/customReporter.js",
+      "tests/security/manual-security-test.js",
+      "tests/security/trustContext.simple.spec.js",
+      "tests/security/trustContext.spec.js",
+      "tests/synchronisation/consensusManager.spec.js"
+    ],
+    "TIER3": [
+      "__tests_legacy__/backend/api/enterpriseExport.test.js",
+      "__tests_legacy__/prismAdaptiveCycler.edge.test.js",
+      "__tests_legacy__/prismAdaptiveCycler.test.js",
+      "__tests_legacy__/prismCodexAnalyzer.test.js",
+      "__tests_legacy__/prismCoreExtendedStressTest.js",
+      "__tests_legacy__/prismPerf.bench.test.js",
+      "__tests_legacy__/stress/prismCoreAdvancedStressTest.js",
+      "asi/asiEthicsModule.js",
+      "asi/asiInterface.js",
+      "asi/asiMemorySystemFixed.js",
+      "asi/asiMetricsCollector.js",
+      "asi/asiReasoningEngine.js",
+      "asi/asiSafetyMonitor.js",
+      "asi/knowledgeTransferEngine.js",
+      "asi/launchASI.js",
+      "asi/multitaskLearningEngine.js",
+      "audit-prism-vitals.js",
+      "backend/analysis/prismDataAnalysis.cjs",
+      "ci/fullAudit.js",
+      "core/KernelBus.js",
+      "generate-control-prompt.js",
+      "memory/prismCodexAnalyzer.js",
+      "monitoring/prismCircuitBreaker.js",
+      "monitoring/prismPredictiveOptimization.js",
+      "monitoring/prismSovereignCycle.js",
+      "perf/analysis.js",
+      "prismMood.js",
+      "prismPriority.js",
+      "prismStrategicLayer.js",
+      "scripts/control_audit_log_military.mjs",
+      "scripts/patent-performance-benchmark.js",
+      "scripts/runBatchSimulationBatch3.js",
+      "scripts/runStressTest.js",
+      "scripts/simulate_trust_flow_military.js",
+      "scripts/test_trustcontext_manual.mjs",
+      "security-verification-final.js",
+      "src/audit/TamperEvidentAuditLog.js",
+      "src/core/FailoverPrismCore.js",
+      "src/core/MetricsPrismCore.js",
+      "src/modules/voice/VoiceIntegration.js",
+      "src/ui/AdaptiveTimeoutManager.js",
+      "src/voice/ElevenLabsClient.js",
+      "test-consensus-demo.js",
+      "test-memory-comparison-demanding.js",
+      "test-memory-system-real.js",
+      "test-prism-vitals-fixed.js",
+      "tests/manual/prismVoiceTests-fixed.html",
+      "ui/prismVoiceChatV2-Corporate.html",
+      "ui/prismVoiceChatV2.html",
+      "utils/prismPurgeScheduler.js",
+      "validate-corporate-dashboard.js",
+      "validate-voice-deployment.js"
+    ],
+    "TIER1": [
+      "evolution/selfImprovementEngine.js",
+      "src/core/ConsciousnessLayer.js",
+      "src/core/ConsensusManager.js",
+      "src/core/JarvisPersonality.js",
+      "src/core/ProjectComplexityManager.js",
+      "src/core/ServerMemoryStore.js",
+      "src/excel/ExcelAnalyzer.js",
+      "src/export/PdfExportService.js",
+      "src/infographic/InfographicGenerator.js",
+      "src/orchestrator/HybridOrchestrator.js"
+    ]
+  },
+  "javascript:S1854": {
+    "TIER2": [
+      "staging/e2e-workflow.test.js",
+      "tests/adapters/adapters.invariants.spec.js",
+      "tests/integration/consensusProviders.integration.test.js",
+      "tests/security/customReporter.js",
+      "tests/security/manual-security-test.js",
+      "tests/security/trustContext.simple.spec.js",
+      "tests/synchronisation/consensusManager.spec.js",
+      "ui/prismUITests.test.js"
+    ],
+    "TIER3": [
+      "__tests_legacy__/migration-gpt41.test.js",
+      "__tests_legacy__/prismAdaptiveCycler.edge.test.js",
+      "__tests_legacy__/prismAdaptiveCycler.test.js",
+      "__tests_legacy__/prismCodexAnalyzer.test.js",
+      "__tests_legacy__/prismCoreExtendedStressTest.js",
+      "__tests_legacy__/prismEmergencyProtocol.test.js",
+      "__tests_legacy__/prismPerf.bench.test.js",
+      "asi/asiInterface.js",
+      "asi/asiMemorySystemFixed.js",
+      "asi/asiSafetyMonitor.js",
+      "asi/knowledgeTransferEngine.js",
+      "asi/launchASI.js",
+      "asi/multitaskLearningEngine.js",
+      "audit-prism-vitals.js",
+      "backend/analysis/prismDataAnalysis.cjs",
+      "backend/memoryAnalyzer.js",
+      "ci/fullAudit.js",
+      "core/KernelBus.js",
+      "generate-control-prompt.js",
+      "legacy_tests/AdaptiveCyclerWidget.test.js",
+      "legacy_tests/functional/PRISMCoreFunctionalTests.js",
+      "legacy_tests/functional/PRISMCoreFunctionalTests.test.js",
+      "legacy_tests/functional/PRISMCoreRealWorldTests.test.js",
+      "legacy_tests/tests_old/regulation/prismStrategicLayer.test.js",
+      "memory/prismCodexAnalyzer.js",
+      "monitoring/prismCircuitBreaker.js",
+      "monitoring/prismPredictiveOptimization.js",
+      "monitoring/prismSovereignCycle.js",
+      "perf/analysis.js",
+      "prismContinuum.js",
+      "prismMood.js",
+      "prismPriority.js",
+      "prismStrategicLayer.js",
+      "scripts/control_audit_log_military.mjs",
+      "scripts/patent-performance-benchmark.js",
+      "scripts/runBatchSimulationBatch3.js",
+      "scripts/runStressTest.js",
+      "scripts/simulate_trust_flow_military.js",
+      "scripts/test_trustcontext_manual.mjs",
+      "security-verification-final.js",
+      "src/core/FailoverPrismCore.js",
+      "src/core/MetricsPrismCore.js",
+      "src/modules/voice/VoiceIntegration.js",
+      "src/ui/AdaptiveTimeoutManager.js",
+      "src/voice/ElevenLabsClient.js",
+      "test-consensus-demo.js",
+      "test-memory-comparison-demanding.js",
+      "test-memory-system-real.js",
+      "test-prism-vitals-fixed.js",
+      "tests/manual/prismVoiceTests-fixed.html",
+      "ui/prismVoiceChatV2-Corporate.html",
+      "ui/prismVoiceChatV2.html",
+      "utils/lz-string.js",
+      "utils/prismPurgeScheduler.js",
+      "validate-corporate-dashboard.js",
+      "validate-voice-deployment.js"
+    ],
+    "TIER1": [
+      "evolution/selfImprovementEngine.js",
+      "src/core/ConsciousnessLayer.js",
+      "src/core/ConsensusManager.js",
+      "src/core/JarvisPersonality.js",
+      "src/core/KeyRegistry.js",
+      "src/core/ProjectComplexityManager.js",
+      "src/core/ServerMemoryStore.js",
+      "src/excel/DataTypeDetector.js",
+      "src/excel/ExcelAnalyzer.js",
+      "src/export/PdfExportService.js",
+      "src/infographic/InfographicGenerator.js"
+    ]
+  },
+  "typescript:S1128": {
+    "TIER2": [
+      "__tests__/adversarial/providers.adversarial.test.ts",
+      "__tests__/core/prismcore/branches-95.spec.ts",
+      "__tests__/core/prismcore/coverage-95.spec.ts",
+      "__tests__/core/prismcore/idempotence.spec.ts",
+      "__tests__/excel/ExcelParserService.test.ts",
+      "__tests__/fuzz/contracts.fuzz.test.ts",
+      "__tests__/integration/trustContext-excelAnalyzer.spec.ts",
+      "__tests__/integration/trustContext-hybridOrchestrator.spec.ts",
+      "__tests__/integration/trustContext-server.spec.ts",
+      "__tests__/properties/providers.properties.test.ts",
+      "simulation/consensus.ts",
+      "simulation/fouling_model.ts",
+      "simulation/scenario.ts",
+      "simulation/sensors.ts",
+      "simulation/tests/fouling_model.test.ts",
+      "src/services/__tests__/admin-project-viewer.service.test.ts",
+      "tests/core/consciousness-layer.spec.ts",
+      "tests/core/jarvis-personality.spec.ts",
+      "tests/core/korev-ai-identity.spec.ts",
+      "tests/core/persona-activator.spec.ts",
+      "tests/core/task-type-processor.spec.ts",
+      "tests/fouling_model.test.ts",
+      "tests/infographic/image-generator.spec.ts",
+      "tests/orchestrator/hybrid-orchestrator.spec.ts",
+      "tests/pdf/pdf-export.spec.ts",
+      "tests/pdf/pdf-messages.spec.ts",
+      "tests/ui/adaptive-timeout.spec.ts",
+      "tests/voice/voice-controller.spec.ts",
+      "tests/voice/voice.spec.ts"
+    ],
+    "TIER3": ["dashboard/pages/index.tsx"]
+  },
+  "javascript:S125": {
+    "TIER3": [
+      "__tests_legacy__/prismSelfEvolutionCycle.test.js",
+      "audio.js",
+      "backend/launchSelfEvolutionCycle.js",
+      "backend/memoryAnalyzer.js",
+      "backend/selfApplicationEngine.js",
+      "legacy_tests/prism_real_run_test.js",
+      "test-voice-interruption-fix.cjs",
+      "ui/AdaptiveCyclerWidget.js",
+      "ui/prismVoiceChatV2-Corporate.html"
+    ],
+    "TIER1": ["backend/contextMemory.js"]
+  },
+  "javascript:S7757": {
+    "TIER3": [
+      "__mocks__/prismEmergencyProtocol.js",
+      "__mocks__/prismStrategicLayer.js",
+      "asi/launchASI.js",
+      "audio.js",
+      "dashboard/consensus-demo.html",
+      "dashboard/security-dashboard.html",
+      "evolution/metricsTimer.js",
+      "generate-control-prompt.js",
+      "infrastructure/resilience.js",
+      "infrastructure/selfMonitor.js",
+      "legacy_tests/tests_old/manual/AudioManagerMock.js",
+      "monitoring/prismAdaptation.js",
+      "monitoring/prismAuroraConsciousness.js",
+      "monitoring/prismRegulation.js",
+      "monitoring/prismSentientPulse.js",
+      "monitoring/prismSovereignCycle.js",
+      "monitoring/prismStrategy.js",
+      "prism-health-monitor.js",
+      "prismAudit.js",
+      "prismAwareness.js",
+      "prismBond.js",
+      "prismContinuum.js",
+      "prismEmergencyProtocol.js",
+      "prismHeartbeat.js",
+      "prismInstinct.js",
+      "prismIntent.js",
+      "prismLoading.js",
+      "prismMeta.js",
+      "prismNotify.js",
+      "prismObserver.js",
+      "prismReflex.js",
+      "prismSession.js",
+      "prismSleep.js",
+      "prismUpdate.js",
+      "prismVision.js",
+      "prismVitals-fixed.js",
+      "prismVitals-original-buggy.js",
+      "regulation/prismStrategicLayer.js",
+      "security/prismHMAC.js",
+      "simple-consensus-test.js",
+      "test-consensus-scenarios.js",
+      "test-memory-comparison-demanding.js",
+      "test-memory-fixed.js",
+      "test-memory-real-api.js",
+      "test-memory-system-real.js",
+      "test-voice-interruption-fix.cjs",
+      "ui/AdaptiveCyclerWidget.js",
+      "ui/InsightCenter.js",
+      "ui/prismVoiceChat_backup.html",
+      "utils/prismCompression.js"
+    ],
+    "TIER1": [
+      "backend/services/enterprisePDFService.js",
+      "config-voice-enhanced.js",
+      "prismVitals.js",
+      "src/core/JarvisPersonality.js",
+      "src/core/MemoryRetrievalEngine.js",
+      "src/core/PersonaActivator.js"
+    ],
+    "TIER2": ["tests/load/stressDriver.js"]
+  },
+  "javascript:S7764": {
+    "TIER3": [
+      "__mocks__/prismCodexAnalyzer.js",
+      "__mocks__/prismStrategicLayer.js",
+      "__tests_legacy__/AdaptiveCyclerWidget.test.js",
+      "__tests_legacy__/prismAdaptiveCycler.edge.test.js",
+      "__tests_legacy__/prismAdaptiveCycler.test.js",
+      "__tests_legacy__/prismAlert.test.js",
+      "__tests_legacy__/prismCodexAnalyzer.persist.test.js",
+      "__tests_legacy__/prismCodexAnalyzer.test.js",
+      "__tests_legacy__/prismEmergencyProtocol.test.js",
+      "__tests_legacy__/prismEventGuard.test.js",
+      "__tests_legacy__/prismHMAC.test.js",
+      "__tests_legacy__/prismModelRouter.test.js",
+      "__tests_legacy__/stress/prismCoreAdvancedStressTest.js",
+      "audio.js",
+      "core/KernelBus.js",
+      "core/Resilience.js",
+      "dashboard/consensus-demo.html",
+      "dashboard/security-dashboard.html",
+      "diagnostic-tests.html",
+      "index-corporate.html",
+      "index.html",
+      "jest.setup.jsdom.js",
+      "jest.setup.node.js",
+      "legacy_tests/AdaptiveCyclerWidget.test.js",
+      "legacy_tests/functional/PRISMCoreFunctionalTests.test.js",
+      "legacy_tests/functional/PRISMCoreRealWorldTests.test.js",
+      "legacy_tests/tests_old/manual/prismVoiceTests.html",
+      "legacy_tests/tests_old/setup.js",
+      "monitoring/prismLogger.js",
+      "prismAudit.js",
+      "prismAwakening.js",
+      "prismAwakeningRitual.js",
+      "prismFusion.js",
+      "prismHeartbeat.js",
+      "prismHyperConsciousness.js",
+      "prismInit.js",
+      "prismLegacyCore.js",
+      "prismNotify.js",
+      "prismObserver.js",
+      "prismPerf.js",
+      "prismPersistence.js",
+      "prismPulse.js",
+      "prismReflex.js",
+      "prismSelfHeal.js",
+      "prismSession.js",
+      "prismSovereignty.js",
+      "prismTone.js",
+      "prismUI.js",
+      "prismUpdate.js",
+      "prismValidator.js",
+      "prismWitness.js",
+      "regulation/prismElysiumMode.js",
+      "test-voice-interruption-fix.cjs",
+      "tests/manual/prismVoiceTests-fixed.html",
+      "tests/manual/prismVoiceTests-simple.html",
+      "tests/manual/prismVoiceTests.html",
+      "ui/AdaptiveCyclerWidget.js",
+      "ui/InsightCenter.js",
+      "ui/prismManualTests.html",
+      "ui/prismManualTests.js",
+      "ui/prismVoiceChat.html",
+      "ui/prismVoiceChatV2-Corporate.html",
+      "ui/prismVoiceChatV2.html",
+      "ui/prismVoiceChat_backup.html"
+    ],
+    "TIER2": [
+      "tests/security/kernelBusCriticalFlow.spec.js",
+      "tests/security/trustContext.simple.spec.js",
+      "tests/security/trustContext.spec.js",
+      "tests/synchronisation/kernelBusPriority.spec.js",
+      "tests/voice/setup.js",
+      "ui/InsightCenter.test.js"
+    ],
+    "TIER1": ["src/core/MemoryRetrievalEngine.js"]
+  },
+  "javascript:S7773": {
+    "TIER3": [
+      "asi/asiCore.js",
+      "asi/asiMetricsCollector.js",
+      "asi/launchASI.js",
+      "ci/fullAudit.js",
+      "ci/rollbackSnapshot.js",
+      "memory/prismCodexAnalyzer.js",
+      "perf/benchmark.js",
+      "prism-health-monitor.js",
+      "prismHarmony.js",
+      "prismNotify.js",
+      "prismPersistence.js",
+      "prismUI.js",
+      "run-consensus-benchmark.js",
+      "scripts/control_providers_military.mjs",
+      "scripts/patent-performance-benchmark.js",
+      "scripts/runBatchSimulation.js",
+      "test-voice-performance.js",
+      "ui/AdaptiveCyclerWidget.js",
+      "ui/InsightCenter.js",
+      "ui/prismVoiceChat.html",
+      "ui/prismVoiceChatV2-Corporate.html",
+      "ui/prismVoiceChatV2.html",
+      "ui/prismVoiceChat_backup.html"
+    ],
+    "TIER1": [
+      "backend/middleware/validation.js",
+      "backend/routes/chatUpload.js",
+      "src/core/RealTimeResearchEngine.js",
+      "src/excel/DataTypeDetector.js",
+      "src/excel/ExcelAnalyzer.js",
+      "src/excel/StatisticalEngine.js",
+      "src/export/PdfExportService.js"
+    ],
+    "TIER2": ["tests/voice/setup.js"]
+  },
+  "javascript:S6582": {
+    "TIER3": [
+      "asi/asiMemorySystemFixed.js",
+      "asi/autoSupervisionEngine.js",
+      "audio.js",
+      "core/KernelBus.js",
+      "core/Resilience.js",
+      "evolution/qualityCheckPerplexityResponse.js",
+      "launch-prism-full-stack.js",
+      "perf/timer.js",
+      "prismLoading.js",
+      "prismPersistence.js",
+      "prismReflex.js",
+      "prismSelfHeal.js",
+      "prismStrategicLayer.js",
+      "prismValidator.js",
+      "prismVision.js",
+      "scripts/build-validation-summary.mjs",
+      "scripts/validate-microstep-0.2.cjs",
+      "src/audit/TamperEvidentAuditLog.js",
+      "src/core/AdaptiveWeightingEngine.js",
+      "src/core/FailoverPrismCore.js",
+      "src/core/MetricsPrismCore.js",
+      "src/core/PrismCoreOrchestrator.js",
+      "src/core/SecureJournalManager.js",
+      "src/voice/AudioQueue.js",
+      "test-memory-comparison-demanding.js",
+      "test-stress-system.js",
+      "test-voice-api-integration.js",
+      "test-voice-fix.js",
+      "test-voice-interruption-fix.cjs",
+      "ui/AdaptiveCyclerWidget.js",
+      "ui/InsightCenter.js",
+      "utils/prismCompression.js",
+      "validate-corporate-dashboard.js"
+    ],
+    "TIER1": [
+      "backend/contextMemory.js",
+      "backend/database.js",
+      "backend/routes/enterpriseExport.js",
+      "backend/services/enterprisePDFService.js",
+      "evolution/selfImprovementEngine.js",
+      "server.js",
+      "src/core/ConsensusManager.js",
+      "src/core/MemoryRetrievalEngine.js",
+      "src/core/PersonaActivator.js",
+      "src/core/ServerMemoryStore.js",
+      "src/core/TaskTypeProcessor.js",
+      "src/core/TrustContext.js",
+      "src/excel/ExcelAnalyzer.js",
+      "src/excel/ExcelParserService.js",
+      "src/export/PdfExportService.js",
+      "src/infographic/ImageGenerator.js",
+      "src/orchestrator/CriticalityClassifier.js",
+      "src/orchestrator/HybridOrchestrator.js"
+    ]
+  },
+  "javascript:S7762": {
+    "TIER3": [
+      "prismLoading.js",
+      "prismNotify.js",
+      "tests/manual/prismVoiceTests-simple.html",
+      "ui/AdaptiveCyclerWidget.js",
+      "ui/InsightCenter.js"
+    ]
+  },
+  "javascript:S7748": {
+    "TIER3": [
+      "__tests_legacy__/prismCodexAnalyzer.metrics.test.js",
+      "__tests_legacy__/prismElysiumMode.test.js",
+      "__tests_legacy__/prismPredictiveOptimization.test.js",
+      "asi/asiEthicsModule.js",
+      "asi/asiInterface.js",
+      "asi/asiMemorySystemFixed.js",
+      "asi/asiReasoningEngine.js",
+      "asi/asiSafetyMonitor.js",
+      "asi/autoSupervisionEngine.js",
+      "asi/hybridLearningEngine.js",
+      "asi/knowledgeTransferEngine.js",
+      "asi/multitaskLearningEngine.js",
+      "backend/fast-orchestrator.js",
+      "ci/fullAudit.js",
+      "dashboard/consensus-demo.html",
+      "generate-control-prompt.js",
+      "legacy_tests/mocks/audioManagerMock.js",
+      "legacy_tests/mocks/configMock.js",
+      "memory/prismCodexAnalyzer.js",
+      "monitoring/prismAdaptation.js",
+      "monitoring/prismBehavioralLearner.js",
+      "monitoring/prismReflection.js",
+      "particles.js",
+      "prismContinuum.js",
+      "prismEthos.js",
+      "prismMood.js",
+      "prismNoesis.js",
+      "prismPersistence.js",
+      "prismVitals-fixed.js",
+      "prismVitals-original-buggy.js",
+      "regulation/prismElysiumMode.js",
+      "scripts/patent-performance-benchmark.js",
+      "src/core/AdaptiveWeightingEngine.js",
+      "src/core/FailoverPrismCore.js",
+      "src/core/MetricsPrismCore.js",
+      "src/core/PrismCoreOrchestrator.js",
+      "test-voice-personality.js",
+      "tests/manual/prismVoiceTests-simple.html",
+      "utils/prismCompression.js"
+    ],
+    "TIER1": [
+      "asi/asiMemorySystem.js",
+      "config-voice-enhanced.js",
+      "config.js",
+      "evolution/selfImprovementEngine.js",
+      "prismVitals.js",
+      "server.js",
+      "src/core/ConsciousnessLayer.js",
+      "src/core/MemoryRetrievalEngine.js",
+      "src/core/ProjectComplexityManager.js",
+      "src/export/PdfExportService.js",
+      "src/voice/ElevenLabsService.js",
+      "src/voice/ResponseModeManager.js"
+    ],
+    "TIER2": ["tests/load/stressDriver.js", "tests/security/kernelBusCriticalFlow.spec.js"]
+  },
+  "javascript:S7784": {
+    "TIER3": ["prismSoul.js", "src/core/AdaptiveWeightingEngine.js"],
+    "TIER1": ["src/core/KeyRegistry.js"]
+  },
+  "python:S1135": {
+    "TIER3": ["orchestration/agent_router.py", "src/prism_salesops/qa/composer.py"]
+  },
+  "python:S1172": {
+    "TIER3": [
+      "orchestration/agent_router.py",
+      "scripts/control_salesops.py",
+      "src/prism_salesops/qa/composer.py",
+      "src/prism_salesops/qa/db.py",
+      "src/prism_salesops/qa/engine.py",
+      "src/prism_salesops/qa/router.py",
+      "src/prism_salesops/qa/text2sql.py"
+    ]
+  },
+  "javascript:S2094": {
+    "TIER3": ["backend/test-firewall.js", "orchestration/agentRouter.js"]
+  },
+  "typescript:S4123": {
+    "TIER2": [
+      "__tests__/core/prismcore/all-green.spec.ts",
+      "__tests__/core/prismcore/orchestration.spec.ts",
+      "__tests__/properties/trustContext.properties.test.ts",
+      "__tests__/trustContext.regression.test.ts",
+      "tests/consensus.test.ts"
+    ]
+  },
+  "javascript:S7780": {
+    "TIER3": [
+      "analyze-code-coverage.js",
+      "fix-voice-performance.js",
+      "legacy_tests/mutationRunner.js",
+      "ui/prismVoiceChatV2-Corporate.html"
+    ],
+    "TIER1": [
+      "backend/services/enterpriseDetectionService.js",
+      "backend/services/enterpriseSanitizer.js"
+    ]
+  },
+  "javascript:S3358": {
+    "TIER3": [
+      "__tests_legacy__/prismCodexAnalyzer.test.js",
+      "__tests_legacy__/prismPerf.bench.test.js",
+      "analyze-code-coverage.js",
+      "asi/asiEthicsModule.js",
+      "asi/asiMemorySystemFixed.js",
+      "asi/asiSafetyMonitor.js",
+      "asi/autoSupervisionEngine.js",
+      "core/Resilience.js",
+      "demo-consensus-live.js",
+      "diagnostic-tests.html",
+      "legacy_tests/functional/PRISMCoreFunctionalTests.test.js",
+      "legacy_tests/functional/PRISMCoreRealWorldTests.test.js",
+      "legacy_tests/functional/runFunctionalTests.js",
+      "legacy_tests/mutationRunner.js",
+      "legacy_tests/tests_old/stress/stressTest.js",
+      "prismMeta.js",
+      "prismStrategicLayer.js",
+      "quick-test-robust.js",
+      "security-verification-final.js",
+      "src/core/MetricsPrismCore.js",
+      "test-memory-fixed.js",
+      "test-memory-real-api.js",
+      "test-turbo-performance.js",
+      "ui/prismVoiceChatV2.html"
+    ],
+    "TIER1": [
+      "backend/orchestrator.js",
+      "src/core/ConsensusManager.js",
+      "src/core/InterDomainOrchestrator.js",
+      "src/excel/DataTypeDetector.js",
+      "src/excel/ExcelAnalyzer.js",
+      "src/export/PdfExportService.js",
+      "src/orchestrator/HybridOrchestrator.js"
+    ],
+    "TIER2": ["tests/security/manual-security-test.js"]
+  },
+  "javascript:S4043": {
+    "TIER3": [
+      "asi/knowledgeTransferEngine.js",
+      "prismAwakening.js",
+      "scripts/analyzeBatchResults.js"
+    ]
+  },
+  "javascript:S7059": {
+    "TIER3": [
+      "asi/asiCore.js",
+      "core/KernelBus.js",
+      "monitoring/prismAuroraConsciousness.js",
+      "monitoring/prismReflection.js",
+      "prismVitals-original-buggy.js",
+      "src/core/SecureJournalManager.js"
+    ],
+    "TIER1": [
+      "evolution/selfImprovementEngine.js",
+      "src/core/ConsensusManager.js",
+      "src/core/TaskTypeProcessor.js",
+      "src/excel/ExcelAnalyzer.js"
+    ]
+  },
+  "javascript:S1874": {
+    "TIER3": [
+      "asi/asiCore.js",
+      "asi/asiEthicsModule.js",
+      "asi/asiMetricsCollector.js",
+      "asi/asiReasoningEngine.js",
+      "asi/asiSafetyMonitor.js",
+      "asi/dynamicAdaptationEngine.js",
+      "asi/hybridLearningEngine.js",
+      "asi/knowledgeTransferEngine.js",
+      "asi/multitaskLearningEngine.js"
+    ],
+    "TIER1": [
+      "asi/asiMemorySystem.js",
+      "src/core/InterDomainOrchestrator.js",
+      "src/core/MemoryRetrievalEngine.js",
+      "src/core/PriorityQueue.js",
+      "src/core/ProjectComplexityManager.js",
+      "src/core/ServerMemoryStore.js"
+    ],
+    "TIER2": ["tests/security/manual-security-test.js"]
+  },
+  "javascript:S7781": {
+    "TIER3": [
+      "asi/asiInterface.js",
+      "asi/asiMemorySystemFixed.js",
+      "backend/analysis/prismDataAnalysis.cjs",
+      "fix-voice-performance.js",
+      "legacy_tests/mutationRunner.js",
+      "monitoring/selfMonitor.js",
+      "perf/benchmark.js",
+      "prismPersistence.js",
+      "prismSanitize.js",
+      "prismSession.js",
+      "scripts/runBatchSimulation.js",
+      "scripts/runBatchSimulationBatch3.js",
+      "scripts/update-imports.js",
+      "security-verification-final.js",
+      "src/audit/TamperEvidentAuditLog.js",
+      "src/core/SecureJournalManager.js",
+      "src/modules/voice/VoiceSentimentDetector.js",
+      "src/voice/ElevenLabsClient.js",
+      "ui/prismVoiceChat.html",
+      "ui/prismVoiceChatV2-Corporate.html",
+      "ui/prismVoiceChatV2.html"
+    ],
+    "TIER1": [
+      "backend/middleware/validation.js",
+      "backend/services/enterprisePDFService.js",
+      "backend/services/enterpriseSanitizer.js",
+      "backend/voicePersonalityEnhancer.js",
+      "config-voice-enhanced.js",
+      "server.js",
+      "src/chat/ChatFileProcessor.js",
+      "src/excel/DataTypeDetector.js",
+      "src/export/PdfExportService.js",
+      "src/infographic/InfographicGenerator.js",
+      "src/voice/ResponseModeManager.js"
+    ]
+  },
+  "javascript:S1186": {
+    "TIER1": ["asi/asiMemorySystem.js"],
+    "TIER3": [
+      "asi/asiReasoningEngine.js",
+      "asi/asiSafetyMonitor.js",
+      "asi/autoSupervisionEngine.js",
+      "asi/dynamicAdaptationEngine.js",
+      "asi/hybridLearningEngine.js",
+      "asi/knowledgeTransferEngine.js",
+      "jest.setup.jsdom.js"
+    ]
+  },
+  "javascript:S4624": {
+    "TIER3": [
+      "asi/asiMemorySystemFixed.js",
+      "src/core/MetricsPrismCore.js",
+      "ui/prismVoiceChatV2-Corporate.html"
+    ],
+    "TIER1": ["src/infographic/InfographicGenerator.js"]
+  },
+  "javascript:S7755": {
+    "TIER3": [
+      "__tests_legacy__/prismCoreAdvancedStressTest.js",
+      "__tests_legacy__/stress/prismCoreScalabilityTest.js",
+      "asi/asiMetricsCollector.js",
+      "evolution/logSummary.js",
+      "legacy_tests/tests_old/loadTests.js",
+      "legacy_tests/tests_old/manual/prismVoiceTests.js",
+      "monitoring/prismLogger.js",
+      "monitoring/prismPerformanceMonitor.js",
+      "monitoring/prismPostStressAnalyzer.js",
+      "prismForecast.js",
+      "src/modules/voice/VoiceAnalyzer.js",
+      "ui/InsightCenter.js"
+    ],
+    "TIER1": ["evolution/selfImprovementEngine.js", "src/excel/DataTypeDetector.js"],
+    "TIER2": ["tests/manual/prismVoiceTests.js"]
+  },
+  "javascript:S2486": {
+    "TIER3": [
+      "__mocks__/prismStorage.js",
+      "__tests_legacy__/prismSelfHeal.test.js",
+      "__tests_legacy__/stress/prismCoreAdvancedStressTest.js",
+      "asi/launchASI.js",
+      "audio.js",
+      "ci/fullAudit.js",
+      "ci/rollbackSnapshot.js",
+      "core/KernelBus.js",
+      "dashboard/security-dashboard.html",
+      "infrastructure/safetyRunner.js",
+      "launch-consensus-demo.js",
+      "launch-prism-full-stack.js",
+      "legacy_tests/mutationRunner.js",
+      "legacy_tests/tests_old/loadTests.js",
+      "legacy_tests/tests_old/stress/stressTest.js",
+      "perf/benchmark.js",
+      "perf/timer.js",
+      "prismAudit.js",
+      "prismAwareness.js",
+      "prismVitals-original-buggy.js",
+      "scripts/audit_trust_capabilities.js",
+      "scripts/control_audit_log_military.mjs",
+      "scripts/simulate_trust_flow_military.js",
+      "scripts/test_audit_log_manual.mjs",
+      "scripts/validate-microstep-0.2.cjs",
+      "src/audit/TamperEvidentAuditLog.js",
+      "src/core/IdempotentPrismCore.js",
+      "src/core/SecureJournalManager.js",
+      "test-consensus-demo.js",
+      "test-consensus-scenarios.js",
+      "test-memory-comparison-demanding.js",
+      "test-memory-fixed.js",
+      "test-memory-persistence.js",
+      "test-real-knowledge-transfer.js",
+      "test-voice-api-integration.js",
+      "tests/manual/prismVoiceTests-fixed.html"
+    ],
+    "TIER1": [
+      "backend/routes/chatUpload.js",
+      "config/security.js",
+      "server.js",
+      "src/core/MemoryRetrievalEngine.js",
+      "src/orchestrator/HybridOrchestrator.js"
+    ],
+    "TIER2": [
+      "staging/e2e-workflow.test.js",
+      "staging/generate-report.mjs",
+      "tests/security/trustContext.simple.spec.js",
+      "tests/voice/setup.js"
+    ]
+  },
+  "javascript:S7746": {
+    "TIER3": ["core/KernelBus.js", "legacy_tests/mocks/audioManagerMock.js"]
+  },
+  "javascript:S3516": {
+    "TIER3": ["__mocks__/prismStorage.js", "src/voice/AudioMutex.js"]
+  },
+  "javascript:S6836": {
+    "TIER3": ["asi/knowledgeTransferEngine.js", "prismReflex.js", "src/voice/AudioQueue.js"]
+  },
+  "python:S3776": {
+    "TIER3": [
+      "integration/perplexity.py",
+      "scripts/control_ask_prism.py",
+      "src/prism_salesops/cadence.py",
+      "src/prism_salesops/controls.py",
+      "src/prism_salesops/facts.py",
+      "src/prism_salesops/headers.py",
+      "src/prism_salesops/io.py",
+      "src/prism_salesops/qa/audit.py",
+      "src/prism_salesops/qa/composer.py"
+    ]
+  },
+  "javascript:S7785": {
+    "TIER3": [
+      "__tests_legacy__/stress/autocannon.js",
+      "asi/launchASI.js",
+      "backend/launchSelfEvolutionCycle.js",
+      "backend/manualMemoryInjector.js",
+      "backend/setup_database.js",
+      "ci/fullAudit.js",
+      "demo-consensus-live.js",
+      "demo-phase2.js",
+      "demo-scripted-consensus.js",
+      "fix-voice-performance.js",
+      "generate-control-prompt.js",
+      "launch-consensus-demo.js",
+      "launch-prism-full-stack.js",
+      "legacy_tests/functional/runFunctionalTests.js",
+      "legacy_tests/mutationRunner.js",
+      "legacy_tests/prism_real_run_test.js",
+      "legacy_tests/tests_old/stress/prismCoreExtendedStressTest.js",
+      "legacy_tests/tests_old/stress/prismCoreStressTest.js",
+      "legacy_tests/tests_old/stress/runExtendedStressTest.js",
+      "legacy_tests/tests_old/stress/runStressTest.js",
+      "memory/prismAdaptiveSeeds.js",
+      "prism-health-monitor.js",
+      "prismAudit.js",
+      "prismAwakening.js",
+      "prismFusion.js",
+      "prismLaunch.js",
+      "quick-test-robust.js",
+      "quick-test.js",
+      "run-consensus-tests.js",
+      "scripts/bench-core.js",
+      "scripts/build-integrity.mjs",
+      "scripts/build-validation-summary.mjs",
+      "scripts/consensus-invariant-guard.mjs",
+      "scripts/patent-performance-benchmark.js",
+      "scripts/runBatchSimulation.js",
+      "scripts/runBatchSimulationBatch3.js",
+      "scripts/runStressTest.js",
+      "scripts/simulate_trust_flow_military.js",
+      "scripts/test_audit_log_manual.mjs",
+      "scripts/test_trustcontext_manual.mjs",
+      "scripts/update-imports.js",
+      "test-api-phase1-real.js",
+      "test-consensus-demo.js",
+      "test-consensus-scenarios.js",
+      "test-logo-integration.js",
+      "test-memory-comparison-demanding.js",
+      "test-memory-fixed.js",
+      "test-memory-persistence.js",
+      "test-memory-real-api.js",
+      "test-memory-system-real.js",
+      "test-prism-vitals.js",
+      "test-prism.js",
+      "test-real-knowledge-transfer.js",
+      "test-stress-system.js",
+      "test-tri-models-realistic.js",
+      "test-tri-models.js",
+      "test-turbo-performance.js",
+      "test-voice-api-integration.js",
+      "test-voice-improvements.js",
+      "test-voice-performance.js",
+      "ui/prismUITests.js",
+      "validate-corporate-dashboard.js"
+    ],
+    "TIER2": [
+      "staging/generate-report.mjs",
+      "staging/scripts/setup-keys.mjs",
+      "test/batchTest.js",
+      "tests/integration/final-scenarios-test.js",
+      "tests/security/manual-security-test.js"
+    ]
+  },
+  "typescript:S1854": {
+    "TIER2": [
+      "__tests__/chat/ChatFileProcessor.test.ts",
+      "__tests__/core/prismcore/branches-95.spec.ts",
+      "__tests__/core/prismcore/failover.spec.ts",
+      "__tests__/core/prismcore/idempotence.spec.ts",
+      "__tests__/core/prismcore/metrics.spec.ts",
+      "__tests__/excel/DetailedAnalysis.test.ts",
+      "__tests__/integration/trustContext-hybridOrchestrator.spec.ts",
+      "__tests__/properties/consensus.properties.test.ts",
+      "__tests__/trustContext.regression.test.ts",
+      "simulation/economics.ts",
+      "simulation/index.ts",
+      "tests/core/jarvis-personality.spec.ts",
+      "tests/core/task-type-processor.spec.ts",
+      "tests/infographic/image-generator.spec.ts",
+      "tests/infographic/infographic-generator.spec.ts",
+      "tests/integration/context-enrichment.spec.ts",
+      "tests/integration/memory-flow-strict.spec.ts",
+      "tests/orchestrator/hybrid-orchestrator.spec.ts",
+      "tests/voice/voice-controller.spec.ts"
+    ],
+    "TIER3": ["src/consensus/ConsensusManager.ts"]
+  },
+  "typescript:S7748": {
+    "TIER2": [
+      "__tests__/adversarial/providers.adversarial.test.ts",
+      "__tests__/core/prismcore/branches-95.spec.ts",
+      "__tests__/core/prismcore/branches-target-95-final.spec.ts",
+      "__tests__/core/prismcore/coverage-95.spec.ts",
+      "__tests__/core/prismcore/orchestration-green.spec.ts",
+      "__tests__/excel/DataTypeDetector.test.ts",
+      "__tests__/excel/DetailedAnalysis.test.ts",
+      "__tests__/excel/ExcelAnalyzer.test.ts",
+      "__tests__/excel/ExcelParserService.test.ts",
+      "__tests__/excel/StatisticalEngine.test.ts",
+      "simulation/consensus.ts",
+      "simulation/economics.ts",
+      "simulation/fouling_model.ts",
+      "simulation/molecular.ts",
+      "simulation/scenario.ts",
+      "simulation/sensors.ts",
+      "simulation/tests/consensus.test.ts",
+      "simulation/tests/economics.test.ts",
+      "simulation/tests/fouling.test.ts",
+      "simulation/tests/fouling_model.test.ts",
+      "simulation/tests/molecular.test.ts",
+      "simulation/types.ts",
+      "tests/consensus/consensus.invariants.spec.ts",
+      "tests/consensus/consensus.micro-tests.spec.ts",
+      "tests/economics.test.ts",
+      "tests/fouling_model.test.ts"
+    ]
+  },
+  "python:S5754": {
+    "TIER3": ["perplexity_api.py", "src/prism_salesops/cadence.py"]
+  },
+  "javascript:S6535": {
+    "TIER1": [
+      "backend/middleware/validation.js",
+      "src/chat/ChatFileProcessor.js",
+      "src/excel/DataTypeDetector.js",
+      "src/excel/ExcelAnalyzer.js",
+      "src/voice/ResponseModeManager.js"
+    ],
+    "TIER3": ["prismSanitize.js", "scripts/validate-microstep-0.2.cjs"],
+    "TIER2": ["tests/voice/setup.js"]
+  },
+  "python:S1481": {
+    "TIER3": ["scripts/control_salesops.py", "src/prism_salesops/classify.py"],
+    "TIER2": ["tests/salesops/qa/test_audit.py", "tests/salesops/test_cadence.py"]
+  },
+  "python:S1192": {
+    "TIER2": ["tests/salesops/conftest.py"],
+    "TIER3": [
+      "scripts/control_salesops.py",
+      "src/prism_salesops/outputs.py",
+      "src/prism_salesops/qa/db.py"
+    ]
+  },
+  "javascript:S7778": {
+    "TIER1": [
+      "src/core/ConsciousnessLayer.js",
+      "src/core/InterDomainOrchestrator.js",
+      "src/core/JarvisPersonality.js"
+    ],
+    "TIER3": [
+      "scripts/consensus-invariant-guard.mjs",
+      "scripts/test_audit_log_manual.mjs",
+      "scripts/test_trustcontext_manual.mjs",
+      "src/core/MetricsPrismCore.js",
+      "test-voice-improvements.js",
+      "test-voice-performance.js"
+    ]
+  },
+  "css:S7924": {
+    "TIER3": [
+      "dashboard/consensus-demo.html",
+      "dashboard/security-dashboard.html",
+      "diagnostic-tests.html",
+      "index.html",
+      "legacy_tests/tests_old/manual/prismVoiceTests.html",
+      "styles/prism-corporate-theme.css",
+      "tests/manual/prismVoiceTests-fixed.html",
+      "tests/manual/prismVoiceTests-simple.html",
+      "tests/manual/prismVoiceTests.html",
+      "ui/prismManualTests.html",
+      "ui/prismVoiceChat.html",
+      "ui/prismVoiceChatV2.html",
+      "ui/prismVoiceChat_backup.html"
+    ]
+  },
+  "javascript:S4138": {
+    "TIER3": [
+      "asi/launchASI.js",
+      "asi/multitaskLearningEngine.js",
+      "dashboard/consensus-demo.html",
+      "src/core/MetricsPrismCore.js",
+      "src/modules/voice/VoiceAnalyzer.js"
+    ],
+    "TIER1": ["src/excel/DataTypeDetector.js", "src/export/PdfExportService.js"]
+  },
+  "typescript:S2486": {
+    "TIER2": [
+      "__tests__/audit/tamperEvidentAuditLog.spec.ts",
+      "__tests__/core/prismcore/failover.spec.ts",
+      "__tests__/core/prismcore/idempotence.spec.ts",
+      "__tests__/core/prismcore/metrics.spec.ts",
+      "__tests__/core/prismcore/orchestration.spec.ts",
+      "__tests__/fuzz/contracts.fuzz.test.ts",
+      "__tests__/integration/trustContext-excelAnalyzer.spec.ts",
+      "__tests__/integration/trustContext-hybridOrchestrator.spec.ts",
+      "__tests__/integration/trustContext-server.spec.ts",
+      "__tests__/properties/consensus.properties.test.ts",
+      "__tests__/properties/journal.properties.test.ts",
+      "__tests__/properties/providers.properties.test.ts",
+      "__tests__/properties/trustContext.properties.test.ts",
+      "__tests__/trustContext.regression.test.ts",
+      "simulation/index.ts"
+    ]
+  },
+  "typescript:S7758": {
+    "TIER2": [
+      "__tests__/properties/consensus.properties.test.ts",
+      "tests/voice/voice-controller.spec.ts"
+    ]
+  },
+  "typescript:S3516": {
+    "TIER2": [
+      "__tests__/fuzz/contracts.fuzz.test.ts",
+      "__tests__/properties/consensus.properties.test.ts",
+      "__tests__/properties/journal.properties.test.ts",
+      "__tests__/properties/providers.properties.test.ts"
+    ]
+  },
+  "typescript:S4043": {
+    "TIER2": ["tests/consensus.test.ts"]
+  },
+  "typescript:S2933": {
+    "TIER2": [
+      "simulation/consensus.ts",
+      "simulation/economics.ts",
+      "simulation/fouling_model.ts",
+      "simulation/molecular.ts",
+      "simulation/scenario.ts",
+      "simulation/sensors.ts"
+    ]
+  },
+  "javascript:S3863": {
+    "TIER3": [
+      "__tests_legacy__/prismCodexAnalyzer.test.js",
+      "__tests_legacy__/prismModelRouter.test.js",
+      "__tests_legacy__/stress/prismCoreAdvancedStressTest.js",
+      "dashboard/dashboard.js",
+      "launch-dashboard.js",
+      "launch-prism-full-stack.js",
+      "legacy_tests/tests_old/stress/prismCoreExtendedStressTest.js",
+      "legacy_tests/tests_old/stress/prismCoreStressTest.js",
+      "legacy_tests/tests_old/stress/runExtendedStressTest.js",
+      "prismInit.js",
+      "run-consensus-benchmark.js",
+      "scripts/runBatchSimulationBatch3.js",
+      "scripts/update-imports.js",
+      "simple-dashboard-backup.js",
+      "simple-dashboard.js"
+    ],
+    "TIER2": ["staging/generate-report.mjs"]
+  },
+  "javascript:S7723": {
+    "TIER3": [
+      "__tests_legacy__/backend/api/enterpriseExport.test.js",
+      "__tests_legacy__/backend/services/enterprisePDFService.test.js",
+      "__tests_legacy__/prismAdaptiveCycler.persist.test.js",
+      "__tests_legacy__/prismCodexAnalyzer.test.js",
+      "__tests_legacy__/prismEventGuard.test.js",
+      "__tests_legacy__/prismStateStore.test.js",
+      "__tests_legacy__/stress/prismCoreAdvancedStressTest.js",
+      "asi/multitaskLearningEngine.js",
+      "legacy_tests/tests_old/dashboard/dashboard.test.js",
+      "monitoring/prismAuroraConsciousness.js"
+    ],
+    "TIER2": ["test/moralLayer.test.js"],
+    "TIER1": ["src/excel/StatisticalEngine.js"]
+  },
+  "typescript:S7723": {
+    "TIER2": [
+      "__tests__/excel/DataTypeDetector.test.ts",
+      "tests/infographic/infographic-generator.spec.ts"
+    ]
+  },
+  "python:S5603": {
+    "TIER3": ["src/prism_salesops/qa/db.py"]
+  },
+  "javascript:S1135": {
+    "TIER3": [
+      "evolution/launchSelfEvolutionCycle.js",
+      "memory/prismCodexAnalyzer.js",
+      "prismSovereignty.js",
+      "scripts/deploy.js"
+    ]
+  },
+  "javascript:S6594": {
+    "TIER3": ["memory/prismCodexAnalyzer.js", "src/voice/ElevenLabsClient.js"],
+    "TIER1": ["server.js", "src/core/ServerMemoryStore.js", "src/excel/ExcelAnalyzer.js"]
+  },
+  "javascript:S6397": {
+    "TIER1": ["backend/services/enterpriseDetectionService.js"],
+    "TIER3": [
+      "backend/analysis/prismDataAnalysis.cjs",
+      "src/modules/voice/VoiceSentimentDetector.js"
+    ]
+  },
+  "javascript:S4030": {
+    "TIER3": [
+      "__tests_legacy__/backend/api/enterpriseExport.test.js",
+      "__tests_legacy__/prismCoreExtendedStressTest.js",
+      "__tests_legacy__/stress/prismCorePredictiveTest.js",
+      "__tests_legacy__/stress/prismCoreScalabilityTest.js"
+    ],
+    "TIER1": ["src/excel/ExcelAnalyzer.js"],
+    "TIER2": ["tests/security/trustContext.spec.js"]
+  },
+  "javascript:S6660": {
+    "TIER1": [
+      "backend/services/enterprisePDFService.js",
+      "src/core/ServerMemoryStore.js",
+      "src/core/providers/ProviderAdapter.js"
+    ],
+    "TIER3": [
+      "test-voice-api-integration.js",
+      "ui/prismVoiceChatV2-Corporate.html",
+      "utils/lz-string.js"
+    ]
+  },
+  "javascript:S5869": {
+    "TIER3": ["__tests_legacy__/backend/services/enterpriseSanitizer.test.js"],
+    "TIER1": ["server.js", "src/core/JarvisPersonality.js", "src/core/ServerMemoryStore.js"]
+  },
+  "javascript:S7770": {
+    "TIER1": ["src/excel/ExcelAnalyzer.js", "src/orchestrator/HybridOrchestrator.js"],
+    "TIER3": [
+      "scripts/test_audit_log_manual.mjs",
+      "scripts/test_trustcontext_manual.mjs",
+      "src/core/PrismCoreOrchestrator.js"
+    ]
+  },
+  "typescript:S7755": {
+    "TIER2": [
+      "__tests__/core/prismcore/final-push-95.spec.ts",
+      "__tests__/excel/ExcelAnalyzer.test.ts",
+      "simulation/fouling_model.ts",
+      "simulation/tests/fouling_model.test.ts",
+      "tests/fouling_model.test.ts"
+    ]
+  },
+  "javascript:S7776": {
+    "TIER1": [
+      "backend/middleware/fileUpload.js",
+      "src/core/ProjectComplexityManager.js",
+      "src/core/ServerMemoryStore.js",
+      "src/excel/ExcelParserService.js",
+      "src/infographic/ImageGenerator.js"
+    ],
+    "TIER3": [
+      "asi/knowledgeTransferEngine.js",
+      "src/modules/voice/VoiceAnalyzer.js",
+      "src/modules/voice/VoiceSentimentDetector.js"
+    ]
+  },
+  "javascript:S7786": {
+    "TIER1": ["src/excel/ExcelParserService.js", "src/excel/StatisticalEngine.js"],
+    "TIER3": [
+      "prismPulse.js",
+      "prismValidator.js",
+      "scripts/runBatchSimulation.js",
+      "src/core/IdempotentPrismCore.js",
+      "test-api-phase1-real.js"
+    ]
+  },
+  "typescript:S7772": {
+    "TIER2": [
+      "__tests__/audit/tamperEvidentAuditLog.spec.ts",
+      "__tests__/core/prismcore/idempotence.spec.ts",
+      "__tests__/excel/ExcelParserService.test.ts",
+      "__tests__/properties/journal.properties.test.ts",
+      "__tests__/properties/trustContext.properties.test.ts",
+      "__tests__/trustContext.regression.test.ts",
+      "simulation/index.ts",
+      "tests/core/korev-ai-identity.spec.ts",
+      "tests/core/server-memory-store.spec.ts",
+      "tests/integration/memory-flow-strict.spec.ts",
+      "tests/pdf/pdf-export.spec.ts"
+    ]
+  },
+  "typescript:S125": {
+    "TIER2": [
+      "__tests__/core/prismcore/failover.spec.ts",
+      "__tests__/core/prismcore/idempotence.spec.ts",
+      "__tests__/core/prismcore/metrics.spec.ts",
+      "__tests__/core/prismcore/orchestration.spec.ts"
+    ]
+  },
+  "typescript:S7737": {
+    "TIER2": ["simulation/fouling_model.ts"]
+  },
+  "javascript:S7758": {
+    "TIER3": [
+      "asi/multitaskLearningEngine.js",
+      "generate-control-prompt.js",
+      "src/voice/MessageTracker.js",
+      "utils/lz-string.js"
+    ]
+  },
+  "python:S7500": {
+    "TIER3": ["src/prism_salesops/headers.py"]
+  },
+  "typescript:S6582": {
+    "TIER2": [
+      "__tests__/core/prismcore/ultra-target-95.spec.ts",
+      "tests/orchestrator/hybrid-orchestrator.spec.ts"
+    ]
+  },
+  "javascript:S4123": {
+    "TIER3": [
+      "__tests_legacy__/prismCoreAdvancedStressTest.js",
+      "__tests_legacy__/prismCoreExtendedStressTest.js",
+      "__tests_legacy__/prismCoreStressTest.js",
+      "asi/hybridLearningEngine.js",
+      "asi/launchASI.js",
+      "core/KernelBus.js",
+      "legacy_tests/tests_old/unit/prismCore.test.js",
+      "prismEmergencyProtocol.js",
+      "prismSelfHeal.js",
+      "scripts/runBatchSimulation.js",
+      "scripts/runBatchSimulationBatch3.js",
+      "ui/prismUITests.js"
+    ],
+    "TIER2": ["tests/manual/prismVoiceTests.js", "tests/prismStateStore.integration.test.js"],
+    "TIER1": ["src/core/TaskTypeProcessor.js"]
+  },
+  "javascript:S7747": {
+    "TIER3": ["src/core/IdempotentPrismCore.js"]
+  },
+  "css:S4666": {
+    "TIER3": ["index-corporate.html", "styles.css", "ui/prismVoiceChatV2-Corporate.html"]
+  },
+  "typescript:S7773": {
+    "TIER2": [
+      "__tests__/excel/StatisticalEngine.test.ts",
+      "__tests__/properties/providers.properties.test.ts",
+      "simulation/index.ts"
+    ]
+  },
+  "typescript:S7781": {
+    "TIER2": ["simulation/index.ts"]
+  },
+  "typescript:S6836": {
+    "TIER2": ["simulation/index.ts"]
+  },
+  "typescript:S7785": {
+    "TIER2": ["simulation/index.ts"]
+  },
+  "typescript:S6479": {
+    "TIER3": ["dashboard/pages/index.tsx"]
+  },
+  "typescript:S3358": {
+    "TIER3": ["dashboard/pages/index.tsx"]
+  },
+  "javascript:S5843": {
+    "TIER1": ["src/core/RealTimeResearchEngine.js", "src/infographic/InfographicGenerator.js"]
+  },
+  "javascript:S7761": {
+    "TIER3": ["prismInit.js", "ui/InsightCenter.js", "ui/prismUITests.js"]
+  },
+  "javascript:S7734": {
+    "TIER3": ["utils/logger.js"]
+  },
+  "javascript:S6653": {
+    "TIER3": ["utils/lz-string.js"]
+  },
+  "javascript:S1121": {
+    "TIER3": ["utils/lz-string.js"]
+  },
+  "typescript:S3863": {
+    "TIER2": ["tests/integration/memory-flow-strict.spec.ts"]
+  },
+  "typescript:S4138": {
+    "TIER2": ["simulation/molecular.ts"]
+  },
+  "typescript:S6564": {
+    "TIER2": ["simulation/molecular.ts", "simulation/types.ts"]
+  },
+  "typescript:S7770": {
+    "TIER2": ["__tests__/core/prismcore/orchestration-green.spec.ts"]
+  },
+  "javascript:S4144": {
+    "TIER1": ["src/core/PersonaActivator.js", "src/core/TrustContext.js"],
+    "TIER3": ["prismBond.js"]
+  },
+  "javascript:S1871": {
+    "TIER3": ["monitoring/prismCircuitBreaker.js", "simple-dashboard.js"]
+  },
+  "javascript:S2004": {
+    "TIER3": ["memory/prismCodexAnalyzer.js", "prismPerf.js"]
+  },
+  "javascript:S1068": {
+    "TIER3": ["prismInstinct.js"]
+  },
+  "javascript:S7766": {
+    "TIER3": ["monitoring/prismPredictiveOptimization.js"]
+  },
+  "javascript:S6635": {
+    "TIER3": ["__mocks__/prismProfiler.js"]
+  },
+  "javascript:S7767": {
+    "TIER3": ["prismSession.js"]
+  },
+  "javascript:S6647": {
+    "TIER3": ["persistence/prismStateStore.js"]
+  },
+  "javascript:S2990": {
+    "TIER3": ["ui/prismUI.js"]
+  },
+  "javascript:S7769": {
+    "TIER3": ["ui/prismVoiceChatV2-Corporate.html"]
+  },
+  "javascript:S7750": {
+    "TIER1": ["src/core/ProjectComplexityManager.js"]
+  },
+  "typescript:S1871": {
+    "TIER2": ["__tests__/adversarial/providers.adversarial.test.ts"]
+  },
+  "python:S6353": {
+    "TIER3": ["src/prism_salesops/qa/router.py"]
+  },
+  "javascript:S7759": {
+    "TIER1": ["evolution/selfImprovementEngine.js"]
+  },
+  "javascript:S7718": {
+    "TIER1": ["server.js"]
+  },
+  "javascript:S7741": {
+    "TIER2": ["tests/voice/setup.js"]
+  },
+  "javascript:S6644": {
+    "TIER1": ["src/core/TaskTypeProcessor.js"]
+  },
+  "javascript:S7777": {
+    "TIER3": ["test-memory-comparison-demanding.js"]
+  },
+  "python:S125": {
+    "TIER2": ["tests/salesops/test_cadence.py"]
+  },
+  "typescript:S4325": {
+    "TIER2": ["__tests__/integration/trustContext-server.spec.ts"]
+  }
+}
