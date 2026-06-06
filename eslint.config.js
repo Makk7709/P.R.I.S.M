@@ -135,12 +135,23 @@ export default [
       'dist/**',
       'build/**',
       'coverage/**',
+      // Python virtualenvs are not part of the JS/TS source. They are
+      // gitignored already; linting their bundled JS (e.g. urllib3's
+      // emscripten_fetch_worker.js) only produces third-party noise.
+      '**/.venv/**',
+      '**/venv/**',
+      '**/__pycache__/**',
       // Generated build artifacts — NEVER lint generated code (e.g. the
       // Next.js compiler output under dashboard/.next). Linting it produces
       // thousands of meaningless errors against minified/transpiled output.
       '**/.next/**',
       '.prism-snapshots/**',
       '**/*.min.js',
+      // Vendored third-party library: utils/lz-string.js is the canonical
+      // pieroxy/lz-string algorithm copied verbatim (only a French JSDoc
+      // header was added). Its `==`/var style is inherent to the upstream
+      // source, not PRISM code we own, so it is out of lint scope.
+      'utils/lz-string.js',
       '**/legacy_tests/**',
       '__tests_legacy__/**',
       '*.config.js',

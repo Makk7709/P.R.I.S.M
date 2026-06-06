@@ -306,3 +306,83 @@ imports S1128 retirés). Côté JS, les fichiers touchés passent `eslint` avec
 0 erreur (hors warnings préexistants) et le correctif globals supprime les
 `no-undef` standard. Un delta Sonar serveur exact nécessite un re-scan
 SonarQube (hors périmètre).
+
+---
+
+## Nettoyage scope lint (config `ignores` ESLint)
+
+Objectif: retirer du périmètre `eslint` le **bruit** (virtualenv, code
+vendored) afin que `npm run lint` ne remonte plus que les vraies erreurs de
+source PRISM. **Aucune correction de code, aucun masquage de dette réelle** :
+seuls des artefacts tiers/générés sont exclus.
+
+### Mesure
+
+| Étape                                   | Erreurs |
+| --------------------------------------- | ------- |
+| Avant nettoyage (post `.next/` ignoré)  | **635** |
+| Bruit retiré (catégorie A)              | −56     |
+| Après nettoyage (vrai source — bruit B) | **579** |
+
+`npm test` : **76/76 PASS** (le changement de config `ignores` n'affecte aucun
+test ; flaky `trustContext.properties.test.ts` repassé vert après nettoyage de
+`test-trustcontext-temp*/`).
+
+### Catégorie A — bruit ignoré (patterns ajoutés)
+
+| Pattern ajouté          | Erreurs masquées | Justification                                                                                                                                                              |
+| ----------------------- | ---------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| `**/.venv/**`           | 19               | Virtualenv Python (gitignored). Unique fichier JS linté : `.venv/.../urllib3/contrib/emscripten/emscripten_fetch_worker.js` — JS tiers embarqué, jamais notre source.    |
+| `**/venv/**`            | 0                | Symétrie/robustesse (alias virtualenv gitignored) ; aucun fichier présent aujourd'hui.                                                                                   |
+| `**/__pycache__/**`     | 0                | Artefacts Python compilés ; aucun JS aujourd'hui, ajouté par prudence.                                                                                                    |
+| `utils/lz-string.js`    | 37               | Lib tierce **vendored** : algorithme `pieroxy/lz-string` recopié verbatim (variables `context_dictionaryToCreate`, `_compress`/`_decompress`, bit-packing). Seul un en-tête JSDoc FR a été ajouté. Le style `==`/`var` est celui de l'upstream, pas du code PRISM. |
+
+Total catégorie A : **56 erreurs** (19 + 37) retirées du périmètre.
+
+Patterns **déjà présents** (rappel, non modifiés) : `node_modules/**`,
+`dist/**`, `build/**`, `coverage/**`, `**/.next/**`, `.prism-snapshots/**`,
+`**/*.min.js`, `**/legacy_tests/**`, `__tests_legacy__/**`, `*.config.js`,
+`*.config.mjs`.
+
+### Fichiers ambigus examinés et **laissés en catégorie B** (par prudence)
+
+- `particles.js` (5 err) — nom proche de la lib `particles.js`, mais en-tête
+  `import { config } ... import * as THREE` : **vrai source PRISM** (système de
+  particules Three.js écrit main). Non ignoré.
+- `monitoring/**` (48 err) — vérifié hand-written (JSDoc FR PRISM, `import
+  kernelBus from '../core/KernelBus.js'`). **Vrai source.** Non ignoré.
+- `prismVitals-original-buggy.js` (1 err) — fichier de sauvegarde mais **code
+  source** ; non généré/vendored → laissé linté.
+
+Scan complémentaire : aucun fichier minifié (ligne > 500 car.) parmi les
+fichiers en erreur hors ceux ci-dessus.
+
+### Catégorie B — backlog résiduel (vrai source, 579 erreurs)
+
+Par règle :
+
+| Règle                             | Erreurs |
+| --------------------------------- | ------- |
+| `no-undef`                        | 541     |
+| `prefer-const`                    | 23      |
+| `no-dupe-class-members`           | 4       |
+| `no-prototype-builtins`           | 3       |
+| `no-empty`                        | 3       |
+| `no-unused-private-class-members` | 2       |
+| `no-control-regex`                | 1       |
+| (autres `no-undef` multi-ligne)   | 2       |
+
+Par top-répertoire : `(root)` 306, `ui/` 142, `monitoring/` 48, `core/` 21,
+`memory/` 18, `scripts/` 11, `regulation/` 9, `src/` 7, `backend/` 6,
+`tests/` 4, `evolution/` 2, `__mocks__/` 2, `telemetry/` 1, `orchestration/` 1,
+`asi/` 1.
+
+Top fichiers : `ui/js/prism-pdf-export.js` 40, `prismUI.js` 40,
+`ui/InsightCenter.test.js` 29, `jest.setup.jsdom.js` 25, `ui/InsightCenter.js`
+23, `test-voice-interruption-fix.cjs` 18, `jest.setup.node.js` 17,
+`core/Resilience.js` 17, `ui/AdaptiveCyclerWidget.js` 16, `prismPerf.js` 16.
+
+L'essentiel du backlog (`no-undef`, 541) provient de globals navigateur
+(`window`, `document`, `localStorage`, `CustomEvent`…) dans le code UI/voix
+écrit main : à traiter via déclarations `globals` ciblées (comme le bloc
+`prismReflex.js` existant), **pas** par exclusion de fichiers.
