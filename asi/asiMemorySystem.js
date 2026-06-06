@@ -677,7 +677,9 @@ export class ASIMemorySystem extends EventEmitter {
   optimizeIndexes() {
     return Promise.resolve();
   }
-  updateMemoryStatistics() {}
+  updateMemoryStatistics() {
+    // Intentional no-op: statistics are recomputed lazily by getStats().
+  }
   createQueryVector(query) {
     return [];
   }
@@ -690,7 +692,9 @@ export class ASIMemorySystem extends EventEmitter {
   calculateAssociationStrength(queryAssoc, entryAssoc) {
     return Math.random() * 0.6 + 0.4;
   }
-  updateAccessPatterns(query, results) {}
+  updateAccessPatterns(_query, _results) {
+    // Intentional no-op placeholder for the simplified memory profile.
+  }
   analyzeTemporalPatterns() {
     return [];
   }
