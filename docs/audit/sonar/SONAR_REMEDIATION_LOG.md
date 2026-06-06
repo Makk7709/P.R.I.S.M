@@ -731,31 +731,74 @@ Tests de caractérisation ajoutés (gate `vitest.config.core-only.js`, dossier
 | 15 | `backend/services/enterprisePDFService.js` | 617 | S3776 | ✅ Corrigé — `_addParagraphWithFormatting` (extract `_renderInlineSegment`) |
 | 16-17 | `src/excel/ExcelParserService.js` | 319,495 | S3776 | ✅ Corrigé — `_parseSheet`/`_extractRows` |
 | 18-22 | `src/excel/ExcelAnalyzer.js` | 941,991,1030,1179,+1 | S3776 | ✅ Corrigé ×5 — `_generateKeyInsights`/`_identifyPatterns`/`_generateColumnProfiles`/`_checkDataQuality`/`_formatForAI` |
-| 23-24 | `src/excel/ExcelAnalyzer.js` | 115,415 | S3776 | ⏸️ Différé — `analyze`/`_analyzeSheet` (orchestration async : parser+TrustContext+consensus ; nécessite un harnais d'intégration, hors budget iso-sûr) |
-| 25 | `src/excel/ExcelAnalyzer.js` | 64 | S7059 | ⏸️ Différé — async dans constructeur (`_loadOrchestrators`), changement structurel |
-| 26 | `backend/orchestrator.js` | 376 | S3776 | ⏸️ Différé — `handleUserInstruction` : entrypoint réseau LLM, dépendances internes au module (cache/`callOpenAI`/voiceEnhancer) non injectables ⇒ pas caractérisable sans harnais réseau complet |
-| 27-29 | `server.js` | 80,356,372 | S3776 | ⏸️ Différé — handlers Express (`req`/`res`, ElevenLabs, orchestrateurs) ⇒ nécessite un harnais HTTP complet |
-| 30 | `src/core/TaskTypeProcessor.js` | 56 | S3776 | ⏸️ Différé — `process` (CC 56), orchestrateur multi-collaborateurs massif ; refactor sûr nécessite un harnais lourd |
-| 31 | `src/core/TaskTypeProcessor.js` | 44 | S7059 | ⏸️ Différé — async dans constructeur (`memoryEngine.initialize()`), structurel |
-| 32 | `src/core/ConsensusManager.js` | 176 | S7059 | ⏸️ Différé — async dans constructeur, structurel |
-| 33 | `evolution/selfImprovementEngine.js` | 487 | S3776 | ⏸️ Différé — `analyzeBatch` non exécutable par le gate (`SECURITY_MODE.CURRENT` figé à `PROD` à l'import ⇒ early-return/throw ; + I/O fichier winston, consensus/trust réseau) |
-| 34 | `evolution/selfImprovementEngine.js` | 94 | S7059 | ⏸️ Différé — async dans constructeur, structurel |
-| 35-36 | `src/excel/ExcelAnalyzer.js` | (drift) | S3776 | ⏸️ Différé — 2 S3776 restants non mappables précisément (dérive de lignes CSV vs fichier courant) ; candidats : `exportForChat`/`exportToMarkdown`/`_interpretQuery` (gros formateurs purs, lot dédié futur) |
+| 23-24 | `src/excel/ExcelAnalyzer.js` | 115,415 | S3776 | ✅ Corrigé — `analyze` (CC 44, extract `_resolveAnalyzeArgs`/`_needsTrustContextValidation`/`_runTrustContextGate`/`_validateSensitiveColumns`/`_analyzeAllSheets`/`_buildDerivedResults`) + `_analyzeSheet` (CC 30, extract `_detectAmbiguousColumns`/`_computeNumericStatistics`/`_computeCategoricalAnalysis`/`_detectDateColumns`). Harnais d'intégration (parser+TrustContext mockés, StatisticalEngine/DataTypeDetector réels) ; iso prouvé par snapshots |
+| 25 | `src/excel/ExcelAnalyzer.js` | 64 | S7059 | ✅ Corrigé — chargement orchestrateurs rendu paresseux via `ensureInitialized()` (awaité par `analyze`), plus de fire-and-forget dans le constructeur |
+| 26 | `backend/orchestrator.js` | 376 | S3776 | ✅ Corrigé — `handleUserInstruction` (CC 18) : extract `tryTurboResponse`/`callModelByChoice`/`handleModelError`. Harnais déterministe sans réseau (clés placeholder ⇒ throws synchrones des callers + chemin TURBO) ; iso prouvé |
+| 27-29 | `server.js` | 80,356,372 | S3776 | ⏸️ **Re-différé (justifié)** — 3 handlers Express dans un module à effets de bord au chargement : 4 singletons instanciés au top-level (`HybridOrchestrator`/`TaskTypeProcessor`/`ImageGenerator`/`ResponseModeManager`), `await import()` de routers, et `app.listen(PORT)` inconditionnel (aucun guard d'import). Les dépendances ne sont pas injectables (consts de module) et `generateElevenLabsAudio` fait un `fetch` réseau ElevenLabs. Caractériser exigerait un harnais HTTP complet (supertest) + `vi.mock` de chaque module importé + guard d'import — effort disproportionné sur un entrypoint critique. **Remédiation recommandée** (lot futur dédié) : extraire les handlers dans un module contrôleur testable injectable + ajouter `if (process.argv[1]===fileURLToPath(import.meta.url)) app.listen(...)`, puis refactor S3776. Sinon `NOSONAR` justifié sur les 3 handlers |
+| 30 | `src/core/TaskTypeProcessor.js` | 56 | S3776 | ✅ Corrigé — `process` (CC 36) : extract helpers purs `_buildUserContextInfo` + `_buildResponseMetadata`. Caractérisé (helpers + lazy init) |
+| 31 | `src/core/TaskTypeProcessor.js` | 44 | S7059 | ✅ Corrigé — `memoryEngine.initialize()` sorti du constructeur (lazy `_memoryInitPromise` + `_ensureMemoryInitialized()` awaité par `process`) |
+| 32 | `src/core/ConsensusManager.js` | 176 | S7059 | ✅ Corrigé — corps de `init()` (sans `await`) extrait en `_initialize()` synchrone appelé par le constructeur ; `async init()` conservé en wrapper rétro-compatible (init immédiate préservée) |
+| 33 | `evolution/selfImprovementEngine.js` | 487 | S3776 | ✅ Corrigé — `SECURITY_MODE` rendu injectable (`config.securityMode`, défaut `SECURITY_MODE.CURRENT` ⇒ iso en PROD) débloque le gate ; `analyzeBatch` (CC 16) split en `_collectApprovedAdjustments` + `_isAdjustmentApproved`. Caractérisé en mode `TEST` |
+| 34 | `evolution/selfImprovementEngine.js` | 94 | S7059 | ✅ Corrigé — `initializeSecurity()` async (sans `await`) remplacé par `_initializeSecurity()` synchrone dans le constructeur |
+| 35-36 | `src/excel/ExcelAnalyzer.js` | 1697,(drift) | S3776 | ✅ Corrigé — `exportForChat` (CC 110) éclaté en 8 helpers `_chat*Section` (overview/colonnes/numérique/catégoriel/corrélations/outliers/qualité/insights). Le 2ᵉ formateur dérivé (CC 31) résolu par le lot #18-22 (`_formatForAI`/profils/qualité) ; `exportToMarkdown`/`_interpretQuery` vérifiés sous CC 15 (non-violations). Caractérisé par snapshots |
 
 \* Lignes telles qu'au scan SonarQube ; le fichier courant a dérivé (les
 refactors ajoutent des lignes), d'où le mapping approximatif sur `ExcelAnalyzer`.
 
 ### Bilan campagne
 
-- **Corrigés cette session** (refactors S3776, iso prouvé par snapshots) :
+- **Corrigés (poste antérieur)** (refactors S3776, iso prouvé par snapshots) :
   `HybridOrchestrator.process`, `EnterprisePDFService._addParagraphWithFormatting`,
   `ExcelParserService._parseSheet`+`_extractRows`, `ExcelAnalyzer` ×5
   (`_generateKeyInsights`, `_identifyPatterns`, `_generateColumnProfiles`,
-  `_checkDataQuality`, `_formatForAI`) → **9 fonctions**.
-- **Corrigés antérieurement** : 10× S3776 + 2× S1186 + 1 faux positif S4123.
-- **Différés (documentés)** : 8× S3776 (entrypoints réseau/HTTP, orchestrateurs
-  async massifs, formateurs non mappés) + 4× S7059 (async-in-constructor,
-  structurel). Statut « différé + raison » conforme au livrable.
+  `_checkDataQuality`, `_formatForAI`) → **9 fonctions** ; + 10× S3776 plus
+  anciens + 2× S1186 + 1 faux positif S4123.
+
+### Poste PRISM_SONAR_DEFERRED_CRITICAL — 11/12 différés repris
+
+Reprise des 12 items différés (8 logiques S3776 + 4 S7059). **11 corrigés**,
+**1 re-différé honnête** (server.js, justifié). Méthode : harnais de
+caractérisation D'ABORD (gate `vitest.config.core-only.js`), puis refactor
+iso prouvé par snapshots. Commits par lot via plumbing (auteur Amine Mohamed,
+0 trailer bot).
+
+- **S3776 corrigés (7)** : `ExcelAnalyzer.analyze`, `ExcelAnalyzer._analyzeSheet`,
+  `ExcelAnalyzer.exportForChat`, `orchestrator.handleUserInstruction`,
+  `TaskTypeProcessor.process`, `selfImprovementEngine.analyzeBatch`, +2ᵉ
+  formateur ExcelAnalyzer (couvert lot #18-22). Voir table #23-36.
+- **S7059 corrigés (4)** : `ExcelAnalyzer` (lazy `ensureInitialized`),
+  `TaskTypeProcessor` (lazy `_ensureMemoryInitialized`), `ConsensusManager`
+  (init synchrone + wrapper), `selfImprovementEngine` (`_initializeSecurity`
+  synchrone). Patron : pas de factory nécessaire — soit lazy-init awaitée dans
+  les méthodes consommatrices (ExcelAnalyzer/TaskTypeProcessor, API de
+  construction inchangée donc **aucun appelant à modifier**), soit corps
+  d'`init()` prouvé synchrone (pas d'`await`) déplacé dans le constructeur
+  (ConsensusManager/selfImprovementEngine, init immédiate préservée).
+- **selfImprovementEngine — `SECURITY_MODE` rendu testable** : résolu une fois
+  dans le constructeur (`this.securityMode = config.securityMode ||
+  SECURITY_MODE.CURRENT`). Défaut **iso en PROD** ; injecter `securityMode:'TEST'`
+  débloque le gate. A permis la caractérisation puis le refactor d'`analyzeBatch`.
+- **Re-différé (1) — `server.js` (#27-29, 3× S3776)** : entrypoint HTTP trop
+  couplé (4 singletons module-level non injectables, `app.listen` sans guard,
+  `fetch` ElevenLabs). Refactor sans harnais HTTP complet = risque de régression
+  sur un entrypoint critique → différé honnête + remédiation recommandée
+  documentée (cf. table #27-29).
+- **Caractérisation ajoutée ce poste** : +44 tests (analyze/_analyzeSheet,
+  TaskTypeProcessor, ConsensusManager, selfImprovementEngine, orchestrator).
+  Gate **146 → 190 PASS**.
+
+### Backlog résiduel & clôture de campagne
+
+- **Tier 1 CRITICAL** : 33/36 issues corrigées, **3 restantes** = les handlers
+  `server.js` (#27-29), re-différées avec plan de remédiation chiffré. C'est le
+  **seul reliquat Tier 1** ; recommandation : ouvrir un ticket dédié
+  « extract server.js controllers + import guard » (décision structurante sur
+  l'entrypoint, hors budget iso-comportement de cette campagne).
+- **Hors Tier 1** : S3776 Tier 2/3, S6582/S1854/S7748/S125/S2486… restent
+  différés (cf. « Lots différés » ci-dessus) — AST/revue cas par cas.
+- **Recommandation de clôture** : campagne Tier 1 CRITICAL **substantiellement
+  close** (33/36, 100 % des items prouvables iso-comportement traités). Le
+  reliquat server.js est un choix d'architecture, pas une dette mécanique.
 
 ### `enterpriseSanitizer.js` — fichier prioritaire (sécurité) : caractérisé, 0 CRITICAL
 
@@ -782,6 +825,7 @@ malveillantes XSS/HTML/contrôle/longues).
 
 ### Tests / lint / push finaux
 
-- `npm test` : **146/146 PASS** (95 + 51 caractérisation), ~65 s, 20 fichiers.
+- `npm test` : **190/190 PASS** (146 + 44 caractérisation du poste différés),
+  ~65 s, 25 fichiers.
 - `npm run lint` : **0 erreur / 1 warning** (`enterpriseExportRouter`, connu).
 - Push `origin/main` par paliers, normal (jamais `--force`), auteur Amine Mohamed.
