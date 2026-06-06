@@ -839,17 +839,17 @@ export class SelfImprovementEngine extends EventEmitter {
   // Logging methods
   logAnalysis(analysis) {
     const logPath = path.join(process.cwd(), 'logs', 'selfimprovement', 'analysis.log');
-    fs.appendFileSync(logPath, JSON.stringify(analysis) + '\n');
+    fs.appendFileSync(logPath, `${JSON.stringify(analysis)  }\n`);
   }
 
   logBatchAnalysis(batchAnalysis, adjustments) {
     const logPath = path.join(process.cwd(), 'logs', 'selfimprovement', 'batch_analysis.log');
-    fs.appendFileSync(logPath, JSON.stringify({ batchAnalysis, adjustments }) + '\n');
+    fs.appendFileSync(logPath, `${JSON.stringify({ batchAnalysis, adjustments })  }\n`);
   }
 
   logAdjustments(adjustments) {
     const logPath = path.join(process.cwd(), 'logs', 'selfimprovement', 'adjustments.log');
-    fs.appendFileSync(logPath, JSON.stringify(adjustments) + '\n');
+    fs.appendFileSync(logPath, `${JSON.stringify(adjustments)  }\n`);
   }
 
   logError(context, error) {
@@ -860,7 +860,7 @@ export class SelfImprovementEngine extends EventEmitter {
       error: error.message || error,
       stack: error.stack
     };
-    fs.appendFileSync(logPath, JSON.stringify(errorLog) + '\n');
+    fs.appendFileSync(logPath, `${JSON.stringify(errorLog)  }\n`);
     logger.error(`[${context}] ${error.message || error}`);
   }
 

@@ -6,7 +6,6 @@
  */
 
 import { EventEmitter } from 'events';
-import crypto from 'crypto';
 
 export class FailoverPrismCore extends EventEmitter {
   constructor() {

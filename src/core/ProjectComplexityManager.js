@@ -109,7 +109,7 @@ export class ProjectComplexityManager {
     const queryLower = query.toLowerCase();
     
     for (const [id, project] of this.activeProjects.entries()) {
-      const projectLower = (project.name + ' ' + project.description).toLowerCase();
+      const projectLower = (`${project.name  } ${  project.description}`).toLowerCase();
       
       // Vérifier si la requête est liée au projet
       const keywords = projectLower.split(/\s+/).filter(w => w.length > 4);

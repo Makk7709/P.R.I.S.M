@@ -15,7 +15,6 @@ import {
   validateApprovalRequest,
   validateApprovalResponse,
   validateSignedApproval,
-  SignedApprovalSchema,
 } from '../security/contracts/trustcontext.js';
 import { getKeyRegistry } from './KeyRegistry.js';
 

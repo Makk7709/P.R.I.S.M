@@ -128,7 +128,7 @@ class EnterpriseDetectionService {
     
     if (duration > 10) { // Log only if > 10ms
       console.log('[DETECTION] Fast enterprise check completed', {
-        duration: Math.round(duration) + 'ms',
+        duration: `${Math.round(duration)  }ms`,
         isEnterprise,
         contentLength: content.length
       });
@@ -153,7 +153,7 @@ class EnterpriseDetectionService {
     const duration = Number(process.hrtime.bigint() - startTime) / 1000000;
     
     console.log('[DETECTION] Enterprise analysis completed', {
-      duration: Math.round(duration) + 'ms',
+      duration: `${Math.round(duration)  }ms`,
       score,
       isEnterprise: score >= 70,
       contentLength: content.length,

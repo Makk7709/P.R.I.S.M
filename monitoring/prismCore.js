@@ -8,7 +8,6 @@ import PrismStrategy from './prismStrategy.js';
 import PrismSelfOptimization from './prismSelfOptimization.js';
 import logger from './prismLogger.js';
 import metrics from './coreMetrics.js';
-import performanceMonitor from './prismPerformanceMonitor.js';
 
 class PrismCore {
   constructor() {

@@ -3,7 +3,6 @@
  * @module monitoring/prismSentientPulse
  */
 
-import kernelBus from '../core/KernelBus.js';
 
 /**
  * Classe gérant le monitoring en temps réel de l'état de conscience comportementale de PRISM

@@ -429,7 +429,7 @@ export class SecureJournalManager extends EventEmitter {
       await this.createNewJournalFile();
     }
     
-    const serialized = entry.serialize() + '\n';
+    const serialized = `${entry.serialize()  }\n`;
     await fs.appendFile(this.currentFile, serialized);
     this.currentFileSize += serialized.length;
   }
@@ -633,7 +633,7 @@ export class SecureJournalManager extends EventEmitter {
       data,
       timestamp: Date.now()
     };
-    const serialized = JSON.stringify(snapshot.data) + '|' + snapshot.timestamp;
+    const serialized = `${JSON.stringify(snapshot.data)  }|${  snapshot.timestamp}`;
     snapshot.signature = crypto.createHmac('sha256', this.config.hmacSecret)
       .update(serialized)
       .digest('hex');
@@ -651,7 +651,7 @@ export class SecureJournalManager extends EventEmitter {
    */
   verifySnapshot(snapshot) {
     if (!snapshot || !snapshot.signature) return false;
-    const serialized = JSON.stringify(snapshot.data) + '|' + snapshot.timestamp;
+    const serialized = `${JSON.stringify(snapshot.data)  }|${  snapshot.timestamp}`;
     const expected = crypto.createHmac('sha256', this.config.hmacSecret)
       .update(serialized)
       .digest('hex');

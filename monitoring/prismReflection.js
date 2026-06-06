@@ -3,7 +3,6 @@
  * @module monitoring/prismReflection
  */
 
-import kernelBus from '../core/KernelBus.js';
 import { PrismBehaviorMap } from './prismBehaviorMap.js';
 import { PrismPostStressAnalyzer } from './prismPostStressAnalyzer.js';
 

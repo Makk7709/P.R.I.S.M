@@ -10,7 +10,6 @@
  * - Support markdown, branding, watermarks
  */
 
-import PDFDocument from 'pdfkit';
 
 class EnterprisePDFService {
   constructor() {
@@ -157,7 +156,7 @@ class EnterprisePDFService {
     const duration = Number(process.hrtime.bigint() - startTime) / 1000000;
 
     console.log('[PDF] Mock PDF generated', {
-      duration: Math.round(duration) + 'ms',
+      duration: `${Math.round(duration)  }ms`,
       title: data.metadata?.title || 'Unknown',
       reportType: data.metadata?.reportType || 'unknown',
       size: mockBuffer.length
@@ -218,7 +217,7 @@ class EnterprisePDFService {
       const duration = Number(process.hrtime.bigint() - startTime) / 1000000;
 
       console.log('[PDF] PDF generation completed', {
-        duration: Math.round(duration) + 'ms',
+        duration: `${Math.round(duration)  }ms`,
         size: pdfBuffer.length,
         pages: Math.ceil(data.content.length / 2000)
       });
@@ -250,7 +249,7 @@ class EnterprisePDFService {
       
       console.error('[PDF] Generation failed', {
         error: error.message,
-        duration: Math.round(duration) + 'ms',
+        duration: `${Math.round(duration)  }ms`,
         reportType: data.metadata?.reportType
       });
 

@@ -5,7 +5,6 @@
  */
 
 import { EventEmitter } from 'events';
-import crypto from 'crypto';
 import SecureJournalManager from './SecureJournalManager.js';
 import { registerMetrics as registerWeightingEngineMetrics } from '../metrics/weightingEngineMetrics.js';
 

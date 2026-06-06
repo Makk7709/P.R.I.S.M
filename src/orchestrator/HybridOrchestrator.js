@@ -16,7 +16,7 @@
  * └─────────────────────────────────────────────────────────┘
  */
 
-import { CriticalityClassifier, CriticalityLevel } from './CriticalityClassifier.js';
+import { CriticalityClassifier } from './CriticalityClassifier.js';
 import { ConsensusManager, ConsensusStatus, VoteType } from '../core/ConsensusManager.js';
 import { getTrustContext, CriticalityLevel as TrustCriticalityLevel } from '../core/TrustContext.js';
 import { handleUserInstruction } from '../../backend/orchestrator.js';
@@ -386,7 +386,7 @@ Dois-tu approuver cette action ?`;
         .filter(r => r)
         .join('; ');
       
-      return `Action rejetée par consensus multi-IA. ${rejectionReasons ? 'Raisons: ' + rejectionReasons : ''}`;
+      return `Action rejetée par consensus multi-IA. ${rejectionReasons ? `Raisons: ${  rejectionReasons}` : ''}`;
     }
     
     return 'Consensus en attente ou incomplet.';
@@ -518,7 +518,7 @@ Dois-tu approuver cette action ?`;
       avgResponseTime,
       failures: this.metrics.failures,
       successRate: this.metrics.totalRequests > 0 
-        ? ((this.metrics.totalRequests - this.metrics.failures) / this.metrics.totalRequests * 100).toFixed(1) + '%'
+        ? `${((this.metrics.totalRequests - this.metrics.failures) / this.metrics.totalRequests * 100).toFixed(1)  }%`
         : '100%'
     };
   }

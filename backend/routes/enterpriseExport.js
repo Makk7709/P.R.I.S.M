@@ -7,8 +7,6 @@
 
 import express from 'express';
 import crypto from 'node:crypto';
-import path from 'node:path';
-import fs from 'node:fs/promises';
 import { createRequire } from 'node:module';
 
 const require = createRequire(import.meta.url);

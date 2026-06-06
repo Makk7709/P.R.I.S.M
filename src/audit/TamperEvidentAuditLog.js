@@ -355,7 +355,7 @@ export class TamperEvidentAuditLog extends EventEmitter {
     record.sig = signature;
     
     // Écrire de manière atomique (append)
-    const recordLine = JSON.stringify(record) + '\n';
+    const recordLine = `${JSON.stringify(record)  }\n`;
     
     try {
       // Append atomique (fs.appendFile est atomique sur la plupart des systèmes)

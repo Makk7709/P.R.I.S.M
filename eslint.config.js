@@ -216,6 +216,30 @@ export default [
     },
   },
   {
+    // JS/MJS/CJS: enable auto-removable unused-import cleanup (Sonar S1128) and
+    // defer unused-variable reporting to the same plugin, keeping `^_` as the
+    // "intentionally unused" convention. CONFIG-only and behaviour-preserving:
+    // `unused-imports/no-unused-imports` only strips genuinely-unused imports on
+    // --fix; remaining dead variables stay warnings (handled manually).
+    files: ['**/*.js', '**/*.mjs', '**/*.cjs'],
+    plugins: {
+      'unused-imports': unusedImports,
+    },
+    rules: {
+      'no-unused-vars': 'off',
+      'unused-imports/no-unused-imports': 'warn',
+      'unused-imports/no-unused-vars': [
+        'warn',
+        {
+          vars: 'all',
+          varsIgnorePattern: '^_',
+          args: 'after-used',
+          argsIgnorePattern: '^_',
+        },
+      ],
+    },
+  },
+  {
     // TypeScript files. We register the typescript-eslint parser so `.ts`
     // stops failing with "Parsing error: Unexpected token". This is a
     // SYNTACTIC setup only: we deliberately do NOT enable type-aware linting

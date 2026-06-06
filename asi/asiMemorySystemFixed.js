@@ -230,7 +230,7 @@ export class ASIMemorySystemFixed extends EventEmitter {
       }
       
       // Écriture atomique pour éviter la corruption
-      const tempFile = this.config.persistenceFile + '.tmp';
+      const tempFile = `${this.config.persistenceFile  }.tmp`;
       fs.writeFileSync(tempFile, JSON.stringify(dataToSave, null, 2));
       fs.renameSync(tempFile, this.config.persistenceFile);
       
@@ -786,7 +786,7 @@ export class ASIMemorySystemFixed extends EventEmitter {
   async realLossyCompression(content) {
     // Compression avec perte mineure (raccourcissement)
     if (typeof content === 'string' && content.length > 1000) {
-      return content.substring(0, 950) + '... [compressé]';
+      return `${content.substring(0, 950)  }... [compressé]`;
     }
     return content;
   }
@@ -797,7 +797,7 @@ export class ASIMemorySystemFixed extends EventEmitter {
       const words = content.split(/\s+/);
       if (words.length > 50) {
         // Garde les 40 premiers mots + résumé
-        return words.slice(0, 40).join(' ') + ' [+résumé sémantique]';
+        return `${words.slice(0, 40).join(' ')  } [+résumé sémantique]`;
       }
     }
     return content;
@@ -970,7 +970,7 @@ export class ASIMemorySystemFixed extends EventEmitter {
       // Simulation de décompression
       return {
         ...entry,
-        content: entry.content + ' [décompressé]',
+        content: `${entry.content  } [décompressé]`,
         compressed: false
       };
     }

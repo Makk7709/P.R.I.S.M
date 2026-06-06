@@ -349,7 +349,7 @@ export class MemoryRetrievalEngine {
 
     // ✨ NOUVEAU: Ajouter contexte mémoire serveur en premier (informations utilisateur)
     if (serverMemoryContext) {
-      enriched += serverMemoryContext + '\n\n';
+      enriched += `${serverMemoryContext  }\n\n`;
     }
 
     enriched += `## 📚 CONTEXTE DES CONVERSATIONS PRÉCÉDENTES\n\n`;

@@ -321,7 +321,7 @@ export class ElevenLabsClient {
     
     for (const sentence of sentences) {
       if ((result + sentence).length <= maxLength - 20) {
-        result += sentence + '. ';
+        result += `${sentence  }. `;
       } else {
         break;
       }
@@ -334,7 +334,7 @@ export class ElevenLabsClient {
       
       for (const word of words) {
         if ((result + word).length <= maxLength - 10) {
-          result += word + ' ';
+          result += `${word  } `;
         } else {
           break;
         }

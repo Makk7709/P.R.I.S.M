@@ -17,7 +17,6 @@ import { ConsciousnessLayer } from './ConsciousnessLayer.js';
 import { MemoryRetrievalEngine } from './MemoryRetrievalEngine.js';
 import { InterDomainOrchestrator } from './InterDomainOrchestrator.js';
 import { ProjectComplexityManager } from './ProjectComplexityManager.js';
-import { serverMemoryStore } from './ServerMemoryStore.js';
 import { JarvisPersonality } from './JarvisPersonality.js';
 
 export class TaskTypeProcessor {

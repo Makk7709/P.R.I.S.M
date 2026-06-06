@@ -440,7 +440,7 @@ class EnterpriseSanitizer {
     
     if (duration > 5) { // Log only if > 5ms
       console.log('[SANITIZER] Fast sanitization completed', {
-        duration: Math.round(duration) + 'ms',
+        duration: `${Math.round(duration)  }ms`,
         changes: changes.length,
         originalLength: content.length,
         sanitizedLength: sanitized.length
@@ -515,7 +515,7 @@ class EnterpriseSanitizer {
     const duration = Number(process.hrtime.bigint() - startTime) / 1000000;
     
     console.log('[SANITIZER] Full sanitization completed', {
-      duration: Math.round(duration) + 'ms',
+      duration: `${Math.round(duration)  }ms`,
       changes: changes.length,
       originalLength,
       sanitizedLength: sanitized.length,
@@ -651,7 +651,7 @@ class EnterpriseSanitizer {
     const duration = Number(process.hrtime.bigint() - startTime) / 1000000;
     
     console.log('[SANITIZER] Formatting standardized', {
-      duration: Math.round(duration) + 'ms',
+      duration: `${Math.round(duration)  }ms`,
       stats
     });
 

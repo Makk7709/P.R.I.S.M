@@ -3,7 +3,6 @@ import { executeSelfOptimizationCycle } from './selfApplicationEngine.js';
 import { analyzeMemoryPerformance } from './memoryAnalyzer.js';
 import { generateSelfInstruction } from './selfOptimizer.js';
 import { evaluateSuggestion } from './decisionFirewall.js';
-import { SelfImprovementEngine } from './selfImprovementEngine.js';
 import { prismStateStore } from '../persistence/prismStateStore.js';
 import { logger } from '../utils/logger.js';
 
@@ -101,7 +100,7 @@ async function performAnalysis() {
     const recentSnapshots = []; // Remplacé par un tableau vide
     if (recentSnapshots.length === 0) {
       logger.warn('SELF_EVOLUTION', 'Aucun snapshot récent trouvé pour l\'analyse, cycle reporté.');
-      return;
+      
     }
   } catch (error) {
     logger.error('SELF_EVOLUTION', `Erreur lors de la finalisation du cycle: ${error.message}`, { error });

@@ -4,7 +4,6 @@
  */
 
 import { PrismBus } from '../prismBus.js';
-import planner from '@core/Planner.js';
 
 /**
  * États des modules avec leurs emojis associés

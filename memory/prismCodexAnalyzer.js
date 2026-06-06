@@ -3,7 +3,6 @@
  * @module PrismCodexAnalyzer
  */
 
-import kernelBus from '../core/KernelBus.js';
 import PrismStateStore from '../persistence/prismStateStore.js';
 import { PrismProfiler } from '../perf/prismProfiler.js';
 import http from 'http';

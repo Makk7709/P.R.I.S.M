@@ -3,7 +3,6 @@
  * @module prismLogger
  */
 
-import prismBus from '../prismBus.js';
 
 const BASE_URL = process.env.PRISM_LOG_SERVER_URL || 'http://localhost:3000';
 

@@ -3,7 +3,6 @@
  * @module monitoring/prismPostStressAnalyzer
  */
 
-import kernelBus from '../core/KernelBus.js';
 
 /**
  * Classe responsable de l'analyse des sessions de stress test
@@ -175,7 +174,7 @@ export class PrismPostStressAnalyzer {
     console.log('📈 Durée de session:', (report.sessionDuration / 1000).toFixed(2), 'secondes');
     console.log('📈 Anomalies déclenchées:', report.anomaliesTriggered);
     console.log('📈 Réponses actives:', report.activeResponses);
-    console.log('📈 Taux de récupération:', (report.recoveryRate * 100).toFixed(2) + '%');
+    console.log('📈 Taux de récupération:', `${(report.recoveryRate * 100).toFixed(2)  }%`);
     console.log('📈 Temps de réaction moyen:', report.averageReactionTime.toFixed(2), 'ms');
     console.log('📉 Reboots forcés:', report.forcedReboots);
     

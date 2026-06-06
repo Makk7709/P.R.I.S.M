@@ -3,7 +3,6 @@
  * @module memory/prismCodex
  */
 
-import kernelBus from '../core/KernelBus.js';
 
 /**
  * Types d'événements supportés par PRISM Codex

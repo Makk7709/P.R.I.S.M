@@ -1,4 +1,3 @@
-import kernelBus from '../core/KernelBus.js';
 
 class PrismAuroraConsciousness {
   constructor() {

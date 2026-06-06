@@ -3,7 +3,6 @@
  * @module monitoring/prismBehavioralLearner
  */
 
-import kernelBus from '../core/KernelBus.js';
 
 /**
  * Classe responsable de l'apprentissage comportemental de PRISM

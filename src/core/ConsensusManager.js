@@ -14,7 +14,6 @@ import {
   validateStrict,
   DecisionProposalSchema,
   VoteSchema,
-  ConsensusResultSchema,
 } from '../security/contracts/consensus.js';
 
 /**

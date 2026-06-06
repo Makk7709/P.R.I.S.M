@@ -3,7 +3,6 @@
  * Visualisation dynamique de l'évolution comportementale de PRISM
  */
 
-import kernelBus from '../core/KernelBus.js';
 
 class PrismBehaviorMap {
   constructor() {

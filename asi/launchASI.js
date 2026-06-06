@@ -337,7 +337,7 @@ class ASILauncher {
     // Vérification de la mémoire
     const memUsage = process.memoryUsage();
     if (memUsage.heapUsed > 2 * 1024 * 1024 * 1024) { // 2GB
-      logger.warn('⚠️ Utilisation mémoire élevée:', Math.round(memUsage.heapUsed / 1024 / 1024) + 'MB');
+      logger.warn('⚠️ Utilisation mémoire élevée:', `${Math.round(memUsage.heapUsed / 1024 / 1024)  }MB`);
     }
 
     logger.debug('💚 Contrôle de santé réussi');

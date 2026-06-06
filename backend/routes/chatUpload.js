@@ -18,7 +18,7 @@ import {
 } from '../middleware/fileUpload.js';
 import { ChatFileProcessor } from '../../src/chat/ChatFileProcessor.js';
 import { getElevenLabsService } from '../../src/voice/ElevenLabsService.js';
-import { ResponseModeManager, InputMode } from '../../src/voice/ResponseModeManager.js';
+import { ResponseModeManager } from '../../src/voice/ResponseModeManager.js';
 
 const router = express.Router();
 

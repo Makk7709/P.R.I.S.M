@@ -17,8 +17,8 @@ export async function generateSelfInstruction() {
     const memoryReport = await analyzeMemoryPerformance(50);
     const promptContext = `
 Rapport de performance cognitive PRISM :
-Succès global : ${memoryReport.successRate ? memoryReport.successRate.toFixed(2) + '%' : 'Indisponible'}
-Échecs globaux : ${memoryReport.failureRate ? memoryReport.failureRate.toFixed(2) + '%' : 'Indisponible'}
+Succès global : ${memoryReport.successRate ? `${memoryReport.successRate.toFixed(2)  }%` : 'Indisponible'}
+Échecs globaux : ${memoryReport.failureRate ? `${memoryReport.failureRate.toFixed(2)  }%` : 'Indisponible'}
 Détail par type d'action :
 ${Object.entries(memoryReport.typeStats).map(([type, stats]) => {
       return `- ${type} : ${stats.success}/${stats.total} réussites`;
