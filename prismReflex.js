@@ -96,7 +96,7 @@ class PrismReflex {
     const anomalies = [];
     
     switch (eventName) {
-      case 'prismHeartbeatEvent':
+      case 'prismHeartbeatEvent': {
         const intervals = this.calculateIntervals(buffer);
         const avgInterval = intervals.reduce((a, b) => a + b, 0) / intervals.length;
         const threshold = avgInterval * this.anomalyThreshold;
@@ -111,6 +111,7 @@ class PrismReflex {
           }
         });
         break;
+      }
 
       case 'prismHarmonyEvent':
         buffer.forEach(signal => {

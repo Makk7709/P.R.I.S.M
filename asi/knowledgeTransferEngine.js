@@ -427,21 +427,24 @@ export class KnowledgeTransferEngine extends EventEmitter {
     // Application des concepts transférés
     for (const knowledge of transferableKnowledge) {
       switch (knowledge.type) {
-        case 'concept':
+        case 'concept': {
           const conceptApplication = await this.applyConceptTransfer(task, knowledge);
           result.transferredConcepts.push(conceptApplication);
           break;
-          
-        case 'analogy':
+        }
+
+        case 'analogy': {
           const analogyApplication = await this.applyAnalogyTransfer(task, knowledge);
           result.appliedAnalogies.push(analogyApplication);
           result.analogiesUsed++;
           break;
-          
-        case 'pattern':
+        }
+
+        case 'pattern': {
           const patternApplication = await this.applyPatternTransfer(task, knowledge);
           result.generalizedPatterns.push(patternApplication);
           break;
+        }
       }
     }
 

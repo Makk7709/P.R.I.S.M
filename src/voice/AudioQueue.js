@@ -244,7 +244,7 @@ export class AudioQueue {
     let indexToRemove = 0;
     
     switch (this.config.evictionPolicy) {
-      case 'lowest-priority':
+      case 'lowest-priority': {
         // Trouver l'élément avec la plus basse priorité
         let lowestPriority = this._items[0].priority;
         indexToRemove = 0;
@@ -256,6 +256,7 @@ export class AudioQueue {
           }
         }
         break;
+      }
         
       case 'oldest':
       default:
