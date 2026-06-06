@@ -44,6 +44,95 @@ exports[`ExcelAnalyzer insight/quality helpers — characterization > _detectSen
 }
 `;
 
+exports[`ExcelAnalyzer insight/quality helpers — characterization > _formatForAI — empty data 1`] = `
+"## DONNÉES DU FICHIER EXCEL (à utiliser pour répondre)
+
+### Informations générales
+- Nombre de lignes: 0
+- Colonnes: 
+
+
+### AGRÉGATIONS PAR COLONNE
+
+## Question de l'utilisateur
+"rien"
+
+## INSTRUCTIONS ABSOLUES
+1. Utilise UNIQUEMENT les données ci-dessus
+2. NE JAMAIS inventer de noms de clients, produits ou chiffres
+3. Cite les valeurs EXACTES trouvées dans les données
+4. Si une donnée n'existe pas, dis clairement "Cette information n'est pas dans le fichier"
+5. Pour identifier le "meilleur" client ou produit, additionne les valeurs numériques par catégorie
+"
+`;
+
+exports[`ExcelAnalyzer insight/quality helpers — characterization > _formatForAI — no sheets 1`] = `
+"## DONNÉES DU FICHIER EXCEL (à utiliser pour répondre)
+
+### Informations générales
+- Nombre de lignes: 0
+- Colonnes: 
+
+
+### AGRÉGATIONS PAR COLONNE
+
+## Question de l'utilisateur
+"question"
+
+## INSTRUCTIONS ABSOLUES
+1. Utilise UNIQUEMENT les données ci-dessus
+2. NE JAMAIS inventer de noms de clients, produits ou chiffres
+3. Cite les valeurs EXACTES trouvées dans les données
+4. Si une donnée n'existe pas, dis clairement "Cette information n'est pas dans le fichier"
+5. Pour identifier le "meilleur" client ou produit, additionne les valeurs numériques par catégorie
+"
+`;
+
+exports[`ExcelAnalyzer insight/quality helpers — characterization > _formatForAI — numeric + categorical aggregations 1`] = `
+"## DONNÉES DU FICHIER EXCEL (à utiliser pour répondre)
+
+### Informations générales
+- Nombre de lignes: 4
+- Colonnes: Product, Revenue, Units
+
+### DONNÉES COMPLÈTES DU FICHIER
+
+| Product | Revenue | Units |
+| --- | --- | --- |
+| A | 100 | 2 |
+| B | 200 | 5 |
+| A | 50 | 1 |
+| C | 300 | 7 |
+
+### AGRÉGATIONS PAR COLONNE
+
+**Product** (catégoriel - 3 valeurs uniques):
+  - "A": 2 fois | Revenue: 150.00 | Units: 3.00
+  - "B": 1 fois | Revenue: 200.00 | Units: 5.00
+  - "C": 1 fois | Revenue: 300.00 | Units: 7.00
+
+**Revenue** (numérique):
+  - Somme totale: 650.00
+  - Moyenne: 162.50
+  - Max: 300, Min: 50
+
+**Units** (numérique):
+  - Somme totale: 15.00
+  - Moyenne: 3.75
+  - Max: 7, Min: 1
+
+## Question de l'utilisateur
+"Quel est le meilleur produit ?"
+
+## INSTRUCTIONS ABSOLUES
+1. Utilise UNIQUEMENT les données ci-dessus
+2. NE JAMAIS inventer de noms de clients, produits ou chiffres
+3. Cite les valeurs EXACTES trouvées dans les données
+4. Si une donnée n'existe pas, dis clairement "Cette information n'est pas dans le fichier"
+5. Pour identifier le "meilleur" client ou produit, additionne les valeurs numériques par catégorie
+"
+`;
+
 exports[`ExcelAnalyzer insight/quality helpers — characterization > _generateColumnProfiles 1`] = `
 {
   "Region": {

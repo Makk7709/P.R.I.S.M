@@ -115,4 +115,30 @@ describe('ExcelAnalyzer insight/quality helpers — characterization', () => {
       quality: analyzer._checkDataQuality([]),
     }).toMatchSnapshot();
   });
+
+  it('_formatForAI — numeric + categorical aggregations', () => {
+    const analysis = {
+      summary: {},
+      sheets: [
+        {
+          headers: ['Product', 'Revenue', 'Units'],
+          rows: [
+            { Product: 'A', Revenue: 100, Units: 2 },
+            { Product: 'B', Revenue: 200, Units: 5 },
+            { Product: 'A', Revenue: 50, Units: 1 },
+            { Product: 'C', Revenue: 300, Units: 7 },
+          ],
+        },
+      ],
+    };
+    expect(analyzer._formatForAI(analysis, 'Quel est le meilleur produit ?')).toMatchSnapshot();
+  });
+
+  it('_formatForAI — empty data', () => {
+    expect(analyzer._formatForAI({ sheets: [{ headers: [], rows: [] }] }, 'rien')).toMatchSnapshot();
+  });
+
+  it('_formatForAI — no sheets', () => {
+    expect(analyzer._formatForAI({}, 'question')).toMatchSnapshot();
+  });
 });
