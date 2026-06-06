@@ -1,0 +1,181 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`ServerMemoryStore — characterization (_extractPersonalInfo) > combined multi-info conversation is stable 1`] = `
+{
+  "context": [
+    "budget limité cette année",
+  ],
+  "prenom": "Amine",
+  "role": [
+    "manalyser les ventes",
+    "est de doubler le chiffre",
+  ],
+  "strategie": [
+    "doubler le chiffre",
+    "développer une croissance rapide",
+  ],
+}
+`;
+
+exports[`ServerMemoryStore — characterization (_extractPersonalInfo) > context extraction (important/souviens/contexte) is stable 1`] = `
+[
+  {
+    "input": "Important: la deadline est fixée au 30 juin",
+    "response": "",
+    "userInfo": {
+      "context": [
+        "la deadline est fixée au 30 juin",
+      ],
+    },
+  },
+  {
+    "input": "souviens-toi: le client préfère le format PDF",
+    "response": "",
+    "userInfo": {
+      "context": [
+        "le client préfère le format PDF",
+      ],
+    },
+  },
+  {
+    "input": "contexte: entreprise de 50 personnes en forte croissance",
+    "response": "",
+    "userInfo": {
+      "context": [
+        "entreprise de 50 personnes en forte croissance",
+      ],
+    },
+  },
+]
+`;
+
+exports[`ServerMemoryStore — characterization (_extractPersonalInfo) > prénom extraction (input, response, common-word rejection) is stable 1`] = `
+[
+  {
+    "input": "Mon prénom est Amine",
+    "response": "",
+    "userInfo": {
+      "prenom": "Amine",
+    },
+  },
+  {
+    "input": "Je m'appelle Sophie aujourd'hui",
+    "response": "",
+    "userInfo": {
+      "prenom": "Sophie",
+    },
+  },
+  {
+    "input": "",
+    "response": "Votre prénom est Marc donc",
+    "userInfo": {
+      "prenom": "Marc",
+    },
+  },
+  {
+    "input": "Je suis le",
+    "response": "",
+    "userInfo": {},
+  },
+  {
+    "input": "appelle-moi X",
+    "response": "",
+    "userInfo": {},
+  },
+  {
+    "input": "Mon nom est Jean-Pierre",
+    "response": "",
+    "userInfo": {
+      "prenom": "Jean",
+    },
+  },
+]
+`;
+
+exports[`ServerMemoryStore — characterization (_extractPersonalInfo) > role extraction (single, multiple, substring dedup) is stable 1`] = `
+[
+  {
+    "input": "Ton rôle est de manalyser les données financières",
+    "response": "",
+    "userInfo": {
+      "role": [
+        "manalyser les données financières",
+      ],
+    },
+  },
+  {
+    "input": "Tu es un assistant intelligent et stratégique",
+    "response": "",
+    "userInfo": {
+      "role": [
+        "assistant intelligent et stratégique",
+      ],
+    },
+  },
+  {
+    "input": "Ton rôle est de manalyser les données",
+    "response": "Ton rôle est de manalyser les données financières",
+    "userInfo": {
+      "role": [
+        "manalyser les données Ton rôle est de manalyser les données financières",
+      ],
+    },
+  },
+  {
+    "input": "mission: développer une stratégie de croissance",
+    "response": "",
+    "userInfo": {
+      "role": [
+        "développer une stratégie de croissance",
+      ],
+    },
+  },
+]
+`;
+
+exports[`ServerMemoryStore — characterization (_extractPersonalInfo) > stratégie extraction (with/without article) is stable 1`] = `
+[
+  {
+    "input": "Notre stratégie est de conquérir le marché européen",
+    "response": "",
+    "userInfo": {
+      "role": [
+        "est de conquérir le marché européen",
+      ],
+      "strategie": [
+        "conquérir le marché européen",
+      ],
+    },
+  },
+  {
+    "input": "On veut développer une application révolutionnaire",
+    "response": "",
+    "userInfo": {
+      "strategie": [
+        "développer une application révolutionnaire",
+      ],
+    },
+  },
+  {
+    "input": "nous souhaitons créer un produit innovant et durable",
+    "response": "",
+    "userInfo": {
+      "strategie": [
+        "créer un produit innovant et durable",
+      ],
+    },
+  },
+  {
+    "input": "projet: refonte complète du système legacy",
+    "response": "",
+    "userInfo": {
+      "context": [
+        "refonte complète du système legacy",
+      ],
+      "strategie": [
+        "refonte complète du système legacy",
+      ],
+    },
+  },
+]
+`;
