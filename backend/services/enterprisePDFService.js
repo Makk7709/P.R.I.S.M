@@ -624,26 +624,9 @@ class EnterprisePDFService {
       let x = doc.x;
       const y = doc.y;
       
+      // Les segments d'index pair sont du texte normal, ceux d'index impair du gras
       for (let i = 0; i < parts.length; i++) {
-        if (i % 2 === 0) {
-          // Texte normal
-          if (parts[i]) {
-            doc.font(this.enterpriseTheme.fonts.body)
-               .fontSize(this.enterpriseTheme.fontSizes.body)
-               .fillColor(this.enterpriseTheme.colors.text)
-               .text(parts[i], x, y, { continued: true, lineBreak: false });
-            x += doc.widthOfString(parts[i]);
-          }
-        } else {
-          // Texte en gras
-          if (parts[i]) {
-            doc.font(this.enterpriseTheme.fonts.heading)
-               .fontSize(this.enterpriseTheme.fontSizes.body)
-               .fillColor(this.enterpriseTheme.colors.accent)
-               .text(parts[i], x, y, { continued: true, lineBreak: false });
-            x += doc.widthOfString(parts[i]);
-          }
-        }
+        x = this._renderInlineSegment(doc, parts[i], i % 2 !== 0, x, y);
       }
       doc.text('', { continued: false }); // Nouvelle ligne
     } else {
@@ -655,6 +638,23 @@ class EnterprisePDFService {
     }
     
     doc.moveDown(0.3);
+  }
+
+  /**
+   * Dessine un segment de texte inline (normal ou gras) et retourne la nouvelle position x.
+   * Les segments vides ne produisent aucun rendu (position x inchangée).
+   */
+  _renderInlineSegment(doc, segment, isBold, x, y) {
+    if (!segment) {
+      return x;
+    }
+    const font = isBold ? this.enterpriseTheme.fonts.heading : this.enterpriseTheme.fonts.body;
+    const color = isBold ? this.enterpriseTheme.colors.accent : this.enterpriseTheme.colors.text;
+    doc.font(font)
+       .fontSize(this.enterpriseTheme.fontSizes.body)
+       .fillColor(color)
+       .text(segment, x, y, { continued: true, lineBreak: false });
+    return x + doc.widthOfString(segment);
   }
 
   /**
