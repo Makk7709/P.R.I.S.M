@@ -145,6 +145,15 @@ pas les règles S-xxxx. Stratégie: **codemods Node ciblés par règle**, appliq
 uniquement aux fichiers signalés par Sonar (liste dérivée du CSV), validés par
 `npm test` après chaque lot.
 
+> **Mise à jour (poste TS autofix).** Le flat config ESLint n'avait aucun
+> parseur TypeScript (chaque `.ts` = parse error). C'est corrigé:
+> `typescript-eslint` (parseur + plugin) ajouté, setup **syntaxique seulement**
+> (pas de type-checking, pour ne pas exposer les ~511 erreurs `tsc`). Les
+> codemods JS (`node-protocol.mjs`, `number-parse.mjs`) ont été étendus aux
+> `.ts`, et S1128 est désormais traité par `eslint-plugin-unused-imports` via le
+> codemod contrôlé `fix-unused-imports.mjs` (imports inutilisés retirés par
+> analyse de portée, diff import-only). Détails et delta dans le journal.
+
 | Famille                              | Méthode                                            | Sûreté                  |
 | ------------------------------------ | -------------------------------------------------- | ----------------------- |
 | S7772 `node:` protocol               | codemod regex sur specifiers de builtins connus    | iso-comportement        |
