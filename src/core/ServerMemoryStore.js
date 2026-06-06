@@ -14,6 +14,67 @@ const MEMORY_FILE = path.join(__dirname, '../../data/server-memory.json');
 const MEMORY_SAMPLE = path.join(__dirname, '../../data/server-memory.sample.json');
 const MEMORY_DIR = path.dirname(MEMORY_FILE);
 
+// Patterns d'extraction d'informations personnelles (extraits de _extractPersonalInfo,
+// iso-comportement : mêmes littéraux, même ordre).
+const PRENOM_INPUT_PATTERNS = [
+  /mon prénom est ([A-Za-zÀ-ÿ]+)/i,
+  /je m'appelle ([A-Za-zÀ-ÿ]+)/i,
+  /appelle-moi ([A-Za-zÀ-ÿ]+)/i,
+  /mon nom est ([A-Za-zÀ-ÿ]+)/i,
+  /je suis ([A-Za-zÀ-ÿ]+)/i,
+  /prénom[:\s]+([A-Za-zÀ-ÿ]+)/i,
+];
+
+const PRENOM_RESPONSE_PATTERNS = [
+  /(?:votre|ton) prénom est ([A-Za-zÀ-ÿ]+)/i,
+  /(?:vous vous appelez|tu t'appelles) ([A-Za-zÀ-ÿ]+)/i,
+  /(?:prénom|appelle)[\s:]+([A-Za-zÀ-ÿ]+)/i,
+];
+
+const ROLE_PATTERNS = [
+  /(?:ton|votre) rôle est (?:de |d'|de )?([^.!?]+)/i,
+  /(?:ton|votre) rôle est d'([^.!?]+)/i, // Cas spécifique "d'X"
+  /(?:tu es|vous êtes) (?:un|une|mon|ma) ([^.!?]+)/i,
+  /(?:mission|objectif|stratégie)[:\s]+([^.!?]+)/i, // "mission: X", "objectif: X", "stratégie: X" (peut être rôle OU stratégie)
+  /(?:explique|définis|définir) (?:ton|votre) (?:rôle|mission|stratégie)[:\s]+([^.!?]+)/i,
+];
+
+const STRATEGY_PATTERNS = [
+  /(?:notre|ma|mon) (?:stratégie|projet|vision|objectif|plan) (?:est (?:de |d'|))([^.!?]+)/i, // "notre stratégie est de X", "notre projet est d'X" (sans capturer "est")
+  /(?:notre|ma|mon) (?:stratégie|projet|vision|objectif|plan):\s+([^.!?]+)/i, // "notre stratégie: X" (uniquement avec ":")
+  /(?:stratégie|projet|vision|plan):\s+([^.!?]+)/i, // "stratégie: X", "projet: X" (uniquement avec ":")
+  /(?:on|nous) (?:veut|veulent|souhaite|souhaitons|cherche|cherchons|développe|développons|crée|créons) (?:de |d'|un|une|le|la|les )([^.!?]+)/i, // "on veut de X", "nous souhaitons créer X" (avec article)
+  /(?:on|nous) (?:veut|veulent|souhaite|souhaitons|cherche|cherchons|développe|développons|crée|créons) ([^.!?]+)/i, // "on veut X", "nous souhaitons X" (sans article, doit être en dernier)
+];
+
+const CONTEXT_PATTERNS = [
+  /(?:important|essentiel|crucial|clé)[:\s]+([^.!?]+)/i, // "important: X", "essentiel: X"
+  /(?:souviens-toi|retiens|note|mémorise)[:\s]+([^.!?]+)/i, // "souviens-toi: X", "retiens: X"
+  /(?:contexte|situation|projet)[:\s]+([^.!?]{10,500})/i, // "contexte: X" (10-500 caractères, réduit de 20 à 10)
+];
+
+/**
+ * Ajoute `value` à `list` sauf doublon exact OU relation de sous-chaîne (insensible
+ * à la casse). Renvoie true si ajouté. Pur (mutation de `list` uniquement).
+ * @param {string[]} list
+ * @param {string} value
+ * @returns {boolean}
+ */
+function pushIfNoSubstringDuplicate(list, value) {
+  const valueLower = value.toLowerCase();
+  const exists = list.some((item) => {
+    const itemLower = item.toLowerCase();
+    return (
+      itemLower === valueLower || itemLower.includes(valueLower) || valueLower.includes(itemLower)
+    );
+  });
+  if (!exists) {
+    list.push(value);
+    return true;
+  }
+  return false;
+}
+
 export class ServerMemoryStore {
   constructor() {
     this.memory = {
@@ -120,21 +181,18 @@ export class ServerMemoryStore {
    * Extrait TOUTES les informations importantes (prénom, rôle, stratégie, etc.)
    */
   _extractPersonalInfo(input, response) {
-    const _inputLower = input.toLowerCase();
-    const _responseLower = response.toLowerCase();
-    const _fullText = `${input} ${response}`.toLowerCase();
+    // Utiliser input+response originaux (pas en minuscules) pour préserver la casse
+    const originalText = `${input} ${response}`;
+    this._extractPrenomFromInput(input, response);
+    this._extractPrenomFromResponse(response);
+    this._extractRole(originalText);
+    this._extractStrategie(originalText);
+    this._extractContext(originalText);
+  }
 
-    // ✨ 1. Détecter prénom
-    const prenomPatterns = [
-      /mon prénom est ([A-Za-zÀ-ÿ]+)/i,
-      /je m'appelle ([A-Za-zÀ-ÿ]+)/i,
-      /appelle-moi ([A-Za-zÀ-ÿ]+)/i,
-      /mon nom est ([A-Za-zÀ-ÿ]+)/i,
-      /je suis ([A-Za-zÀ-ÿ]+)/i,
-      /prénom[:\s]+([A-Za-zÀ-ÿ]+)/i,
-    ];
-
-    for (const pattern of prenomPatterns) {
+  /** ✨ 1. Détecte le prénom dans l'input (fallback response). @private */
+  _extractPrenomFromInput(input, response) {
+    for (const pattern of PRENOM_INPUT_PATTERNS) {
       const match = input.match(pattern) || response.match(pattern);
       if (match && match[1]) {
         const prenom = match[1].trim();
@@ -145,132 +203,84 @@ export class ServerMemoryStore {
         }
       }
     }
+  }
 
-    // ✨ 1.5. Détecter prénom depuis la réponse si présent
-    if (response && response.length > 0) {
-      const responsePrenomPatterns = [
-        /(?:votre|ton) prénom est ([A-Za-zÀ-ÿ]+)/i,
-        /(?:vous vous appelez|tu t'appelles) ([A-Za-zÀ-ÿ]+)/i,
-        /(?:prénom|appelle)[\s:]+([A-Za-zÀ-ÿ]+)/i,
-      ];
-
-      for (const pattern of responsePrenomPatterns) {
-        const match = response.match(pattern);
-        if (match && match[1]) {
-          const prenom = match[1].trim();
-          if (prenom.length > 1 && prenom.length < 30 && !this._isCommonWord(prenom)) {
-            this.memory.userInfo.prenom = prenom;
-            console.log(`[ServerMemoryStore] Prénom extrait de réponse: ${prenom}`);
-            break;
-          }
-        }
-      }
+  /** ✨ 1.5. Détecte le prénom depuis la réponse si présente. @private */
+  _extractPrenomFromResponse(response) {
+    if (!(response && response.length > 0)) {
+      return;
     }
-
-    // ✨ 2. Détecter rôle/mission de PRISM
-    const rolePatterns = [
-      /(?:ton|votre) rôle est (?:de |d'|de )?([^.!?]+)/i,
-      /(?:ton|votre) rôle est d'([^.!?]+)/i, // Cas spécifique "d'X"
-      /(?:tu es|vous êtes) (?:un|une|mon|ma) ([^.!?]+)/i,
-      /(?:mission|objectif|stratégie)[:\s]+([^.!?]+)/i, // "mission: X", "objectif: X", "stratégie: X" (peut être rôle OU stratégie)
-      /(?:explique|définis|définir) (?:ton|votre) (?:rôle|mission|stratégie)[:\s]+([^.!?]+)/i,
-    ];
-
-    // Essayer chaque pattern (sans break pour permettre plusieurs rôles)
-    // Utiliser input+response originaux (pas fullText en minuscules) pour préserver la casse
-    const originalText = `${input} ${response}`;
-    for (const pattern of rolePatterns) {
-      const match = originalText.match(pattern);
+    for (const pattern of PRENOM_RESPONSE_PATTERNS) {
+      const match = response.match(pattern);
       if (match && match[1]) {
-        const role = match[1].trim();
-        // Minimum réduit à 7 pour capturer des rôles courts mais valides comme "m'aider"
-        if (role.length >= 7 && role.length < 500) {
-          if (!this.memory.userInfo.role) {
-            this.memory.userInfo.role = [];
-          }
-          // Vérifier si le rôle n'est pas déjà présent (comparaison insensible à la casse + détection sous-chaînes)
-          const roleLower = role.toLowerCase();
-          const exists = this.memory.userInfo.role.some((r) => {
-            const rLower = r.toLowerCase();
-            // Détecter doublons exacts ou sous-chaînes
-            return rLower === roleLower || rLower.includes(roleLower) || roleLower.includes(rLower);
-          });
-          if (!exists) {
-            this.memory.userInfo.role.push(role);
-            console.log(`[ServerMemoryStore] Rôle détecté: ${role.substring(0, 50)}...`);
-          }
+        const prenom = match[1].trim();
+        if (prenom.length > 1 && prenom.length < 30 && !this._isCommonWord(prenom)) {
+          this.memory.userInfo.prenom = prenom;
+          console.log(`[ServerMemoryStore] Prénom extrait de réponse: ${prenom}`);
+          break;
         }
       }
     }
+  }
 
-    // ✨ 3. Détecter stratégie/projet
-    const strategyPatterns = [
-      /(?:notre|ma|mon) (?:stratégie|projet|vision|objectif|plan) (?:est (?:de |d'|))([^.!?]+)/i, // "notre stratégie est de X", "notre projet est d'X" (sans capturer "est")
-      /(?:notre|ma|mon) (?:stratégie|projet|vision|objectif|plan):\s+([^.!?]+)/i, // "notre stratégie: X" (uniquement avec ":")
-      /(?:stratégie|projet|vision|plan):\s+([^.!?]+)/i, // "stratégie: X", "projet: X" (uniquement avec ":")
-      /(?:on|nous) (?:veut|veulent|souhaite|souhaitons|cherche|cherchons|développe|développons|crée|créons) (?:de |d'|un|une|le|la|les )([^.!?]+)/i, // "on veut de X", "nous souhaitons créer X" (avec article)
-      /(?:on|nous) (?:veut|veulent|souhaite|souhaitons|cherche|cherchons|développe|développons|crée|créons) ([^.!?]+)/i, // "on veut X", "nous souhaitons X" (sans article, doit être en dernier)
-    ];
-
-    // Essayer chaque pattern (sans break pour permettre plusieurs stratégies)
-    // Utiliser input+response originaux (pas fullText en minuscules) pour préserver la casse
-    for (const pattern of strategyPatterns) {
+  /** ✨ 2. Détecte le(s) rôle(s)/mission(s) (sans break, dedup sous-chaîne). @private */
+  _extractRole(originalText) {
+    for (const pattern of ROLE_PATTERNS) {
       const match = originalText.match(pattern);
-      if (match && match[1]) {
-        const strategy = match[1].trim();
-        // Minimum réduit à 7 pour capturer des stratégies courtes mais valides
-        if (strategy.length >= 7 && strategy.length < 500) {
-          if (!this.memory.userInfo.strategie) {
-            this.memory.userInfo.strategie = [];
-          }
-          // Vérifier si la stratégie n'est pas déjà présente (comparaison insensible à la casse + détection sous-chaînes)
-          const strategyLower = strategy.toLowerCase();
-          const exists = this.memory.userInfo.strategie.some((s) => {
-            const sLower = s.toLowerCase();
-            // Détecter doublons exacts ou sous-chaînes (ex: "développer X" vs "est de développer X")
-            return (
-              sLower === strategyLower ||
-              sLower.includes(strategyLower) ||
-              strategyLower.includes(sLower)
-            );
-          });
-          if (!exists) {
-            this.memory.userInfo.strategie.push(strategy);
-            console.log(`[ServerMemoryStore] Stratégie détectée: ${strategy.substring(0, 50)}...`);
-          }
+      if (!(match && match[1])) {
+        continue;
+      }
+      const role = match[1].trim();
+      // Minimum réduit à 7 pour capturer des rôles courts mais valides comme "m'aider"
+      if (role.length >= 7 && role.length < 500) {
+        if (!this.memory.userInfo.role) {
+          this.memory.userInfo.role = [];
+        }
+        if (pushIfNoSubstringDuplicate(this.memory.userInfo.role, role)) {
+          console.log(`[ServerMemoryStore] Rôle détecté: ${role.substring(0, 50)}...`);
         }
       }
     }
+  }
 
-    // ✨ 4. Détecter informations contextuelles importantes
-    const contextPatterns = [
-      /(?:important|essentiel|crucial|clé)[:\s]+([^.!?]+)/i, // "important: X", "essentiel: X"
-      /(?:souviens-toi|retiens|note|mémorise)[:\s]+([^.!?]+)/i, // "souviens-toi: X", "retiens: X"
-      /(?:contexte|situation|projet)[:\s]+([^.!?]{10,500})/i, // "contexte: X" (10-500 caractères, réduit de 20 à 10)
-    ];
+  /** ✨ 3. Détecte la/les stratégie(s)/projet(s) (sans break, dedup sous-chaîne). @private */
+  _extractStrategie(originalText) {
+    for (const pattern of STRATEGY_PATTERNS) {
+      const match = originalText.match(pattern);
+      if (!(match && match[1])) {
+        continue;
+      }
+      const strategy = match[1].trim();
+      // Minimum réduit à 7 pour capturer des stratégies courtes mais valides
+      if (strategy.length >= 7 && strategy.length < 500) {
+        if (!this.memory.userInfo.strategie) {
+          this.memory.userInfo.strategie = [];
+        }
+        if (pushIfNoSubstringDuplicate(this.memory.userInfo.strategie, strategy)) {
+          console.log(`[ServerMemoryStore] Stratégie détectée: ${strategy.substring(0, 50)}...`);
+        }
+      }
+    }
+  }
 
-    // Utiliser input+response originaux (pas fullText en minuscules) pour préserver la casse
-    for (const pattern of contextPatterns) {
+  /** ✨ 4. Détecte les informations contextuelles importantes (dedup exact). @private */
+  _extractContext(originalText) {
+    for (const pattern of CONTEXT_PATTERNS) {
       const matches = originalText.matchAll(new RegExp(pattern.source, 'gi'));
       for (const match of matches) {
-        if (match && match[1]) {
-          const context = match[1].trim();
-          // Réduire le minimum de 20 à 10 caractères pour capturer plus de contextes
-          if (context.length >= 10 && context.length < 500) {
-            if (!this.memory.userInfo.context) {
-              this.memory.userInfo.context = [];
-            }
-            // Vérifier si le contexte n'est pas déjà présent (comparaison insensible à la casse)
-            const contextLower = context.toLowerCase();
-            const exists = this.memory.userInfo.context.some(
-              (c) => c.toLowerCase() === contextLower
+        const context = match && match[1] ? match[1].trim() : '';
+        // Réduire le minimum de 20 à 10 caractères pour capturer plus de contextes
+        if (context.length >= 10 && context.length < 500) {
+          if (!this.memory.userInfo.context) {
+            this.memory.userInfo.context = [];
+          }
+          const contextLower = context.toLowerCase();
+          const exists = this.memory.userInfo.context.some((c) => c.toLowerCase() === contextLower);
+          if (!exists) {
+            this.memory.userInfo.context.push(context);
+            console.log(
+              `[ServerMemoryStore] Contexte important détecté: ${context.substring(0, 50)}...`
             );
-            if (!exists) {
-              this.memory.userInfo.context.push(context);
-              console.log(
-                `[ServerMemoryStore] Contexte important détecté: ${context.substring(0, 50)}...`
-              );
-            }
           }
         }
       }
