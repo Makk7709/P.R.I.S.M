@@ -73,6 +73,25 @@ export default [
     },
   },
   {
+    // Browser-context files that legitimately use Web platform globals
+    // (window, CustomEvent, EventTarget, Event, Audio, ...). prismReflex.js is
+    // runtime code that dispatches DOM CustomEvents; tests/voice/setup.js is a
+    // jsdom test harness that polyfills the Audio/Event DOM API. Declaring the
+    // browser globals here resolves the no-undef reports without altering any
+    // runtime behaviour.
+    files: ['prismReflex.js', 'tests/voice/setup.js'],
+    languageOptions: {
+      globals: {
+        window: 'readonly',
+        document: 'readonly',
+        CustomEvent: 'readonly',
+        EventTarget: 'readonly',
+        Event: 'readonly',
+        Audio: 'readonly',
+      },
+    },
+  },
+  {
     // TypeScript files. We register the typescript-eslint parser so `.ts`
     // stops failing with "Parsing error: Unexpected token". This is a
     // SYNTACTIC setup only: we deliberately do NOT enable type-aware linting
@@ -114,7 +133,12 @@ export default [
     ignores: [
       'node_modules/**',
       'dist/**',
+      'build/**',
       'coverage/**',
+      // Generated build artifacts — NEVER lint generated code (e.g. the
+      // Next.js compiler output under dashboard/.next). Linting it produces
+      // thousands of meaningless errors against minified/transpiled output.
+      '**/.next/**',
       '.prism-snapshots/**',
       '**/*.min.js',
       '**/legacy_tests/**',
