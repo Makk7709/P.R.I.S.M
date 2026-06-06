@@ -81,7 +81,7 @@ const enterpriseExportSchema = Joi.object({
 
   requestId: Joi.string()
     .optional()
-    .pattern(/^[a-zA-Z0-9\-]+$/)
+    .pattern(/^[a-zA-Z0-9-]+$/)
     .min(10)
     .max(50),
   

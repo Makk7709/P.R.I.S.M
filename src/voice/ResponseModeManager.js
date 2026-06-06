@@ -63,11 +63,11 @@ export class VoiceOptimizer {
     result = result.replace(/[\u{1F300}-\u{1F9FF}]|[\u{2600}-\u{26FF}]|[\u{2700}-\u{27BF}]/gu, '');
     
     // 4. Convertir les listes à puces en texte naturel
-    const bulletMatches = result.match(/^[•\-\*]\s+(.+)$/gm);
+    const bulletMatches = result.match(/^[•\-*]\s+(.+)$/gm);
     if (bulletMatches) {
       const ordinals = ['Premièrement', 'Deuxièmement', 'Troisièmement', 'Quatrièmement', 'Cinquièmement'];
       let bulletIndex = 0;
-      result = result.replace(/^[•\-\*]\s+(.+)$/gm, (match, content) => {
+      result = result.replace(/^[•\-*]\s+(.+)$/gm, (match, content) => {
         const ordinal = ordinals[bulletIndex] || `Point ${bulletIndex + 1}`;
         bulletIndex++;
         return `${ordinal}, ${content}.`;

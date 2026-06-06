@@ -297,7 +297,7 @@ async function validateTestCoverage() {
       console.log('✅ Tous les tests passent');
       
       // Compter les tests
-      const testMatches = output.match(/✓|\√/g);
+      const testMatches = output.match(/✓|√/g);
       const testCount = testMatches ? testMatches.length : 0;
       console.log(`📊 Nombre de tests: ${testCount}`);
       

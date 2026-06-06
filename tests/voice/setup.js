@@ -77,7 +77,7 @@ class TestAudio extends EventTarget {
       let playDuration = 100; // 100ms par défaut
       
       // Extraire durée si encodée dans l'URL (blob:test-audio-DURATION)
-      const durationMatch = this._src.match(/duration[:\-]?(\d+)/i);
+      const durationMatch = this._src.match(/duration[:-]?(\d+)/i);
       if (durationMatch) {
         playDuration = parseInt(durationMatch[1], 10);
       }
