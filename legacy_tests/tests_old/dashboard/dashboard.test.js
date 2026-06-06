@@ -1,5 +1,4 @@
 import Dashboard from '../../dashboard/dashboard.js';
-import { AgentRouter } from '../../orchestration/agentRouter.js';
 
 describe('Dashboard', () => {
   let dashboard;

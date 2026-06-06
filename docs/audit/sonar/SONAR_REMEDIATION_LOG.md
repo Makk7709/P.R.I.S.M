@@ -525,3 +525,51 @@ pas de masquage) :
 
 Les 899 warnings (majoritairement `no-unused-vars` / `unused-imports`) sont
 inchangés et hors périmètre de cette passe.
+
+---
+
+## Final lint sweep — Bugs latents tranchés (Volet 1)
+
+Baseline de cette passe : `npm run lint` = **42 erreurs / 899 warnings**,
+`npm test` = **76/76**.
+
+Les deux `no-undef` résiduels remontés précédemment (décision produit) ont été
+tranchés selon ce qui est juste — un câblé, un supprimé.
+
+### Bug 1 — `backend/launchSelfEvolutionCycle.js` → CÂBLÉ
+
+- **Constat** : `saveMemorySnapshot` (×2) et `fetchLatestSnapshots` (×1) appelés
+  mais définis nulle part. L'import historique visé (`./database.js`) n'expose
+  que `getDb`/`closeDb` — jamais de snapshots.
+- **Preuve d'intention** : le module importait déjà `prismStateStore`
+  (`persistence/prismStateStore.js`) **sans l'utiliser** — c'est l'API mémoire
+  réelle (SQLite via `getDb`, méthodes `set`/`get` sérialisées en JSON). Le
+  câblage avait été préparé puis abandonné.
+- **Décision** : câblage réel (pas factice) des deux fonctions sur
+  `prismStateStore`, sous une clé `self_evolution_snapshots` (liste
+  chronologique ; `fetchLatestSnapshots(limit)` renvoie les `limit` derniers).
+- **Impact** : 3 `no-undef` résolus, l'import `prismStateStore` devient utilisé.
+  Fichier non importé par les 76 tests core → 76/76 préservés.
+
+### Bug 2 — `orchestration/agentRouter.js` → SUPPRIMÉ (code mort prouvé)
+
+- **Preuve de mort** :
+  1. CommonJS (`require` / `module.exports`) dans un projet ESM
+     (`"type":"module"`) → non exécutable tel quel.
+  2. `new Perplexity(config.perplexity)` : `Perplexity` jamais importé, aucun
+     SDK correspondant dans les dépendances (seulement `openai` +
+     `@anthropic-ai/sdk`) → crash garanti à la construction.
+  3. Aucun importeur actif (grep : 0 hit dans `server.js` / points d'entrée).
+     Seuls consommateurs : 2 tests archivés sous `legacy_tests/tests_old/`,
+     exclus du gate 76 tests (`vitest.config.core-only.js` ignore
+     `legacy_tests/**`) et ignorés par ESLint (`**/legacy_tests/**`), déjà
+     cassés (style `jest.fn()` sous vitest + crash `Perplexity`).
+- **Décision** : suppression de `orchestration/agentRouter.js` ; suppression du
+  test dédié mort `legacy_tests/tests_old/orchestration/agentRouter.test.js` ;
+  retrait de l'import `AgentRouter` orphelin (inutilisé) dans
+  `legacy_tests/tests_old/dashboard/dashboard.test.js` (`dashboard/dashboard.js`
+  n'utilise pas ce routeur).
+- **Impact** : 1 `no-undef` résolu, aucun import actif cassé. 76/76 préservés.
+
+Après Volet 1 : `npm run lint` = **38 erreurs / 898 warnings**, `npm test` =
+**76/76**.

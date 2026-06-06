@@ -7,6 +7,29 @@ import { SelfImprovementEngine } from './selfImprovementEngine.js';
 import { prismStateStore } from '../persistence/prismStateStore.js';
 import { logger } from '../utils/logger.js';
 
+const SNAPSHOT_STORE_KEY = 'self_evolution_snapshots';
+
+/**
+ * Persiste un snapshot du cycle d'auto-évolution dans le store mémoire existant.
+ * Les snapshots sont conservés en liste chronologique (du plus ancien au plus récent).
+ * @param {Object} snapshot - Les données du cycle à conserver.
+ */
+async function saveMemorySnapshot(snapshot) {
+  const snapshots = (await prismStateStore.get(SNAPSHOT_STORE_KEY)) || [];
+  snapshots.push(snapshot);
+  await prismStateStore.set(SNAPSHOT_STORE_KEY, snapshots);
+}
+
+/**
+ * Récupère les N derniers snapshots du cycle d'auto-évolution.
+ * @param {number} [limit=5] - Nombre maximum de snapshots à retourner.
+ * @returns {Promise<Object[]>} Les snapshots les plus récents (ordre chronologique).
+ */
+async function fetchLatestSnapshots(limit = 5) {
+  const snapshots = (await prismStateStore.get(SNAPSHOT_STORE_KEY)) || [];
+  return snapshots.slice(-limit);
+}
+
 export async function launchEvolutionCycle() {
   console.log("[PRISM CYCLE] 🔵 Début requête Perplexity");
 
