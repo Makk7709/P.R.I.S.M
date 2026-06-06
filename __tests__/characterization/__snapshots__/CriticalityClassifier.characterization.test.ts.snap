@@ -1,0 +1,406 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`CriticalityClassifier — characterization > classify (no context) is stable for representative prompts (golden master) 1`] = `
+[
+  {
+    "input": "what is the weather today",
+    "output": {
+      "contextInfluenced": false,
+      "details": {
+        "amplifierBonus": 0,
+        "attenuatorPenalty": -0.4,
+        "baseScore": 0,
+        "contextBonus": 0,
+      },
+      "isCritical": false,
+      "level": "NORMAL",
+      "matchedPatterns": [],
+      "reason": "Requête standard sans indicateurs de criticité",
+      "score": 0,
+      "type": "NORMAL",
+    },
+  },
+  {
+    "input": "hello how are you",
+    "output": {
+      "contextInfluenced": false,
+      "details": {
+        "amplifierBonus": 0,
+        "attenuatorPenalty": 0,
+        "baseScore": 0,
+        "contextBonus": 0,
+      },
+      "isCritical": false,
+      "level": "NORMAL",
+      "matchedPatterns": [],
+      "reason": "Requête standard sans indicateurs de criticité",
+      "score": 0,
+      "type": "NORMAL",
+    },
+  },
+  {
+    "input": "supprime tous les fichiers de la base de données",
+    "output": {
+      "contextInfluenced": false,
+      "details": {
+        "amplifierBonus": 0.15,
+        "attenuatorPenalty": 0,
+        "baseScore": 0,
+        "contextBonus": 0,
+      },
+      "isCritical": false,
+      "level": "NORMAL",
+      "matchedPatterns": [],
+      "reason": "Requête standard sans indicateurs de criticité",
+      "score": 0.15,
+      "type": "NORMAL",
+    },
+  },
+  {
+    "input": "delete all production data now",
+    "output": {
+      "contextInfluenced": false,
+      "details": {
+        "amplifierBonus": 0.25,
+        "attenuatorPenalty": 0,
+        "baseScore": 0,
+        "contextBonus": 0,
+      },
+      "isCritical": false,
+      "level": "NORMAL",
+      "matchedPatterns": [],
+      "reason": "Requête standard sans indicateurs de criticité",
+      "score": 0.25,
+      "type": "NORMAL",
+    },
+  },
+  {
+    "input": "modifier les paramètres système et la sécurité admin",
+    "output": {
+      "contextInfluenced": false,
+      "details": {
+        "amplifierBonus": 0,
+        "attenuatorPenalty": 0,
+        "baseScore": 0.9,
+        "contextBonus": 0,
+      },
+      "isCritical": true,
+      "level": "CRITICAL",
+      "matchedPatterns": [
+        {
+          "category": "SYSTEM_MODIFICATION",
+          "pattern": "/modifi(e|er?)\\s+(les?\\s+)?param[eè]tres?\\s+(de\\s+)?(s[eé]curit[eé]|syst[eè]me)/i",
+          "weight": 0.9,
+        },
+      ],
+      "reason": "Modification du système détectée - Niveau: CRITICAL",
+      "score": 0.9,
+      "type": "SYSTEM_MODIFICATION",
+    },
+  },
+  {
+    "input": "peux-tu juste me donner un exemple simple",
+    "output": {
+      "contextInfluenced": false,
+      "details": {
+        "amplifierBonus": 0,
+        "attenuatorPenalty": -0.3,
+        "baseScore": 0,
+        "contextBonus": 0,
+      },
+      "isCritical": false,
+      "level": "NORMAL",
+      "matchedPatterns": [],
+      "reason": "Requête standard sans indicateurs de criticité",
+      "score": 0,
+      "type": "NORMAL",
+    },
+  },
+  {
+    "input": "urgent: efface la configuration root immédiatement",
+    "output": {
+      "contextInfluenced": false,
+      "details": {
+        "amplifierBonus": 0.1,
+        "attenuatorPenalty": 0,
+        "baseScore": 0,
+        "contextBonus": 0,
+      },
+      "isCritical": false,
+      "level": "NORMAL",
+      "matchedPatterns": [],
+      "reason": "Requête standard sans indicateurs de criticité",
+      "score": 0.1,
+      "type": "NORMAL",
+    },
+  },
+  {
+    "input": "explique-moi la photosynthèse",
+    "output": {
+      "contextInfluenced": false,
+      "details": {
+        "amplifierBonus": 0,
+        "attenuatorPenalty": -0.4,
+        "baseScore": 0,
+        "contextBonus": 0,
+      },
+      "isCritical": false,
+      "level": "NORMAL",
+      "matchedPatterns": [],
+      "reason": "Requête standard sans indicateurs de criticité",
+      "score": 0,
+      "type": "NORMAL",
+    },
+  },
+  {
+    "input": "DROP TABLE users; -- security critical",
+    "output": {
+      "contextInfluenced": false,
+      "details": {
+        "amplifierBonus": 0,
+        "attenuatorPenalty": 0,
+        "baseScore": 0,
+        "contextBonus": 0,
+      },
+      "isCritical": false,
+      "level": "NORMAL",
+      "matchedPatterns": [],
+      "reason": "Requête standard sans indicateurs de criticité",
+      "score": 0,
+      "type": "NORMAL",
+    },
+  },
+  {
+    "input": "merci beaucoup pour ton aide",
+    "output": {
+      "contextInfluenced": false,
+      "details": {
+        "amplifierBonus": 0,
+        "attenuatorPenalty": 0,
+        "baseScore": 0,
+        "contextBonus": 0,
+      },
+      "isCritical": false,
+      "level": "NORMAL",
+      "matchedPatterns": [],
+      "reason": "Requête standard sans indicateurs de criticité",
+      "score": 0,
+      "type": "NORMAL",
+    },
+  },
+  {
+    "input": "",
+    "output": {
+      "contextInfluenced": false,
+      "details": {
+        "amplifierBonus": 0,
+        "attenuatorPenalty": 0,
+        "baseScore": 0,
+        "contextBonus": 0,
+      },
+      "isCritical": false,
+      "level": "NORMAL",
+      "matchedPatterns": [],
+      "reason": "Requête standard sans indicateurs de criticité",
+      "score": 0,
+      "type": "NORMAL",
+    },
+  },
+  {
+    "input": "   ",
+    "output": {
+      "contextInfluenced": false,
+      "details": {
+        "amplifierBonus": 0,
+        "attenuatorPenalty": 0,
+        "baseScore": 0,
+        "contextBonus": 0,
+      },
+      "isCritical": false,
+      "level": "NORMAL",
+      "matchedPatterns": [],
+      "reason": "Requête standard sans indicateurs de criticité",
+      "score": 0,
+      "type": "NORMAL",
+    },
+  },
+]
+`;
+
+exports[`CriticalityClassifier — characterization > classify respects custom thresholds (golden master) 1`] = `
+[
+  {
+    "input": "what is the weather today",
+    "output": {
+      "contextInfluenced": false,
+      "details": {
+        "amplifierBonus": 0,
+        "attenuatorPenalty": -0.4,
+        "baseScore": 0,
+        "contextBonus": 0,
+      },
+      "isCritical": false,
+      "level": "NORMAL",
+      "matchedPatterns": [],
+      "reason": "Requête standard sans indicateurs de criticité",
+      "score": 0,
+      "type": "NORMAL",
+    },
+  },
+  {
+    "input": "hello how are you",
+    "output": {
+      "contextInfluenced": false,
+      "details": {
+        "amplifierBonus": 0,
+        "attenuatorPenalty": 0,
+        "baseScore": 0,
+        "contextBonus": 0,
+      },
+      "isCritical": false,
+      "level": "NORMAL",
+      "matchedPatterns": [],
+      "reason": "Requête standard sans indicateurs de criticité",
+      "score": 0,
+      "type": "NORMAL",
+    },
+  },
+  {
+    "input": "supprime tous les fichiers de la base de données",
+    "output": {
+      "contextInfluenced": false,
+      "details": {
+        "amplifierBonus": 0.15,
+        "attenuatorPenalty": 0,
+        "baseScore": 0,
+        "contextBonus": 0,
+      },
+      "isCritical": false,
+      "level": "HIGH",
+      "matchedPatterns": [],
+      "reason": "Requête standard sans indicateurs de criticité",
+      "score": 0.15,
+      "type": "NORMAL",
+    },
+  },
+  {
+    "input": "delete all production data now",
+    "output": {
+      "contextInfluenced": false,
+      "details": {
+        "amplifierBonus": 0.25,
+        "attenuatorPenalty": 0,
+        "baseScore": 0,
+        "contextBonus": 0,
+      },
+      "isCritical": false,
+      "level": "HIGH",
+      "matchedPatterns": [],
+      "reason": "Requête standard sans indicateurs de criticité",
+      "score": 0.25,
+      "type": "NORMAL",
+    },
+  },
+  {
+    "input": "modifier les paramètres système et la sécurité admin",
+    "output": {
+      "contextInfluenced": false,
+      "details": {
+        "amplifierBonus": 0,
+        "attenuatorPenalty": 0,
+        "baseScore": 0.9,
+        "contextBonus": 0,
+      },
+      "isCritical": true,
+      "level": "CRITICAL",
+      "matchedPatterns": [
+        {
+          "category": "SYSTEM_MODIFICATION",
+          "pattern": "/modifi(e|er?)\\s+(les?\\s+)?param[eè]tres?\\s+(de\\s+)?(s[eé]curit[eé]|syst[eè]me)/i",
+          "weight": 0.9,
+        },
+      ],
+      "reason": "Modification du système détectée - Niveau: CRITICAL",
+      "score": 0.9,
+      "type": "SYSTEM_MODIFICATION",
+    },
+  },
+  {
+    "input": "peux-tu juste me donner un exemple simple",
+    "output": {
+      "contextInfluenced": false,
+      "details": {
+        "amplifierBonus": 0,
+        "attenuatorPenalty": -0.3,
+        "baseScore": 0,
+        "contextBonus": 0,
+      },
+      "isCritical": false,
+      "level": "NORMAL",
+      "matchedPatterns": [],
+      "reason": "Requête standard sans indicateurs de criticité",
+      "score": 0,
+      "type": "NORMAL",
+    },
+  },
+]
+`;
+
+exports[`CriticalityClassifier — characterization > classify with conversational context is stable (golden master) 1`] = `
+[
+  {
+    "input": "continue",
+    "output": {
+      "contextInfluenced": true,
+      "details": {
+        "amplifierBonus": 0,
+        "attenuatorPenalty": 0,
+        "baseScore": 0,
+        "contextBonus": 0.5,
+      },
+      "isCritical": false,
+      "level": "HIGH",
+      "matchedPatterns": [],
+      "reason": "Requête standard sans indicateurs de criticité",
+      "score": 0.5,
+      "type": "NORMAL",
+    },
+  },
+  {
+    "input": "fais-le maintenant",
+    "output": {
+      "contextInfluenced": true,
+      "details": {
+        "amplifierBonus": 0,
+        "attenuatorPenalty": 0,
+        "baseScore": 0,
+        "contextBonus": 0.5,
+      },
+      "isCritical": false,
+      "level": "HIGH",
+      "matchedPatterns": [],
+      "reason": "Requête standard sans indicateurs de criticité",
+      "score": 0.5,
+      "type": "NORMAL",
+    },
+  },
+  {
+    "input": "what about the weather",
+    "output": {
+      "contextInfluenced": true,
+      "details": {
+        "amplifierBonus": 0,
+        "attenuatorPenalty": 0,
+        "baseScore": 0,
+        "contextBonus": 0.5,
+      },
+      "isCritical": false,
+      "level": "HIGH",
+      "matchedPatterns": [],
+      "reason": "Requête standard sans indicateurs de criticité",
+      "score": 0.5,
+      "type": "NORMAL",
+    },
+  },
+]
+`;
