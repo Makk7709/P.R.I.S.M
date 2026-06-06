@@ -1,12 +1,10 @@
 import { 
   SensorReading, 
-  MHI, 
   Recommendation, 
   AgentVote, 
   ConsensusDecision,
   NormalizedKPI,
-  TriggerThresholds,
-  SimulationConfig 
+  TriggerThresholds 
 } from './types.js';
 import { CleaningTriggerAnalyzer } from './fouling_model.js';
 

@@ -9,10 +9,10 @@
  * @date 2024-12-06
  */
 
-import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
+import { describe, it, expect, beforeEach, afterEach } from 'vitest';
 
 // Imports des modules voice
-import { VoiceController, AudioState, AudioEvent } from '../../src/voice/VoiceController.js';
+import { VoiceController, AudioState } from '../../src/voice/VoiceController.js';
 import { AudioMutex } from '../../src/voice/AudioMutex.js';
 import { MessageTracker } from '../../src/voice/MessageTracker.js';
 import { AudioQueue } from '../../src/voice/AudioQueue.js';

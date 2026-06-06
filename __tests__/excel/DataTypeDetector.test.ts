@@ -6,7 +6,7 @@
  */
 
 import { describe, it, expect, beforeEach } from 'vitest';
-import { DataTypeDetector, DataType, TypeConfidence } from '../../src/excel/DataTypeDetector.js';
+import { DataTypeDetector, DataType } from '../../src/excel/DataTypeDetector.js';
 
 describe('DataTypeDetector', () => {
   let detector: DataTypeDetector;

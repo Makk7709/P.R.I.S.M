@@ -8,7 +8,7 @@
  * @coverage Target: 95%+ sans mocks
  */
 
-import { describe, it, expect, beforeEach, afterEach } from 'vitest';
+import { describe, it, expect } from 'vitest';
 
 // ============================================================================
 // SECTION 1: TESTS DE CLASSIFICATION DES REQUÊTES

@@ -6,10 +6,8 @@
 import { describe, it, expect } from 'vitest';
 import { 
   normalizeProviderResponse,
-  validateProviderResult,
-  createProviderResultError
+  validateProviderResult
 } from '../../src/core/providers/AdapterGuard.js';
-import { ProviderStatusSchema } from '../../src/security/contracts/providerResult.js';
 
 describe('ProviderAdapters - Adversarial Tests (Fail-Closed)', () => {
   

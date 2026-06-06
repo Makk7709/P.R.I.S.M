@@ -1,7 +1,6 @@
 import { 
   SimulationConfig, 
-  DEFAULT_CONFIG, 
-  DEFAULT_BASELINE,
+  DEFAULT_CONFIG,
   SensorReading, 
   MolecularData, 
   NormalizedKPI,
@@ -9,9 +8,9 @@ import {
   StrategyMetrics,
   SystemEvent
 } from './types.js';
-import { SensorSimulator, generateSensorTimeSeries } from './sensors.js';
-import { MolecularSimulator, generateMolecularTimeSeries } from './molecular.js';
-import { NormalizedKPICalculator, CleaningTriggerAnalyzer, calculateNormalizedKPITimeSeries } from './fouling_model.js';
+import { SensorSimulator } from './sensors.js';
+import { MolecularSimulator } from './molecular.js';
+import { NormalizedKPICalculator, CleaningTriggerAnalyzer } from './fouling_model.js';
 import { ConsensusEngine } from './consensus.js';
 import { EconomicCalculator, CIPEvent } from './economics.js';
 

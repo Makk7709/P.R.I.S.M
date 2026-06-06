@@ -1,6 +1,6 @@
 import { describe, it, expect, beforeEach } from 'vitest';
 import { MHICalculator, FoulingKineticsModel, calculateMHITimeSeries } from '../simulation/fouling_model.js';
-import { SensorReading, MHI, DataQuality } from '../simulation/types.js';
+import { SensorReading, DataQuality } from '../simulation/types.js';
 
 // ═══════════════════════════════════════════════════════════════════════════════════
 // FOULING MODEL & MHI TESTS - PRISM-IND

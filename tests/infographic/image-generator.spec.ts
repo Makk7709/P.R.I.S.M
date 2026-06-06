@@ -10,8 +10,8 @@
  * - Support multi-formats (PNG, JPEG, WebP)
  */
 
-import { describe, it, expect, beforeEach, vi, afterEach } from 'vitest';
-import { ImageGenerator, ImageGenerationResult } from '../../src/infographic/ImageGenerator.js';
+import { describe, it, expect, beforeEach, vi } from 'vitest';
+import { ImageGenerator } from '../../src/infographic/ImageGenerator.js';
 
 // Mock de l'API fal.ai
 vi.mock('@fal-ai/client', () => ({

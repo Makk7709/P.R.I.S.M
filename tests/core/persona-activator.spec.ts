@@ -3,7 +3,7 @@
  * Processus TDD strict - Pas de simplification
  */
 
-import { describe, it, expect, beforeEach, vi } from 'vitest';
+import { describe, it, expect, beforeEach } from 'vitest';
 import { PersonaActivator } from '../../src/core/PersonaActivator.js';
 
 describe('PersonaActivator', () => {

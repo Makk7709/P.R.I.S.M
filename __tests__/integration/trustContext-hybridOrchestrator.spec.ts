@@ -5,8 +5,8 @@
 
 import { describe, it, expect, beforeEach, vi, afterEach } from 'vitest';
 import { HybridOrchestrator, OrchestrationMode } from '../../../src/orchestrator/HybridOrchestrator.js';
-import { TrustContext, CriticalityLevel, ApprovalStatus } from '../../../src/core/TrustContext.js';
-import { ConsensusManager, ConsensusStatus } from '../../../src/core/ConsensusManager.js';
+import { CriticalityLevel } from '../../../src/core/TrustContext.js';
+import { ConsensusStatus } from '../../../src/core/ConsensusManager.js';
 
 describe('HybridOrchestrator + TrustContext Integration', () => {
   let orchestrator: HybridOrchestrator;

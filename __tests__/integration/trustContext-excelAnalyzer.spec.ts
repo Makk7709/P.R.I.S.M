@@ -5,7 +5,7 @@
 
 import { describe, it, expect, beforeEach, vi, afterEach } from 'vitest';
 import { ExcelAnalyzer } from '../../../src/excel/ExcelAnalyzer.js';
-import { TrustContext, CriticalityLevel } from '../../../src/core/TrustContext.js';
+import { CriticalityLevel } from '../../../src/core/TrustContext.js';
 
 describe('ExcelAnalyzer + TrustContext Integration', () => {
   let analyzer: ExcelAnalyzer;

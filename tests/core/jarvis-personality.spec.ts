@@ -16,7 +16,7 @@
  * - Initiative et curiosité
  */
 
-import { describe, it, expect, beforeEach, vi } from 'vitest';
+import { describe, it, expect, beforeEach } from 'vitest';
 import { JarvisPersonality } from '../../src/core/JarvisPersonality.js';
 
 describe('JarvisPersonality - Personnalité JARVIS pour PRISM', () => {

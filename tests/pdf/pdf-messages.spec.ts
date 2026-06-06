@@ -9,7 +9,7 @@
  * @coverage Target: 95%+ sans mocks
  */
 
-import { describe, it, expect, beforeEach, afterEach } from 'vitest';
+import { describe, it, expect, beforeEach } from 'vitest';
 import { PdfExportService } from '../../src/export/PdfExportService.js';
 
 // ============================================================================

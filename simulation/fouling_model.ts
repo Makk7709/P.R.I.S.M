@@ -1,5 +1,4 @@
-import { SensorReading, MHI, DataQuality, NormalizedKPI, MolecularData, TriggerThresholds, SimulationConfig } from './types.js';
-import { MolecularSimulator } from './molecular.js';
+import { SensorReading, MHI, DataQuality, NormalizedKPI, MolecularData, TriggerThresholds } from './types.js';
 
 // ═══════════════════════════════════════════════════════════════════════════════════
 // MEMBRANE FOULING MODEL & NORMALIZED KPI - PRISM-IND Water Treatment

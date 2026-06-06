@@ -10,9 +10,6 @@ import { PrismCoreOrchestrator } from '../../../src/core/PrismCoreOrchestrator.j
 import { IdempotentPrismCore } from '../../../src/core/IdempotentPrismCore.js';
 import { FailoverPrismCore } from '../../../src/core/FailoverPrismCore.js';
 import { MetricsPrismCore } from '../../../src/core/MetricsPrismCore.js';
-import { ConsensusManager } from '../../../src/core/ConsensusManager.js';
-import { SecureJournalManager } from '../../../src/core/SecureJournalManager.js';
-import { getTrustContext } from '../../../src/core/TrustContext.js';
 
 describe('PrismCore - Coverage ≥95% Tests', () => {
   beforeEach(() => {

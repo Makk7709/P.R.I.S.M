@@ -10,7 +10,7 @@
  */
 
 import { describe, it, expect, beforeEach, afterEach } from 'vitest';
-import { PdfExportService, PdfExportOptions, ChatMessage, ExportResult } from '../../src/export/PdfExportService.js';
+import { PdfExportService, ChatMessage } from '../../src/export/PdfExportService.js';
 import fs from 'node:fs';
 import path from 'node:path';
 

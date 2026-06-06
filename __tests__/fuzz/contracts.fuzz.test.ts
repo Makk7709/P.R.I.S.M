@@ -11,8 +11,7 @@ import {
   VoteSchema 
 } from '../../src/security/contracts/consensus.js';
 import {
-  validateCriticalDecisionRequest,
-  validateApprovalRequest
+  validateCriticalDecisionRequest
 } from '../../src/security/contracts/trustcontext.js';
 import {
   validateJournalEntryInput

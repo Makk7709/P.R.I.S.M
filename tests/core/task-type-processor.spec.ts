@@ -6,7 +6,7 @@
 import { describe, it, expect, beforeEach, vi } from 'vitest';
 import { TaskTypeProcessor } from '../../src/core/TaskTypeProcessor.js';
 import { CriticalityLevel } from '../../src/core/TrustContext.js';
-import { ConsensusStatus, DecisionType } from '../../src/core/ConsensusManager.js';
+import { ConsensusStatus } from '../../src/core/ConsensusManager.js';
 
 // Mocks
 vi.mock('../../src/orchestrator/CriticalityClassifier.js', () => ({

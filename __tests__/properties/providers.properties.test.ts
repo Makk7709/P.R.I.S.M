@@ -13,7 +13,7 @@ import {
   createProviderResultOK,
   createProviderResultError
 } from '../../src/security/contracts/providerResult.js';
-import { ConsensusManager, ConsensusStatus, VoteType, DecisionType } from '../../src/core/ConsensusManager.js';
+import { ConsensusManager, VoteType, DecisionType } from '../../src/core/ConsensusManager.js';
 
 describe('ProviderAdapters - Property-Based Tests (Invariants Métier)', () => {
   const timeoutMs = 5000;

@@ -6,7 +6,7 @@
  * et non OpenAI
  */
 
-import { describe, it, expect, beforeEach, vi } from 'vitest';
+import { describe, it, expect, beforeEach } from 'vitest';
 import { PersonaActivator } from '../../src/core/PersonaActivator.js';
 import { ConsciousnessLayer } from '../../src/core/ConsciousnessLayer.js';
 import { readFileSync } from 'node:fs';

@@ -1,4 +1,4 @@
-import { SensorReading, DataQuality, SimulationConfig, NTU, µScm, Celsius, Bar } from './types.js';
+import { SensorReading, DataQuality, SimulationConfig } from './types.js';
 
 // ═══════════════════════════════════════════════════════════════════════════════════
 // SENSOR SIMULATION MODULE - PRISM-IND Water Treatment

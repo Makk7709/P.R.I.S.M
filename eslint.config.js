@@ -2,6 +2,7 @@ import js from '@eslint/js';
 import prettier from 'eslint-config-prettier';
 import globals from 'globals';
 import tseslint from 'typescript-eslint';
+import unusedImports from 'eslint-plugin-unused-imports';
 
 export default [
   js.configs.recommended,
@@ -88,6 +89,7 @@ export default [
     },
     plugins: {
       '@typescript-eslint': tseslint.plugin,
+      'unused-imports': unusedImports,
     },
     rules: {
       // The core `no-undef` rule misfires on TypeScript type references and
@@ -101,6 +103,10 @@ export default [
         'warn',
         { argsIgnorePattern: '^_', varsIgnorePattern: '^_' },
       ],
+      // Auto-removable on --fix; addresses Sonar S1128 (unused imports). Only
+      // genuinely-unused imports are removed (scope analysis, type-aware of
+      // TS usage), so this is behaviour-preserving.
+      'unused-imports/no-unused-imports': 'warn',
     },
   },
   prettier, // Must be last to override other configs

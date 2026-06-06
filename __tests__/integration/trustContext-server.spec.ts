@@ -6,7 +6,7 @@
 import { describe, it, expect, beforeEach, vi, afterEach } from 'vitest';
 import request from 'supertest';
 import express from 'express';
-import { TrustContext, CriticalityLevel } from '../../../src/core/TrustContext.js';
+import { CriticalityLevel } from '../../../src/core/TrustContext.js';
 
 // Mock des modules
 vi.mock('../../../src/core/TrustContext.js', () => ({

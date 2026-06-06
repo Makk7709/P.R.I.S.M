@@ -4,7 +4,7 @@
  * Couverture minimum 95%
  */
 
-import { describe, it, expect, beforeEach, vi } from 'vitest';
+import { describe, it, expect, beforeEach } from 'vitest';
 import { ConsciousnessLayer } from '../../src/core/ConsciousnessLayer.js';
 
 describe('ConsciousnessLayer', () => {

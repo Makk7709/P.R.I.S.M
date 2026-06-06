@@ -11,7 +11,7 @@
 import { describe, it, expect, beforeEach, vi, afterEach } from 'vitest';
 
 // Import du module à tester (sera créé après les tests)
-import { AdaptiveTimeoutManager, TimeoutConfig, OperationType } from '../../src/ui/AdaptiveTimeoutManager.js';
+import { AdaptiveTimeoutManager, OperationType } from '../../src/ui/AdaptiveTimeoutManager.js';
 
 describe('AdaptiveTimeoutManager - TDD Strict', () => {
   let manager: AdaptiveTimeoutManager;
