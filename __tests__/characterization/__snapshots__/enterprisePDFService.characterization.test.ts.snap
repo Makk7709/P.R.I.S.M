@@ -1,0 +1,433 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`EnterprisePDFService._addParagraphWithFormatting — characterization > empty string 1`] = `
+{
+  "calls": [
+    [
+      "font",
+      "Helvetica",
+    ],
+    [
+      "fontSize",
+      12,
+    ],
+    [
+      "fillColor",
+      "#1F2937",
+    ],
+    [
+      "text",
+      "",
+      {
+        "continued": false,
+      },
+    ],
+    [
+      "moveDown",
+      0.3,
+    ],
+  ],
+  "structure": {},
+}
+`;
+
+exports[`EnterprisePDFService._addParagraphWithFormatting — characterization > entirely bold 1`] = `
+{
+  "calls": [
+    [
+      "font",
+      "Helvetica-Bold",
+    ],
+    [
+      "fontSize",
+      12,
+    ],
+    [
+      "fillColor",
+      "#059669",
+    ],
+    [
+      "text",
+      "all bold",
+      100,
+      200,
+      {
+        "continued": true,
+        "lineBreak": false,
+      },
+    ],
+    [
+      "widthOfString",
+      "all bold",
+    ],
+    [
+      "text",
+      "",
+      {
+        "continued": false,
+      },
+    ],
+    [
+      "moveDown",
+      0.3,
+    ],
+  ],
+  "structure": {
+    "hasBoldText": true,
+  },
+}
+`;
+
+exports[`EnterprisePDFService._addParagraphWithFormatting — characterization > leading bold with empty leading segment 1`] = `
+{
+  "calls": [
+    [
+      "font",
+      "Helvetica-Bold",
+    ],
+    [
+      "fontSize",
+      12,
+    ],
+    [
+      "fillColor",
+      "#059669",
+    ],
+    [
+      "text",
+      "start",
+      100,
+      200,
+      {
+        "continued": true,
+        "lineBreak": false,
+      },
+    ],
+    [
+      "widthOfString",
+      "start",
+    ],
+    [
+      "font",
+      "Helvetica",
+    ],
+    [
+      "fontSize",
+      12,
+    ],
+    [
+      "fillColor",
+      "#1F2937",
+    ],
+    [
+      "text",
+      " then normal",
+      105,
+      200,
+      {
+        "continued": true,
+        "lineBreak": false,
+      },
+    ],
+    [
+      "widthOfString",
+      " then normal",
+    ],
+    [
+      "text",
+      "",
+      {
+        "continued": false,
+      },
+    ],
+    [
+      "moveDown",
+      0.3,
+    ],
+  ],
+  "structure": {
+    "hasBoldText": true,
+  },
+}
+`;
+
+exports[`EnterprisePDFService._addParagraphWithFormatting — characterization > mixed bold and normal text 1`] = `
+{
+  "calls": [
+    [
+      "font",
+      "Helvetica",
+    ],
+    [
+      "fontSize",
+      12,
+    ],
+    [
+      "fillColor",
+      "#1F2937",
+    ],
+    [
+      "text",
+      "Hello ",
+      100,
+      200,
+      {
+        "continued": true,
+        "lineBreak": false,
+      },
+    ],
+    [
+      "widthOfString",
+      "Hello ",
+    ],
+    [
+      "font",
+      "Helvetica-Bold",
+    ],
+    [
+      "fontSize",
+      12,
+    ],
+    [
+      "fillColor",
+      "#059669",
+    ],
+    [
+      "text",
+      "world",
+      106,
+      200,
+      {
+        "continued": true,
+        "lineBreak": false,
+      },
+    ],
+    [
+      "widthOfString",
+      "world",
+    ],
+    [
+      "font",
+      "Helvetica",
+    ],
+    [
+      "fontSize",
+      12,
+    ],
+    [
+      "fillColor",
+      "#1F2937",
+    ],
+    [
+      "text",
+      " foo",
+      111,
+      200,
+      {
+        "continued": true,
+        "lineBreak": false,
+      },
+    ],
+    [
+      "widthOfString",
+      " foo",
+    ],
+    [
+      "text",
+      "",
+      {
+        "continued": false,
+      },
+    ],
+    [
+      "moveDown",
+      0.3,
+    ],
+  ],
+  "structure": {
+    "hasBoldText": true,
+  },
+}
+`;
+
+exports[`EnterprisePDFService._addParagraphWithFormatting — characterization > multiple bold segments 1`] = `
+{
+  "calls": [
+    [
+      "font",
+      "Helvetica",
+    ],
+    [
+      "fontSize",
+      12,
+    ],
+    [
+      "fillColor",
+      "#1F2937",
+    ],
+    [
+      "text",
+      "a ",
+      100,
+      200,
+      {
+        "continued": true,
+        "lineBreak": false,
+      },
+    ],
+    [
+      "widthOfString",
+      "a ",
+    ],
+    [
+      "font",
+      "Helvetica-Bold",
+    ],
+    [
+      "fontSize",
+      12,
+    ],
+    [
+      "fillColor",
+      "#059669",
+    ],
+    [
+      "text",
+      "b",
+      102,
+      200,
+      {
+        "continued": true,
+        "lineBreak": false,
+      },
+    ],
+    [
+      "widthOfString",
+      "b",
+    ],
+    [
+      "font",
+      "Helvetica",
+    ],
+    [
+      "fontSize",
+      12,
+    ],
+    [
+      "fillColor",
+      "#1F2937",
+    ],
+    [
+      "text",
+      " c ",
+      103,
+      200,
+      {
+        "continued": true,
+        "lineBreak": false,
+      },
+    ],
+    [
+      "widthOfString",
+      " c ",
+    ],
+    [
+      "font",
+      "Helvetica-Bold",
+    ],
+    [
+      "fontSize",
+      12,
+    ],
+    [
+      "fillColor",
+      "#059669",
+    ],
+    [
+      "text",
+      "d",
+      106,
+      200,
+      {
+        "continued": true,
+        "lineBreak": false,
+      },
+    ],
+    [
+      "widthOfString",
+      "d",
+    ],
+    [
+      "font",
+      "Helvetica",
+    ],
+    [
+      "fontSize",
+      12,
+    ],
+    [
+      "fillColor",
+      "#1F2937",
+    ],
+    [
+      "text",
+      " e",
+      107,
+      200,
+      {
+        "continued": true,
+        "lineBreak": false,
+      },
+    ],
+    [
+      "widthOfString",
+      " e",
+    ],
+    [
+      "text",
+      "",
+      {
+        "continued": false,
+      },
+    ],
+    [
+      "moveDown",
+      0.3,
+    ],
+  ],
+  "structure": {
+    "hasBoldText": true,
+  },
+}
+`;
+
+exports[`EnterprisePDFService._addParagraphWithFormatting — characterization > no bold markers 1`] = `
+{
+  "calls": [
+    [
+      "font",
+      "Helvetica",
+    ],
+    [
+      "fontSize",
+      12,
+    ],
+    [
+      "fillColor",
+      "#1F2937",
+    ],
+    [
+      "text",
+      "no bold here",
+      {
+        "continued": false,
+      },
+    ],
+    [
+      "moveDown",
+      0.3,
+    ],
+  ],
+  "structure": {},
+}
+`;
