@@ -7,7 +7,6 @@
  */
 
 import { KernelBus } from '../../core/KernelBus.js';
-import ConsensusManager from '../../src/core/ConsensusManager.js';
 import PrismVitals from '../../prismVitals.js';
 import fs from 'node:fs';
 import path from 'node:path';

@@ -1,6 +1,4 @@
 import { jest } from '@jest/globals';
-import { AdaptiveCyclerWidget } from './AdaptiveCyclerWidget.js';
-import { InsightCenter } from './InsightCenter.js';
 import { PrismUITestRunner } from './prismUITests.js';
 import { PrismUI } from './prismUI.js';
 import { config } from '../config.js';

@@ -4,8 +4,6 @@
 
 import { AdaptiveCyclerWidget } from './AdaptiveCyclerWidget.js';
 import { InsightCenter } from './InsightCenter.js';
-import { PrismCompression } from '../utils/prismCompression.js';
-import { PrismPurgeScheduler } from '../utils/prismPurgeScheduler.js';
 
 // Supprimer les imports CSS qui causent des problèmes
 // import './prismUI.css';

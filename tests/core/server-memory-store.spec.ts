@@ -123,7 +123,7 @@ describe('ServerMemoryStore - Extraction Données Complètes', () => {
     });
 
     it('NE DOIT PAS extraire de prénom si trop long', () => {
-      const input = 'Je suis ' + 'A'.repeat(35);
+      const input = `Je suis ${  'A'.repeat(35)}`;
       const response = '';
       store._extractPersonalInfo(input, response);
       
@@ -215,7 +215,7 @@ describe('ServerMemoryStore - Extraction Données Complètes', () => {
     });
 
     it('NE DOIT PAS extraire de rôle si trop long (> 500 caractères)', () => {
-      const input = 'Ton rôle est ' + 'A'.repeat(510);
+      const input = `Ton rôle est ${  'A'.repeat(510)}`;
       const response = '';
       store._extractPersonalInfo(input, response);
       
@@ -324,7 +324,7 @@ describe('ServerMemoryStore - Extraction Données Complètes', () => {
     });
 
     it('NE DOIT PAS extraire de stratégie si trop long (> 500 caractères)', () => {
-      const input = 'Notre stratégie est ' + 'A'.repeat(510);
+      const input = `Notre stratégie est ${  'A'.repeat(510)}`;
       const response = '';
       store._extractPersonalInfo(input, response);
       
@@ -444,7 +444,7 @@ describe('ServerMemoryStore - Extraction Données Complètes', () => {
     });
 
     it('NE DOIT PAS extraire de contexte si trop long (> 500 caractères)', () => {
-      const input = 'Important: ' + 'A'.repeat(510);
+      const input = `Important: ${  'A'.repeat(510)}`;
       const response = '';
       store._extractPersonalInfo(input, response);
       

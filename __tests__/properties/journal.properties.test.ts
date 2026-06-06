@@ -177,7 +177,7 @@ describe('Journal / Audit Log - Property-Based Tests', () => {
             // Modifier un champ (eventType)
             record.eventType = corruptValue;
             lines[corruptIndex] = JSON.stringify(record);
-            content = lines.join('\n') + '\n';
+            content = `${lines.join('\n')  }\n`;
             await fs.writeFile(logFile, content, 'utf8');
             
             // Verify doit échouer

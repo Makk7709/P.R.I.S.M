@@ -11,7 +11,7 @@ vi.mock('../../backend/voicePersonalityEnhancer.js', () => ({
   VoicePersonalityEnhancer: vi.fn().mockImplementation(() => ({
     enhanceForVoice: vi.fn((response) => ({
       ...response,
-      enhancedText: response.content + ' [Enhanced]',
+      enhancedText: `${response.content  } [Enhanced]`,
       voiceConfig: { speaking_rate: 1.1 }
     }))
   }))

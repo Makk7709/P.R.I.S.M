@@ -613,7 +613,7 @@
         
       } catch (error) {
         console.error('[PrismPdfExport] ❌ Erreur:', error);
-        alert('Erreur lors de l\'export: ' + error.message);
+        alert(`Erreur lors de l'export: ${  error.message}`);
       } finally {
         this.isExporting = false;
         exportBtn.innerHTML = originalContent;
@@ -675,7 +675,7 @@
             model: el.dataset?.model || (role === 'assistant' ? 'openai' : null)
           });
           
-          console.log(`[PrismPdfExport] Message ${index + 1}:`, role, content.substring(0, 50) + '...');
+          console.log(`[PrismPdfExport] Message ${index + 1}:`, role, `${content.substring(0, 50)  }...`);
         }
       });
       
@@ -707,8 +707,8 @@
       
       document.getElementById('export-stat-messages').textContent = messages.length;
       document.getElementById('export-stat-words').textContent = totalWords > 1000 ? 
-        (totalWords / 1000).toFixed(1) + 'K' : totalWords;
-      document.getElementById('export-stat-pages').textContent = '~' + estimatedPages;
+        `${(totalWords / 1000).toFixed(1)  }K` : totalWords;
+      document.getElementById('export-stat-pages').textContent = `~${  estimatedPages}`;
     }
   }
 

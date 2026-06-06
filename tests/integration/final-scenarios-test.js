@@ -104,7 +104,7 @@ async function runScenarios() {
     }
   }
   
-  console.log('\n' + '='.repeat(60));
+  console.log(`\n${  '='.repeat(60)}`);
   console.log(`📊 Résultats: ${passed} passés, ${failed} échoués sur ${scenarios.length} scénarios`);
   console.log('='.repeat(60));
   

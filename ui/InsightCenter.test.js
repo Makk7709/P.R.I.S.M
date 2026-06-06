@@ -1,6 +1,5 @@
 import { jest } from '@jest/globals';
 import { InsightCenter } from './InsightCenter.js';
-import kernelBus from '../core/KernelBus.js';
 import { config } from '../config.js';
 
 // Mock prismBus

@@ -96,7 +96,7 @@ describe('TamperEvidentAuditLog - Tamper Detection', () => {
       const record = JSON.parse(lines[1]);
       record.eventType = 'CORRUPTED'; // Corruption
       lines[1] = JSON.stringify(record);
-      content = lines.join('\n') + '\n';
+      content = `${lines.join('\n')  }\n`;
       await fs.writeFile(logFile, content, 'utf8');
 
       // Verify doit échouer
@@ -127,7 +127,7 @@ describe('TamperEvidentAuditLog - Tamper Detection', () => {
 
       // Supprimer la ligne 2 (index 2, qui est le 3ème record, seq=3)
       lines.splice(2, 1);
-      content = lines.join('\n') + '\n';
+      content = `${lines.join('\n')  }\n`;
       await fs.writeFile(logFile, content, 'utf8');
 
       // Verify doit échouer
@@ -163,7 +163,7 @@ describe('TamperEvidentAuditLog - Tamper Detection', () => {
 
       // Insérer après la ligne 1
       lines.splice(2, 0, JSON.stringify(fakeRecord));
-      content = lines.join('\n') + '\n';
+      content = `${lines.join('\n')  }\n`;
       await fs.writeFile(logFile, content, 'utf8');
 
       // Verify doit échouer
@@ -196,7 +196,7 @@ describe('TamperEvidentAuditLog - Tamper Detection', () => {
       lines[1] = lines[2];
       lines[2] = temp;
 
-      content = lines.join('\n') + '\n';
+      content = `${lines.join('\n')  }\n`;
       await fs.writeFile(logFile, content, 'utf8');
 
       // Verify doit échouer
@@ -266,7 +266,7 @@ describe('TamperEvidentAuditLog - Tamper Detection', () => {
 
       record.sig = wrongSignature.toString('hex');
       lines[0] = JSON.stringify(record);
-      content = lines.join('\n') + '\n';
+      content = `${lines.join('\n')  }\n`;
       await fs.writeFile(logFile, content, 'utf8');
 
       // Verify doit échouer

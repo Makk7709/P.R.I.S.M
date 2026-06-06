@@ -10,10 +10,10 @@ import { TrustContext, CriticalityLevel, ApprovalStatus, getTrustContext } from 
 jest.mock('crypto', () => ({
   createHash: jest.fn(() => ({
     update: jest.fn().mockReturnThis(),
-    digest: jest.fn(() => 'test_hash_' + Date.now())
+    digest: jest.fn(() => `test_hash_${  Date.now()}`)
   })),
   randomBytes: jest.fn(() => ({
-    toString: jest.fn(() => 'test_token_' + Date.now())
+    toString: jest.fn(() => `test_token_${  Date.now()}`)
   }))
 }));
 

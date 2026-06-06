@@ -43,7 +43,7 @@ describe('TrustContext Security Verification - Simplified', () => {
         }
 
         async requireHumanApproval(type, level, data) {
-          const token = 'test_token_' + Date.now();
+          const token = `test_token_${  Date.now()}`;
           this.pendingDecisions.set(token, {
             type, level, data, status: 'PENDING'
           });

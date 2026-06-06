@@ -6,8 +6,6 @@
 import { CONFIG } from '../config.js';
 import { PrismCompression } from '../utils/prismCompression.js';
 import { PrismPurgeScheduler } from '../utils/prismPurgeScheduler.js';
-import { PrismHMAC } from '../security/prismHMAC.js';
-import { AudioManager } from '../audio.js';
 // import './prismUI.css';
 // import './AdaptiveCyclerWidget.css';
 

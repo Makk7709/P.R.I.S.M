@@ -2,7 +2,6 @@
 import kernelBus from '../core/KernelBus.js';
 import { PrismCompression } from '../utils/prismCompression.js';
 import { PrismPurgeScheduler } from '../utils/prismPurgeScheduler.js';
-import { CONFIG } from '../config.js';
 
 export class InsightCenter {
   constructor(audioManager) {

@@ -1,4 +1,4 @@
-import { describe, it, expect, beforeEach } from 'vitest';
+import { describe, it, expect } from 'vitest';
 import { ProviderAdapter } from '../../src/core/providers/ProviderAdapter.js';
 
 class FlakyAdapter extends ProviderAdapter {

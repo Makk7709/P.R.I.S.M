@@ -85,7 +85,7 @@ vi.mock('../../src/core/JarvisPersonality.js', () => ({
 
 vi.mock('../../src/core/ConsciousnessLayer.js', () => ({
   ConsciousnessLayer: vi.fn().mockImplementation(() => ({
-    enrichPromptWithAwareness: vi.fn((prompt) => prompt + ' [Enriched by Consciousness]'),
+    enrichPromptWithAwareness: vi.fn((prompt) => `${prompt  } [Enriched by Consciousness]`),
     reflectOnResponse: vi.fn().mockResolvedValue({
       quality: 0.9,
       improvements: []
