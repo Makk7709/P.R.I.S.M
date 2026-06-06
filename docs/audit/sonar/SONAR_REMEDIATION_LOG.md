@@ -692,3 +692,96 @@ Après Volet 3 : `npm run lint` = **0 erreur / 1 warning**, `npm test` = **76/76
 
 Tests : **76/76** maintenus à chaque lot. Bug latent restant (à arbitrer) :
 route `enterpriseExportRouter` jamais montée (`server.js`).
+
+---
+
+## Campagne TIER 1 CRITICAL — refactors production à iso-comportement
+
+Périmètre : les **36 issues CRITICAL ∩ Tier 1** (source autoritative :
+`sonar_issues.csv`, `severity==CRITICAL && tier==TIER1`). Règles concernées :
+`S3776` (complexité cognitive) ×29, `S7059` (async dans constructeur) ×4,
+`S1186` (corps vide) ×2, `S4123` (await sur non-Promise) ×1.
+
+Méthode (haute prudence) : pour tout fichier de production non couvert par le
+gate, **tests de caractérisation (golden-master snapshots) D'ABORD**, capturant
+le comportement ACTUEL (cas nominaux + bords + entrées malveillantes), exécutés
+par le gate et verts ; **PUIS** refactor `S3776` par extraction de fonctions
+(« Extract Method »), iso-comportement **prouvé par les snapshots**. Commits par
+lot via plumbing git (`commit-tree`/`update-ref`), auteur Amine Mohamed, 0
+trailer bot. `npm run lint` = 0 erreur maintenu.
+
+Tests de caractérisation ajoutés (gate `vitest.config.core-only.js`, dossier
+`__tests__/characterization/`) : **+51 tests** → gate **95 → 146 PASS**.
+
+### Statut autoritatif des 36 CRITICAL Tier 1
+
+| # | Fichier | Ligne(s)\* | Règle | Statut |
+|---|---------|-----------|-------|--------|
+| 1-2 | `asi/asiMemorySystem.js` | 661,666 | S1186 | ✅ Corrigé (campagne antérieure, Lot 4) |
+| 3 | `src/core/ConsensusManager.js` | 412 | S3776 | ✅ Corrigé — `submitVote` |
+| 4 | `src/core/ServerMemoryStore.js` | 120 | S3776 | ✅ Corrigé — `_extractPersonalInfo` (CC 75) |
+| 5 | `src/core/TrustContext.js` | 165 | S3776 | ✅ Corrigé — `_loadApproverPublicKeys` |
+| 6 | `src/core/providers/AdapterGuard.js` | 176 | S3776 | ✅ Corrigé — `normalizeProviderResponse` |
+| 7 | `src/excel/DataTypeDetector.js` | 345 | S3776 | ✅ Corrigé — `_detectStringType` (CC 39) |
+| 8-10 | `src/excel/StatisticalEngine.js` | 654,1313,1402 | S3776 | ✅ Corrigé — `correlationMatrix`/`analyzeDataset`/`_generateKeyInsights` |
+| 11 | `src/infographic/InfographicGenerator.js` | 497 | S3776 | ✅ Corrigé — `extractDataFromChat` |
+| 12 | `src/orchestrator/CriticalityClassifier.js` | 189 | S3776 | ✅ Corrigé — `classify` |
+| 13 | `src/core/TaskTypeProcessor.js` | 212 | S4123 | ✅ Faux positif documenté (NOSONAR : `await` sur fonction `async`) |
+| 14 | `src/orchestrator/HybridOrchestrator.js` | 65 | S3776 | ✅ Corrigé — `process` (extract `_determineMode`/`_enforceTrustGate`/`_executeMode`…) |
+| 15 | `backend/services/enterprisePDFService.js` | 617 | S3776 | ✅ Corrigé — `_addParagraphWithFormatting` (extract `_renderInlineSegment`) |
+| 16-17 | `src/excel/ExcelParserService.js` | 319,495 | S3776 | ✅ Corrigé — `_parseSheet`/`_extractRows` |
+| 18-22 | `src/excel/ExcelAnalyzer.js` | 941,991,1030,1179,+1 | S3776 | ✅ Corrigé ×5 — `_generateKeyInsights`/`_identifyPatterns`/`_generateColumnProfiles`/`_checkDataQuality`/`_formatForAI` |
+| 23-24 | `src/excel/ExcelAnalyzer.js` | 115,415 | S3776 | ⏸️ Différé — `analyze`/`_analyzeSheet` (orchestration async : parser+TrustContext+consensus ; nécessite un harnais d'intégration, hors budget iso-sûr) |
+| 25 | `src/excel/ExcelAnalyzer.js` | 64 | S7059 | ⏸️ Différé — async dans constructeur (`_loadOrchestrators`), changement structurel |
+| 26 | `backend/orchestrator.js` | 376 | S3776 | ⏸️ Différé — `handleUserInstruction` : entrypoint réseau LLM, dépendances internes au module (cache/`callOpenAI`/voiceEnhancer) non injectables ⇒ pas caractérisable sans harnais réseau complet |
+| 27-29 | `server.js` | 80,356,372 | S3776 | ⏸️ Différé — handlers Express (`req`/`res`, ElevenLabs, orchestrateurs) ⇒ nécessite un harnais HTTP complet |
+| 30 | `src/core/TaskTypeProcessor.js` | 56 | S3776 | ⏸️ Différé — `process` (CC 56), orchestrateur multi-collaborateurs massif ; refactor sûr nécessite un harnais lourd |
+| 31 | `src/core/TaskTypeProcessor.js` | 44 | S7059 | ⏸️ Différé — async dans constructeur (`memoryEngine.initialize()`), structurel |
+| 32 | `src/core/ConsensusManager.js` | 176 | S7059 | ⏸️ Différé — async dans constructeur, structurel |
+| 33 | `evolution/selfImprovementEngine.js` | 487 | S3776 | ⏸️ Différé — `analyzeBatch` non exécutable par le gate (`SECURITY_MODE.CURRENT` figé à `PROD` à l'import ⇒ early-return/throw ; + I/O fichier winston, consensus/trust réseau) |
+| 34 | `evolution/selfImprovementEngine.js` | 94 | S7059 | ⏸️ Différé — async dans constructeur, structurel |
+| 35-36 | `src/excel/ExcelAnalyzer.js` | (drift) | S3776 | ⏸️ Différé — 2 S3776 restants non mappables précisément (dérive de lignes CSV vs fichier courant) ; candidats : `exportForChat`/`exportToMarkdown`/`_interpretQuery` (gros formateurs purs, lot dédié futur) |
+
+\* Lignes telles qu'au scan SonarQube ; le fichier courant a dérivé (les
+refactors ajoutent des lignes), d'où le mapping approximatif sur `ExcelAnalyzer`.
+
+### Bilan campagne
+
+- **Corrigés cette session** (refactors S3776, iso prouvé par snapshots) :
+  `HybridOrchestrator.process`, `EnterprisePDFService._addParagraphWithFormatting`,
+  `ExcelParserService._parseSheet`+`_extractRows`, `ExcelAnalyzer` ×5
+  (`_generateKeyInsights`, `_identifyPatterns`, `_generateColumnProfiles`,
+  `_checkDataQuality`, `_formatForAI`) → **9 fonctions**.
+- **Corrigés antérieurement** : 10× S3776 + 2× S1186 + 1 faux positif S4123.
+- **Différés (documentés)** : 8× S3776 (entrypoints réseau/HTTP, orchestrateurs
+  async massifs, formateurs non mappés) + 4× S7059 (async-in-constructor,
+  structurel). Statut « différé + raison » conforme au livrable.
+
+### `enterpriseSanitizer.js` — fichier prioritaire (sécurité) : caractérisé, 0 CRITICAL
+
+Réconciliation CSV : `backend/services/enterpriseSanitizer.js` porte **51 issues
+MINOR uniquement** (S7781 ×47 `replaceAll`, S7780 ×4 `String.raw`), **0
+CRITICAL / 0 S3776**. Conformément à la consigne (fichier le plus à risque,
+sanitizer, non couvert), des **tests de caractérisation complets** ont été
+ajoutés (15 tests, toutes les méthodes publiques ; nominal + bords + entrées
+malveillantes XSS/HTML/contrôle/longues).
+
+- **Bug latent découvert et verrouillé** : `sanitizeContent()` **lève une
+  `TypeError` pour toute chaîne non vide** — le constructeur redéfinit
+  `this.casualExpressions` (de `string[]` ligne 18 en `object[]` ligne 82) mais
+  `sanitizeContent` (l.140) traite encore les entrées comme des chaînes. C'est
+  du **code mort en production** : la route `enterpriseExport.js:162` appelle
+  `removeEmojisAndCasualContent` (→ `fastSanitization`/`fullSanitization`, qui
+  fonctionnent). **Non « corrigé »** (changement de comportement = décision
+  produit, règle STOP) ; comportement actuel (throw) capturé tel quel.
+- **S7781/S7780 (MINOR, hors périmètre CRITICAL) NON mécanisés** : la
+  conversion `replace`→`replaceAll` à la ligne 140 changerait le message d'erreur
+  levé (`replaceAll` n'existe pas non plus sur une `RegExp`) et les lignes 146+
+  sont du code mort inatteignable ⇒ conversion non iso / sans valeur. Conforme
+  au choix de différer S7781 (risque de mécanisation aveugle).
+
+### Tests / lint / push finaux
+
+- `npm test` : **146/146 PASS** (95 + 51 caractérisation), ~65 s, 20 fichiers.
+- `npm run lint` : **0 erreur / 1 warning** (`enterpriseExportRouter`, connu).
+- Push `origin/main` par paliers, normal (jamais `--force`), auteur Amine Mohamed.
