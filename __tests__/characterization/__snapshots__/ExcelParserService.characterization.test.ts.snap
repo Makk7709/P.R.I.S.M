@@ -1,0 +1,273 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`ExcelParserService._extractRows — characterization > extracts rows skipping fully empty ones 1`] = `
+[
+  {
+    "Age": 30,
+    "Name": "Alice",
+  },
+  {
+    "Age": 25,
+    "Name": "Bob",
+  },
+]
+`;
+
+exports[`ExcelParserService._extractRows — characterization > handles missing cells as null 1`] = `
+[
+  {
+    "A": "only-a",
+    "B": null,
+    "C": null,
+  },
+]
+`;
+
+exports[`ExcelParserService._extractRows — characterization > respects columnIndices subset 1`] = `
+[
+  {
+    "City": "Paris",
+    "Name": "Alice",
+  },
+]
+`;
+
+exports[`ExcelParserService._parseSheet — characterization > basic sheet with headers (default options) 1`] = `
+{
+  "columnTypes": {
+    "Active": "boolean",
+    "Age": "id",
+    "Name": "string",
+  },
+  "columnsWithFormulas": [],
+  "detectedSeparator": undefined,
+  "formulas": null,
+  "headerRow": 0,
+  "headers": [
+    "Name",
+    "Age",
+    "Active",
+  ],
+  "isEmpty": false,
+  "mergedCells": [],
+  "name": "Sheet1",
+  "rows": [
+    {
+      "Active": true,
+      "Age": 30,
+      "Name": "Alice",
+    },
+    {
+      "Active": false,
+      "Age": 25,
+      "Name": "Bob",
+    },
+  ],
+  "stats": null,
+  "typeStats": {
+    "booleanColumns": [
+      "Active",
+    ],
+    "dateColumns": [],
+    "numericColumns": [],
+    "textColumns": [
+      "Name",
+    ],
+  },
+}
+`;
+
+exports[`ExcelParserService._parseSheet — characterization > column filter via options.columns 1`] = `
+{
+  "columnTypes": {
+    "City": "string",
+    "Name": "string",
+  },
+  "columnsWithFormulas": [],
+  "detectedSeparator": undefined,
+  "formulas": null,
+  "headerRow": 0,
+  "headers": [
+    "Name",
+    "City",
+  ],
+  "isEmpty": false,
+  "mergedCells": [],
+  "name": "Filtered",
+  "rows": [
+    {
+      "City": "Paris",
+      "Name": "Alice",
+    },
+    {
+      "City": "Lyon",
+      "Name": "Bob",
+    },
+  ],
+  "stats": null,
+  "typeStats": {
+    "booleanColumns": [],
+    "dateColumns": [],
+    "numericColumns": [],
+    "textColumns": [
+      "Name",
+      "City",
+    ],
+  },
+}
+`;
+
+exports[`ExcelParserService._parseSheet — characterization > detectTypes=false skips type detection 1`] = `
+{
+  "columnTypes": null,
+  "columnsWithFormulas": [],
+  "detectedSeparator": undefined,
+  "formulas": null,
+  "headerRow": 0,
+  "headers": [
+    "A",
+    "B",
+  ],
+  "isEmpty": false,
+  "mergedCells": [],
+  "name": "NoTypes",
+  "rows": [
+    {
+      "A": 1,
+      "B": "foo",
+    },
+  ],
+  "stats": null,
+  "typeStats": null,
+}
+`;
+
+exports[`ExcelParserService._parseSheet — characterization > empty sheet (no !ref) 1`] = `
+{
+  "headerRow": 0,
+  "headers": [],
+  "isEmpty": true,
+  "name": "Empty",
+  "rows": [],
+}
+`;
+
+exports[`ExcelParserService._parseSheet — characterization > explicit range notation 1`] = `
+{
+  "columnTypes": {
+    "H1": "string",
+    "H2": "string",
+  },
+  "columnsWithFormulas": [],
+  "detectedSeparator": undefined,
+  "formulas": null,
+  "headerRow": 0,
+  "headers": [
+    "H1",
+    "H2",
+  ],
+  "isEmpty": false,
+  "mergedCells": [],
+  "name": "Ranged",
+  "rows": [
+    {
+      "H1": "a",
+      "H2": "b",
+    },
+    {
+      "H1": "d",
+      "H2": "e",
+    },
+  ],
+  "stats": null,
+  "typeStats": {
+    "booleanColumns": [],
+    "dateColumns": [],
+    "numericColumns": [],
+    "textColumns": [
+      "H1",
+      "H2",
+    ],
+  },
+}
+`;
+
+exports[`ExcelParserService._parseSheet — characterization > hasHeaders=false generates column names 1`] = `
+{
+  "columnTypes": {
+    "Column_A": "string",
+    "Column_B": "id",
+  },
+  "columnsWithFormulas": [],
+  "detectedSeparator": undefined,
+  "formulas": null,
+  "headerRow": 0,
+  "headers": [
+    "Column_A",
+    "Column_B",
+  ],
+  "isEmpty": false,
+  "mergedCells": [],
+  "name": "NoHeaders",
+  "rows": [
+    {
+      "Column_A": "x",
+      "Column_B": 1,
+    },
+    {
+      "Column_A": "y",
+      "Column_B": 2,
+    },
+  ],
+  "stats": null,
+  "typeStats": {
+    "booleanColumns": [],
+    "dateColumns": [],
+    "numericColumns": [],
+    "textColumns": [
+      "Column_A",
+    ],
+  },
+}
+`;
+
+exports[`ExcelParserService._parseSheet — characterization > includeStats=true adds stats 1`] = `
+{
+  "columnTypes": {
+    "Score": "id",
+  },
+  "columnsWithFormulas": [],
+  "detectedSeparator": undefined,
+  "formulas": null,
+  "headerRow": 0,
+  "headers": [
+    "Score",
+  ],
+  "isEmpty": false,
+  "mergedCells": [],
+  "name": "Stats",
+  "rows": [
+    {
+      "Score": 10,
+    },
+    {
+      "Score": 20,
+    },
+    {
+      "Score": 30,
+    },
+  ],
+  "stats": {
+    "fillRate": 1,
+    "filledCells": 3,
+    "nullCount": 0,
+    "totalCells": 3,
+  },
+  "typeStats": {
+    "booleanColumns": [],
+    "dateColumns": [],
+    "numericColumns": [],
+    "textColumns": [],
+  },
+}
+`;
