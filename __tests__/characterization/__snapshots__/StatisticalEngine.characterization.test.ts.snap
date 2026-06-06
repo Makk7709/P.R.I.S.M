@@ -1,0 +1,280 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`StatisticalEngine — characterization > _generateKeyInsights is stable (golden master) 1`] = `
+[
+  "skewedCol shows positive skewness",
+  "negSkew shows negative skewness",
+  "Strong correlation between a and b",
+  "Strong correlation between b and c",
+]
+`;
+
+exports[`StatisticalEngine — characterization > _generateKeyInsights is stable (golden master) 2`] = `
+[
+  "skewedCol shows positive skewness",
+  "negSkew shows negative skewness",
+]
+`;
+
+exports[`StatisticalEngine — characterization > analyzeDataset is stable (golden master) 1`] = `
+{
+  "categoricalColumns": [
+    "dept",
+  ],
+  "categoricalSummary": {
+    "dept": {
+      "frequency": {
+        "eng": {
+          "count": 3,
+          "percentage": 60,
+        },
+        "sales": {
+          "count": 2,
+          "percentage": 40,
+        },
+      },
+      "mode": {
+        "frequency": 3,
+        "mode": "eng",
+      },
+      "uniqueValues": 2,
+    },
+  },
+  "correlations": {
+    "age": {
+      "age": 1,
+      "salary": 1,
+    },
+    "salary": {
+      "age": 1,
+      "salary": 1,
+    },
+  },
+  "dataQuality": {
+    "completenessScore": 1,
+    "nullCount": 0,
+    "outlierWarnings": [],
+  },
+  "executiveSummary": {
+    "categoricalColumnCount": 1,
+    "keyInsights": [
+      "Strong correlation between age and salary",
+    ],
+    "numericColumnCount": 2,
+    "totalColumns": 3,
+    "totalRows": 5,
+  },
+  "numericColumns": [
+    "age",
+    "salary",
+  ],
+  "statistics": {
+    "age": {
+      "coefficientOfVariation": 28.342973,
+      "count": 5,
+      "excessKurtosis": -1.236326,
+      "hasNoMode": true,
+      "interquartileRange": 15,
+      "isEmpty": false,
+      "isMultimodal": false,
+      "kurtosis": 1.763674,
+      "max": 55,
+      "mean": 38,
+      "median": 35,
+      "min": 25,
+      "mode": [],
+      "nanCount": 0,
+      "nullCount": 0,
+      "quartiles": {
+        "Q1": 30,
+        "Q2": 35,
+        "Q3": 45,
+      },
+      "range": 30,
+      "sampleStandardDeviation": 12.041595,
+      "sampleVariance": 145,
+      "skewness": 0.840431,
+      "standardDeviation": 10.77033,
+      "sum": 190,
+      "validCount": 5,
+      "variance": 116,
+    },
+    "salary": {
+      "coefficientOfVariation": 38.465463,
+      "count": 5,
+      "excessKurtosis": -1.236326,
+      "hasNoMode": true,
+      "interquartileRange": 30000,
+      "isEmpty": false,
+      "isMultimodal": false,
+      "kurtosis": 1.763674,
+      "max": 90000,
+      "mean": 56000,
+      "median": 50000,
+      "min": 30000,
+      "mode": [],
+      "nanCount": 0,
+      "nullCount": 0,
+      "quartiles": {
+        "Q1": 40000,
+        "Q2": 50000,
+        "Q3": 70000,
+      },
+      "range": 60000,
+      "sampleStandardDeviation": 24083.189158,
+      "sampleVariance": 580000000,
+      "skewness": 0.840431,
+      "standardDeviation": 21540.659229,
+      "sum": 280000,
+      "validCount": 5,
+      "variance": 464000000,
+    },
+  },
+}
+`;
+
+exports[`StatisticalEngine — characterization > analyzeDataset with nulls and outliers is stable (golden master) 1`] = `
+{
+  "categoricalColumns": [
+    "label",
+  ],
+  "categoricalSummary": {
+    "label": {
+      "frequency": {
+        "a": {
+          "count": 3,
+          "percentage": 75,
+        },
+        "b": {
+          "count": 1,
+          "percentage": 25,
+        },
+      },
+      "mode": {
+        "frequency": 3,
+        "mode": "a",
+      },
+      "uniqueValues": 2,
+    },
+  },
+  "correlations": null,
+  "dataQuality": {
+    "completenessScore": 0.8,
+    "nullCount": 2,
+    "outlierWarnings": [
+      {
+        "column": "x",
+        "outlierCount": 1,
+        "percentage": 25,
+      },
+    ],
+  },
+  "executiveSummary": {
+    "categoricalColumnCount": 1,
+    "keyInsights": [
+      "x shows positive skewness",
+    ],
+    "numericColumnCount": 1,
+    "totalColumns": 2,
+    "totalRows": 5,
+  },
+  "numericColumns": [
+    "x",
+  ],
+  "statistics": {
+    "x": {
+      "coefficientOfVariation": 171.827934,
+      "count": 4,
+      "excessKurtosis": -0.666674,
+      "hasNoMode": true,
+      "interquartileRange": 250.5,
+      "isEmpty": false,
+      "isMultimodal": false,
+      "kurtosis": 2.333326,
+      "max": 1000,
+      "mean": 251.5,
+      "median": 2.5,
+      "min": 1,
+      "mode": [],
+      "nanCount": 0,
+      "nullCount": 0,
+      "quartiles": {
+        "Q1": 1.75,
+        "Q2": 2.5,
+        "Q3": 252.25,
+      },
+      "range": 999,
+      "sampleStandardDeviation": 499.000668,
+      "sampleVariance": 249001.666667,
+      "skewness": 3.079177,
+      "standardDeviation": 432.147255,
+      "sum": 1006,
+      "validCount": 4,
+      "variance": 186751.25,
+    },
+  },
+}
+`;
+
+exports[`StatisticalEngine — characterization > correlationMatrix is stable (golden master) 1`] = `
+{
+  "matrix": {
+    "a": {
+      "a": 1,
+      "b": 1,
+      "c": -1,
+      "d": 0.8,
+    },
+    "b": {
+      "a": 1,
+      "b": 1,
+      "c": -1,
+      "d": 0.8,
+    },
+    "c": {
+      "a": -1,
+      "b": -1,
+      "c": 1,
+      "d": -0.8,
+    },
+    "d": {
+      "a": 0.8,
+      "b": 0.8,
+      "c": -0.8,
+      "d": 1,
+    },
+  },
+  "strongestNegative": {
+    "columns": [
+      "a",
+      "c",
+    ],
+    "value": -1,
+  },
+  "strongestPositive": {
+    "columns": [
+      "a",
+      "b",
+    ],
+    "value": 1,
+  },
+}
+`;
+
+exports[`StatisticalEngine — characterization > correlationMatrix on single column is stable (golden master) 1`] = `
+{
+  "matrix": {
+    "only": {
+      "only": 1,
+    },
+  },
+  "strongestNegative": {
+    "columns": null,
+    "value": 1,
+  },
+  "strongestPositive": {
+    "columns": null,
+    "value": -1,
+  },
+}
+`;
