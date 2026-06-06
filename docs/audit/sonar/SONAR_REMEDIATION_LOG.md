@@ -190,6 +190,65 @@ iso-comportement.
 - Commit (plumbing, 0 trailer bot):
   `fix(sonar): resolve no-case-declarations and no-useless-escape ESLint errors`.
 
+## Poste — Erreurs ESLint préexistantes (.js/.cjs)
+
+Cible: la **dette JS préexistante** explicitement laissée hors périmètre par le
+poste TS ci-dessus (errors de niveau `error`, pas `warning`, dans des fichiers
+source `.js`/`.cjs`). Inventaire via `eslint .` (flat config). Toutes les
+corrections sont iso-comportement ; tests **76/76** après chaque lot.
+
+Inventaire (fichier · règle · nombre) dans les fichiers ciblés :
+
+| Fichier                              | Règle                | N | Méthode                  |
+| ------------------------------------ | -------------------- | - | ------------------------ |
+| `asi/knowledgeTransferEngine.js`     | no-case-declarations | 3 | bloc `{ }`               |
+| `prismReflex.js`                     | no-case-declarations | 3 | bloc `{ }`               |
+| `src/voice/AudioQueue.js`            | no-case-declarations | 1 | bloc `{ }`               |
+| `backend/middleware/validation.js`   | no-useless-escape    | 1 | suppr. `\` superflu      |
+| `prismSanitize.js`                   | no-useless-escape    | 1 | suppr. `\` superflu      |
+| `scripts/validate-microstep-0.2.cjs` | no-useless-escape    | 1 | suppr. `\` superflu      |
+| `src/voice/ResponseModeManager.js`   | no-useless-escape    | 2 | suppr. `\*` (garde `\-`) |
+| `tests/voice/setup.js`               | no-useless-escape    | 1 | suppr. `\` superflu      |
+| `backend/middleware/validation.js`   | no-control-regex     | 3 | disable justifié         |
+| `prismSanitize.js`                   | no-control-regex     | 1 | disable justifié         |
+| `prismReflex.js`                     | no-undef             | 8 | globals navigateur       |
+| `tests/voice/setup.js`               | no-undef             | 11| globals navigateur       |
+
+Lots (chacun : commit conventionnel via plumbing, 0 trailer bot, tests 76/76) :
+
+- **Lot 1 — `chore(eslint)`** (`eslint.config.js`) : (a) `ignores` étendus avec
+  `**/.next/**` et `build/` → ESLint cesse de linter le code GÉNÉRÉ de Next.js
+  sous `dashboard/.next/` (~1378 erreurs absurdes contre du transpilé/minifié,
+  jamais à corriger). (b) bloc `files` scopé déclarant les globals navigateur
+  (`window`, `document`, `CustomEvent`, `EventTarget`, `Event`, `Audio`) pour
+  `prismReflex.js` (dispatch de DOM CustomEvents) et `tests/voice/setup.js`
+  (harnais jsdom polyfillant l'API Audio/Event) → résout les `no-undef`. NB :
+  `globals.browser` (paquet `globals@11`) contient une clé malformée
+  (`"AudioWorkletGlobalScope "`) rejetée par ESLint 9 → globals listés
+  explicitement.
+- **Lot 2 — `fix(lint)`** `no-case-declarations` (7) : chaque corps de `case`
+  déclarant `const`/`let` est entouré d'un bloc `{ }`. Flot inchangé (`break`
+  dans le bloc).
+- **Lot 3 — `fix(lint)`** `no-useless-escape` (6) : retrait des `\` superflus
+  dans les littéraux regex, position par position (vérifié non intentionnel ;
+  langage matché identique). Cas notable `ResponseModeManager.js` `[•\-\*]` :
+  seul `\*` retiré, le `\-` est **conservé** (sans lui, `•-*` formerait une
+  plage hors-ordre).
+- **Lot 4 — `fix(lint)`** `no-control-regex` (4) : ces regex matchent
+  **volontairement** des caractères de contrôle (sanitizers : strip/détection
+  de control chars dans l'entrée utilisateur). Casser le motif annulerait la
+  sanitisation → `eslint-disable-next-line no-control-regex` ciblé + commentaire
+  justificatif, comportement inchangé.
+
+Résultat : **0 erreur ESLint réelle dans les 8 fichiers source ciblés** (étaient
+≈17 errors de règles « recommended » + 19 `no-undef`). Delta global du dépôt :
+errors ESLint **2049 → 635** (le gros du delta vient de l'ignore de
+`dashboard/.next/`). Les **635** erreurs restantes sont de la dette préexistante
+**hors périmètre de ce poste** (fichiers navigateur `ui/`, lib vendored
+`utils/lz-string.js`, `monitoring/`, virtualenv Python `.venv/`, etc.) : non
+nommées par la mission, non introduites ici, et relevant de décisions de scope
+distinctes (mêmes critères de risque que les lots différés ci-dessous).
+
 ## Lots différés (documentés, non exécutés)
 
 Non traités dans ce poste, par décision de risque (cf. audit hostile §4):
