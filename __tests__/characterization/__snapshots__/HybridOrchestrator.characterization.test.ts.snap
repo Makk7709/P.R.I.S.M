@@ -1,0 +1,221 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`HybridOrchestrator.process — characterization > auto-detected critical classification 1`] = `
+{
+  "autoDetected": true,
+  "consensusStatus": "APPROVED",
+  "consensusUsed": true,
+  "content": "CONSENSUS_CONTENT",
+  "criticalityScore": 0.95,
+  "metadata": {
+    "consensusDetails": {
+      "participatingModels": [
+        "openai",
+        "anthropic",
+      ],
+      "status": "APPROVED",
+      "voteSummary": {
+        "abstain": 0,
+        "approve": 1,
+        "reject": 0,
+      },
+    },
+    "criticality": {
+      "level": "CRITICAL",
+      "score": 0.95,
+      "type": "finance",
+    },
+    "modeLabel": "Consensus Multi-IA",
+    "orchestrationMode": "CONSENSUS",
+    "selectedModel": "consensus",
+    "taskType": "general",
+  },
+  "mode": "CONSENSUS",
+  "model": "consensus",
+  "participatingModels": [
+    "openai",
+    "anthropic",
+  ],
+  "votes": [
+    {
+      "provider": "openai",
+      "reasoning": "ok",
+      "timestamp": 0,
+      "vote": "APPROVE",
+    },
+  ],
+}
+`;
+
+exports[`HybridOrchestrator.process — characterization > forceConsensus flag 1`] = `
+{
+  "consensusStatus": "APPROVED",
+  "consensusUsed": true,
+  "content": "CONSENSUS_CONTENT",
+  "criticalityScore": 0.2,
+  "forcedMode": true,
+  "metadata": {
+    "consensusDetails": {
+      "participatingModels": [
+        "openai",
+        "anthropic",
+      ],
+      "status": "APPROVED",
+      "voteSummary": {
+        "abstain": 0,
+        "approve": 1,
+        "reject": 0,
+      },
+    },
+    "criticality": {
+      "level": "LOW",
+      "score": 0.2,
+      "type": "general",
+    },
+    "modeLabel": "Consensus Multi-IA",
+    "orchestrationMode": "CONSENSUS",
+    "selectedModel": "consensus",
+    "taskType": "general",
+  },
+  "mode": "CONSENSUS",
+  "model": "consensus",
+  "participatingModels": [
+    "openai",
+    "anthropic",
+  ],
+  "votes": [
+    {
+      "provider": "openai",
+      "reasoning": "ok",
+      "timestamp": 0,
+      "vote": "APPROVE",
+    },
+  ],
+}
+`;
+
+exports[`HybridOrchestrator.process — characterization > forceRouted flag (even when critical) 1`] = `
+{
+  "consensusUsed": false,
+  "content": "ROUTED_CONTENT",
+  "criticalityScore": 0.95,
+  "forcedMode": true,
+  "metadata": {
+    "criticality": {
+      "level": "CRITICAL",
+      "score": 0.95,
+      "type": "finance",
+    },
+    "modeLabel": "Router Simple",
+    "orchestrationMode": "ROUTED",
+    "selectedModel": "openai",
+    "taskType": "general",
+  },
+  "mode": "ROUTED",
+  "model": "openai",
+}
+`;
+
+exports[`HybridOrchestrator.process — characterization > metrics reflect routed vs consensus counts 1`] = `
+{
+  "consensusRequests": 1,
+  "failures": 0,
+  "routedRequests": 1,
+  "totalRequests": 2,
+}
+`;
+
+exports[`HybridOrchestrator.process — characterization > routed (normal, no flags) 1`] = `
+{
+  "consensusUsed": false,
+  "content": "ROUTED_CONTENT",
+  "criticalityScore": 0.2,
+  "metadata": {
+    "criticality": {
+      "level": "LOW",
+      "score": 0.2,
+      "type": "general",
+    },
+    "modeLabel": "Router Simple",
+    "orchestrationMode": "ROUTED",
+    "selectedModel": "openai",
+    "taskType": "general",
+  },
+  "mode": "ROUTED",
+  "model": "openai",
+}
+`;
+
+exports[`HybridOrchestrator.process — characterization > taskType critical (high score -> HIGH trust level) 1`] = `
+{
+  "consensusStatus": "APPROVED",
+  "consensusUsed": true,
+  "content": "CONSENSUS_CONTENT",
+  "criticalityScore": 0.85,
+  "metadata": {
+    "consensusDetails": {
+      "participatingModels": [
+        "openai",
+        "anthropic",
+      ],
+      "status": "APPROVED",
+      "voteSummary": {
+        "abstain": 0,
+        "approve": 1,
+        "reject": 0,
+      },
+    },
+    "criticality": {
+      "level": "HIGH",
+      "score": 0.85,
+      "type": "finance",
+    },
+    "modeLabel": "Consensus Multi-IA",
+    "orchestrationMode": "CONSENSUS",
+    "selectedModel": "consensus",
+    "taskType": "critical",
+  },
+  "mode": "CONSENSUS",
+  "model": "consensus",
+  "participatingModels": [
+    "openai",
+    "anthropic",
+  ],
+  "votes": [
+    {
+      "provider": "openai",
+      "reasoning": "ok",
+      "timestamp": 0,
+      "vote": "APPROVE",
+    },
+  ],
+}
+`;
+
+exports[`HybridOrchestrator.process — characterization > trust gate generic error -> security validation failed 1`] = `
+{
+  "content": null,
+  "criticalityScore": 0,
+  "error": "Security validation failed - request rejected",
+  "metadata": {
+    "error": "Security validation failed - request rejected",
+    "orchestrationMode": "ERROR",
+  },
+  "mode": "ROUTED",
+  "model": "error",
+}
+`;
+
+exports[`HybridOrchestrator.process — characterization > trust gate rejects the request 1`] = `
+{
+  "content": null,
+  "criticalityScore": 0,
+  "error": "Request rejected by TrustContext: needs human",
+  "metadata": {
+    "error": "Request rejected by TrustContext: needs human",
+    "orchestrationMode": "ERROR",
+  },
+  "mode": "ROUTED",
+  "model": "error",
+}
+`;
