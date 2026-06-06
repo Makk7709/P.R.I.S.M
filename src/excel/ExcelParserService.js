@@ -332,12 +332,66 @@ export class ExcelParserService {
     }
 
     // Déterminer la ligne d'en-tête
-    let headerRow = options.headerRow ?? 0;
-    if (options.autoDetectHeader) {
-      headerRow = this._detectHeaderRow(worksheet, range);
+    const headerRow = this._resolveHeaderRow(worksheet, range, options);
+
+    // Extraire les en-têtes (et éventuel filtre de colonnes)
+    const resolvedHeaders = this._resolveHeaders(worksheet, range, headerRow, options);
+    let headers = resolvedHeaders.headers;
+    const columnIndices = resolvedHeaders.columnIndices;
+
+    // Déterminer les bornes de lignes de données
+    let { startRow, endRow } = this._resolveRowRange(range, headerRow, options);
+
+    // Gérer la notation de plage Excel (surcharge en-têtes + bornes)
+    if (options.range) {
+      const override = this._applyExcelRangeNotation(worksheet, options);
+      headers = override.headers;
+      startRow = override.startRow;
+      endRow = override.endRow;
     }
 
-    // Extraire les en-têtes
+    // Extraire les lignes
+    const rows = this._extractRows(worksheet, headers, startRow, endRow, range, options, columnIndices);
+
+    // Extraire les cellules fusionnées
+    const mergedCells = this._extractMergedCells(worksheet);
+
+    // Données dérivées optionnelles (formules, types, stats)
+    const derived = this._buildDerivedSheetData(worksheet, rows, headers, startRow, endRow, options);
+
+    return {
+      name: sheetName,
+      headers,
+      rows,
+      headerRow,
+      mergedCells,
+      formulas: derived.formulas,
+      columnsWithFormulas: derived.columnsWithFormulas,
+      columnTypes: derived.columnTypes,
+      typeStats: derived.typeStats,
+      stats: derived.stats,
+      isEmpty: rows.length === 0,
+      detectedSeparator: worksheet._detectedSeparator
+    };
+  }
+
+  /**
+   * Détermine la ligne d'en-tête (auto-détection si demandée).
+   * @private
+   */
+  _resolveHeaderRow(worksheet, range, options) {
+    const headerRow = options.headerRow ?? 0;
+    if (options.autoDetectHeader) {
+      return this._detectHeaderRow(worksheet, range);
+    }
+    return headerRow;
+  }
+
+  /**
+   * Extrait les en-têtes et applique l'éventuel filtre de colonnes.
+   * @private
+   */
+  _resolveHeaders(worksheet, range, headerRow, options) {
     let headers;
     if (options.hasHeaders === false) {
       // Générer des noms de colonnes
@@ -349,47 +403,58 @@ export class ExcelParserService {
       headers = this._extractHeaders(worksheet, headerRow, range, options);
     }
 
-    // Filtrer les colonnes si spécifié
     let columnIndices = null;
     if (options.columns) {
       columnIndices = options.columns.map(col => headers.indexOf(col)).filter(i => i !== -1);
       headers = columnIndices.map(i => headers[i]);
     }
 
-    // Extraire les données selon la plage spécifiée
+    return { headers, columnIndices };
+  }
+
+  /**
+   * Calcule les bornes de lignes de données à partir des options.
+   * @private
+   */
+  _resolveRowRange(range, headerRow, options) {
     let startRow = options.hasHeaders === false ? range.s.r : headerRow + 1;
     let endRow = range.e.r;
-    
+
     if (options.startRow !== undefined) {
       startRow = options.startRow;
     }
     if (options.endRow !== undefined) {
       endRow = Math.min(options.endRow, range.e.r);
     }
-    
-    // Gérer la notation de plage Excel
-    if (options.range) {
-      const rangeRef = XLSX.utils.decode_range(options.range);
-      startRow = rangeRef.s.r;
-      endRow = rangeRef.e.r;
-      
-      // Extraire les en-têtes de la plage
-      headers = [];
-      for (let col = rangeRef.s.c; col <= rangeRef.e.c; col++) {
-        const cellRef = XLSX.utils.encode_cell({ r: rangeRef.s.r, c: col });
-        const cell = worksheet[cellRef];
-        headers.push(cell ? this._getCellValue(cell) : `Column_${col}`);
-      }
-      startRow++; // Passer l'en-tête
+
+    return { startRow, endRow };
+  }
+
+  /**
+   * Applique la notation de plage Excel (ex: "A1:C10") : recalcule en-têtes et bornes.
+   * @private
+   */
+  _applyExcelRangeNotation(worksheet, options) {
+    const rangeRef = XLSX.utils.decode_range(options.range);
+    let startRow = rangeRef.s.r;
+    const endRow = rangeRef.e.r;
+
+    const headers = [];
+    for (let col = rangeRef.s.c; col <= rangeRef.e.c; col++) {
+      const cellRef = XLSX.utils.encode_cell({ r: rangeRef.s.r, c: col });
+      const cell = worksheet[cellRef];
+      headers.push(cell ? this._getCellValue(cell) : `Column_${col}`);
     }
+    startRow++; // Passer l'en-tête
 
-    // Extraire les lignes
-    const rows = this._extractRows(worksheet, headers, startRow, endRow, range, options, columnIndices);
+    return { headers, startRow, endRow };
+  }
 
-    // Extraire les cellules fusionnées
-    const mergedCells = this._extractMergedCells(worksheet);
-
-    // Extraire les formules si demandé
+  /**
+   * Construit les données dérivées optionnelles (formules, types, stats).
+   * @private
+   */
+  _buildDerivedSheetData(worksheet, rows, headers, startRow, endRow, options) {
     let formulas = null;
     let columnsWithFormulas = [];
     if (options.preserveFormulas) {
@@ -398,7 +463,6 @@ export class ExcelParserService {
       columnsWithFormulas = formulaData.columnsWithFormulas;
     }
 
-    // Détecter les types si demandé
     let columnTypes = null;
     let typeStats = null;
     if (options.detectTypes !== false) {
@@ -407,26 +471,12 @@ export class ExcelParserService {
       typeStats = typeData.stats;
     }
 
-    // Calculer les statistiques de base si demandé
     let stats = null;
     if (options.includeStats) {
       stats = this._computeSheetStats(rows, headers);
     }
 
-    return {
-      name: sheetName,
-      headers,
-      rows,
-      headerRow,
-      mergedCells,
-      formulas,
-      columnsWithFormulas,
-      columnTypes,
-      typeStats,
-      stats,
-      isEmpty: rows.length === 0,
-      detectedSeparator: worksheet._detectedSeparator
-    };
+    return { formulas, columnsWithFormulas, columnTypes, typeStats, stats };
   }
 
   /**
@@ -494,31 +544,11 @@ export class ExcelParserService {
    */
   _extractRows(worksheet, headers, startRow, endRow, range, options, columnIndices) {
     const rows = [];
-    
+    const cols = columnIndices || headers.map((_, i) => range.s.c + i);
+
     for (let rowIdx = startRow; rowIdx <= endRow; rowIdx++) {
-      const row = {};
-      let hasData = false;
-      
-      const cols = columnIndices || headers.map((_, i) => range.s.c + i);
-      
-      for (let i = 0; i < headers.length; i++) {
-        const col = cols[i];
-        const cellRef = XLSX.utils.encode_cell({ r: rowIdx, c: col });
-        const cell = worksheet[cellRef];
-        
-        let value = cell ? this._getCellValue(cell) : null;
-        
-        // Gérer les cellules fusionnées si demandé
-        if (value === null && options.expandMergedCells && worksheet['!merges']) {
-          value = this._getMergedCellValue(worksheet, rowIdx, col);
-        }
-        
-        row[headers[i]] = value;
-        if (value !== null && value !== '') {
-          hasData = true;
-        }
-      }
-      
+      const { row, hasData } = this._extractRowCells(worksheet, headers, rowIdx, cols, options);
+
       // Ne pas inclure les lignes complètement vides
       if (hasData) {
         rows.push(row);
@@ -526,6 +556,35 @@ export class ExcelParserService {
     }
     
     return rows;
+  }
+
+  /**
+   * Extrait les cellules d'une ligne donnée et indique si la ligne contient des données.
+   * @private
+   */
+  _extractRowCells(worksheet, headers, rowIdx, cols, options) {
+    const row = {};
+    let hasData = false;
+
+    for (let i = 0; i < headers.length; i++) {
+      const col = cols[i];
+      const cellRef = XLSX.utils.encode_cell({ r: rowIdx, c: col });
+      const cell = worksheet[cellRef];
+
+      let value = cell ? this._getCellValue(cell) : null;
+
+      // Gérer les cellules fusionnées si demandé
+      if (value === null && options.expandMergedCells && worksheet['!merges']) {
+        value = this._getMergedCellValue(worksheet, rowIdx, col);
+      }
+
+      row[headers[i]] = value;
+      if (value !== null && value !== '') {
+        hasData = true;
+      }
+    }
+
+    return { row, hasData };
   }
 
   /**
