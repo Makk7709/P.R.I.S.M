@@ -11,8 +11,6 @@ export { VoiceIntegration } from './VoiceIntegration.js';
 export { VoiceAnalyzer as default } from './VoiceAnalyzer.js';
 
 // Export des classes principales pour utilisation directe
-export {
-  VoiceAnalyzer as PrismVoiceAnalyzer,
-  VoiceSentimentDetector as PrismSentimentDetector,
-  VoiceIntegration as PrismVoiceIntegration
-};
+export { VoiceAnalyzer as PrismVoiceAnalyzer } from './VoiceAnalyzer.js';
+export { VoiceSentimentDetector as PrismSentimentDetector } from './VoiceSentimentDetector.js';
+export { VoiceIntegration as PrismVoiceIntegration } from './VoiceIntegration.js';

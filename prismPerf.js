@@ -88,7 +88,7 @@ const PRISMPerf = {
 
   setupDOMOptimization() {
     // Batch DOM updates
-    let pendingUpdates = new Map();
+    const pendingUpdates = new Map();
     let updateTimeout = null;
 
     this.scheduleDOMUpdate = (element, updates) => {

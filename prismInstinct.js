@@ -25,8 +25,6 @@ const INSTINCT_THRESHOLDS = {
 export class PrismInstinct {
   #isActive = false;
   #pulseCounter = 0;
-  #lastAnalysis = null;
-  #preventiveActions = new Map();
   #eventListeners = new Set();
 
   /**
@@ -153,8 +151,6 @@ export class PrismInstinct {
         mood: mood,
         severity: this._calculateSeverity(forecast, vitals, noesis, mood)
       };
-
-      this.#lastAnalysis = analysis;
 
       if (analysis.severity > INSTINCT_THRESHOLDS.SEVERITY_LOW) {
         await this.takePreventiveAction(analysis);

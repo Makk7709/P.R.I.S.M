@@ -91,7 +91,7 @@ Réponds avec l'énergie d'un chercheur passionné qui vient de faire une décou
     const { urgency = 'normal', complexity = 'medium', emotion = 'neutral' } = context;
     
     let enhancedText = text;
-    let voiceSettings = {};
+    const voiceSettings = {};
 
     // Adaptation selon l'urgence
     switch (urgency) {

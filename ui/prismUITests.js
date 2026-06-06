@@ -327,7 +327,7 @@ export class PrismUITestRunner {
       
       let metricsStable = true;
       let lastMetrics = null;
-      let metricsHistory = [];
+      const metricsHistory = [];
       
       while (Date.now() < endTime) {
         // Wait for next metrics update

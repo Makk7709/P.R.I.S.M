@@ -58,7 +58,7 @@ class PrismMood {
     // Apply new emotional input
     if (emotionalInput && typeof emotionalInput === 'object') {
       Object.entries(emotionalInput).forEach(([mood, intensity]) => {
-        if (this.moods.hasOwnProperty(mood)) {
+        if (Object.prototype.hasOwnProperty.call(this.moods, mood)) {
           const normalizedIntensity = Math.max(this.minMoodValue, 
                                    Math.min(this.maxMoodValue, 
                                    Number(intensity)));

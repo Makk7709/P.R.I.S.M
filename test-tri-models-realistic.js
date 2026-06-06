@@ -13,7 +13,7 @@ const API_CHAT = `${API_BASE}/api/chat`;
 
 console.log(chalk.blue.bold('🎯 PRISM Test Tri-Modèles - Questions Réalistes\n'));
 
-let responses = [];
+const responses = [];
 
 async function testRealisticQuestions() {
   const realisticTests = [

@@ -179,7 +179,7 @@ class VoicePerformanceFixer {
     this.backups.push(`${orchestratorPath}.backup`);
 
     // Réduire maxTokens par défaut
-    let updatedContent = content
+    const updatedContent = content
       .replace(/max_tokens: skipContext \? 500 : 1000/g, 'max_tokens: skipContext ? 300 : 600')
       .replace(/temperature: 0\.3/g, 'temperature: 0.1')
       .replace(/const snapshots = await loadContextSnapshots\(3\)/g, 'const snapshots = await loadContextSnapshots(1)');

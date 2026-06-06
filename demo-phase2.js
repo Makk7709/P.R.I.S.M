@@ -70,7 +70,7 @@ class Phase2Demo {
             
             // Extraire le contenu selon le modèle
             let content = '';
-            let actualModel = response.metadata?.model || 'unknown';
+            const actualModel = response.metadata?.model || 'unknown';
             
             if (actualModel === 'openai') {
                 content = response.data?.choices?.[0]?.message?.content || 

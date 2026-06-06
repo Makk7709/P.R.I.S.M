@@ -478,39 +478,6 @@ export class MetricsPrismCore extends EventEmitter {
     return lines.join('\n');
   }
 
-  async _updateSystemHealth() {
-    // Calculer uptime
-    this.systemHealth.uptime = Date.now() - this.systemHealth.uptime;
-    
-    // Calculer métriques response time depuis timers
-    const responseTimes = [];
-    for (const timer of this.metrics.timers.values()) {
-      responseTimes.push(timer.mean);
-    }
-    
-    if (responseTimes.length > 0) {
-      this.systemHealth.responseTime.mean = responseTimes.reduce((a, b) => a + b) / responseTimes.length;
-      this.systemHealth.responseTime.p95 = this._getPercentile(responseTimes, 0.95);
-      this.systemHealth.responseTime.p99 = this._getPercentile(responseTimes, 0.99);
-    }
-    
-    // Calculer error rate
-    let totalRequests = 0;
-    let totalErrors = 0;
-    
-    for (const counter of this.metrics.counters.values()) {
-      if (counter.name.includes('success')) {
-        totalRequests += counter.value;
-      } else if (counter.name.includes('error')) {
-        totalRequests += counter.value;
-        totalErrors += counter.value;
-      }
-    }
-    
-    this.systemHealth.errorRate = totalRequests > 0 ? totalErrors / totalRequests : 0;
-    this.systemHealth.throughput = totalRequests;
-  }
-
   async _analyzeModulePerformance() {
     this.performanceData.modulePerformance.clear();
     

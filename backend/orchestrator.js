@@ -419,7 +419,7 @@ export async function handleUserInstruction(userInput, taskType = "general", opt
 
   try {
     let response;
-    let actualModel = modelChoice;
+    const actualModel = modelChoice;
     
     // 🎯 ÉTAPE 3: Optimisation des appels API
     // ✨ Passer le prompt enrichi (avec mémoire utilisateur) si fourni

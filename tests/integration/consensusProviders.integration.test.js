@@ -11,9 +11,9 @@ describe('Real Providers Adapters (conditional)', () => {
   beforeAll(async () => {
     // Import dynamiques pour éviter erreurs si dépendances non requises
     const base = await import('../../src/core/providers/ProviderAdapter.js');
-    try { OpenAIAdapter = (await import('../../src/core/providers/OpenAIAdapter.js')).default; } catch {}
-    try { AnthropicAdapter = (await import('../../src/core/providers/AnthropicAdapter.js')).default; } catch {}
-    try { PerplexityAdapter = (await import('../../src/core/providers/PerplexityAdapter.js')).default; } catch {}
+    try { OpenAIAdapter = (await import('../../src/core/providers/OpenAIAdapter.js')).default; } catch { /* adaptateur optionnel absent */ }
+    try { AnthropicAdapter = (await import('../../src/core/providers/AnthropicAdapter.js')).default; } catch { /* adaptateur optionnel absent */ }
+    try { PerplexityAdapter = (await import('../../src/core/providers/PerplexityAdapter.js')).default; } catch { /* adaptateur optionnel absent */ }
   });
 
   it.runIf(hasOpenAI)('OpenAIAdapter returns boolean decision under timeout', async () => {

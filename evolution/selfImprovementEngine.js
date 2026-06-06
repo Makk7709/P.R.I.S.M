@@ -709,7 +709,7 @@ export class SelfImprovementEngine extends EventEmitter {
                     SECURITY_CONFIG.SELF_IMPROVEMENT.IMPROVEMENT_TIMEOUT_MS);
         });
 
-        const improvementPromise = this.executeImprovement(change);
+        const improvementPromise = this.executeChange(change);
         await Promise.race([improvementPromise, timeoutPromise]);
         
         appliedChanges.push(change);
@@ -785,7 +785,7 @@ export class SelfImprovementEngine extends EventEmitter {
    * @param {Object} change - Changement à appliquer
    * @returns {Promise<void>}
    */
-  async executeImprovement(change) {
+  async executeChange(change) {
     switch (change.type) {
       case 'temperature':
         await this.adjustTemperature(change.value);

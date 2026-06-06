@@ -15,7 +15,7 @@ class LogSummary {
     }
 
     setLogLevel(level) {
-        if (!LOG_LEVELS.hasOwnProperty(level)) {
+        if (!Object.prototype.hasOwnProperty.call(LOG_LEVELS, level)) {
             throw new Error(`Invalid log level: ${level}`);
         }
         this.logLevel = LOG_LEVELS[level];

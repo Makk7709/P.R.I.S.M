@@ -95,7 +95,7 @@ await testScenario('Corruption: Modification champ → HASH_MISMATCH', async () 
   // Corrompre le 2ème record
   const files = await fs.readdir(path.join(TEST_DIR, 'logs'));
   const logFile = path.join(TEST_DIR, 'logs', files[0]);
-  let content = await fs.readFile(logFile, 'utf8');
+  const content = await fs.readFile(logFile, 'utf8');
   const lines = content.split('\n').filter(l => l.trim());
   
   const record = JSON.parse(lines[1]);
@@ -130,7 +130,7 @@ await testScenario('Suppression: Ligne supprimée → SEQ_GAP', async () => {
   // Supprimer le 3ème record (seq=3)
   const files = await fs.readdir(path.join(TEST_DIR, 'logs'));
   const logFile = path.join(TEST_DIR, 'logs', files[0]);
-  let content = await fs.readFile(logFile, 'utf8');
+  const content = await fs.readFile(logFile, 'utf8');
   const lines = content.split('\n').filter(l => l.trim());
   
   const deletedSeq = JSON.parse(lines[2]).seq;
@@ -162,7 +162,7 @@ await testScenario('Insertion: Ligne insérée → SEQ_GAP', async () => {
   // Insérer une ligne factice
   const files = await fs.readdir(path.join(TEST_DIR, 'logs'));
   const logFile = path.join(TEST_DIR, 'logs', files[0]);
-  let content = await fs.readFile(logFile, 'utf8');
+  const content = await fs.readFile(logFile, 'utf8');
   const lines = content.split('\n').filter(l => l.trim());
   
   const fakeRecord = {
@@ -206,7 +206,7 @@ await testScenario('Reorder: Permutation → PREVHASH_MISMATCH', async () => {
   // Permuter deux lignes
   const files = await fs.readdir(path.join(TEST_DIR, 'logs'));
   const logFile = path.join(TEST_DIR, 'logs', files[0]);
-  let content = await fs.readFile(logFile, 'utf8');
+  const content = await fs.readFile(logFile, 'utf8');
   const lines = content.split('\n').filter(l => l.trim());
   
   const line1Seq = JSON.parse(lines[1]).seq;
@@ -244,7 +244,7 @@ await testScenario('Signature Invalid: Autre clé → SIG_INVALID', async () => 
   // Re-signer avec autre clé
   const files = await fs.readdir(path.join(TEST_DIR, 'logs'));
   const logFile = path.join(TEST_DIR, 'logs', files[0]);
-  let content = await fs.readFile(logFile, 'utf8');
+  const content = await fs.readFile(logFile, 'utf8');
   const lines = content.split('\n').filter(l => l.trim());
   
   const record = JSON.parse(lines[0]);

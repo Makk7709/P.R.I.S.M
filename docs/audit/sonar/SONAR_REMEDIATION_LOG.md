@@ -573,3 +573,61 @@ tranchés selon ce qui est juste — un câblé, un supprimé.
 
 Après Volet 1 : `npm run lint` = **38 erreurs / 898 warnings**, `npm test` =
 **76/76**.
+
+## Final lint sweep — 42 erreurs résolues (Volet 2)
+
+Toutes les erreurs ESLint résiduelles ont été ramenées à **0** (38 après
+Volet 1, dont 2 erreurs de parsing comptées dans les 42 initiales). Méthode :
+par règle, corrections iso-comportement, `npm test` = 76/76 maintenu.
+
+| Règle                             | Nb  | Traitement                              |
+| --------------------------------- | --- | --------------------------------------- |
+| `prefer-const`                    | 23  | `let`→`const` (jamais réassigné)        |
+| `no-dupe-class-members`           | 4   | 1 vrai bug fixé + 3 doublons morts ôtés |
+| `no-prototype-builtins`           | 3   | `Object.prototype.hasOwnProperty.call`  |
+| `no-empty`                        | 3   | commentaire justificatif (catch optn.)  |
+| `no-unused-private-class-members` | 2   | champs `#` morts supprimés              |
+| `no-control-regex`                | 1   | disable ciblé justifié (sanitizer TTS)  |
+| parsing errors                    | 2   | vrais bugs (export) corrigés            |
+
+### `no-dupe-class-members` — investigation (vrais risques)
+
+La 2ᵉ définition écrase silencieusement la 1ʳᵉ (jamais sur le prototype).
+
+- **`evolution/selfImprovementEngine.js` — VRAI BUG FIXÉ (renommage).** Deux
+  `executeImprovement` *différents* coexistaient : l.788 `(change)` (switch sur
+  `change.type`, appelé par `applyAdjustments` l.712) et l.1407 `(suggestion)`
+  (switch sur `suggestion.action.type`, appelé par `applyImprovements` l.1380).
+  La 2ᵉ écrasait la 1ʳᵉ → l'appel l.712 partait avec `change` dans un corps
+  attendant `suggestion.action.*` → switch sans match → **no-op silencieux loggé
+  comme "Applied"**. Les feuilles (`adjustTemperature`/`switchModel`) sont des
+  stubs vides ⇒ aucun effet de bord destructeur. Fix : renommage de la méthode
+  l.788 en `executeChange` + son unique appelant (l.712). La voie `suggestion`
+  (l.1407, couverte par un test legacy) reste intacte.
+- **`prismSovereignty.js` — doublon mort ôté.** Fichier = fusion bâclée de deux
+  implémentations (`this.x` vs `this._x`). 1ʳᵉ `analyzeExternalInfluence` (l.78,
+  anomalies/`selfHeal`) écrasée par la 2ᵉ (l.180, `_coreIntegrity`). Seul
+  appelant (l.54) ⇒ déjà servi par la 2ᵉ. Suppression de la 1ʳᵉ (morte,
+  iso-comportement). NB latent documenté : fusion à arbitrer côté produit.
+- **`src/core/MetricsPrismCore.js` — doublon mort ôté.** Deux
+  `_updateSystemHealth` : l.481 (uptime/responseTime/errorRate brut) écrasée par
+  l.784 (score de santé). Un seul appel (l.268) ⇒ 784 seule active. Suppression
+  de la 481 (morte, iso-comportement). NB latent : la 784 lit `errorRate` que la
+  481 calculait — métriques brutes non recalculées (bug pré-existant, hors
+  périmètre lint ; à re-câbler côté produit si besoin).
+- **`tests/manual/prismVoiceTests.js` — doublon mort ôté.** `testErrorHandling`
+  l.250 (async, renvoie un objet) écrasé par l.331 (stub renvoyant `9`). L'appel
+  l.228 agrège un *nombre* ⇒ le stub (l.331) est l'intention correcte.
+  Suppression de la 1ʳᵉ (morte). Fichier de test manuel hors suite automatisée.
+
+### Erreurs de parsing (vrais bugs export)
+
+- `src/modules/voice/index.js` — `export { VoiceAnalyzer as ... }` sans liaison
+  locale (les noms venaient de `export … from` ⇒ pas de binding local) →
+  module non chargeable. Corrigé en `export { X as Y } from './…'` par source.
+- `telemetry/prismAlert.js` — `export { checkEfficiencyAlert, sendAlert }` en fin
+  de fichier doublonnait les `export async function` → *Duplicate export* (erreur
+  de syntaxe). Bloc redondant supprimé (les fonctions restent exportées).
+
+Après Volet 2 : `npm run lint` = **0 erreur / 898 warnings**, `npm test` =
+**76/76**.

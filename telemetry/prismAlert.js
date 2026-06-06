@@ -57,8 +57,3 @@ export async function sendAlert(efficiencyValue) {
 
 // Start monitoring
 // setInterval(checkEfficiencyAlert, 60000); // Check every minute
-
-export {
-  checkEfficiencyAlert,
-  sendAlert,
-}; 

@@ -322,7 +322,7 @@ export class ASIInterface extends EventEmitter {
     const recentTurns = context.turns.slice(-3);
     
     // Analyse du style préféré de l'utilisateur
-    let style = {
+    const style = {
       formality: 0.5,
       technicality: 0.5,
       verbosity: 0.5,

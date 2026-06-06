@@ -75,35 +75,6 @@ class PrismSovereignty {
     }
   }
 
-  async analyzeExternalInfluence() {
-    try {
-      console.log('🔍 Analyzing external influence...');
-      
-      // Simulate analysis (replace with actual implementation)
-      const analysis = await this.performAnalysis();
-      
-      if (analysis.anomalyDetected) {
-        this.anomalyCount++;
-        console.warn(`⚠️ Anomaly detected (${this.anomalyCount}/${this.anomalyThreshold})`);
-        
-        if (this.anomalyCount >= this.anomalyThreshold) {
-          await this.handleCriticalAnomaly();
-        } else {
-          await this.selfHeal.analyzeIssue({
-            type: 'EXTERNAL_INFLUENCE',
-            level: 'WARNING',
-            details: analysis
-          });
-        }
-      }
-      
-      return analysis;
-    } catch (error) {
-      console.error('❌ External influence analysis failed:', error);
-      throw error;
-    }
-  }
-
   async performAnalysis() {
     // TODO: Implement actual analysis logic
     return {

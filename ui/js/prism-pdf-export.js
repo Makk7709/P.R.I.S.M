@@ -687,7 +687,7 @@
       if (!content) return '';
       
       // Supprimer les badges de modèle courants
-      let cleaned = content
+      const cleaned = content
         .replace(/\[GPT-4\]/gi, '')
         .replace(/\[Claude\]/gi, '')
         .replace(/\[Perplexity\]/gi, '')

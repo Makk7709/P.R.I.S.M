@@ -89,7 +89,7 @@ async function testHybridOrchestratorTrustContext() {
     
     // Mock pour capturer les appels
     let trustContextCalled = false;
-    let originalValidate = trustContext.validateCriticalDecision.bind(trustContext);
+    const originalValidate = trustContext.validateCriticalDecision.bind(trustContext);
     trustContext.validateCriticalDecision = async (params) => {
       trustContextCalled = true;
       assert(

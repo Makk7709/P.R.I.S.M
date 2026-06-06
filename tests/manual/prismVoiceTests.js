@@ -246,37 +246,6 @@ export class VoiceTestRunner {
     }
   }
 
-  // Test Scenario 5: Error Handling
-  async testErrorHandling() {
-    try {
-      // Test error detection
-      const errorDetection = this.testErrorDetection();
-      
-      // Test interface stability
-      const interfaceStability = this.testInterfaceStability();
-      
-      // Test error messages
-      const errorMessages = this.testErrorMessages();
-      
-      // Test recovery process
-      const recoveryProcess = this.testRecoveryProcess();
-      
-      // Test user guidance
-      const userGuidance = this.testUserGuidance();
-
-      return {
-        errorDetection,
-        interfaceStability,
-        errorMessages,
-        recoveryProcess,
-        userGuidance
-      };
-    } catch (error) {
-      this.logError('Error Handling Test', error);
-      return false;
-    }
-  }
-
   // Utility Methods
   measureInterfaceFluidity() {
     // Mesurer la fluidité de l'interface

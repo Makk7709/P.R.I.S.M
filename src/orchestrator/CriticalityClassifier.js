@@ -192,7 +192,7 @@ export class CriticalityClassifier {
     // Calculer le score de base
     let baseScore = 0;
     let detectedType = CriticalityType.NORMAL;
-    let matchedPatterns = [];
+    const matchedPatterns = [];
     
     // Vérifier chaque catégorie de patterns critiques
     for (const [category, config] of Object.entries(CRITICAL_PATTERNS)) {

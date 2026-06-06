@@ -26,7 +26,7 @@ class PrismBond {
   }
 
   recordInteraction(type) {
-    if (!INTERACTION_WEIGHTS.hasOwnProperty(type)) {
+    if (!Object.prototype.hasOwnProperty.call(INTERACTION_WEIGHTS, type)) {
       throw new Error(`Invalid interaction type: ${type}`);
     }
 

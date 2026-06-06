@@ -414,7 +414,7 @@ export class TamperEvidentAuditLog extends EventEmitter {
       let lastTs = null;
       let previousHash = 'GENESIS';
       let previousSeq = 0;
-      let currentPubKeyId = null;
+      const currentPubKeyId = null;
       
       // Charger la clé publique (format PEM)
       const publicKeyPath = path.join(this.config.keyDir, `${this.pubKeyId}.pub`);

@@ -623,7 +623,7 @@ class EnterprisePDFService {
       
       const parts = text.split(boldRegex);
       let x = doc.x;
-      let y = doc.y;
+      const y = doc.y;
       
       for (let i = 0; i < parts.length; i++) {
         if (i % 2 === 0) {

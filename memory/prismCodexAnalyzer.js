@@ -892,7 +892,7 @@ export default class PrismCodexAnalyzer {
    * @private
    */
   async _autoTuneParameters(metrics) {
-    let adjustments = [];
+    const adjustments = [];
 
     // Vérifier l'efficacité
     if (metrics.efficiency !== null && metrics.efficiency < 60) {

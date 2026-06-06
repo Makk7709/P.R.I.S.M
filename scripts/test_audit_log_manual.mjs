@@ -71,7 +71,7 @@ async function testCorruption() {
   // Corrompre le 2ème record
   const files = await fs.readdir(path.join(TEST_DIR, 'logs'));
   const logFile = path.join(TEST_DIR, 'logs', files[0]);
-  let content = await fs.readFile(logFile, 'utf8');
+  const content = await fs.readFile(logFile, 'utf8');
   const lines = content.split('\n').filter(l => l.trim());
   
   const record = JSON.parse(lines[1]);
@@ -109,7 +109,7 @@ async function testSuppression() {
   // Supprimer le 3ème record
   const files = await fs.readdir(path.join(TEST_DIR, 'logs'));
   const logFile = path.join(TEST_DIR, 'logs', files[0]);
-  let content = await fs.readFile(logFile, 'utf8');
+  const content = await fs.readFile(logFile, 'utf8');
   const lines = content.split('\n').filter(l => l.trim());
   lines.splice(2, 1); // Supprimer ligne 2 (3ème record)
   await fs.writeFile(logFile, lines.join('\n') + '\n', 'utf8');
@@ -144,7 +144,7 @@ async function testReorder() {
   // Permuter deux lignes
   const files = await fs.readdir(path.join(TEST_DIR, 'logs'));
   const logFile = path.join(TEST_DIR, 'logs', files[0]);
-  let content = await fs.readFile(logFile, 'utf8');
+  const content = await fs.readFile(logFile, 'utf8');
   const lines = content.split('\n').filter(l => l.trim());
   
   // Permuter lignes 1 et 2

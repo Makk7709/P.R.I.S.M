@@ -46,7 +46,7 @@ app.post('/api/chat', async (req, res) => {
     
     // Extraction du contenu selon le modèle
     let responseContent;
-    let actualModel = orchestratorResponse.metadata?.model || 'unknown';
+    const actualModel = orchestratorResponse.metadata?.model || 'unknown';
     
     if (actualModel === 'openai') {
       responseContent = orchestratorResponse.data?.choices?.[0]?.message?.content || 
