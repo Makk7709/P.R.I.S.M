@@ -395,44 +395,21 @@ export async function handleUserInstruction(userInput, taskType = "general", opt
   }
   
   // 🎯 ÉTAPE 2: Réponses pré-calculées pour démo
-  if (TURBO_MODE) {
-    const demoKey = `${taskType}-${userInput.toLowerCase().trim().substring(0, 10)}`;
-    for (const [pattern, response] of DEMO_RESPONSES) {
-      if (demoKey.includes(pattern.split('-')[1])) {
-        console.log(`[PRISM] 🚀 TURBO MODE response en ${Date.now() - startTime}ms`);
-        return {
-          data: { content: response.content },
-          metadata: {
-            model: response.model,
-            taskType: taskType,
-            success: true,
-            turbo: true,
-            responseTime: Date.now() - startTime
-          }
-        };
-      }
-    }
+  const turboResponse = tryTurboResponse(userInput, taskType, startTime);
+  if (turboResponse) {
+    return turboResponse;
   }
 
   const modelChoice = chooseModel(taskType);
   logModelChoice(modelChoice, taskType);
 
   try {
-    let response;
     const actualModel = modelChoice;
     
     // 🎯 ÉTAPE 3: Optimisation des appels API
     // ✨ Passer le prompt enrichi (avec mémoire utilisateur) si fourni
     const customSystemPrompt = options?.enrichedPrompt || null;
-    if (modelChoice === "openai") {
-      response = await callOpenAI(userInput, SKIP_CONTEXT_LOADING, customSystemPrompt);
-    } else if (modelChoice === "claude") {
-      response = await callClaude(userInput, SKIP_CONTEXT_LOADING);
-    } else if (modelChoice === "perplexity") {
-      response = await callPerplexity(userInput, SKIP_CONTEXT_LOADING);
-    } else {
-      throw new Error(`[PRISM] Modèle inconnu sélectionné: ${modelChoice}`);
-    }
+    const response = await callModelByChoice(modelChoice, userInput, customSystemPrompt);
     
     // 🚀 ÉTAPE 4: Enrichissement vocal automatique
     const rawResponseContent = extractResponseContent(response, actualModel);
@@ -476,32 +453,85 @@ export async function handleUserInstruction(userInput, taskType = "general", opt
     };
     
   } catch (error) {
-    console.error(`[PRISM] Erreur lors de l'appel au modèle ${modelChoice}:`, error);
-    
-    // 🔄 Fallback ultra-rapide
-    if (modelChoice !== "openai") {
-      console.log(`[PRISM] 🔄 Fallback rapide vers OpenAI...`);
-      try {
-        const fallbackResponse = await callOpenAI(userInput, true, options?.enrichedPrompt || null); // Force skip context mais garde prompt enrichi
-        const responseTime = Date.now() - startTime;
-        return {
-          data: fallbackResponse,
-          metadata: {
-            model: "openai",
-            taskType: taskType,
-            success: true,
-            fallback: true,
-            originalModel: modelChoice,
-            responseTime
-          }
-        };
-      } catch (fallbackError) {
-        console.error(`[PRISM] Erreur fallback OpenAI:`, fallbackError);
-        throw error;
-      }
-    }
-    throw error;
+    return await handleModelError(error, modelChoice, userInput, taskType, options, startTime);
   }
+}
+
+/**
+ * ÉTAPE 2 (mode démo): renvoie une réponse pré-calculée si TURBO_MODE est actif
+ * et qu'un pattern correspond, sinon null. Extrait de handleUserInstruction
+ * (S3776).
+ */
+function tryTurboResponse(userInput, taskType, startTime) {
+  if (!TURBO_MODE) {
+    return null;
+  }
+  const demoKey = `${taskType}-${userInput.toLowerCase().trim().substring(0, 10)}`;
+  for (const [pattern, response] of DEMO_RESPONSES) {
+    if (demoKey.includes(pattern.split('-')[1])) {
+      console.log(`[PRISM] 🚀 TURBO MODE response en ${Date.now() - startTime}ms`);
+      return {
+        data: { content: response.content },
+        metadata: {
+          model: response.model,
+          taskType: taskType,
+          success: true,
+          turbo: true,
+          responseTime: Date.now() - startTime
+        }
+      };
+    }
+  }
+  return null;
+}
+
+/**
+ * ÉTAPE 3: route l'appel vers le bon fournisseur selon le modèle choisi.
+ * Extrait de handleUserInstruction (S3776).
+ */
+async function callModelByChoice(modelChoice, userInput, customSystemPrompt) {
+  if (modelChoice === "openai") {
+    return callOpenAI(userInput, SKIP_CONTEXT_LOADING, customSystemPrompt);
+  } else if (modelChoice === "claude") {
+    return callClaude(userInput, SKIP_CONTEXT_LOADING);
+  } else if (modelChoice === "perplexity") {
+    return callPerplexity(userInput, SKIP_CONTEXT_LOADING);
+  } else {
+    throw new Error(`[PRISM] Modèle inconnu sélectionné: ${modelChoice}`);
+  }
+}
+
+/**
+ * Gestion d'erreur d'appel modèle: fallback ultra-rapide vers OpenAI pour les
+ * modèles non-OpenAI, sinon propagation de l'erreur d'origine. Extrait de
+ * handleUserInstruction (S3776).
+ */
+async function handleModelError(error, modelChoice, userInput, taskType, options, startTime) {
+  console.error(`[PRISM] Erreur lors de l'appel au modèle ${modelChoice}:`, error);
+
+  // 🔄 Fallback ultra-rapide
+  if (modelChoice !== "openai") {
+    console.log(`[PRISM] 🔄 Fallback rapide vers OpenAI...`);
+    try {
+      const fallbackResponse = await callOpenAI(userInput, true, options?.enrichedPrompt || null); // Force skip context mais garde prompt enrichi
+      const responseTime = Date.now() - startTime;
+      return {
+        data: fallbackResponse,
+        metadata: {
+          model: "openai",
+          taskType: taskType,
+          success: true,
+          fallback: true,
+          originalModel: modelChoice,
+          responseTime
+        }
+      };
+    } catch (fallbackError) {
+      console.error(`[PRISM] Erreur fallback OpenAI:`, fallbackError);
+      throw error;
+    }
+  }
+  throw error;
 }
 
 // 🚀 NOUVELLE FONCTION: Extraction optimisée du contenu
