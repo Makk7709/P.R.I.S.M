@@ -3,11 +3,9 @@
  * Garantit fail-closed et déterminisme sur toutes les frontières externes
  */
 
-import { 
-  validateProviderResult,
+import {
   createProviderResultOK,
   createProviderResultError,
-  ProviderStatusSchema
 } from '../../security/contracts/providerResult.js';
 
 /**
@@ -27,10 +25,10 @@ export function normalizeProviderResponse({
   latencyMs,
   correlationId,
   requestId,
-  meta = {}
+  meta = {},
 }) {
   const startTime = Date.now();
-  
+
   // Cas 1: Réponse est déjà une Error
   if (rawResponse instanceof Error) {
     return normalizeError({
@@ -38,33 +36,44 @@ export function normalizeProviderResponse({
       error: rawResponse,
       latencyMs,
       correlationId,
-      requestId
+      requestId,
     });
   }
-  
+
   // Cas 1b: Réponse est un objet avec propriété error (wrapper d'erreur)
-  if (typeof rawResponse === 'object' && rawResponse !== null && rawResponse.error && !rawResponse.text) {
+  if (
+    typeof rawResponse === 'object' &&
+    rawResponse !== null &&
+    rawResponse.error &&
+    !rawResponse.text
+  ) {
     return normalizeError({
       provider,
       error: rawResponse.error instanceof Error ? rawResponse.error : rawResponse,
       latencyMs,
       correlationId,
-      requestId: rawResponse.requestId || requestId
+      requestId: rawResponse.requestId || requestId,
     });
   }
-  
+
   // Cas 1c: Réponse est un objet d'erreur (avec status/retryable/etc, mais pas text)
-  if (typeof rawResponse === 'object' && rawResponse !== null && !rawResponse.text && 
-      (rawResponse.status !== undefined || rawResponse.retryable !== undefined || rawResponse.name === 'TimeoutError')) {
+  if (
+    typeof rawResponse === 'object' &&
+    rawResponse !== null &&
+    !rawResponse.text &&
+    (rawResponse.status !== undefined ||
+      rawResponse.retryable !== undefined ||
+      rawResponse.name === 'TimeoutError')
+  ) {
     return normalizeError({
       provider,
       error: rawResponse,
       latencyMs,
       correlationId,
-      requestId
+      requestId,
     });
   }
-  
+
   // Cas 2: Réponse est un objet avec propriété text (wrapper avec métadonnées)
   if (typeof rawResponse === 'object' && rawResponse !== null && rawResponse.text) {
     return normalizeStringResponse({
@@ -76,11 +85,11 @@ export function normalizeProviderResponse({
       meta: {
         ...meta,
         tokensIn: rawResponse.usage?.prompt_tokens || rawResponse.usage?.input_tokens,
-        tokensOut: rawResponse.usage?.completion_tokens || rawResponse.usage?.output_tokens
-      }
+        tokensOut: rawResponse.usage?.completion_tokens || rawResponse.usage?.output_tokens,
+      },
     });
   }
-  
+
   // Cas 3: Réponse est une string (JSON attendu)
   if (typeof rawResponse === 'string') {
     return normalizeStringResponse({
@@ -89,10 +98,10 @@ export function normalizeProviderResponse({
       latencyMs,
       correlationId,
       requestId,
-      meta
+      meta,
     });
   }
-  
+
   // Cas 4: Réponse est un objet (déjà parsé)
   if (typeof rawResponse === 'object' && rawResponse !== null) {
     return normalizeObjectResponse({
@@ -101,15 +110,17 @@ export function normalizeProviderResponse({
       latencyMs,
       correlationId,
       requestId,
-      meta
+      meta,
     });
   }
-  
+
   // Cas 5: Réponse inconnue => SCHEMA_INVALID
-  const validCorrelationId = correlationId && /^[0-9a-f]{8}-[0-9a-f]{4}-[1-8][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(correlationId)
-    ? correlationId
-    : undefined;
-  
+  const validCorrelationId =
+    correlationId &&
+    /^[0-9a-f]{8}-[0-9a-f]{4}-[1-8][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(correlationId)
+      ? correlationId
+      : undefined;
+
   return createProviderResultError({
     provider,
     status: 'SCHEMA_INVALID',
@@ -118,8 +129,8 @@ export function normalizeProviderResponse({
     requestId,
     error: {
       message: `FAIL-CLOSED: Unknown response type: ${typeof rawResponse}`,
-      rawSnippet: String(rawResponse).slice(0, 200)
-    }
+      rawSnippet: String(rawResponse).slice(0, 200),
+    },
   });
 }
 
@@ -133,32 +144,36 @@ function normalizeStringResponse({ provider, rawText, latencyMs, correlationId, 
     // Extraction JSON depuis texte (peut contenir markdown, etc.)
     const jsonStart = rawText.indexOf('{');
     const jsonEnd = rawText.lastIndexOf('}');
-    
+
     if (jsonStart === -1 || jsonEnd === -1 || jsonEnd <= jsonStart) {
       throw new Error('No JSON object found in response');
     }
-    
+
     const jsonStr = rawText.slice(jsonStart, jsonEnd + 1);
     parsed = JSON.parse(jsonStr);
   } catch (parseError) {
-      // Ne pas passer correlationId s'il n'est pas un UUID valide
-      const validCorrelationId = correlationId && /^[0-9a-f]{8}-[0-9a-f]{4}-[1-8][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(correlationId)
+    // Ne pas passer correlationId s'il n'est pas un UUID valide
+    const validCorrelationId =
+      correlationId &&
+      /^[0-9a-f]{8}-[0-9a-f]{4}-[1-8][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(
+        correlationId
+      )
         ? correlationId
         : undefined;
-      
-      return createProviderResultError({
-        provider,
-        status: 'PARSE_ERROR',
-        latencyMs,
-        correlationId: validCorrelationId,
-        requestId,
-        error: {
-          message: `JSON parse failed: ${parseError.message}`,
-          rawSnippet: rawText.slice(0, 200)
-        }
-      });
+
+    return createProviderResultError({
+      provider,
+      status: 'PARSE_ERROR',
+      latencyMs,
+      correlationId: validCorrelationId,
+      requestId,
+      error: {
+        message: `JSON parse failed: ${parseError.message}`,
+        rawSnippet: rawText.slice(0, 200),
+      },
+    });
   }
-  
+
   // Maintenant normaliser l'objet parsé
   return normalizeObjectResponse({
     provider,
@@ -166,49 +181,64 @@ function normalizeStringResponse({ provider, rawText, latencyMs, correlationId, 
     latencyMs,
     correlationId,
     requestId,
-    meta
+    meta,
   });
 }
 
 /**
  * Normalise une réponse objet (déjà parsé)
  */
-function normalizeObjectResponse({ provider, rawObject, latencyMs, correlationId, requestId, meta }) {
+function normalizeObjectResponse({
+  provider,
+  rawObject,
+  latencyMs,
+  correlationId,
+  requestId,
+  meta,
+}) {
   // Extraire les champs attendus (decision, reasoning, confidence, etc.)
   const decision = rawObject.decision;
   const reasoning = rawObject.reasoning || rawObject.rationale || '';
   const confidence = rawObject.confidence;
-  
+
   // Validation: decision doit être boolean
   if (typeof decision !== 'boolean') {
-      // Ne pas passer correlationId s'il n'est pas un UUID valide
-      const validCorrelationId = correlationId && /^[0-9a-f]{8}-[0-9a-f]{4}-[1-8][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(correlationId)
+    // Ne pas passer correlationId s'il n'est pas un UUID valide
+    const validCorrelationId =
+      correlationId &&
+      /^[0-9a-f]{8}-[0-9a-f]{4}-[1-8][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(
+        correlationId
+      )
         ? correlationId
         : undefined;
-      
-      return createProviderResultError({
-        provider,
-        status: 'SCHEMA_INVALID',
-        latencyMs,
-        correlationId: validCorrelationId,
-        requestId,
-        error: {
-          message: `FAIL-CLOSED: decision must be boolean, got ${typeof decision}`,
-          rawSnippet: JSON.stringify(rawObject).slice(0, 200)
-        }
-      });
+
+    return createProviderResultError({
+      provider,
+      status: 'SCHEMA_INVALID',
+      latencyMs,
+      correlationId: validCorrelationId,
+      requestId,
+      error: {
+        message: `FAIL-CLOSED: decision must be boolean, got ${typeof decision}`,
+        rawSnippet: JSON.stringify(rawObject).slice(0, 200),
+      },
+    });
   }
-  
+
   // Mapper decision (boolean) vers verdict (approve/reject)
   const verdict = decision ? 'approve' : 'reject';
-  
+
   // Valider confidence si présente
   if (confidence !== undefined) {
     if (typeof confidence !== 'number' || confidence < 0 || confidence > 1) {
-      const validCorrelationId = correlationId && /^[0-9a-f]{8}-[0-9a-f]{4}-[1-8][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(correlationId)
-        ? correlationId
-        : undefined;
-      
+      const validCorrelationId =
+        correlationId &&
+        /^[0-9a-f]{8}-[0-9a-f]{4}-[1-8][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(
+          correlationId
+        )
+          ? correlationId
+          : undefined;
+
       return createProviderResultError({
         provider,
         status: 'SCHEMA_INVALID',
@@ -217,12 +247,12 @@ function normalizeObjectResponse({ provider, rawObject, latencyMs, correlationId
         requestId,
         error: {
           message: `FAIL-CLOSED: confidence must be [0..1], got ${confidence}`,
-          rawSnippet: JSON.stringify(rawObject).slice(0, 200)
-        }
+          rawSnippet: JSON.stringify(rawObject).slice(0, 200),
+        },
       });
     }
   }
-  
+
   // Construire ProviderResult OK
   try {
     return createProviderResultOK({
@@ -234,14 +264,18 @@ function normalizeObjectResponse({ provider, rawObject, latencyMs, correlationId
       tokensIn: meta.tokensIn,
       tokensOut: meta.tokensOut,
       requestId,
-      correlationId
+      correlationId,
     });
   } catch (validationError) {
     // Si la validation échoue, retourner SCHEMA_INVALID
-    const validCorrelationId = correlationId && /^[0-9a-f]{8}-[0-9a-f]{4}-[1-8][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(correlationId)
-      ? correlationId
-      : undefined;
-    
+    const validCorrelationId =
+      correlationId &&
+      /^[0-9a-f]{8}-[0-9a-f]{4}-[1-8][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(
+        correlationId
+      )
+        ? correlationId
+        : undefined;
+
     return createProviderResultError({
       provider,
       status: 'SCHEMA_INVALID',
@@ -250,8 +284,8 @@ function normalizeObjectResponse({ provider, rawObject, latencyMs, correlationId
       requestId,
       error: {
         message: `FAIL-CLOSED: ProviderResult validation failed: ${validationError.message}`,
-        rawSnippet: JSON.stringify(rawObject).slice(0, 200)
-      }
+        rawSnippet: JSON.stringify(rawObject).slice(0, 200),
+      },
     });
   }
 }
@@ -263,12 +297,12 @@ function normalizeError({ provider, error, latencyMs, correlationId, requestId }
   let status = 'PROVIDER_ERROR';
   let errorMessage = 'Unknown error';
   let errorCode = undefined;
-  
+
   // Gérer Error instances
   if (error instanceof Error) {
     errorMessage = error.message || 'Unknown error';
     errorCode = error.code;
-    
+
     // Mapper types d'erreur connus vers statuts canoniques
     if (errorMessage.toLowerCase().includes('timeout') || error.name === 'TimeoutError') {
       status = 'TIMEOUT';
@@ -277,12 +311,12 @@ function normalizeError({ provider, error, latencyMs, correlationId, requestId }
     } else if (errorMessage.toLowerCase().includes('abort') || error.name === 'AbortError') {
       status = 'ABORTED';
     }
-  } 
+  }
   // Gérer objets d'erreur (pas Error instance)
   else if (typeof error === 'object' && error !== null) {
     errorMessage = error.message || error.error?.message || 'Unknown error';
     errorCode = error.code || error.status?.toString();
-    
+
     // Détecter name pour TimeoutError
     if (error.name === 'TimeoutError' || errorMessage.toLowerCase().includes('timeout')) {
       status = 'TIMEOUT';
@@ -294,12 +328,14 @@ function normalizeError({ provider, error, latencyMs, correlationId, requestId }
   } else {
     errorMessage = String(error);
   }
-  
+
   // Ne pas passer correlationId s'il n'est pas un UUID valide
-  const validCorrelationId = correlationId && /^[0-9a-f]{8}-[0-9a-f]{4}-[1-8][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(correlationId)
-    ? correlationId
-    : undefined;
-  
+  const validCorrelationId =
+    correlationId &&
+    /^[0-9a-f]{8}-[0-9a-f]{4}-[1-8][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(correlationId)
+      ? correlationId
+      : undefined;
+
   return createProviderResultError({
     provider,
     status,
@@ -309,8 +345,8 @@ function normalizeError({ provider, error, latencyMs, correlationId, requestId }
     error: {
       code: errorCode,
       message: errorMessage.slice(0, 1000),
-      rawSnippet: (error instanceof Error ? error.stack : JSON.stringify(error))?.slice(0, 200)
-    }
+      rawSnippet: (error instanceof Error ? error.stack : JSON.stringify(error))?.slice(0, 200),
+    },
   });
 }
 
@@ -324,7 +360,7 @@ function normalizeError({ provider, error, latencyMs, correlationId, requestId }
 export async function withProviderTimeout(promise, timeoutMs, provider) {
   const controller = new AbortController();
   const timeoutId = setTimeout(() => controller.abort(), timeoutMs);
-  
+
   try {
     const result = await Promise.race([
       promise,
@@ -332,7 +368,7 @@ export async function withProviderTimeout(promise, timeoutMs, provider) {
         controller.signal.addEventListener('abort', () => {
           reject(new Error(`Provider ${provider} timeout after ${timeoutMs}ms`));
         });
-      })
+      }),
     ]);
     clearTimeout(timeoutId);
     return result;
@@ -344,3 +380,5 @@ export async function withProviderTimeout(promise, timeoutMs, provider) {
     throw error;
   }
 }
+
+export { createProviderResultOK, createProviderResultError };
