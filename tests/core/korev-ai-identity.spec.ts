@@ -164,7 +164,7 @@ describe('Identité KOREV AI - Vérification Prompts', () => {
       const content = readFileSync(filePath, 'utf8');
       
       // Vérifier qu'il n'y a pas "PRISM-OpenAI" seul (sans parenthèses ou contexte)
-      const hasStandalonePRISMOpenAI = /PRISM-OpenAI[^\(]/.test(content);
+      const hasStandalonePRISMOpenAI = /PRISM-OpenAI[^(]/.test(content);
       expect(hasStandalonePRISMOpenAI).toBe(false);
     });
 

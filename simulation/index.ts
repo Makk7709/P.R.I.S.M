@@ -330,23 +330,26 @@ async function main(): Promise<void> {
     
     // Run scenarios
     switch (args.scenario) {
-      case 'baseline':
+      case 'baseline': {
         console.log('Running baseline scenario...');
         const runnerBaseline = new ScenarioRunner(config);
         results = await runnerBaseline.runBaselineScenario();
         break;
+      }
         
-      case 'prism':
+      case 'prism': {
         console.log('Running PRISM scenario...');
         const runnerPrism = new ScenarioRunner(config);
         results = await runnerPrism.runPRISMScenario();
         break;
+      }
         
-      case 'compare':
+      case 'compare': {
         console.log('Running comparative analysis...');
         const runnerCompare = new ScenarioRunner(config);
         results = await runnerCompare.runComparativeAnalysis();
         break;
+      }
         
       case 'validate':
         console.log('Running validation scenarios...');

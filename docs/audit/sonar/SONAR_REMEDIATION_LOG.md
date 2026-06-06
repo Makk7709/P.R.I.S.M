@@ -147,13 +147,12 @@ facto cassé, `lint:fix` et `lint-staged` incapables de traiter un `.ts`.
 | -------------------------------- | ------------- | ------------- | ---------- |
 | Parse errors (fatal)             | 75            | 0             | 0          |
 | Warnings ESLint                  | n/a (parse)   | 143           | 92         |
-| Errors ESLint (hors parse)       | n/a (parse)   | 4             | 4          |
+| Errors ESLint (hors parse)       | n/a (parse)   | 4             | 0          |
 
 Les 51 warnings retirés = les imports S1128 supprimés. Les 4 errors résiduelles
 sont des findings préexistants nouvellement visibles (3 `no-case-declarations`
 dans `simulation/index.ts`, 1 `no-useless-escape` dans
-`tests/core/korev-ai-identity.spec.ts`) — laissés pour un poste ultérieur (hors
-périmètre autofix mécanique sûr).
+`tests/core/korev-ai-identity.spec.ts`) — traitées dans le poste ci-dessous.
 
 ### Note sur le gate lint-staged
 
@@ -163,6 +162,33 @@ ET contourne le `prettier --write` forcé de `lint-staged`, donc les diffs
 restent **chirurgicaux** (uniquement les lignes corrigées, pas de reformatage
 intégral). `npm test` (76/76) est exécuté manuellement avant chaque commit pour
 respecter le gate.
+
+### Lot TS-4 — `no-case-declarations` + `no-useless-escape` (errors TS résiduelles)
+
+Cible: les **4 errors ESLint** sur `.ts` rendues visibles par l'ajout du parseur
+(table delta ci-dessus, colonne « Après lots »). Corrections sûres, locales,
+iso-comportement.
+
+- `simulation/index.ts` (lignes 333/339/345, switch `args.scenario`):
+  3 × `no-case-declarations`. Fix canonique — chaque `case` (`baseline`,
+  `prism`, `compare`) dont le corps déclarait un `const runner…` est entouré
+  d'un bloc lexical `{ … }`. Aucun changement de flot (le `break;` reste dans
+  le bloc).
+- `tests/core/korev-ai-identity.spec.ts` (ligne 167): 1 × `no-useless-escape`.
+  Regex `/PRISM-OpenAI[^\(]/` → `/PRISM-OpenAI[^(]/`. Le `\(` est dans une
+  classe de caractères `[^…]` où `(` est déjà littéral : l'échappement est
+  inutile, sa suppression est strictement iso-comportement (même que le
+  `[^\(]`→`[^(]` du Lot 3 JS). Vérifié : non intentionnel.
+- Résultat: errors ESLint TS **4 → 0**. Tests **76/76**.
+- Hors périmètre (dette JS préexistante, non introduite par le parseur TS,
+  laissée inchangée): `no-case-declarations` dans `prismReflex.js`,
+  `asi/knowledgeTransferEngine.js`, `src/voice/AudioQueue.js`; `no-useless-escape`
+  dans `prismSanitize.js`, `backend/middleware/validation.js`,
+  `src/voice/ResponseModeManager.js`, `tests/voice/setup.js`,
+  `scripts/validate-microstep-0.2.cjs`, et un artefact de build
+  `dashboard/.next/…` (non couvert par les ignores du flat config).
+- Commit (plumbing, 0 trailer bot):
+  `fix(sonar): resolve no-case-declarations and no-useless-escape ESLint errors`.
 
 ## Lots différés (documentés, non exécutés)
 
