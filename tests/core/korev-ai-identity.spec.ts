@@ -9,9 +9,9 @@
 import { describe, it, expect, beforeEach, vi } from 'vitest';
 import { PersonaActivator } from '../../src/core/PersonaActivator.js';
 import { ConsciousnessLayer } from '../../src/core/ConsciousnessLayer.js';
-import { readFileSync } from 'fs';
-import { fileURLToPath } from 'url';
-import { dirname, join } from 'path';
+import { readFileSync } from 'node:fs';
+import { fileURLToPath } from 'node:url';
+import { dirname, join } from 'node:path';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);

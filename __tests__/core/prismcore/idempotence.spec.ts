@@ -10,7 +10,7 @@
  */
 
 import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
-import crypto from 'crypto';
+import crypto from 'node:crypto';
 
 // Interface IdempotentPrismCore manquante - DOIT être implémentée
 interface IdempotentPrismCore {

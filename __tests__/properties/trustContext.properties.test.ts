@@ -10,9 +10,9 @@
 import { describe, it, expect, beforeEach, afterEach } from 'vitest';
 import fc from 'fast-check';
 import crypto from 'node:crypto';
-import fs from 'fs/promises';
-import path from 'path';
-import { fileURLToPath } from 'url';
+import fs from 'node:fs/promises';
+import path from 'node:path';
+import { fileURLToPath } from 'node:url';
 import { TrustContext, CriticalityLevel, createSignedApproval } from '../../src/core/TrustContext.js';
 import { KeyRegistry as KeyRegistryClass } from '../../src/core/KeyRegistry.js';
 

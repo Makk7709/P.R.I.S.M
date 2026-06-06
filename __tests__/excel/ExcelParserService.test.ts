@@ -8,8 +8,8 @@
 import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
 import { ExcelParserService } from '../../src/excel/ExcelParserService.js';
 import * as XLSX from 'xlsx';
-import path from 'path';
-import fs from 'fs';
+import path from 'node:path';
+import fs from 'node:fs';
 
 describe('ExcelParserService', () => {
   let parser: ExcelParserService;

@@ -7,10 +7,10 @@ import { describe, it, expect, beforeEach, vi } from 'vitest';
 import { TaskTypeProcessor } from '../../src/core/TaskTypeProcessor.js';
 import { ServerMemoryStore } from '../../src/core/ServerMemoryStore.js';
 import { serverMemoryStore } from '../../src/core/ServerMemoryStore.js';
-import fs from 'fs';
-import path from 'path';
-import { fileURLToPath } from 'url';
-import { dirname } from 'path';
+import fs from 'node:fs';
+import path from 'node:path';
+import { fileURLToPath } from 'node:url';
+import { dirname } from 'node:path';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);

@@ -10,9 +10,9 @@
  */
 
 import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
-import fs from 'fs';
-import path from 'path';
-import { fileURLToPath } from 'url';
+import fs from 'node:fs';
+import path from 'node:path';
+import { fileURLToPath } from 'node:url';
 import { ServerMemoryStore } from '../../src/core/ServerMemoryStore.js';
 
 const __filename = fileURLToPath(import.meta.url);

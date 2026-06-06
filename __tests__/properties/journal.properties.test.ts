@@ -5,9 +5,9 @@
 
 import { describe, it, expect, beforeEach, afterEach } from 'vitest';
 import fc from 'fast-check';
-import fs from 'fs/promises';
-import path from 'path';
-import { fileURLToPath } from 'url';
+import fs from 'node:fs/promises';
+import path from 'node:path';
+import { fileURLToPath } from 'node:url';
 import crypto from 'node:crypto';
 import { TamperEvidentAuditLog } from '../../src/audit/TamperEvidentAuditLog.js';
 import { SecureJournalManager } from '../../src/core/SecureJournalManager.js';

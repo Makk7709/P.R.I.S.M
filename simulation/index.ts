@@ -1,6 +1,6 @@
 #!/usr/bin/env tsx
-import { writeFileSync, mkdirSync } from 'fs';
-import { join } from 'path';
+import { writeFileSync, mkdirSync } from 'node:fs';
+import { join } from 'node:path';
 import { DEFAULT_CONFIG } from './types.js';
 import { ScenarioRunner, runValidationScenarios } from './scenario.js';
 

@@ -11,8 +11,8 @@
 
 import { describe, it, expect, beforeEach, afterEach } from 'vitest';
 import { PdfExportService, PdfExportOptions, ChatMessage, ExportResult } from '../../src/export/PdfExportService.js';
-import fs from 'fs';
-import path from 'path';
+import fs from 'node:fs';
+import path from 'node:path';
 
 // Répertoire temporaire pour les tests
 const TEST_OUTPUT_DIR = path.join(process.cwd(), 'test-output-pdf');
