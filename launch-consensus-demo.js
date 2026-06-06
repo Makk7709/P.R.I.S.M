@@ -20,7 +20,7 @@ async function checkDependencies() {
   try {
     await import('chalk');
     return true;
-  } catch (error) {
+  } catch (_error) {
     console.log('❌ Dépendance manquante: chalk');
     console.log('💡 Installation automatique...\n');
     

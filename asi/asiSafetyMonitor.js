@@ -509,7 +509,7 @@ export class ASISafetyMonitor extends EventEmitter {
    * Déclenche les protocoles de sécurité si nécessaire
    */
   async triggerProtocolsIfNeeded(riskAssessment) {
-    const { overall: riskLevel, level: riskCategory } = riskAssessment;
+    const { overall: riskLevel, level: _riskCategory } = riskAssessment;
 
     // Déclenchement basé sur le niveau de risque
     if (riskLevel >= this.config.emergencyThreshold) {
@@ -649,7 +649,7 @@ export class ASISafetyMonitor extends EventEmitter {
   /**
    * Met à jour les statistiques de monitoring
    */
-  updateMonitoringStats(checkId, processingTime, safetyScore) {
+  updateMonitoringStats(checkId, processingTime, _safetyScore) {
     this.state.monitoringStats.totalChecks++;
     
     // Mise à jour du temps moyen
@@ -714,19 +714,19 @@ export class ASISafetyMonitor extends EventEmitter {
 
   // Méthodes simplifiées pour les fonctionnalités avancées
   generateSafetyRecommendation(level, issues) { return `Niveau ${level}: ${issues.length} problèmes détectés`; }
-  analyzeImmediateRisk(results, analysis) { return Promise.resolve({ level: Math.random() * 0.3, factors: [] }); }
-  analyzeShortTermRisk(results, analysis) { return Promise.resolve({ level: Math.random() * 0.4, factors: [] }); }
-  analyzeLongTermRisk(results, analysis) { return Promise.resolve({ level: Math.random() * 0.2, factors: [] }); }
-  analyzeCascadingRisk(results, analysis) { return Promise.resolve({ level: Math.random() * 0.3, factors: [] }); }
+  analyzeImmediateRisk(_results, _analysis) { return Promise.resolve({ level: Math.random() * 0.3, factors: [] }); }
+  analyzeShortTermRisk(_results, _analysis) { return Promise.resolve({ level: Math.random() * 0.4, factors: [] }); }
+  analyzeLongTermRisk(_results, _analysis) { return Promise.resolve({ level: Math.random() * 0.2, factors: [] }); }
+  analyzeCascadingRisk(_results, _analysis) { return Promise.resolve({ level: Math.random() * 0.3, factors: [] }); }
   categorizeRiskLevel(risk) { return risk > 0.7 ? 'high' : risk > 0.4 ? 'medium' : 'low'; }
-  generateRiskRecommendations(risks) { return ['Surveiller les métriques', 'Maintenir la vigilance']; }
+  generateRiskRecommendations(_risks) { return ['Surveiller les métriques', 'Maintenir la vigilance']; }
   analyzeSafetyTrends() { return []; }
-  predictFutureRisks(trends) { return []; }
-  adjustSafetyThresholds(predictions) { return Promise.resolve(); }
+  predictFutureRisks(_trends) { return []; }
+  adjustSafetyThresholds(_predictions) { return Promise.resolve(); }
   cleanupOldIncidents() { }
   optimizeSafetyThresholds() { }
   updateSafetyProtocols() { }
-  notifyHumans(alert) { return Promise.resolve(); }
+  notifyHumans(_alert) { return Promise.resolve(); }
 }
 
 export default ASISafetyMonitor; 

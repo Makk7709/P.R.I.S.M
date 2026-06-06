@@ -403,7 +403,7 @@ class EnterpriseSanitizer {
   /**
    * Fast sanitization for test mode
    */
-  fastSanitization(content, metadata) {
+  fastSanitization(content, _metadata) {
     const startTime = process.hrtime.bigint();
     
     if (!content || typeof content !== 'string') {
@@ -464,7 +464,7 @@ class EnterpriseSanitizer {
   /**
    * Full sanitization for production
    */
-  fullSanitization(content, metadata) {
+  fullSanitization(content, _metadata) {
     const startTime = process.hrtime.bigint();
     
     if (!content || typeof content !== 'string') {

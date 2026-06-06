@@ -28,7 +28,7 @@ export default class PrismAwareness {
    * @constructor
    * @param {Object} options - Options de configuration
    */
-  constructor(options = {}) {
+  constructor(_options = {}) {
     this.isActive = false;
     this.adaptationCount = 0;
     this.lastAdaptationTime = 0;
@@ -87,7 +87,7 @@ export default class PrismAwareness {
     
     this.scanInterval = setInterval(() => {
       if (this.isActive) {
-        this.scanVitalSigns().catch(error => {
+        this.scanVitalSigns().catch(_error => {
           this._logSystemEvent('Vital signs scan failed', 'error');
         });
       }
@@ -329,7 +329,7 @@ export default class PrismAwareness {
     try {
       const vitals = await this._gatherSystemVitals();
       await this.adjustBehaviorBasedOnVitals(vitals);
-    } catch (error) {
+    } catch (_error) {
       this._logSystemEvent('Adaptive analysis failed', 'error');
     }
   }

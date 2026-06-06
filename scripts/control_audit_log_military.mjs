@@ -14,7 +14,7 @@ const TEST_DIR = path.join(process.cwd(), 'test-control-audit');
 async function cleanup() {
   try {
     await fs.rm(TEST_DIR, { recursive: true, force: true });
-  } catch (e) {
+  } catch (_e) {
     // Ignore
   }
 }
@@ -238,7 +238,7 @@ await testScenario('Signature Invalid: Autre clé → SIG_INVALID', async () => 
   await log.appendAuditEvent({ eventType: 'test', payload: {} });
   
   // Générer autre clé
-  const { publicKey: otherPub, privateKey: otherPriv } = 
+  const { publicKey: _otherPub, privateKey: otherPriv } = 
     crypto.generateKeyPairSync('ed25519');
   
   // Re-signer avec autre clé

@@ -116,7 +116,7 @@ export class PrismSystemMonitor {
    * @private
    * @param {Object} event - Événement de module silencieux
    */
-  handleModuleSilent(event) {
+  handleModuleSilent(_event) {
     this.updateDisplay();
   }
 
@@ -125,7 +125,7 @@ export class PrismSystemMonitor {
    * @private
    * @param {Object} event - Événement de plan de récupération
    */
-  handleRecoveryPlan(event) {
+  handleRecoveryPlan(_event) {
     this.updateDisplay();
   }
 
@@ -134,7 +134,7 @@ export class PrismSystemMonitor {
    * @private
    * @param {Object} event - Événement d'anomalie
    */
-  handleAnomaly(event) {
+  handleAnomaly(_event) {
     this.updateDisplay();
   }
 
@@ -143,7 +143,7 @@ export class PrismSystemMonitor {
    * @private
    * @param {Object} event - Événement d'urgence
    */
-  handleEmergency(event) {
+  handleEmergency(_event) {
     this.updateDisplay();
   }
 

@@ -209,7 +209,7 @@ export class MultitaskLearningEngine extends EventEmitter {
     const domainScores = new Map();
     
     // Analyse lexicale pour chaque domaine
-    for (const [domain, config] of Object.entries(this.domains)) {
+    for (const [domain, _config] of Object.entries(this.domains)) {
       let score = 0;
       
       // Mots-clés spécifiques au domaine
@@ -234,7 +234,7 @@ export class MultitaskLearningEngine extends EventEmitter {
     const sortedDomains = Array.from(domainScores.entries())
       .sort((a, b) => b[1] - a[1])
       .slice(0, 3) // Top 3 domaines
-      .filter(([domain, score]) => score > 0.1);
+      .filter(([_domain, score]) => score > 0.1);
     
     return sortedDomains.map(([domain, score]) => ({ domain, relevance: score }));
   }
@@ -390,7 +390,7 @@ export class MultitaskLearningEngine extends EventEmitter {
   /**
    * Préprocesse une tâche pour un domaine spécifique
    */
-  preprocessTaskForDomain(task, domain) {
+  preprocessTaskForDomain(task, _domain) {
     const text = task.description || task.content || '';
     
     // Tokenisation et vectorisation simplifiée
@@ -521,7 +521,7 @@ export class MultitaskLearningEngine extends EventEmitter {
     
     // Recherche dans la base de connaissances du domaine
     const relevantKnowledge = [];
-    for (const [key, knowledge] of expert.knowledgeBase) {
+    for (const [_key, knowledge] of expert.knowledgeBase) {
       if (this.isKnowledgeRelevant(knowledge, task)) {
         relevantKnowledge.push(knowledge);
       }

@@ -510,7 +510,7 @@ export class HybridLearningEngine extends EventEmitter {
    */
   async validateStoredKnowledge() {
     const knowledgeToValidate = Array.from(this.state.validatedKnowledge.entries())
-      .filter(([key, knowledge]) => {
+      .filter(([_key, knowledge]) => {
         const age = Date.now() - knowledge.timestamp.getTime();
         return age > 3600000; // Plus d'1 heure
       })
@@ -586,7 +586,7 @@ export class HybridLearningEngine extends EventEmitter {
     return intersection.length / union.length;
   }
 
-  generateKnowledgeKey(task) {
+  generateKnowledgeKey(_task) {
     return `hybrid_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
   }
 
@@ -632,29 +632,29 @@ export class HybridLearningEngine extends EventEmitter {
   }
 
   // Méthodes simplifiées pour les fonctionnalités avancées
-  analyzeTaskContext(task) { return { complexity: 'medium', domain: 'general' }; }
-  generateExperientialInsights(context) { return [{ content: 'Insight expérientiel', confidence: 0.7 }]; }
-  generateCreativeInsights(context) { return [{ content: 'Insight créatif', confidence: 0.6 }]; }
-  recognizePatterns(task) { return [{ pattern: 'Pattern identifié', confidence: 0.8 }]; }
-  formHypotheses(task) { return [{ hypothesis: 'Hypothèse formée', confidence: 0.7 }]; }
-  calculateAutonomousConfidence(knowledge) { return 0.75; }
-  assessNovelty(knowledge) { return 0.6; }
-  analyzeEducationalConsensus(educational) { return []; }
-  integrateAutonomousInsights(consensus, autonomous) { return { majority: [], minority: [] }; }
-  calculateConsensusConfidence(consensus) { return 0.8; }
-  synthesizeContent(items) { return 'Synthèse du contenu validé'; }
-  integrateConsensus(consensus) { return ' avec consensus intégré'; }
-  extractNovelInsights(knowledge) { return []; }
+  analyzeTaskContext(_task) { return { complexity: 'medium', domain: 'general' }; }
+  generateExperientialInsights(_context) { return [{ content: 'Insight expérientiel', confidence: 0.7 }]; }
+  generateCreativeInsights(_context) { return [{ content: 'Insight créatif', confidence: 0.6 }]; }
+  recognizePatterns(_task) { return [{ pattern: 'Pattern identifié', confidence: 0.8 }]; }
+  formHypotheses(_task) { return [{ hypothesis: 'Hypothèse formée', confidence: 0.7 }]; }
+  calculateAutonomousConfidence(_knowledge) { return 0.75; }
+  assessNovelty(_knowledge) { return 0.6; }
+  analyzeEducationalConsensus(_educational) { return []; }
+  integrateAutonomousInsights(_consensus, _autonomous) { return { majority: [], minority: [] }; }
+  calculateConsensusConfidence(_consensus) { return 0.8; }
+  synthesizeContent(_items) { return 'Synthèse du contenu validé'; }
+  integrateConsensus(_consensus) { return ' avec consensus intégré'; }
+  extractNovelInsights(_knowledge) { return []; }
   calculateHybridConfidence(knowledge) { return knowledge.validationScore * 0.9; }
-  extractSourceList(knowledge) { return ['academic', 'autonomous']; }
-  updateSourceReliability(result) { }
-  identifyImprovementAreas(learning) { return []; }
-  optimizeSources(areas) { return Promise.resolve(); }
-  updateValidationMechanisms(learning) { }
+  extractSourceList(_knowledge) { return ['academic', 'autonomous']; }
+  updateSourceReliability(_result) { }
+  identifyImprovementAreas(_learning) { return []; }
+  optimizeSources(_areas) { return Promise.resolve(); }
+  updateValidationMechanisms(_learning) { }
   revalidateKnowledge(knowledge) { return Promise.resolve({ confidence: knowledge.confidence }); }
-  empiricalValidation(items) { return Promise.resolve({ support: 0.8 }); }
-  checkLogicalConsistency(items) { return Promise.resolve(0.85); }
-  calculateValidationScore(validation) { return 0.8; }
+  empiricalValidation(_items) { return Promise.resolve({ support: 0.8 }); }
+  checkLogicalConsistency(_items) { return Promise.resolve(0.85); }
+  calculateValidationScore(_validation) { return 0.8; }
 }
 
 export default HybridLearningEngine; 

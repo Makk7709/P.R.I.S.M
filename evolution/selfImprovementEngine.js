@@ -129,7 +129,7 @@ export class SelfImprovementEngine extends EventEmitter {
    * @param {Object} consensusResult - Résultat du consensus
    */
   handleConsensusReached(consensusResult) {
-    const { proposalId, status, votes, decisionTime } = consensusResult;
+    const { proposalId, status, _votes, decisionTime } = consensusResult;
     
     if (status === ConsensusStatus.APPROVED) {
       this.consensusMetrics.approvedRequests++;
@@ -703,7 +703,7 @@ export class SelfImprovementEngine extends EventEmitter {
     for (const change of adjustments.changes) {
       try {
         // Vérifier le timeout
-        const startTime = Date.now();
+        const _startTime = Date.now();
         const timeoutPromise = new Promise((_, reject) => {
           setTimeout(() => reject(new Error('Improvement timeout')), 
                     SECURITY_CONFIG.SELF_IMPROVEMENT.IMPROVEMENT_TIMEOUT_MS);
@@ -826,12 +826,12 @@ export class SelfImprovementEngine extends EventEmitter {
     return 'fallback_model';
   }
 
-  async adjustTemperature(delta) {
+  async adjustTemperature(_delta) {
     // Implementation to adjust temperature
     // This should be integrated with PRISM's configuration system
   }
 
-  async switchModel(modelName) {
+  async switchModel(_modelName) {
     // Implementation to switch models
     // This should be integrated with PRISM's model selection system
   }
@@ -1061,7 +1061,7 @@ export class SelfImprovementEngine extends EventEmitter {
     };
   }
 
-  generateQualitySuggestion(taskResult) {
+  generateQualitySuggestion(_taskResult) {
     return {
       area: ImprovementArea.QUALITY,
       suggestion: 'Enhance prompt with more specific instructions and context',
@@ -1108,7 +1108,7 @@ export class SelfImprovementEngine extends EventEmitter {
     };
   }
 
-  generatePromptOptimizationSuggestion(taskResult) {
+  generatePromptOptimizationSuggestion(_taskResult) {
     return {
       area: ImprovementArea.PROMPT_OPTIMIZATION,
       suggestion: 'Refine prompt structure and add task-specific constraints',
@@ -1125,7 +1125,7 @@ export class SelfImprovementEngine extends EventEmitter {
     };
   }
 
-  generateContextSuggestion(taskResult) {
+  generateContextSuggestion(_taskResult) {
     return {
       area: ImprovementArea.CONTEXT_MANAGEMENT,
       suggestion: 'Improve context management for better task understanding',
@@ -1141,7 +1141,7 @@ export class SelfImprovementEngine extends EventEmitter {
     };
   }
 
-  generateErrorHandlingSuggestion(taskResult) {
+  generateErrorHandlingSuggestion(_taskResult) {
     return {
       area: ImprovementArea.ERROR_HANDLING,
       suggestion: 'Implement better error handling and recovery strategies',
@@ -1157,7 +1157,7 @@ export class SelfImprovementEngine extends EventEmitter {
     };
   }
 
-  generateLearningRateSuggestion(taskResult) {
+  generateLearningRateSuggestion(_taskResult) {
     return {
       area: ImprovementArea.LEARNING_RATE,
       suggestion: 'Adjust learning rate for better adaptation',
@@ -1172,7 +1172,7 @@ export class SelfImprovementEngine extends EventEmitter {
     };
   }
 
-  generateAdaptationSuggestion(taskResult) {
+  generateAdaptationSuggestion(_taskResult) {
     return {
       area: ImprovementArea.ADAPTATION,
       suggestion: 'Adapt to changing task patterns and user needs',
@@ -1208,7 +1208,7 @@ export class SelfImprovementEngine extends EventEmitter {
     return hasLowSuccessRate || hasKnowledgeGaps || hasInconsistentPerformance;
   }
 
-  shouldAdjustLearningRate(taskResult) {
+  shouldAdjustLearningRate(_taskResult) {
     const recentHistory = this.improvementHistory.slice(-10);
     const successRate = recentHistory.filter(h => h.metrics.success).length / 
                        recentHistory.length;

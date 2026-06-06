@@ -64,7 +64,7 @@ function assert(condition, message) {
   }
 }
 
-function warning(message) {
+function _warning(message) {
   RESULTS.warnings.push(message);
   log(`WARN: ${message}`, 'WARN');
 }
@@ -89,7 +89,7 @@ async function testHybridOrchestratorTrustContext() {
     
     // Mock pour capturer les appels
     let trustContextCalled = false;
-    const originalValidate = trustContext.validateCriticalDecision.bind(trustContext);
+    const _originalValidate = trustContext.validateCriticalDecision.bind(trustContext);
     trustContext.validateCriticalDecision = async (params) => {
       trustContextCalled = true;
       assert(
@@ -107,7 +107,7 @@ async function testHybridOrchestratorTrustContext() {
     try {
       await orchestrator.process('DELETE ALL DATA', 'critical');
       assert(trustContextCalled, 'TrustContext a été appelé pour requête CRITICAL');
-    } catch (e) {
+    } catch (_e) {
       // Peut échouer sur autre chose, mais TrustContext doit avoir été appelé
       assert(trustContextCalled, 'TrustContext a été appelé même en cas d\'erreur');
     }
@@ -170,7 +170,7 @@ async function testExcelAnalyzerTrustContext() {
     log('\n🧪 Test 2.1: Fichier 11MB → TrustContext appelé', 'TEST');
     
     let trustContextCalled = false;
-    const originalRequest = trustContext.requestApproval.bind(trustContext);
+    const _originalRequest = trustContext.requestApproval.bind(trustContext);
     trustContext.requestApproval = async (params) => {
       trustContextCalled = true;
       assert(
@@ -189,7 +189,7 @@ async function testExcelAnalyzerTrustContext() {
     try {
       await analyzer.analyze(largeFile, { filename: 'large.xlsx' });
       assert(trustContextCalled, 'TrustContext a été appelé pour fichier > 10MB');
-    } catch (e) {
+    } catch (_e) {
       // Peut échouer sur parsing, mais TrustContext doit avoir été appelé
       assert(trustContextCalled, 'TrustContext a été appelé même si parsing échoue');
     }
@@ -212,7 +212,7 @@ async function testExcelAnalyzerTrustContext() {
     try {
       await analyzer.analyze(smallFile, 'Analyze confidential data');
       assert(trustContextCalled, 'TrustContext a été appelé pour mot-clé sensible');
-    } catch (e) {
+    } catch (_e) {
       assert(trustContextCalled, 'TrustContext a été appelé même en cas d\'erreur');
     }
     

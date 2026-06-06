@@ -12,8 +12,8 @@ const METRICS_PORT = 9100;
 const ALERT_PORT = 3001;
 const TIMEOUT = 180000; // 3 minutes
 const COVERAGE_THRESHOLD = 0.90;
-const MUTATION_THRESHOLD = 0.90;
-const OVERHEAD_THRESHOLD = 0.02;
+const _MUTATION_THRESHOLD = 0.90;
+const _OVERHEAD_THRESHOLD = 0.02;
 
 // Utility functions
 function execCommand(command) {
@@ -53,7 +53,7 @@ async function runAudit() {
     
     try {
       execCommand('npm ci --no-audit --no-progress');
-    } catch (error) {
+    } catch (_error) {
       console.log('npm ci failed, trying npm install...');
       execCommand('npm install --no-audit --no-progress');
     }
@@ -98,10 +98,10 @@ async function runAudit() {
 
     // 5. Metrics and alerting
     console.log('Starting metrics server...');
-    const metricsProcess = execCommand('node telemetry/prismMetrics.js', { stdio: 'inherit' });
+    const _metricsProcess = execCommand('node telemetry/prismMetrics.js', { stdio: 'inherit' });
     
     // Start mock server
-    const mockProcess = execCommand('npx http-echo 3001', { stdio: 'inherit' });
+    const _mockProcess = execCommand('npx http-echo 3001', { stdio: 'inherit' });
     
     // Wait for metrics to be available
     await sleep(2000);
@@ -190,7 +190,7 @@ async function runAudit() {
     try {
       execCommand('pkill -f "node telemetry/prismMetrics.js"');
       execCommand('pkill -f "http-echo"');
-    } catch (error) {
+    } catch (_error) {
       // Ignore cleanup errors
     }
   }

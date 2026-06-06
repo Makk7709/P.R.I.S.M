@@ -443,7 +443,7 @@ export class ASIEthicsModule extends EventEmitter {
    */
   async performEthicalMonitoring() {
     // Analyse des tendances éthiques
-    const trends = this.analyzeEthicalTrends();
+    const _trends = this.analyzeEthicalTrends();
     
     // Détection d'anomalies éthiques
     const anomalies = this.detectEthicalAnomalies();
@@ -592,39 +592,39 @@ export class ASIEthicsModule extends EventEmitter {
 
   // Méthodes simplifiées pour les fonctionnalités avancées
   classifyActionType(action) { return action.type || 'general'; }
-  identifyStakeholders(action) { return ['user', 'system']; }
-  predictConsequences(action) { return ['consequence1', 'consequence2']; }
+  identifyStakeholders(_action) { return ['user', 'system']; }
+  predictConsequences(_action) { return ['consequence1', 'consequence2']; }
   extractContext(action) { return action.context || {}; }
   analyzeIntentions(action) { return action.intentions || 'beneficial'; }
   determineScope(action) { return action.scope || 'limited'; }
-  assessSpecificRisk(action, analysis, category) { return Promise.resolve(Math.random() * 0.3); }
+  assessSpecificRisk(_action, _analysis, _category) { return Promise.resolve(Math.random() * 0.3); }
   categorizeRiskLevel(risk) { return risk > 0.7 ? 'high' : risk > 0.4 ? 'medium' : 'low'; }
-  evaluatePrinciple(action, analysis, principle) { return Promise.resolve(Math.random() * 0.4 + 0.6); }
-  checkRuleCompliance(action, analysis, rule) { return Promise.resolve({ compliant: Math.random() > 0.2, reason: 'Évaluation automatique' }); }
-  generateConditions(score, risk) { return Promise.resolve(['condition1', 'condition2']); }
-  generateSafeguards(score, risk) { return Promise.resolve(['safeguard1', 'safeguard2']); }
-  recordEthicalDecision(id, action, score, recommendation) { return Promise.resolve(); }
+  evaluatePrinciple(_action, _analysis, _principle) { return Promise.resolve(Math.random() * 0.4 + 0.6); }
+  checkRuleCompliance(_action, _analysis, _rule) { return Promise.resolve({ compliant: Math.random() > 0.2, reason: 'Évaluation automatique' }); }
+  generateConditions(_score, _risk) { return Promise.resolve(['condition1', 'condition2']); }
+  generateSafeguards(_score, _risk) { return Promise.resolve(['safeguard1', 'safeguard2']); }
+  recordEthicalDecision(_id, _action, _score, _recommendation) { return Promise.resolve(); }
   generateEthicalExplanation(score, recommendation) { return `Score éthique: ${score.overall.toFixed(3)}, Action: ${recommendation.action}`; }
   analyzeEthicalTrends() { return []; }
   detectEthicalAnomalies() { return []; }
-  adjustEthicalThresholds(anomalies) { return Promise.resolve(); }
+  adjustEthicalThresholds(_anomalies) { return Promise.resolve(); }
   checkSafetyIndicators() { return { status: 'normal' }; }
-  detectSafetyIncidents(indicators) { return []; }
-  respondToSafetyIncident(incident) { return Promise.resolve(); }
+  detectSafetyIncidents(_indicators) { return []; }
+  respondToSafetyIncident(_incident) { return Promise.resolve(); }
   calculateComplianceRate() { return 0.95; }
   generateAuditRecommendations() { return ['Maintenir les standards actuels']; }
 
   // Méthodes manquantes pour les validateurs éthiques
-  assessHarmPotential(action) { return Promise.resolve({ risk: Math.random() * 0.3, factors: [] }); }
-  detectBias(action) { return Promise.resolve({ detected: Math.random() > 0.8, score: Math.random() }); }
-  checkPrivacyCompliance(action) { return Promise.resolve({ compliant: Math.random() > 0.2, score: Math.random() * 0.3 + 0.7 }); }
-  validateAutonomy(action) { return Promise.resolve({ preserved: Math.random() > 0.1, score: Math.random() * 0.2 + 0.8 }); }
-  checkTransparency(action) { return Promise.resolve({ transparent: Math.random() > 0.15, score: Math.random() * 0.25 + 0.75 }); }
-  assessFairness(action) { return Promise.resolve({ fair: Math.random() > 0.2, score: Math.random() * 0.3 + 0.7 }); }
+  assessHarmPotential(_action) { return Promise.resolve({ risk: Math.random() * 0.3, factors: [] }); }
+  detectBias(_action) { return Promise.resolve({ detected: Math.random() > 0.8, score: Math.random() }); }
+  checkPrivacyCompliance(_action) { return Promise.resolve({ compliant: Math.random() > 0.2, score: Math.random() * 0.3 + 0.7 }); }
+  validateAutonomy(_action) { return Promise.resolve({ preserved: Math.random() > 0.1, score: Math.random() * 0.2 + 0.8 }); }
+  checkTransparency(_action) { return Promise.resolve({ transparent: Math.random() > 0.15, score: Math.random() * 0.25 + 0.75 }); }
+  assessFairness(_action) { return Promise.resolve({ fair: Math.random() > 0.2, score: Math.random() * 0.3 + 0.7 }); }
 
   // Méthodes manquantes pour les mécanismes de sécurité
-  mitigateRisk(risk) { return Promise.resolve({ mitigated: true, actions: ['action1', 'action2'] }); }
-  safeFallback(reason) { return Promise.resolve({ activated: true, mode: 'safe' }); }
+  mitigateRisk(_risk) { return Promise.resolve({ mitigated: true, actions: ['action1', 'action2'] }); }
+  safeFallback(_reason) { return Promise.resolve({ activated: true, mode: 'safe' }); }
 }
 
 export default ASIEthicsModule; 

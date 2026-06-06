@@ -120,9 +120,9 @@ export class ServerMemoryStore {
    * Extrait TOUTES les informations importantes (prénom, rôle, stratégie, etc.)
    */
   _extractPersonalInfo(input, response) {
-    const inputLower = input.toLowerCase();
-    const responseLower = response.toLowerCase();
-    const fullText = `${input} ${response}`.toLowerCase();
+    const _inputLower = input.toLowerCase();
+    const _responseLower = response.toLowerCase();
+    const _fullText = `${input} ${response}`.toLowerCase();
 
     // ✨ 1. Détecter prénom
     const prenomPatterns = [

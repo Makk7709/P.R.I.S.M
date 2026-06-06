@@ -8,7 +8,7 @@ import { createRequire } from 'module';
 import { execSync } from 'child_process';
 const require = createRequire(import.meta.url);
 const fs = require('fs');
-const path = require('path');
+const _path = require('path');
 
 console.log('🔒 PRISM Security Verification - Final Report');
 console.log('==============================================\n');
@@ -29,7 +29,7 @@ async function runSecurityVerification() {
   // 1. Exécuter le test manuel de sécurité
   console.log('🧪 Step 1: Running Manual Security Tests');
   try {
-    const testOutput = execSync('node tests/security/manual-security-test.js', { 
+    const _testOutput = execSync('node tests/security/manual-security-test.js', { 
       encoding: 'utf8',
       timeout: 30000 
     });

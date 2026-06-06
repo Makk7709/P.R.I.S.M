@@ -229,7 +229,7 @@ export class SecureJournalManager extends EventEmitter {
     try {
       const checkpointData = await fs.readFile(checkpointPath, 'utf8');
       return JSON.parse(checkpointData);
-    } catch (error) {
+    } catch (_error) {
       // Pas de checkpoint existant, commencer depuis le début
       return {
         sequence: 0,
@@ -508,7 +508,7 @@ export class SecureJournalManager extends EventEmitter {
   /**
    * Met à jour les métriques de récupération
    */
-  updateRecoveryMetrics(recoveryTime, success = true) {
+  updateRecoveryMetrics(recoveryTime, _success = true) {
     this.metrics.totalRecoveries++;
     this.metrics.lastRecoveryTime = recoveryTime;
     
@@ -658,7 +658,7 @@ export class SecureJournalManager extends EventEmitter {
 
     try {
       return crypto.timingSafeEqual(Buffer.from(expected, 'hex'), Buffer.from(snapshot.signature, 'hex'));
-    } catch (err) {
+    } catch (_err) {
       // crypto.timingSafeEqual may throw if buffer lengths differ
       return false;
     }

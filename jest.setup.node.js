@@ -1,4 +1,4 @@
-const { PrismEvents } = require('./__mocks__/prismEvents');
+const { _PrismEvents } = require('./__mocks__/prismEvents');
 
 // Mock global prismBus
 global.prismBus = {

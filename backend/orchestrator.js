@@ -28,7 +28,7 @@ const openai = new OpenAI({
 });
 
 // 🚀 CACHE HAUTE PERFORMANCE - Nouvelle implémentation
-const responseCache = new Map();
+const _responseCache = new Map();
 const CACHE_TTL = 60000; // 1 minute cache
 const MAX_CACHE_SIZE = 100;
 
@@ -152,7 +152,7 @@ async function callOpenAI(userInput, skipContext = false, customSystemPrompt = n
 }
 
 // Fonctions d'exécution
-function generateMarketingCampaign(product, targetAudience) {
+function _generateMarketingCampaign(product, targetAudience) {
   return `# 🎯 Stratégie Marketing pour ${product}
 
 ## 🎭 Public Cible
@@ -184,7 +184,7 @@ ${targetAudience}
 *Budget estimé: €50k - €150k selon l'ambition*`;
 }
 
-function analyzeFinancialStatus(revenue, expenses) {
+function _analyzeFinancialStatus(revenue, expenses) {
   const burn = expenses - revenue;
   const runwayMonths = revenue > 0 ? Math.floor(revenue / (burn / 12)) : 0;
   const burnRate = burn / 12;
@@ -221,7 +221,7 @@ ${burn > 0 ?
 - **Break-even**: ${burn > 0 ? 'Dans 6-12 mois' : 'Maintenir'}`;
 }
 
-function composeClientEmail(clientName, product) {
+function _composeClientEmail(clientName, product) {
   return `Objet: ${product} - Innovation IA conversationnelle pour ${clientName}
 
 Bonjour,

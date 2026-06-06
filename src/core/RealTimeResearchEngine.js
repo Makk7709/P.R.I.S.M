@@ -18,7 +18,7 @@ export class RealTimeResearchEngine {
    * @param {Object} options - Options supplémentaires
    * @returns {Promise<Object>} Données de recherche structurées
    */
-  async search(query, taskType, options = {}) {
+  async search(query, taskType, _options = {}) {
     const cacheKey = this._generateCacheKey(query, taskType);
 
     // Vérifier le cache

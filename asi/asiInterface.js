@@ -318,7 +318,7 @@ export class ASIInterface extends EventEmitter {
    * Détermine le style de réponse
    */
   determineResponseStyle(context) {
-    const userProfile = context.userProfile;
+    const _userProfile = context.userProfile;
     const recentTurns = context.turns.slice(-3);
     
     // Analyse du style préféré de l'utilisateur
@@ -382,7 +382,7 @@ export class ASIInterface extends EventEmitter {
   /**
    * Interprète la sortie fusionnée de l'ASI
    */
-  interpretFusedOutput(fusedOutput, style) {
+  interpretFusedOutput(fusedOutput, _style) {
     // Simulation de l'interprétation - à adapter selon la vraie structure
     const confidence = fusedOutput.confidence || 0.8;
     
@@ -518,7 +518,7 @@ export class ASIInterface extends EventEmitter {
   /**
    * Gère les autres types de requêtes
    */
-  async handleStatusRequest(request) {
+  async handleStatusRequest(_request) {
     return {
       success: true,
       status: this.asiCore.getStatus(),
@@ -531,7 +531,7 @@ export class ASIInterface extends EventEmitter {
     };
   }
 
-  async handleMetricsRequest(request) {
+  async handleMetricsRequest(_request) {
     return {
       success: true,
       metrics: {
@@ -542,7 +542,7 @@ export class ASIInterface extends EventEmitter {
     };
   }
 
-  async handleVoiceRequest(request) {
+  async handleVoiceRequest(_request) {
     // Gestion des requêtes vocales
     return {
       success: true,
@@ -550,7 +550,7 @@ export class ASIInterface extends EventEmitter {
     };
   }
 
-  async handleLearningRequest(request) {
+  async handleLearningRequest(_request) {
     // Gestion des requêtes d'apprentissage
     return {
       success: true,
@@ -702,11 +702,11 @@ export class ASIInterface extends EventEmitter {
   /**
    * Méthodes utilitaires
    */
-  generateFallbackResponse(message) {
+  generateFallbackResponse(_message) {
     return "Je rencontre actuellement des difficultés pour traiter votre demande. Pouvez-vous reformuler ou réessayer dans quelques instants ?";
   }
 
-  updateMetrics(responseTime, success) {
+  updateMetrics(responseTime, _success) {
     this.state.metrics.totalInteractions++;
     
     // Mise à jour du temps de réponse moyen
@@ -750,11 +750,11 @@ export class ASIInterface extends EventEmitter {
       .map(([domain, count]) => ({ domain, count }));
   }
 
-  identifyResponseAdaptations(baseResponse, context) {
+  identifyResponseAdaptations(_baseResponse, _context) {
     return []; // À implémenter selon les besoins
   }
 
-  interpretOutput(output, style) {
+  interpretOutput(_output, _style) {
     return "J'ai analysé votre demande et voici ma réponse basée sur mes capacités d'IA avancée.";
   }
 

@@ -410,7 +410,7 @@ FORMAT: Image haute résolution, ratio 16:9, optimisée pour insertion PDF`;
         throw new Error(`API Error: ${response.status}`);
       }
 
-      const data = await response.json();
+      const _data = await response.json();
 
       // Pour l'instant, retourner un placeholder car Gemini Pro ne génère pas d'images directement
       // Une intégration avec Imagen ou DALL-E serait nécessaire pour de vraies images
@@ -459,7 +459,7 @@ FORMAT: Image haute résolution, ratio 16:9, optimisée pour insertion PDF`;
    * Génère une image de fallback
    * @private
    */
-  _generateFallbackImage(domain, data) {
+  _generateFallbackImage(domain, _data) {
     return this._generatePlaceholderImage(domain);
   }
 
@@ -469,7 +469,7 @@ FORMAT: Image haute résolution, ratio 16:9, optimisée pour insertion PDF`;
    * @returns {Promise<Object>}
    */
   async generateForPdf(chatData) {
-    const { messages, taskType, metadata } = chatData;
+    const { messages, taskType, _metadata } = chatData;
 
     // Extraire les données du chat
     const extractedData = this.extractDataFromChat(messages, taskType);

@@ -113,10 +113,10 @@ class PrismContinuum {
 if (typeof process !== 'undefined' && process.env.NODE_ENV === 'test') {
   const testContinuum = () => {
     const continuum = new PrismContinuum();
-    let milestoneReached = false;
+    let _milestoneReached = false;
     
     continuum.on('milestone:reached', () => {
-      milestoneReached = true;
+      _milestoneReached = true;
     });
 
     // Test start

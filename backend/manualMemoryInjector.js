@@ -6,7 +6,7 @@ import { createClient } from '@supabase/supabase-js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
-const require = createRequire(import.meta.url);
+const _require = createRequire(import.meta.url);
 
 // Load environment variables from the root directory
 dotenv.config({ path: join(__dirname, '..', '.env.local') });

@@ -342,7 +342,7 @@ export class FailoverPrismCore extends EventEmitter {
   }
 
   async _attemptProviderRequest(provider, request, result) {
-    const startTime = Date.now();
+    const _startTime = Date.now();
     
     try {
       // Vérifier timeout de configuration
@@ -378,7 +378,7 @@ export class FailoverPrismCore extends EventEmitter {
     }
   }
 
-  async _simulateProviderRequest(provider, request) {
+  async _simulateProviderRequest(provider, _request) {
     // Simuler délai réseau
     const latency = Math.random() * 100 + 50; // 50-150ms
     await new Promise(resolve => setTimeout(resolve, latency));

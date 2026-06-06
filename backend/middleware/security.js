@@ -51,7 +51,7 @@ const enterpriseExportRateLimit = rateLimit({
       });
     },
 
-    decrement: (key) => {
+    decrement: (_key) => {
       // Pas d'implémentation nécessaire pour notre cas d'usage
       return Promise.resolve();
     },
@@ -316,7 +316,7 @@ const securityLogger = (req, res, next) => {
 /**
  * Middleware de nettoyage des erreurs pour éviter l'exposition d'informations sensibles
  */
-const sanitizeErrors = (err, req, res, next) => {
+const sanitizeErrors = (err, req, res, _next) => {
   console.error('[SECURITY] Error occurred', {
     timestamp: new Date().toISOString(),
     error: err.message,

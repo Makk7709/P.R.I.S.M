@@ -111,7 +111,7 @@ class EnterpriseDetectionService {
   /**
    * Fast enterprise check for test mode
    */
-  fastEnterpriseCheck(content, metadata) {
+  fastEnterpriseCheck(content, _metadata) {
     const startTime = process.hrtime.bigint();
     
     // Quick checks based on content length and basic patterns

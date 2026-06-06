@@ -2,7 +2,7 @@ import fetch from 'node-fetch';
 
 // Configuration pour tests
 const API_ENDPOINT = 'http://localhost:3000/api/chat';
-const TEST_TIMEOUT = 10000; // 10 secondes
+const _TEST_TIMEOUT = 10000; // 10 secondes
 
 class VoiceAPIIntegrationTester {
     constructor() {
@@ -463,7 +463,7 @@ async function checkServerAvailability() {
             timeout: 5000 
         });
         return response.ok;
-    } catch (error) {
+    } catch (_error) {
         return false;
     }
 }

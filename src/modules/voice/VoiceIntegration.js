@@ -231,7 +231,7 @@ export class VoiceIntegration {
       let enhancedResponse = prismResponse;
       
       // Extraire le texte de la réponse
-      const text = this.extractTextFromResponse(prismResponse);
+      const _text = this.extractTextFromResponse(prismResponse);
       
       // Analyser si données audio disponibles
       if (audioData && this.config.enableProsodyAnalysis) {
@@ -282,7 +282,7 @@ export class VoiceIntegration {
     
     try {
       const adaptedResponse = { ...response };
-      const text = this.extractTextFromResponse(response);
+      const _text = this.extractTextFromResponse(response);
       
       switch (emotion.emotion) {
         case 'joy':

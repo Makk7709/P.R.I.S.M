@@ -282,7 +282,7 @@ export class VoiceSentimentDetector {
   /**
    * Calcule le score de joie
    */
-  calculateJoyScore(pitch, volume, tempo, rhythm, stress) {
+  calculateJoyScore(pitch, volume, tempo, rhythm, _stress) {
     let score = 0;
     
     // Pitch élevé = joie

@@ -49,7 +49,7 @@ async function generateReport() {
         }
       }
     }
-  } catch (error) {
+  } catch (_error) {
     console.warn('No metrics files found, generating empty report');
   }
 

@@ -175,7 +175,7 @@ export class IdempotentPrismCore {
       }
 
       return report;
-    } catch (error) {
+    } catch (_error) {
       return {
         isValid: false,
         violations: ['validation_error'],

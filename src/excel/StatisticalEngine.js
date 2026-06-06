@@ -34,7 +34,7 @@ export class StatisticalEngine {
    * @param {Object} options - Options (sample: boolean pour variance échantillon)
    * @returns {Object} Statistiques complètes
    */
-  descriptiveStats(data, options = {}) {
+  descriptiveStats(data, _options = {}) {
     if (!Array.isArray(data)) {
       throw new Error('Input must be an array');
     }
@@ -732,7 +732,7 @@ export class StatisticalEngine {
       standardError: this._round(standardError),
       suggestNonLinear,
       predict: (xNew) => this._round(slope * xNew + intercept),
-      predictWithInterval: (xNew, confidence = 0.95) => {
+      predictWithInterval: (xNew, _confidence = 0.95) => {
         const yPred = slope * xNew + intercept;
         const margin = 1.96 * standardError; // Approximation
         return {

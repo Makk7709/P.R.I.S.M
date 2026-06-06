@@ -79,7 +79,7 @@ export class PrismPostStressAnalyzer {
    * @param {Object} data - Données de la réponse
    * @private
    */
-  _handleResponseTriggered(data) {
+  _handleResponseTriggered(_data) {
     if (!this.isActive) return;
     
     this.stressSessionData.activeResponses++;

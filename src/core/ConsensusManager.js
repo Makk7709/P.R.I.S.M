@@ -92,8 +92,8 @@ class DecisionProposal {
   isComplete() {
     const { approvals, rejections, abstentions, unavailable, total } = this.getVoteCount();
     const totalProviders = Object.keys(AIProvider).length;
-    const effectiveVotes = approvals + rejections; // Abstentions ne comptent pas dans le quorum
-    const availableProviders = totalProviders - unavailable;
+    const _effectiveVotes = approvals + rejections; // Abstentions ne comptent pas dans le quorum
+    const _availableProviders = totalProviders - unavailable;
 
     // Quorum dynamique : 2/3 des fournisseurs totaux
     const requiredQuorum = Math.ceil((totalProviders * 2) / 3);

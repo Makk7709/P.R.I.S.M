@@ -189,7 +189,7 @@ if (typeof process !== 'undefined' && process.env.NODE_ENV === 'test') {
     'Mood should reset to neutral');
   
   // Test 4: Mood drift
-  const initialMood = moodEngine.getCurrentMood().allMoods.uplifting;
+  const _initialMood = moodEngine.getCurrentMood().allMoods.uplifting;
   moodEngine.updateMood({ uplifting: 0.9 });
   setTimeout(() => {
     const driftedMood = moodEngine.getCurrentMood().allMoods.uplifting;

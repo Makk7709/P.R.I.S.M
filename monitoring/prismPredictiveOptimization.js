@@ -157,7 +157,7 @@ class PrismPredictiveOptimization {
   }
 
   async adaptPerformanceThresholds(prediction) {
-    const { probability, trend } = prediction;
+    const { probability, _trend } = prediction;
     
     // Ajustement des seuils en fonction de la prédiction
     const newThresholds = {
@@ -174,7 +174,7 @@ class PrismPredictiveOptimization {
   }
 
   async adaptStabilityParameters(prediction) {
-    const { probability, volatility } = prediction;
+    const { probability, _volatility } = prediction;
     
     // Ajustement des paramètres de stabilité
     const newParameters = {
@@ -191,7 +191,7 @@ class PrismPredictiveOptimization {
   }
 
   async adaptLoadBalancing(prediction) {
-    const { probability, trend } = prediction;
+    const { probability, _trend } = prediction;
     
     // Ajustement des paramètres de charge
     const newParameters = {

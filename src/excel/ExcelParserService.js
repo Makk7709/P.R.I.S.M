@@ -461,7 +461,7 @@ export class ExcelParserService {
    * Extrait les en-têtes
    * @private
    */
-  _extractHeaders(worksheet, headerRow, range, options) {
+  _extractHeaders(worksheet, headerRow, range, _options) {
     const headers = [];
     
     for (let col = range.s.c; col <= range.e.c; col++) {

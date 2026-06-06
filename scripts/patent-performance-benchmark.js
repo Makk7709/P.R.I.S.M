@@ -149,10 +149,10 @@ class PatentBenchmark {
     const consensus = new ConsensusManager({ timeoutMs: 1000 });
     await new Promise(resolve => setTimeout(resolve, 100)); // Init
 
-    const totalDecisions = 1000;
-    const successfulDecisions = [];
-    const failedDecisions = [];
-    const decisionTimes = [];
+    const _totalDecisions = 1000;
+    const _successfulDecisions = [];
+    const _failedDecisions = [];
+    const _decisionTimes = [];
 
     // Test de disponibilité avec différents niveaux de panne
     for (let unavailablePercent = 0; unavailablePercent <= 67; unavailablePercent += 10) {

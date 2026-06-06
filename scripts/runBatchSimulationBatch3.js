@@ -43,7 +43,7 @@ async function runBatch3(nbRuns = 50) {
       console.log(`🔄 Running event ${i + 1}/${nbRuns} (attempt 1/3)...`);
 
       const startTime = Date.now();
-      const result = await prism.processEvent(randomPrompt.prompt);
+      const _result = await prism.processEvent(randomPrompt.prompt);
       const responseTime = Date.now() - startTime;
       totalResponseTime += responseTime;
 

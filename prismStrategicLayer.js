@@ -165,14 +165,14 @@ export async function generateDirectives(risks) {
  */
 export async function analyzePerformanceMetrics() {
   try {
-    const metrics = await prismPredictiveOptimization.analyzeMetrics({
+    const _metrics = await prismPredictiveOptimization.analyzeMetrics({
       responseTime: performance.now(),
       stabilityScore: 0.8,
       load: 0.5
     });
 
     const predictions = await prismPredictiveOptimization.generatePredictions();
-    const adaptations = await prismPredictiveOptimization.applyAdaptations(predictions);
+    const _adaptations = await prismPredictiveOptimization.applyAdaptations(predictions);
 
     // Générer des directives basées sur les prédictions
     const risks = Object.entries(predictions).map(([type, prediction]) => ({

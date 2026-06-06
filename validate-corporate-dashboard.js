@@ -137,7 +137,7 @@ async function testBackendModules() {
     try {
         // Vérifier que les modules sont importables
         const { handleUserInstruction } = await import('./backend/orchestrator.js');
-        const { VoicePersonalityEnhancer } = await import('./backend/voicePersonalityEnhancer.js');
+        const { _VoicePersonalityEnhancer } = await import('./backend/voicePersonalityEnhancer.js');
         
         console.log('✅ Modules backend chargés');
         console.log('   - Orchestrateur: ✅');

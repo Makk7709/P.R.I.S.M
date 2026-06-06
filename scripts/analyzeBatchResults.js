@@ -2,7 +2,7 @@
 
 const path = require('path');
 const fs = require('fs');
-const PRISM = require('../prismCore.js');
+const _PRISM = require('../prismCore.js');
 
 // Ensure we're in TEST mode
 if (process.env.PRISM_MODE !== 'TEST') {

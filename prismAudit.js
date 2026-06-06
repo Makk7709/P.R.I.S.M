@@ -157,7 +157,7 @@ class PrismAudit {
         if (!moduleStatus.healthy) {
           auditResult.warnings.push(`Module ${module} en état critique`);
         }
-      } catch (error) {
+      } catch (_error) {
         auditResult.errors.push(`Erreur lors de la vérification du module ${module}`);
       }
     }
@@ -184,7 +184,7 @@ class PrismAudit {
       if (!sessionData.valid || !localMemory.valid || !internalStates.valid) {
         auditResult.warnings.push('Données critiques corrompues');
       }
-    } catch (error) {
+    } catch (_error) {
       auditResult.errors.push('Erreur lors de la vérification des données critiques');
     }
   }
@@ -208,7 +208,7 @@ class PrismAudit {
       if (!heartbeatEvents.regular || !systemEvents.regular) {
         auditResult.warnings.push('Irrégularités détectées dans les événements système');
       }
-    } catch (error) {
+    } catch (_error) {
       auditResult.errors.push('Erreur lors de la vérification des événements système');
     }
   }
@@ -232,7 +232,7 @@ class PrismAudit {
       if (criticalErrors.length > 0) {
         auditResult.errors.push(`${criticalErrors.length} erreurs critiques détectées`);
       }
-    } catch (error) {
+    } catch (_error) {
       auditResult.errors.push('Erreur lors de la vérification des journaux');
     }
   }
@@ -347,7 +347,7 @@ class PrismAudit {
   }
 
   // Méthodes de vérification à implémenter selon les besoins spécifiques
-  async _verifyModule(moduleName) { return { healthy: true }; }
+  async _verifyModule(_moduleName) { return { healthy: true }; }
   async _verifySessionData() { return { valid: true }; }
   async _verifyLocalMemory() { return { valid: true }; }
   async _verifyInternalStates() { return { valid: true }; }

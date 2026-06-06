@@ -20,7 +20,7 @@ async function loadSecurityConfig() {
   try {
     const securityModule = await import('./config/security.js');
     SECURITY_CONFIG = securityModule.SECURITY_CONFIG || SECURITY_CONFIG;
-  } catch (error) {
+  } catch (_error) {
     console.warn('Security config not found, using defaults');
   }
 }
@@ -843,7 +843,7 @@ export default class PrismVitals {
    * @param {Object} pulseData - Données du pulse
    * @private
    */
-  handlePulse(pulseData) {
+  handlePulse(_pulseData) {
     try {
       // Traiter les données du pulse
       this.updateVitals();
@@ -865,7 +865,7 @@ export default class PrismVitals {
    * @returns {Object} Tendances calculées
    * @private
    */
-  calculateTrends(vitals = null) {
+  calculateTrends(_vitals = null) {
     try {
       const recentHistory = this.vitalsHistory.slice(-VITALS_CYCLE);
       

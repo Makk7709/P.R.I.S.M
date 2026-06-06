@@ -589,7 +589,7 @@ async function generateElevenLabsAudio(text, voiceConfig, selectedVoiceConfig) {
         const shortText = smartTruncate(cleanText, Math.floor(cleanText.length * 0.8)); // Réduction moins agressive
         try {
           return await generateElevenLabsAudio(shortText, voiceConfig, selectedVoiceConfig);
-        } catch (secondError) {
+        } catch (_secondError) {
           console.error('[ElevenLabs] ❌ Échec même avec texte réduit, abandon ElevenLabs');
           throw new Error('ElevenLabs indisponible - utiliser TTS navigateur');
         }

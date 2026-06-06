@@ -17,7 +17,7 @@ let openai = null;
 try {
   openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
   console.log('✅ OpenAI configuré');
-} catch (error) {
+} catch (_error) {
   console.warn('⚠️ OpenAI non configuré');
 }
 

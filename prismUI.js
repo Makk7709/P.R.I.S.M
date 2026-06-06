@@ -353,7 +353,7 @@ export class PrismUI {
       success: 'transition-success animate-success'
     };
 
-    Object.entries(elements).forEach(([key, element]) => {
+    Object.entries(elements).forEach(([_key, element]) => {
       if (element) {
         // Remove all state classes
         Object.values(stateClasses).forEach(classes => {

@@ -231,7 +231,7 @@ export class ConsensusBenchmark {
     for (const dir of dirs) {
       try {
         await fs.mkdir(dir, { recursive: true });
-      } catch (error) {
+      } catch (_error) {
         // Directory might already exist
       }
     }

@@ -222,7 +222,7 @@ export class TrustContext extends EventEmitter {
    * @param {Object} context - Contexte de la décision
    * @returns {boolean} True si approbation requise
    */
-  requiresHumanApproval(decisionType, criticalityLevel, context = {}) {
+  requiresHumanApproval(decisionType, criticalityLevel, _context = {}) {
     // En mode TEST, pas d'approbation requise sauf pour les décisions CRITICAL
     if (this.config.mode === 'TEST' && criticalityLevel !== CriticalityLevel.CRITICAL) {
       return false;

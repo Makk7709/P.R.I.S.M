@@ -367,7 +367,7 @@ export class KnowledgeTransferEngine extends EventEmitter {
   findApplicableAnalogies(task, sourceDomain) {
     const analogies = [];
     
-    for (const [key, analogy] of this.state.analogyDatabase) {
+    for (const [_key, analogy] of this.state.analogyDatabase) {
       if (analogy.source.domain === sourceDomain && 
           analogy.strength >= this.config.analogyStrength) {
         
@@ -685,17 +685,17 @@ export class KnowledgeTransferEngine extends EventEmitter {
     return Math.min(abstractionLevel * 1.2, 1.0);
   }
 
-  calculateAbstractionLevel(item) {
+  calculateAbstractionLevel(_item) {
     // Simulation du calcul du niveau d'abstraction
     return Math.random() * 0.4 + 0.6; // 0.6-1.0
   }
 
-  assessAnalogyApplicability(task, analogy) {
+  assessAnalogyApplicability(_task, _analogy) {
     // Évaluation de l'applicabilité d'une analogie
     return Math.random() * 0.5 + 0.5; // 0.5-1.0
   }
 
-  assessPatternGeneralizability(pattern) {
+  assessPatternGeneralizability(_pattern) {
     // Évaluation de la généralisabilité d'un pattern
     return Math.random() * 0.4 + 0.6; // 0.6-1.0
   }
@@ -741,22 +741,22 @@ export class KnowledgeTransferEngine extends EventEmitter {
   mapAnalogyToTask(analogy, task) { return `Application de ${analogy.mapping} à ${task.description}`; }
   generalizePattern(pattern) { return `Pattern généralisé: ${pattern.name || 'pattern'}`; }
   adaptPatternToTask(pattern, task) { return `Pattern adapté au contexte de: ${task.description}`; }
-  synthesizeTransfers(result) { return 'Synthèse des transferts de connaissances appliqués'; }
-  calculateTransferConfidence(result) { return 0.8; }
-  validateCoherence(result) { return 0.85; }
-  validateApplicability(task, result) { return 0.8; }
-  assessNovelty(result) { return 0.7; }
-  generateValidationFeedback(validation) { return ['Transfert cohérent', 'Bonne applicabilité']; }
-  generateTransferKey(task, result) { return `transfer_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`; }
-  updateKnowledgeGraph(task, result, validation) { return Promise.resolve(); }
-  identifySuccessfulTransferPatterns(transfers) { return []; }
-  optimizeTransferMechanisms(patterns) { return Promise.resolve(); }
+  synthesizeTransfers(_result) { return 'Synthèse des transferts de connaissances appliqués'; }
+  calculateTransferConfidence(_result) { return 0.8; }
+  validateCoherence(_result) { return 0.85; }
+  validateApplicability(_task, _result) { return 0.8; }
+  assessNovelty(_result) { return 0.7; }
+  generateValidationFeedback(_validation) { return ['Transfert cohérent', 'Bonne applicabilité']; }
+  generateTransferKey(_task, _result) { return `transfer_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`; }
+  updateKnowledgeGraph(_task, _result, _validation) { return Promise.resolve(); }
+  identifySuccessfulTransferPatterns(_transfers) { return []; }
+  optimizeTransferMechanisms(_patterns) { return Promise.resolve(); }
   extractRecentConcepts() { return []; }
-  findNewAnalogies(concepts) { return []; }
-  extractKnowledge(result) { return {}; }
-  updateKnowledgeGraphWithResult(knowledge) { return Promise.resolve(); }
-  identifyNewPatterns(knowledge) { return []; }
-  updatePatternDatabase(patterns) { }
+  findNewAnalogies(_concepts) { return []; }
+  extractKnowledge(_result) { return {}; }
+  updateKnowledgeGraphWithResult(_knowledge) { return Promise.resolve(); }
+  identifyNewPatterns(_knowledge) { return []; }
+  updatePatternDatabase(_patterns) { }
   structuralMapping() { return Promise.resolve(); }
   conceptualBridging() { return Promise.resolve(); }
   patternGeneralization() { return Promise.resolve(); }

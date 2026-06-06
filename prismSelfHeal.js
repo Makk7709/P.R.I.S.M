@@ -19,7 +19,7 @@ class PrismSelfHeal {
 
   initializeStrategies() {
     // Memory leak detection and cleanup
-    this.registerStrategy('memory', async (error) => {
+    this.registerStrategy('memory', async (_error) => {
       if (global.gc) {
         global.gc();
       }
@@ -43,13 +43,13 @@ class PrismSelfHeal {
     });
 
     // State recovery
-    this.registerStrategy('state', async (error) => {
+    this.registerStrategy('state', async (_error) => {
       await prismBus.emit('state:restore', { timestamp: Date.now() });
       return { success: true, action: 'state_restore' };
     });
 
     // Performance optimization
-    this.registerStrategy('performance', async (error) => {
+    this.registerStrategy('performance', async (_error) => {
       const metrics = await this.collectMetrics();
       const prediction = await prismPredictiveOptimization.predictPerformanceDecline(metrics);
       

@@ -581,7 +581,7 @@ export class ExcelAnalyzer {
    * Résout les ambiguïtés via le Consensus multi-IA
    * @private
    */
-  async _resolveAmbiguitiesWithConsensus(sheet, ambiguousColumns, options) {
+  async _resolveAmbiguitiesWithConsensus(sheet, ambiguousColumns, _options) {
     const resolutions = [];
 
     if (!this.hybridOrchestrator) {
@@ -631,7 +631,7 @@ export class ExcelAnalyzer {
    * Construit le prompt pour la résolution d'ambiguïté
    * @private
    */
-  _buildAmbiguityResolutionPrompt(ambiguity, sheet) {
+  _buildAmbiguityResolutionPrompt(ambiguity, _sheet) {
     const sampleData = ambiguity.sampleValues.map((v) => `"${v}"`).join(', ');
 
     return `
@@ -719,7 +719,7 @@ ACTION_RECOMMANDÉE: [conversion/filtrage/aucune]
    * Résolution heuristique pour une colonne
    * @private
    */
-  _resolveWithHeuristic(ambiguity, sheet) {
+  _resolveWithHeuristic(ambiguity, _sheet) {
     let resolvedType = ambiguity.detectedType;
     let confidence = ambiguity.confidence;
     let reason = 'Heuristic resolution';
@@ -887,7 +887,7 @@ ACTION_RECOMMANDÉE: [conversion/filtrage/aucune]
       for (const col of sheet.typeStats?.numericColumns || []) {
         if (col === groupCol) continue;
 
-        const values = rows.map((r) => r[col]).filter((v) => !isNaN(v));
+        const _values = rows.map((r) => r[col]).filter((v) => !isNaN(v));
         result[groupKey][col] = {};
 
         for (const agg of aggregations) {
@@ -1094,7 +1094,7 @@ ACTION_RECOMMANDÉE: [conversion/filtrage/aucune]
    * Génère des recommandations actionnables
    * @private
    */
-  _generateRecommendations(sheets, insights, patterns) {
+  _generateRecommendations(sheets, insights, _patterns) {
     const recommendations = [];
 
     // Recommandation basée sur les outliers
@@ -1385,7 +1385,7 @@ ACTION_RECOMMANDÉE: [conversion/filtrage/aucune]
     for (const header of sheet.headers) {
       const headerLower = String(header).toLowerCase();
 
-      for (const { pattern, type } of sensitivePatterns) {
+      for (const { pattern, _type } of sensitivePatterns) {
         if (pattern.test(headerLower)) {
           sensitiveColumns.push(header);
           break;
@@ -1446,7 +1446,7 @@ ACTION_RECOMMANDÉE: [conversion/filtrage/aucune]
    * @private
    */
   _formatForAI(analysis, userQuery) {
-    const summary = analysis.summary || {};
+    const _summary = analysis.summary || {};
     const sheet = analysis.sheets?.[0] || {};
     const rows = sheet.rows || sheet._rawData || [];
     const headers = sheet.headers || [];
@@ -1637,7 +1637,7 @@ Pour une analyse IA plus approfondie, configurez OPENAI_API_KEY.`,
    * Génère des insights basiques sans IA
    * @private
    */
-  _generateBasicInsights(prompt, userQuery) {
+  _generateBasicInsights(prompt, _userQuery) {
     // Extraire les informations clés du prompt
     const insights = [];
 
@@ -1758,7 +1758,7 @@ IMPORTANT: Réponds en utilisant UNIQUEMENT les données ci-dessus. Ne jamais in
   /**
    * Exporte pour affichage dans le chat
    */
-  exportForChat(analysis, options = {}) {
+  exportForChat(analysis, _options = {}) {
     const summary = analysis.summary || {};
     const sheet = analysis.sheets?.[0];
     const dataQuality = analysis.dataQuality || {};

@@ -1,4 +1,4 @@
-const { PrismEvents } = require('./__mocks__/prismEvents');
+const { _PrismEvents } = require('./__mocks__/prismEvents');
 
 // Mock window.matchMedia
 Object.defineProperty(window, 'matchMedia', {

@@ -148,7 +148,7 @@ class PrismCircuitBreaker {
   }
 
   resetAll() {
-    for (const [name, circuit] of this.circuits) {
+    for (const [_name, circuit] of this.circuits) {
       this.close(circuit);
     }
   }

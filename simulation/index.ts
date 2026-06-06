@@ -119,7 +119,7 @@ OUTPUTS:
 function ensureOutputDir(outputDir: string): void {
   try {
     mkdirSync(outputDir, { recursive: true });
-  } catch (error) {
+  } catch (_error) {
     console.error(`❌ Failed to create output directory: ${outputDir}`);
     process.exit(1);
   }
@@ -133,7 +133,7 @@ async function writeResults(
   results: any, 
   scenario: string
 ): Promise<void> {
-  const timestamp = new Date().toISOString().replace(/[:.]/g, '-');
+  const _timestamp = new Date().toISOString().replace(/[:.]/g, '-');
   
   try {
     // Write CSV data

@@ -51,7 +51,7 @@ export class StatisticalAnalyzer {
    * @param {number} confidence - Confidence level (0.95 for 95%)
    * @returns {Object} Confidence interval
    */
-  static calculateConfidenceInterval(values, confidence = 0.95) {
+  static calculateConfidenceInterval(values, _confidence = 0.95) {
     if (values.length === 0) return { lower: 0, upper: 0, margin: 0 };
     
     const mean = this.calculateMean(values);
@@ -289,7 +289,7 @@ export class BenchmarkAnalyzer {
     for (const result of this.successfulResults) {
       const agents = result.metrics?.agents || {};
       
-      for (const [agentId, agentData] of Object.entries(agents)) {
+      for (const [_agentId, agentData] of Object.entries(agents)) {
         const provider = agentData.provider;
         if (!providerAnalysis[provider]) {
           providerAnalysis[provider] = {
@@ -314,7 +314,7 @@ export class BenchmarkAnalyzer {
     }
     
     // Calculate statistics for each provider
-    for (const [provider, data] of Object.entries(providerAnalysis)) {
+    for (const [_provider, data] of Object.entries(providerAnalysis)) {
       data.latency = {
         p50: StatisticalAnalyzer.calculatePercentile(data.latencies, 50),
         p95: StatisticalAnalyzer.calculatePercentile(data.latencies, 95),

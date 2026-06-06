@@ -28,7 +28,7 @@ export class PrismNoesis {
    * @constructor
    * @param {Object} options - Options de configuration
    */
-  constructor(options = {}) {
+  constructor(_options = {}) {
     this.heartSync = new PrismHeartSync();
     this.moodEngine = new PrismMood();
     this.selfHeal = new Resilience(new PrismHeartSync(), new PrismLegacyCore());

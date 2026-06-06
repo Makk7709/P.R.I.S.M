@@ -32,7 +32,7 @@ class BasePersona {
     return researchData.summary || 'Aucune donnée de recherche disponible.';
   }
 
-  async generate(input, options = {}) {
+  async generate(input, _options = {}) {
     // À implémenter par chaque persona
     throw new Error('generate() must be implemented by persona subclass');
   }
@@ -51,7 +51,7 @@ class GeneralPersona extends BasePersona {
     return `Tu es PRISM, un système d'intelligence artificielle avancé développé par KOREV AI. Tu n'es PAS un produit OpenAI, mais un système d'orchestration IA indépendant. Tu n'es pas un produit OpenAI. Tu n'es pas OpenAI. Réponds de manière concise, professionnelle et utile.`;
   }
 
-  async generate(input, options = {}) {
+  async generate(input, _options = {}) {
     // Retourner le contenu tel quel - le formatage est géré par le modèle
     return {
       content: input,
@@ -201,7 +201,7 @@ FORMAT DE RÉPONSE OBLIGATOIRE:
 - Scénario pessimiste: ...`;
   }
 
-  async generate(input, options = {}) {
+  async generate(input, _options = {}) {
     return {
       content: input,
       metadata: {
@@ -253,7 +253,7 @@ FORMAT DE RÉPONSE OBLIGATOIRE:
 - Objectifs quantifiables`;
   }
 
-  async generate(input, options = {}) {
+  async generate(input, _options = {}) {
     return {
       content: input,
       metadata: {
@@ -313,7 +313,7 @@ FORMAT DE RÉPONSE OBLIGATOIRE:
     return formatted;
   }
 
-  async generate(input, options = {}) {
+  async generate(input, _options = {}) {
     return {
       content: input,
       metadata: {
@@ -353,7 +353,7 @@ FORMAT DE RÉPONSE OBLIGATOIRE:
 1. ...`;
   }
 
-  async generate(input, options = {}) {
+  async generate(input, _options = {}) {
     return {
       content: input,
       metadata: {
@@ -383,7 +383,7 @@ TON RÔLE:
 - Identifier les meilleures pratiques`;
   }
 
-  async generate(input, options = {}) {
+  async generate(input, _options = {}) {
     return {
       content: input,
       metadata: {
@@ -413,7 +413,7 @@ TON RÔLE:
 - Guider vers des décisions responsables`;
   }
 
-  async generate(input, options = {}) {
+  async generate(input, _options = {}) {
     return {
       content: input,
       metadata: {
@@ -443,7 +443,7 @@ TON RÔLE:
 - Pousser les limites créatives`;
   }
 
-  async generate(input, options = {}) {
+  async generate(input, _options = {}) {
     return {
       content: input,
       metadata: {

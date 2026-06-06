@@ -158,7 +158,7 @@ export class AdaptiveTimeoutManager {
    * Annule tous les timeouts actifs
    */
   clearAll() {
-    for (const [id, timeoutId] of this._timeouts) {
+    for (const [_id, timeoutId] of this._timeouts) {
       clearTimeout(timeoutId);
       this._stats.cleared++;
     }

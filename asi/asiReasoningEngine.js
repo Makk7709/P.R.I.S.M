@@ -357,7 +357,7 @@ export class ASIReasoningEngine extends EventEmitter {
    */
   async inductiveReasoning(problem, context) {
     const steps = [];
-    const evidence = [];
+    const _evidence = [];
     
     // Collecte d'observations
     const observations = this.collectObservations(problem, context);
@@ -389,7 +389,7 @@ export class ASIReasoningEngine extends EventEmitter {
    */
   async abductiveReasoning(problem, context) {
     const steps = [];
-    const evidence = [];
+    const _evidence = [];
     
     // Identification du phénomène à expliquer
     const phenomenon = this.identifyPhenomenon(problem);
@@ -649,45 +649,45 @@ export class ASIReasoningEngine extends EventEmitter {
   }
 
   // Méthodes simplifiées pour les fonctionnalités avancées
-  gatherRelevantKnowledge(problem) { return Promise.resolve([]); }
-  extractConstraints(problem) { return []; }
-  identifyAssumptions(problem) { return []; }
-  defineGoals(problem) { return []; }
-  collectEvidence(problem) { return []; }
-  findApplicableLogicalRules(problem, context) { return Array.from(this.state.logicalRules.values()).slice(0, 2); }
-  applyLogicalRule(rule, problem, context) { return { step: { description: `Application de ${rule.name}` }, evidence: rule.pattern }; }
-  constructDeductiveConclusion(steps, evidence) { return 'Conclusion déductive basée sur les règles logiques'; }
-  collectObservations(problem, context) { return ['observation1', 'observation2']; }
-  identifyPatterns(observations) { return [{ pattern: 'pattern1', strength: 0.8 }]; }
-  generateGeneralization(patterns) { return { conclusion: 'Généralisation inductive', confidence: 0.7 }; }
-  evaluateInductiveStrength(obs, patterns, gen) { return 0.75; }
+  gatherRelevantKnowledge(_problem) { return Promise.resolve([]); }
+  extractConstraints(_problem) { return []; }
+  identifyAssumptions(_problem) { return []; }
+  defineGoals(_problem) { return []; }
+  collectEvidence(_problem) { return []; }
+  findApplicableLogicalRules(_problem, _context) { return Array.from(this.state.logicalRules.values()).slice(0, 2); }
+  applyLogicalRule(rule, _problem, _context) { return { step: { description: `Application de ${rule.name}` }, evidence: rule.pattern }; }
+  constructDeductiveConclusion(_steps, _evidence) { return 'Conclusion déductive basée sur les règles logiques'; }
+  collectObservations(_problem, _context) { return ['observation1', 'observation2']; }
+  identifyPatterns(_observations) { return [{ pattern: 'pattern1', strength: 0.8 }]; }
+  generateGeneralization(_patterns) { return { conclusion: 'Généralisation inductive', confidence: 0.7 }; }
+  evaluateInductiveStrength(_obs, _patterns, _gen) { return 0.75; }
   identifyPhenomenon(problem) { return { description: problem.description, type: 'phenomenon' }; }
-  generateExplanatoryHypotheses(phenomenon, context) { return [{ hypothesis: 'H1', plausibility: 0.8 }]; }
-  evaluateHypotheses(hypotheses, context) { return hypotheses.map(h => ({ ...h, score: 0.7 })); }
-  selectBestExplanation(hypotheses) { return { explanation: 'Meilleure explication', confidence: 0.8, supporting_evidence: [] }; }
-  identifySourceDomain(problem, context) { return { name: 'domaine_source', similarity: 0.8 }; }
-  performStructuralMapping(source, target) { return { mappings: ['A->X', 'B->Y'], strength: 0.7 }; }
-  performAnalogicalProjection(mapping) { return { conclusion: 'Projection analogique', confidence: 0.75 }; }
-  evaluateAnalogyStrength(source, target, mapping) { return 0.7; }
-  identifyVariables(problem, context) { return ['var1', 'var2']; }
-  buildCausalModel(variables, context) { return { variables, relationships: ['var1->var2'] }; }
-  performCausalInference(model, problem) { return { conclusion: 'Inférence causale', strength: 0.8 }; }
-  validateCausalClaim(inference, context) { return { confidence: 0.75, evidence: [] }; }
-  generateCreativeIdeas(problem, context) { return ['idée1', 'idée2', 'idée3']; }
-  combineCreativeConcepts(ideas) { return ['combinaison1', 'combinaison2']; }
-  evaluateCreativeSolutions(combinations, problem) { return combinations.map(c => ({ solution: c, score: 0.7 })); }
+  generateExplanatoryHypotheses(_phenomenon, _context) { return [{ hypothesis: 'H1', plausibility: 0.8 }]; }
+  evaluateHypotheses(hypotheses, _context) { return hypotheses.map(h => ({ ...h, score: 0.7 })); }
+  selectBestExplanation(_hypotheses) { return { explanation: 'Meilleure explication', confidence: 0.8, supporting_evidence: [] }; }
+  identifySourceDomain(_problem, _context) { return { name: 'domaine_source', similarity: 0.8 }; }
+  performStructuralMapping(_source, _target) { return { mappings: ['A->X', 'B->Y'], strength: 0.7 }; }
+  performAnalogicalProjection(_mapping) { return { conclusion: 'Projection analogique', confidence: 0.75 }; }
+  evaluateAnalogyStrength(_source, _target, _mapping) { return 0.7; }
+  identifyVariables(_problem, _context) { return ['var1', 'var2']; }
+  buildCausalModel(variables, _context) { return { variables, relationships: ['var1->var2'] }; }
+  performCausalInference(_model, _problem) { return { conclusion: 'Inférence causale', strength: 0.8 }; }
+  validateCausalClaim(_inference, _context) { return { confidence: 0.75, evidence: [] }; }
+  generateCreativeIdeas(_problem, _context) { return ['idée1', 'idée2', 'idée3']; }
+  combineCreativeConcepts(_ideas) { return ['combinaison1', 'combinaison2']; }
+  evaluateCreativeSolutions(combinations, _problem) { return combinations.map(c => ({ solution: c, score: 0.7 })); }
   selectBestCreativeSolution(solutions) { return { solution: solutions[0].solution, confidence: 0.8, rationale: [] }; }
   calculateFinalConfidence(reasoning, validation) { return (reasoning.confidence + validation.overallScore) / 2; }
-  learnFromReasoning(problem, result, validation) { return Promise.resolve(); }
-  validateLogicalConsistency(result, context) { return Promise.resolve(0.8); }
-  validateEmpiricalSupport(result, context) { return Promise.resolve(0.7); }
-  validateCoherence(result, context) { return Promise.resolve(0.85); }
-  assessPlausibility(result, context) { return Promise.resolve(0.75); }
-  analyzePerformanceByType(reasonings) { return {}; }
-  adjustConfidenceThresholds(performance) { }
-  optimizeReasoningDepth(performance) { }
-  extractReasoningPatterns(reasonings) { return []; }
-  updateReasoningPatterns(patterns) { }
+  learnFromReasoning(_problem, _result, _validation) { return Promise.resolve(); }
+  validateLogicalConsistency(_result, _context) { return Promise.resolve(0.8); }
+  validateEmpiricalSupport(_result, _context) { return Promise.resolve(0.7); }
+  validateCoherence(_result, _context) { return Promise.resolve(0.85); }
+  assessPlausibility(_result, _context) { return Promise.resolve(0.75); }
+  analyzePerformanceByType(_reasonings) { return {}; }
+  adjustConfidenceThresholds(_performance) { }
+  optimizeReasoningDepth(_performance) { }
+  extractReasoningPatterns(_reasonings) { return []; }
+  updateReasoningPatterns(_patterns) { }
 }
 
 export default ASIReasoningEngine; 

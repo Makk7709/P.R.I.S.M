@@ -35,7 +35,7 @@ const ModuleState = {
  * Plans d'action prédéfinis pour chaque niveau d'alerte
  * @const {Object}
  */
-const RECOVERY_PLANS = {
+const _RECOVERY_PLANS = {
   [AlertLevel.NORMAL]: {
     name: 'routine_monitoring',
     actions: ['logSystemState', 'updateMetrics'],
@@ -70,7 +70,7 @@ const THRESHOLD_LIMITS = {
  * Seuils pour l'auto-récupération
  * @const {Object}
  */
-const AUTO_RECOVERY_THRESHOLDS = {
+const _AUTO_RECOVERY_THRESHOLDS = {
   CRITICAL_MODULES_PERCENTAGE: 50,
   RECOVERY_ATTEMPTS_MAX: 2,
   RECOVERY_CHECK_INTERVAL: 30000 // 30 secondes
@@ -242,7 +242,7 @@ export class Planner {
     }
   }
 
-  async handleEmergency(event) {
+  async handleEmergency(_event) {
     if (this.observationModeEnabled) {
       console.log('🎥 Observation mode: Emergency detected but no action taken');
       return;

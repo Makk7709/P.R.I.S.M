@@ -8,7 +8,7 @@ import PrismHMAC from '../security/prismHMAC.js';
 import { PrismProfiler } from '../perf/prismProfiler.js';
 
 const COOLDOWN_DURATION = 300000; // 5 minutes en ms
-const MAX_SECONDARY_DIRECTIVES = 2;
+const _MAX_SECONDARY_DIRECTIVES = 2;
 const SIMILARITY_THRESHOLD = 0.5;
 
 class PrismStrategicLayer {

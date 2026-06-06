@@ -13,7 +13,7 @@ async function runStressTest() {
   try {
     // Run the stress test
     console.log('📊 Running stress test...');
-    const { stdout, stderr } = await execAsync('npm test -- __tests__/prismCoreAdvancedStressTest.js');
+    const { _stdout, stderr } = await execAsync('npm test -- __tests__/prismCoreAdvancedStressTest.js');
     
     if (stderr) {
       console.error('❌ Test execution errors:', stderr);

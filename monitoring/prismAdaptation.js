@@ -66,7 +66,7 @@ class PrismAdaptation {
     let consecutiveChanges = 0;
     let maxConsecutiveChanges = 0;
 
-    transitionHistory.forEach((transition, index) => {
+    transitionHistory.forEach((transition, _index) => {
       const currentIntensity = transition.intensity;
       
       if (previousIntensity !== null) {
@@ -197,7 +197,7 @@ class PrismAdaptation {
     }
   }
 
-  _calculateParameters(strategy, score) {
+  _calculateParameters(strategy, _score) {
     let parameters = {};
 
     if (strategy === 'stable') {

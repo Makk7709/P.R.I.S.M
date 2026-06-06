@@ -35,7 +35,7 @@ async function testPrismVitalsFixed() {
       });
       
       // Test vitals report
-      const report = vitals.getVitalsReport();
+      const _report = vitals.getVitalsReport();
       console.log('   ✅ getVitalsReport: SUCCESS');
       
       // Test self-improvement metrics

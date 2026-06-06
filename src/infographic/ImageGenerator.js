@@ -534,7 +534,7 @@ Technical specs: 4K quality, photorealistic details, masterpiece quality`;
    * Fallback vers fal.ai si Google est restreint
    * @private
    */
-  async _callFalAIFallback(prompt, options = {}) {
+  async _callFalAIFallback(prompt, _options = {}) {
     const falKey = process.env.FAL_KEY || process.env.FAL_API_KEY;
 
     if (!falKey) {
@@ -613,7 +613,7 @@ Technical specs: 4K quality, photorealistic details, masterpiece quality`;
    * Construit un prompt contextuel
    * @private
    */
-  _buildContextualPrompt(message, taskType, previousMessages = []) {
+  _buildContextualPrompt(message, taskType, _previousMessages = []) {
     const style = DOMAIN_STYLES[taskType] || DOMAIN_STYLES.general;
 
     let prompt = message;

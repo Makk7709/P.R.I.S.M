@@ -352,7 +352,7 @@ Réponds à cette nouvelle question en utilisant le contexte: "Peux-tu me donner
       console.log('🗜️ Test compression mémoire...');
       
       const beforeCompression = this.asiMemory.getMemoryStats();
-      const compressionResult = await this.asiMemory.compressMemories();
+      const _compressionResult = await this.asiMemory.compressMemories();
       const afterCompression = this.asiMemory.getMemoryStats();
       
       console.log(`   📊 Avant compression: ${beforeCompression.memoryUsage}MB`);

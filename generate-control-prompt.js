@@ -368,7 +368,7 @@ async function main() {
   const generator = new ControlPromptGenerator();
   
   try {
-    const prompt = await generator.generateControlPrompt();
+    const _prompt = await generator.generateControlPrompt();
     
     console.log('\n🎯 CONTROL PROMPT GENERATED');
     console.log('═══════════════════════════');

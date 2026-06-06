@@ -248,7 +248,7 @@ export class MolecularSimulator {
   static calculateNSP(
     feedConductivity: µScm,
     permeateData: { NO3_mgL: mgL; SO4_mgL: mgL; TOC_mgL: mgL },
-    baselineNSP: number = 2.0 // Typical baseline NSP %
+    _baselineNSP: number = 2.0 // Typical baseline NSP %
   ): number {
     
     // Simplified NSP calculation
@@ -278,7 +278,7 @@ export class MolecularSimulator {
 export function generateMolecularTimeSeries(
   config: SimulationConfig,
   sensorReadings: SensorReading[],
-  startTime: Date = new Date()
+  _startTime: Date = new Date()
 ): MolecularData[] {
   
   const simulator = new MolecularSimulator(config);

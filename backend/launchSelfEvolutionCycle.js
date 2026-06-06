@@ -94,7 +94,7 @@ if (import.meta.url === `file://${process.argv[1]}`) {
   launchEvolutionCycle();
 } 
 
-async function performAnalysis() {
+async function _performAnalysis() {
   try {
     // const recentSnapshots = await fetchLatestSnapshots(5);
     const recentSnapshots = []; // Remplacé par un tableau vide
@@ -107,7 +107,7 @@ async function performAnalysis() {
   }
 }
 
-async function finalizeCycle(analysis, suggestions) {
+async function _finalizeCycle(_analysis, _suggestions) {
   try {
     // await saveMemorySnapshot(currentState);
     logger.info('SELF_EVOLUTION', 'Cycle d\'auto-évolution terminé et snapshot de la mémoire sauvegardé.');

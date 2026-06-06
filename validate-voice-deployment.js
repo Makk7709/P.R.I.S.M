@@ -58,7 +58,7 @@ console.log('──────────────────────�
 
 try {
   const voiceEnhancer = new VoicePersonalityEnhancer();
-  const prismEnhancer = new PRISMVoiceEnhancer();
+  const _prismEnhancer = new PRISMVoiceEnhancer();
   
   console.log('✅ VoicePersonalityEnhancer chargé');
   console.log('✅ PRISMVoiceEnhancer chargé');

@@ -241,7 +241,7 @@ if (typeof process !== 'undefined' && process.env.NODE_ENV === 'test') {
       const priority = new PrismPriority();
       
       const signal = { intent: { urgency: 'high' } };
-      const id = priority.addToQueue(signal, priority.priorityLevels.HIGH);
+      const _id = priority.addToQueue(signal, priority.priorityLevels.HIGH);
       
       console.assert(
         priority.getQueue().length === 1,

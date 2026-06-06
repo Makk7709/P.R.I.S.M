@@ -81,7 +81,7 @@ class PrismPulse {
     };
   }
 
-  #determinePulseAction(priority, state) {
+  #determinePulseAction(priority, _state) {
     if (priority > 0.8) return 'proactive_engagement';
     if (priority > 0.6) return 'contextual_response';
     return 'passive_observation';

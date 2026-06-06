@@ -105,10 +105,9 @@ export class KeyRegistry {
       throw new Error(`Key ${keyId} already exists`);
     }
 
-    // Valider format PEM
-    let publicKey;
+    // Valider format PEM (createPublicKey lève si le PEM est invalide)
     try {
-      publicKey = crypto.createPublicKey(publicKeyPem);
+      crypto.createPublicKey(publicKeyPem);
     } catch (error) {
       throw new Error(`Invalid public key PEM: ${error.message}`);
     }

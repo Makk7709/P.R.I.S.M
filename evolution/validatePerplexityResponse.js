@@ -7,7 +7,7 @@
  * Liste des patterns interdits dans les réponses
  * @type {string[]}
  */
-const FORBIDDEN_PATTERNS = [
+const _FORBIDDEN_PATTERNS = [
     'error',
     'forbidden',
     'bad request',

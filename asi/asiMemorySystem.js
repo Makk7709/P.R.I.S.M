@@ -604,7 +604,7 @@ export class ASIMemorySystem extends EventEmitter {
     ); // Pas déjà compressé
   }
 
-  updateMemoryStats(operation, value) {
+  updateMemoryStats(operation, _value) {
     this.state.memoryStats[operation === 'read' ? 'reads' : 'writes']++;
     this.state.memoryUsage = this.calculateCurrentMemoryUsage();
     this.state.totalEntries = this.calculateTotalEntries();
@@ -656,22 +656,22 @@ export class ASIMemorySystem extends EventEmitter {
   }
 
   // Méthodes simplifiées pour les fonctionnalités avancées
-  findAssociations(knowledge) {
+  findAssociations(_knowledge) {
     return [];
   }
-  extractContext(knowledge) {
+  extractContext(_knowledge) {
     return {};
   }
-  compressContent(content, type) {
+  compressContent(content, _type) {
     return Promise.resolve(content);
   }
   decompressIfNeeded(entry) {
     return Promise.resolve(entry);
   }
-  updateIndexes(id, entry) {
+  updateIndexes(_id, _entry) {
     return Promise.resolve();
   }
-  removeFromIndexes(id, entry) {
+  removeFromIndexes(_id, _entry) {
     return Promise.resolve();
   }
   optimizeIndexes() {
@@ -680,16 +680,16 @@ export class ASIMemorySystem extends EventEmitter {
   updateMemoryStatistics() {
     // Intentional no-op: statistics are recomputed lazily by getStats().
   }
-  createQueryVector(query) {
+  createQueryVector(_query) {
     return [];
   }
-  calculateSemanticSimilarity(vector, entry) {
+  calculateSemanticSimilarity(_vector, _entry) {
     return Math.random() * 0.8 + 0.2;
   }
-  extractAssociations(query) {
+  extractAssociations(_query) {
     return [];
   }
-  calculateAssociationStrength(queryAssoc, entryAssoc) {
+  calculateAssociationStrength(_queryAssoc, _entryAssoc) {
     return Math.random() * 0.6 + 0.4;
   }
   updateAccessPatterns(_query, _results) {
@@ -701,16 +701,16 @@ export class ASIMemorySystem extends EventEmitter {
   analyzeSemanticPatterns() {
     return [];
   }
-  optimizeBasedOnPatterns(temporal, semantic) {
+  optimizeBasedOnPatterns(_temporal, _semantic) {
     return Promise.resolve();
   }
-  exactMatchRetrieval(query) {
+  exactMatchRetrieval(_query) {
     return Promise.resolve([]);
   }
-  temporalRetrieval(query) {
+  temporalRetrieval(_query) {
     return Promise.resolve([]);
   }
-  contextualRetrieval(query) {
+  contextualRetrieval(_query) {
     return Promise.resolve([]);
   }
   losslessCompression(content) {

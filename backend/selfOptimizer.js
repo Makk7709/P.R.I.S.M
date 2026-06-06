@@ -6,7 +6,7 @@ const openai = new OpenAI({
   dangerouslyAllowBrowser: true
 });
 
-const MAX_SUGGESTION_LENGTH = 150; // Limite la longueur des suggestions générées
+const _MAX_SUGGESTION_LENGTH = 150; // Limite la longueur des suggestions générées
 
 /**
  * Génére des suggestions d'amélioration pour PRISM basées sur ses performances mémorielles.

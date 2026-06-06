@@ -346,7 +346,7 @@ export class ASIMemorySystemFixed extends EventEmitter {
    * Récupération directe par ID
    */
   async directRetrieval(memoryId) {
-    for (const [type, storage] of Object.entries(this.storage)) {
+    for (const [_type, storage] of Object.entries(this.storage)) {
       if (storage.has(memoryId)) {
         const entry = storage.get(memoryId);
         
@@ -526,7 +526,7 @@ export class ASIMemorySystemFixed extends EventEmitter {
     
     let indexedCount = 0;
     
-    for (const [type, storage] of Object.entries(this.storage)) {
+    for (const [_type, storage] of Object.entries(this.storage)) {
       for (const [id, entry] of storage) {
         await this.buildSemanticVector(id, entry);
         indexedCount++;
@@ -893,7 +893,7 @@ export class ASIMemorySystemFixed extends EventEmitter {
     }
     
     const now = new Date();
-    const oneDayAgo = new Date(now - 24 * 60 * 60 * 1000);
+    const _oneDayAgo = new Date(now - 24 * 60 * 60 * 1000);
     const oneWeekAgo = new Date(now - 7 * 24 * 60 * 60 * 1000);
     
     for (const [type, storage] of Object.entries(this.storage)) {

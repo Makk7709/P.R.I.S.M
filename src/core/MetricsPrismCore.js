@@ -321,7 +321,7 @@ export class MetricsPrismCore extends EventEmitter {
 
   _processBatch(batch) {
     // Traiter batch de métriques
-    for (const item of batch) {
+    for (const _item of batch) {
       // Traitement simplifié pour tests
     }
   }
@@ -462,14 +462,14 @@ export class MetricsPrismCore extends EventEmitter {
     const lines = [];
     
     // Export counters
-    for (const [key, counter] of this.metrics.counters) {
+    for (const [_key, counter] of this.metrics.counters) {
       lines.push(`# HELP ${counter.name} Counter metric`);
       lines.push(`# TYPE ${counter.name} counter`);
       lines.push(`${counter.name} ${counter.value}`);
     }
     
     // Export gauges
-    for (const [key, gauge] of this.metrics.gauges) {
+    for (const [_key, gauge] of this.metrics.gauges) {
       lines.push(`# HELP ${gauge.name} Gauge metric`);
       lines.push(`# TYPE ${gauge.name} gauge`);
       lines.push(`${gauge.name} ${gauge.value}`);
@@ -692,7 +692,7 @@ export class MetricsPrismCore extends EventEmitter {
     this.anomalies = [];
     
     // Analyser les métriques pour détecter anomalies
-    for (const [key, metric] of this.metrics.gauges) {
+    for (const [_key, metric] of this.metrics.gauges) {
       // Détecter patterns dans les noms des métriques
       if (metric.name.includes('spike') || metric.name.includes('trend') || 
           metric.name.includes('drop') || metric.name.includes('oscillation')) {
@@ -779,7 +779,7 @@ export class MetricsPrismCore extends EventEmitter {
   }
 
   _getLatestMetricValue(metricName) {
-    for (const [key, metric] of this.metrics.gauges) {
+    for (const [_key, metric] of this.metrics.gauges) {
       if (metric.name === metricName) {
         return metric.value;
       }

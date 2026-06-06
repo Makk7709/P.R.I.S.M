@@ -30,7 +30,7 @@ export class PrismInstinct {
    * @constructor
    * @param {Object} options - Options de configuration
    */
-  constructor(options = {}) {
+  constructor(_options = {}) {
     this.heartSync = null;
     this.selfHeal = null;
     this.moodEngine = null;

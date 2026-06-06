@@ -21,7 +21,7 @@ export class PrismPurgeScheduler {
 
   runStrategies() {
     const now = Date.now();
-    for (const [name, strategy] of this.strategies) {
+    for (const [_name, strategy] of this.strategies) {
       if (now - strategy.lastRun >= strategy.interval) {
         strategy.callback();
         strategy.lastRun = now;

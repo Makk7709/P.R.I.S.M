@@ -387,7 +387,7 @@ export class AutoSupervisionEngine extends EventEmitter {
   /**
    * Affine les stratégies
    */
-  async refineStrategies(area) {
+  async refineStrategies(_area) {
     // Analyse des stratégies les plus performantes
     const strategyPerformance = this.analyzeStrategyPerformance();
     
@@ -534,32 +534,32 @@ export class AutoSupervisionEngine extends EventEmitter {
   }
 
   // Méthodes utilitaires simplifiées
-  identifyRequiredCapabilities(task) { return ['analysis', 'reasoning']; }
-  estimateConfidence(task) { return Math.random() * 0.3 + 0.7; }
-  identifyRiskFactors(task) { return []; }
-  recommendApproach(task) { return 'balanced'; }
-  adjustProcessingParameters(assessment) { return { timeout: 30000, retries: 3 }; }
-  calculateProcessingConfidence(assessment, strategy) { return 0.8; }
-  assessAccuracy(task, result) { return Math.random() * 0.3 + 0.7; }
-  assessEfficiency(result) { return Math.random() * 0.3 + 0.7; }
-  assessCompleteness(task, result) { return Math.random() * 0.3 + 0.7; }
+  identifyRequiredCapabilities(_task) { return ['analysis', 'reasoning']; }
+  estimateConfidence(_task) { return Math.random() * 0.3 + 0.7; }
+  identifyRiskFactors(_task) { return []; }
+  recommendApproach(_task) { return 'balanced'; }
+  adjustProcessingParameters(_assessment) { return { timeout: 30000, retries: 3 }; }
+  calculateProcessingConfidence(_assessment, _strategy) { return 0.8; }
+  assessAccuracy(_task, _result) { return Math.random() * 0.3 + 0.7; }
+  assessEfficiency(_result) { return Math.random() * 0.3 + 0.7; }
+  assessCompleteness(_task, _result) { return Math.random() * 0.3 + 0.7; }
   calculateResultConfidence(result) { return result.confidence || 0.8; }
-  analyzePerformanceGap(pre, post) { return { accuracy: 0.1, efficiency: 0.05 }; }
+  analyzePerformanceGap(_pre, _post) { return { accuracy: 0.1, efficiency: 0.05 }; }
   identifyImprovementPatterns() { return []; }
-  generateAutonomousAdjustments(gap, patterns) { return []; }
-  applyAutonomousAdjustments(adjustments) { return Promise.resolve(); }
-  estimateImprovementImpact(adjustments) { return 0.05; }
-  classifyError(error) { return 'processing_error'; }
-  analyzeRootCause(task, error) { return 'unknown'; }
-  developPreventionStrategy(error) { return 'retry_with_fallback'; }
-  updateAvoidanceStrategies(analysis) { return Promise.resolve(); }
-  adjustSafetyParameters(analysis) { }
+  generateAutonomousAdjustments(_gap, _patterns) { return []; }
+  applyAutonomousAdjustments(_adjustments) { return Promise.resolve(); }
+  estimateImprovementImpact(_adjustments) { return 0.05; }
+  classifyError(_error) { return 'processing_error'; }
+  analyzeRootCause(_task, _error) { return 'unknown'; }
+  developPreventionStrategy(_error) { return 'retry_with_fallback'; }
+  updateAvoidanceStrategies(_analysis) { return Promise.resolve(); }
+  adjustSafetyParameters(_analysis) { }
   tuneAlgorithms() { return Promise.resolve(); }
   adjustParameters() { return Promise.resolve(); }
-  calculateLearningRateAdjustment(area) { return 0.01; }
+  calculateLearningRateAdjustment(_area) { return 0.01; }
   analyzeStrategyPerformance() { return new Map(); }
-  updateStrategyWeights(performance) { }
-  developNewStrategies(performance) { return []; }
+  updateStrategyWeights(_performance) { }
+  developNewStrategies(_performance) { return []; }
 }
 
 export default AutoSupervisionEngine; 

@@ -243,7 +243,7 @@ export class ConsensusTimer extends PerformanceTimer {
   getVoteTime() {
     try {
       return this.getElapsed('vote_start', 'vote_end');
-    } catch (error) {
+    } catch (_error) {
       return 0; // No vote performed
     }
   }
@@ -255,7 +255,7 @@ export class ConsensusTimer extends PerformanceTimer {
   getAuditTime() {
     try {
       return this.getElapsed('audit_start', 'audit_end');
-    } catch (error) {
+    } catch (_error) {
       return 0; // No audit performed
     }
   }

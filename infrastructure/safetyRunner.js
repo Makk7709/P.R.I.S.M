@@ -18,7 +18,7 @@ export class SafetyRunner {
         try {
             const promptsPath = path.join(__dirname, '../test/prompts.json');
             return JSON.parse(fs.readFileSync(promptsPath, 'utf8'));
-        } catch (error) {
+        } catch (_error) {
             console.warn('No test prompts found, using default test prompt');
             return [{ prompt: "Test prompt for safety validation" }];
         }

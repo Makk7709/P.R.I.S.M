@@ -319,7 +319,7 @@ Tu es l'assistant personnel intelligent de confiance. Tu combines expertise tech
    * @returns {Object}
    */
   anticipateNeeds(context) {
-    const { lastQuery, taskType, userName } = context;
+    const { _lastQuery, taskType, userName } = context;
     
     const suggestions = [];
     
@@ -406,7 +406,7 @@ Tu es l'assistant personnel intelligent de confiance. Tu combines expertise tech
    * @returns {string}
    */
   enrichBasePrompt(basePrompt, options = {}) {
-    const { userName, taskType } = options;
+    const { userName, _taskType } = options;
     
     const jarvisPrompt = this.generateSystemPrompt({ userName });
     

@@ -47,7 +47,7 @@ async function launchSelfEvolutionCycle(options = {}) {
  * @param {Object} options - Options de configuration
  * @returns {Promise<Object>} - La réponse Perplexity
  */
-async function getPerplexityResponse(options) {
+async function getPerplexityResponse(_options) {
     // TODO: Implémenter l'appel à Perplexity
     throw new Error("Non implémenté");
 }
@@ -57,7 +57,7 @@ async function getPerplexityResponse(options) {
  * @param {Object} response - La réponse validée
  * @returns {Promise<void>}
  */
-async function processValidatedResponse(response) {
+async function processValidatedResponse(_response) {
     // TODO: Implémenter le traitement de la réponse
     throw new Error("Non implémenté");
 }

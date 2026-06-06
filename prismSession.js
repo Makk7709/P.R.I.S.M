@@ -4,7 +4,7 @@
  */
 
 const SESSION_KEY = 'prism_session';
-const ENCRYPTION_KEY = 'prism_enc_key';
+const _ENCRYPTION_KEY = 'prism_enc_key';
 const SESSION_SECRET = 'PRISM_SECURE_SESSION_2024';
 const INACTIVITY_TIMEOUT = 60 * 60 * 1000; // 60 minutes
 const MAX_SESSION_DURATION = 6 * 60 * 60 * 1000; // 6 hours

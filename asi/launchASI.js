@@ -210,10 +210,10 @@ class ASILauncher {
    */
   async checkDiskSpace() {
     try {
-      const stats = fs.statSync('.');
+      const _stats = fs.statSync('.');
       // Vérification basique - dans un vrai système, utiliser une bibliothèque dédiée
       logger.info('✅ Espace disque suffisant');
-    } catch (error) {
+    } catch (_error) {
       throw new Error('Impossible de vérifier l\'espace disque');
     }
   }
@@ -222,7 +222,7 @@ class ASILauncher {
    * Vérifie la mémoire disponible
    */
   checkMemory() {
-    const totalMemory = process.memoryUsage();
+    const _totalMemory = process.memoryUsage();
     const freeMemory = process.memoryUsage().heapTotal;
     
     // Vérification que nous avons au moins 1GB de mémoire heap
@@ -281,7 +281,7 @@ class ASILauncher {
       }
     });
 
-    this.asiInterface.on('metrics_updated', (metrics) => {
+    this.asiInterface.on('metrics_updated', (_metrics) => {
       logger.debug('📊 Métriques mises à jour');
     });
   }

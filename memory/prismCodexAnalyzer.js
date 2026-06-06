@@ -275,10 +275,10 @@ export default class PrismCodexAnalyzer {
    * @param {Object} trends - Tendances actuelles
    * @returns {Promise<Object>} Prédiction d'état avec justification
    */
-  async predictNextState(trends) {
+  async predictNextState(_trends) {
     const startTime = performance.now();
     const recentEvents = this.eventBuffer.slice(-100);
-    const now = Date.now();
+    const _now = Date.now();
 
     // Calcul des poids temporels exponentiels
     const weightedEvents = recentEvents.map((event, index) => ({
@@ -492,7 +492,7 @@ export default class PrismCodexAnalyzer {
    */
   _calculateTemporalRisk() {
     let risk = 0;
-    const now = Date.now();
+    const _now = Date.now();
 
     // Analyse de l'historique des métriques
     for (const [moduleId, history] of this.metricHistory.entries()) {
@@ -724,22 +724,22 @@ export default class PrismCodexAnalyzer {
   }
 
   // Méthodes utilitaires d'analyse
-  calculatePredictionConfidence(trends) {
+  calculatePredictionConfidence(_trends) {
     // TODO: Implémenter le calcul de confiance
     return 0;
   }
 
-  inferNextState(trends) {
+  inferNextState(_trends) {
     // TODO: Implémenter l'inférence d'état
     return {};
   }
 
-  detectCollapseRisk(trends, nextState) {
+  detectCollapseRisk(_trends, _nextState) {
     // TODO: Implémenter la détection de risque d'effondrement
     return false;
   }
 
-  calculateCollapseRisk(trends, nextState) {
+  calculateCollapseRisk(_trends, _nextState) {
     // TODO: Implémenter le calcul de risque d'effondrement
     return 0;
   }

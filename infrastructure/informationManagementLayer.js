@@ -111,7 +111,7 @@ export class InformationManagementLayer {
         }
     }
 
-    handleProdMode(type, data, destination) {
+    handleProdMode(type, data, _destination) {
         // Normal production routing
         const prodPath = type === 'log' ? PATHS.PROD.LOGS : PATHS.PROD.SUMMARIES;
         const fullPath = path.join(process.cwd(), prodPath, `${Date.now()}.json`);

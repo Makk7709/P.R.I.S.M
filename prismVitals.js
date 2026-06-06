@@ -7,7 +7,7 @@ import prismBus from './prismBus.js';
 import http from 'node:http';
 
 // Configuration sécurisée par défaut
-const SECURITY_CONFIG = {
+const _SECURITY_CONFIG = {
   TRUST_THRESHOLD: 0.3, // Seuil plus permissif
   SECURITY_LEVEL: 'MEDIUM',
   MONITORING: {
@@ -19,10 +19,10 @@ const SECURITY_CONFIG = {
   },
 };
 
-const VITALS_CYCLE = 5;
-const CRITICAL_THRESHOLD = 30;
-const WARNING_THRESHOLD = 50;
-const PERFORMANCE_SAMPLE_SIZE = 10;
+const _VITALS_CYCLE = 5;
+const _CRITICAL_THRESHOLD = 30;
+const _WARNING_THRESHOLD = 50;
+const _PERFORMANCE_SAMPLE_SIZE = 10;
 
 /**
  * Logger simple sans réseau pour éviter les erreurs
@@ -51,7 +51,7 @@ class SimpleLogger {
   }
 }
 
-const simpleLogger = new SimpleLogger();
+const _simpleLogger = new SimpleLogger();
 
 /**
  * TrustContext simplifié pour éviter les dépendances
@@ -86,7 +86,7 @@ class SimpleTrustContext {
     return [];
   }
 
-  getApprovalHistory(limit = 10) {
+  getApprovalHistory(_limit = 10) {
     return [];
   }
 }
@@ -391,7 +391,7 @@ prism_uptime_seconds ${process.uptime()} ${timestamp}
       this.updateConsensusMetrics(consensusResult);
     });
 
-    prismBus.on('prism:consensus:timeout', (timeoutResult) => {
+    prismBus.on('prism:consensus:timeout', (_timeoutResult) => {
       this.consensusMetrics.timeoutConsensus++;
       this.consensusMetrics.totalConsensusRequests++;
       this.updateConsensusSuccessRate();

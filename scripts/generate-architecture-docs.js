@@ -2,12 +2,12 @@
 
 const fs = require('fs');
 const path = require('path');
-const { execSync } = require('child_process');
+const { _execSync } = require('child_process');
 
 // Configuration
 const SRC_DIR = path.join(__dirname, '../src');
 const DOCS_DIR = path.join(__dirname, '../docs');
-const ARCHITECTURE_CONFIG = {
+const _ARCHITECTURE_CONFIG = {
   sections: [
     'overview',
     'kernel',

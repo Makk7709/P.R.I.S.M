@@ -92,7 +92,7 @@ async function testExcelAnalyzer() {
   
   try {
     // Mock _performAnalysis pour éviter le parsing réel
-    const originalAnalyze = analyzer.analyze.bind(analyzer);
+    const _originalAnalyze = analyzer.analyze.bind(analyzer);
     analyzer.analyze = async function(buffer, userQuery) {
       // Vérifier si TrustContext devrait être appelé
       const fileSize = buffer.buffer ? buffer.buffer.length : buffer.length;

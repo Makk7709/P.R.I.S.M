@@ -645,7 +645,7 @@ export class DynamicAdaptationEngine extends EventEmitter {
     return currentStr !== previousStr;
   }
 
-  calculateContextShiftMagnitude(current, previous) {
+  calculateContextShiftMagnitude(_current, _previous) {
     // Simulation du calcul de magnitude
     return Math.random() * 0.5 + 0.1;
   }
@@ -688,33 +688,33 @@ export class DynamicAdaptationEngine extends EventEmitter {
   }
 
   // Méthodes simplifiées pour les fonctionnalités avancées
-  detectPatternChange(patterns) { return Math.random() > 0.8; }
-  evaluateTrigger(trigger, task, context) { return Promise.resolve(Math.random() > 0.7); }
-  calculateAdaptationUrgency(trigger, context) { return Math.random() * 0.5 + 0.5; }
-  predictAdaptationNeeds(task, context) { return Promise.resolve([]); }
+  detectPatternChange(_patterns) { return Math.random() > 0.8; }
+  evaluateTrigger(_trigger, _task, _context) { return Promise.resolve(Math.random() > 0.7); }
+  calculateAdaptationUrgency(_trigger, _context) { return Math.random() * 0.5 + 0.5; }
+  predictAdaptationNeeds(_task, _context) { return Promise.resolve([]); }
   generateAdaptationDescription(need, task) { return `Adaptation ${need.type} pour ${task.description}`; }
-  calculateAdaptationParameters(need, task) { return Promise.resolve({ intensity: 0.5 }); }
-  selectAdaptationMechanism(adaptation) { return 'performance_based'; }
-  simulateAdaptiveProcessing(task, adaptations) { return 'Traitement adaptatif simulé'; }
-  calculateAdaptiveConfidence(adaptations) { return 0.8; }
+  calculateAdaptationParameters(_need, _task) { return Promise.resolve({ intensity: 0.5 }); }
+  selectAdaptationMechanism(_adaptation) { return 'performance_based'; }
+  simulateAdaptiveProcessing(_task, _adaptations) { return 'Traitement adaptatif simulé'; }
+  calculateAdaptiveConfidence(_adaptations) { return 0.8; }
   estimatePerformanceGain(adaptations) { return adaptations.length * 0.1; }
-  evaluateIndividualAdaptation(adaptation, result) { return Promise.resolve(0.8); }
-  measureAdaptationImpact(adaptation, result) { return 'positive'; }
-  generateAdaptationRecommendations(evaluation) { return ['Continuer les adaptations cognitives']; }
-  updateBehaviorPatterns(adaptations, effectiveness) { return Promise.resolve(); }
-  updateAdaptationTriggers(adaptations, effectiveness) { }
-  updatePerformanceMetrics(effectiveness) { }
+  evaluateIndividualAdaptation(_adaptation, _result) { return Promise.resolve(0.8); }
+  measureAdaptationImpact(_adaptation, _result) { return 'positive'; }
+  generateAdaptationRecommendations(_evaluation) { return ['Continuer les adaptations cognitives']; }
+  updateBehaviorPatterns(_adaptations, _effectiveness) { return Promise.resolve(); }
+  updateAdaptationTriggers(_adaptations, _effectiveness) { }
+  updatePerformanceMetrics(_effectiveness) { }
   getCurrentMetrics() { return { successRate: 0.8, responseTime: 2000 }; }
-  detectUrgentAdaptationNeeds(metrics) { return []; }
+  detectUrgentAdaptationNeeds(_metrics) { return []; }
   createQuickAdaptation(need) { return Promise.resolve({ type: need.type, description: 'Adaptation rapide' }); }
   analyzeContextualTrends() { return []; }
-  predictContextualChanges(trends) { return []; }
-  preparePreventiveAdaptations(changes) { return []; }
-  performanceBasedAdaptation(adaptation) { return Promise.resolve({ success: true, changes: [] }); }
-  contextDrivenAdaptation(adaptation) { return Promise.resolve({ success: true, changes: [] }); }
-  feedbackResponsiveAdaptation(adaptation) { return Promise.resolve({ success: true, changes: [] }); }
-  predictiveAdaptation(adaptation) { return Promise.resolve({ success: true, changes: [] }); }
-  reactiveAdaptation(adaptation) { return Promise.resolve({ success: true, changes: [] }); }
+  predictContextualChanges(_trends) { return []; }
+  preparePreventiveAdaptations(_changes) { return []; }
+  performanceBasedAdaptation(_adaptation) { return Promise.resolve({ success: true, changes: [] }); }
+  contextDrivenAdaptation(_adaptation) { return Promise.resolve({ success: true, changes: [] }); }
+  feedbackResponsiveAdaptation(_adaptation) { return Promise.resolve({ success: true, changes: [] }); }
+  predictiveAdaptation(_adaptation) { return Promise.resolve({ success: true, changes: [] }); }
+  reactiveAdaptation(_adaptation) { return Promise.resolve({ success: true, changes: [] }); }
 }
 
 export default DynamicAdaptationEngine; 

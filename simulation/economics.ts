@@ -116,7 +116,7 @@ export class EconomicCalculator {
   calculateActionROI(
     action: Recommendation,
     currentMHI: number,
-    hoursUntilScheduledCIP: number
+    _hoursUntilScheduledCIP: number
   ): number {
     switch (action) {
       case Recommendation.SCHEDULE_CIP:
@@ -195,7 +195,7 @@ export class EconomicCalculator {
   /**
    * Calculate ROI for setpoint adjustments
    */
-  private calculateSetpointAdjustmentROI(currentMHI: number): number {
+  private calculateSetpointAdjustmentROI(_currentMHI: number): number {
     // Cost: slightly reduced production efficiency
     const efficiencyReduction = 0.05; // 5% efficiency loss
     const productionLoss = 24 * this.params.productionValue * efficiencyReduction;
@@ -266,7 +266,7 @@ export class EconomicCalculator {
     const lostProduction = strategyProduction
       .filter(e => e.value < 0)
       .reduce((sum, e) => sum + Math.abs(e.value), 0);
-    const productionImpact = totalProduction - lostProduction;
+    const _productionImpact = totalProduction - lostProduction;
 
     // Calculate remaining membrane life
     const cipCount = strategyEvents.length;

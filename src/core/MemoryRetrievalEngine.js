@@ -228,7 +228,7 @@ export class MemoryRetrievalEngine {
     if (typeof window !== 'undefined' && prismMemory && prismMemory.appendMemoryEntry) {
       try {
         prismMemory.appendMemoryEntry(memoryEntry);
-      } catch (error) {
+      } catch (_error) {
         // Ignorer si localStorage non disponible (côté serveur)
       }
     }
@@ -300,7 +300,7 @@ export class MemoryRetrievalEngine {
 
   // ========== MÉTHODES PRIVÉES ==========
 
-  _calculateRelevance(query, content, domain) {
+  _calculateRelevance(query, content, _domain) {
     const queryLower = query.toLowerCase();
     const contentLower = content.toLowerCase();
 
@@ -344,7 +344,7 @@ export class MemoryRetrievalEngine {
            `liée à "${query.substring(0, 50)}" dans le contexte ${taskType}`;
   }
 
-  _buildEnrichedContext(query, relatedConversations, crossDomainResults, context, serverMemoryContext = '', userInfo = {}) {
+  _buildEnrichedContext(query, relatedConversations, crossDomainResults, context, serverMemoryContext = '', _userInfo = {}) {
     let enriched = '';
 
     // ✨ NOUVEAU: Ajouter contexte mémoire serveur en premier (informations utilisateur)

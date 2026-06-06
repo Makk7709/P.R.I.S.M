@@ -236,7 +236,7 @@ export class KernelBus extends EventEmitter {
    * @param {Object} consensusResult - Résultat du consensus
    */
   handleConsensusReached(consensusResult) {
-    const { proposalId, status, votes, decisionTime } = consensusResult;
+    const { proposalId, status, _votes, decisionTime } = consensusResult;
     
     if (status === ConsensusStatus.APPROVED) {
       this.metrics.consensusApprovals++;

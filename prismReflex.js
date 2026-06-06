@@ -191,7 +191,7 @@ class PrismReflex {
     }
   }
 
-  handleSleepAnomaly(reflex) {
+  handleSleepAnomaly(_reflex) {
     this.triggerSafetyProcedure('sleep_interrupted');
   }
 

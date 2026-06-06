@@ -170,7 +170,7 @@ Réponds avec l'énergie d'un chercheur passionné qui vient de faire une décou
   /**
    * Analyse le contexte pour déterminer les paramètres vocaux appropriés
    */
-  analyzeContextForVoice(text, taskType, metadata = {}) {
+  analyzeContextForVoice(text, taskType, _metadata = {}) {
     const analysis = {
       urgency: 'normal',
       complexity: 'medium',

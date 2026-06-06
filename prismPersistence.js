@@ -2,7 +2,7 @@
 const PRISM_PERSISTENCE_KEY = 'prism_state_v1';
 const SCHEMA_VERSION = '1.0.0';
 const MEMORY_CHUNK_SIZE = 1024 * 1024; // 1MB
-const MAX_MEMORY_USAGE = 0.8; // 80% de la mémoire disponible
+const _MAX_MEMORY_USAGE = 0.8; // 80% de la mémoire disponible
 
 class PrismPersistence {
   constructor() {

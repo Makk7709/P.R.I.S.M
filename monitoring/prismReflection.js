@@ -186,60 +186,60 @@ export class PrismReflection {
   }
 
   // Gestionnaires d'événements
-  handleBehaviorAdjustment(event) {
+  handleBehaviorAdjustment(_event) {
     // Traitement des ajustements comportementaux
   }
 
-  handleStressReport(event) {
+  handleStressReport(_event) {
     // Traitement des rapports de stress
   }
 
-  handleSeedUpdate(event) {
+  handleSeedUpdate(_event) {
     // Traitement des mises à jour des seeds
   }
 
   // Méthodes utilitaires privées
-  calculateAdjustmentRatio(behaviorData) {
+  calculateAdjustmentRatio(_behaviorData) {
     // Implémentation du calcul du ratio d'ajustements
     return 0;
   }
 
-  calculateAverageReactionDelay(behaviorData) {
+  calculateAverageReactionDelay(_behaviorData) {
     // Implémentation du calcul du délai moyen de réaction
     return 0;
   }
 
-  analyzeModuleStability(behaviorData) {
+  analyzeModuleStability(_behaviorData) {
     // Implémentation de l'analyse de stabilité des modules
     return {};
   }
 
-  countCriticalIncidents(stressData) {
+  countCriticalIncidents(_stressData) {
     // Implémentation du comptage des incidents critiques
     return 0;
   }
 
-  analyzeStressPatterns(stressData) {
+  analyzeStressPatterns(_stressData) {
     // Implémentation de l'analyse des patterns de stress
     return {};
   }
 
-  analyzeRecoveryEfficiency(stressData) {
+  analyzeRecoveryEfficiency(_stressData) {
     // Implémentation de l'analyse de l'efficacité de récupération
     return 0;
   }
 
-  detectImprovements(behaviorData, stressData) {
+  detectImprovements(_behaviorData, _stressData) {
     // Implémentation de la détection des améliorations
     return false;
   }
 
-  detectDrifts(behaviorData) {
+  detectDrifts(_behaviorData) {
     // Implémentation de la détection des dérives
     return [];
   }
 
-  detectStagnations(behaviorData, stressData) {
+  detectStagnations(_behaviorData, _stressData) {
     // Implémentation de la détection des stagnations
     return false;
   }

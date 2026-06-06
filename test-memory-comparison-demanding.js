@@ -19,7 +19,7 @@ let openai = null;
 try {
   openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
   console.log('✅ OpenAI configuré pour test intelligence');
-} catch (error) {
+} catch (_error) {
   console.warn('⚠️ OpenAI non configuré - Tests limités');
 }
 
@@ -725,10 +725,10 @@ class DemandingMemoryTest {
     await this.initializeSystems();
     
     // Tests
-    const test1 = await this.testMassStorage();
-    const test2 = await this.testSemanticIntelligence();
-    const test3 = await this.testPersistenceReliability();
-    const test4 = await this.testRealAIIntegration();
+    const _test1 = await this.testMassStorage();
+    const _test2 = await this.testSemanticIntelligence();
+    const _test3 = await this.testPersistenceReliability();
+    const _test4 = await this.testRealAIIntegration();
     
     // Analyse finale
     this.analyzeComparison();
@@ -741,7 +741,7 @@ class DemandingMemoryTest {
       if (fs.existsSync('./data/test-ai-integration.json')) {
         fs.unlinkSync('./data/test-ai-integration.json');
       }
-    } catch (error) {
+    } catch (_error) {
       // Ignorer erreurs nettoyage
     }
     

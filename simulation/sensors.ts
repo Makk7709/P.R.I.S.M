@@ -232,7 +232,7 @@ export class SensorSimulator {
   /**
    * Determine data quality based on various factors
    */
-  private determineDataQuality(timestamp: Date): DataQuality {
+  private determineDataQuality(_timestamp: Date): DataQuality {
     const random = this.rng.next();
     
     // 2% chance of sensor dropout

@@ -477,7 +477,7 @@ export class DataTypeDetector {
    * Parse une chaîne numérique
    * @private
    */
-  _parseNumericString(str, options) {
+  _parseNumericString(str, _options) {
     // Notation scientifique
     if (/^-?[\d.]+[eE][+-]?\d+$/.test(str)) {
       const val = Number.parseFloat(str);

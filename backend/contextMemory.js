@@ -5,7 +5,7 @@
  * @param {number} limit - Nombre maximum de snapshots à charger
  * @returns {Promise<Array>} Liste des snapshots de contexte
  */
-export async function loadContextSnapshots(limit = 5) {
+export async function loadContextSnapshots(_limit = 5) {
   // const snapshots = await fetchLatestSnapshots(limit);
   const snapshots = []; // Remplacé par un tableau vide
   if (snapshots.length > 0) {

@@ -65,7 +65,7 @@ export class ConsensusManager {
     
     // Vérifier contraintes de timeout global
     if (timeoutCount >= 2 || totalLatency >= this.GLOBAL_TIMEOUT_MS) {
-      const endTime = performance.now();
+      const _endTime = performance.now();
       return this.createNoConsensusResult(
         validVotes.length,
         votes.length,
@@ -99,7 +99,7 @@ export class ConsensusManager {
     }
     
     const endTime = performance.now();
-    const decisionLatencyMs = endTime - startTime;
+    const _decisionLatencyMs = endTime - startTime;
     
     return {
       verdict,

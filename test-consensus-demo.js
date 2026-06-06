@@ -14,7 +14,7 @@ const __dirname = path.dirname(__filename);
 
 console.log('🧪 Test Consensus Demo PRISM\n');
 
-const tests = [];
+const _tests = [];
 
 // Test 1: Vérifier les fichiers de démo
 function testDemoFiles() {
@@ -70,13 +70,13 @@ async function testDependencies() {
   for (const dep of deps) {
     try {
       if (dep === 'crypto') {
-        const crypto = await import('crypto');
+        const _crypto = await import('crypto');
         console.log(`✅ ${dep} (built-in)`);
       } else {
         await import(dep);
         console.log(`✅ ${dep}`);
       }
-    } catch (error) {
+    } catch (_error) {
       console.log(`❌ ${dep} - MANQUANT`);
       allOk = false;
     }

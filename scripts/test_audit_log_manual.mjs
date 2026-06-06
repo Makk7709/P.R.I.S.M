@@ -13,7 +13,7 @@ const TEST_DIR = path.join(process.cwd(), 'test-audit-manual');
 async function cleanup() {
   try {
     await fs.rm(TEST_DIR, { recursive: true, force: true });
-  } catch (e) {
+  } catch (_e) {
     // Ignore
   }
 }

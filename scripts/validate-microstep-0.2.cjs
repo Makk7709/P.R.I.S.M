@@ -8,7 +8,7 @@
 
 const { exec } = require('child_process');
 const fs = require('fs');
-const path = require('path');
+const _path = require('path');
 
 console.log('🔬 VALIDATION MICRO-ÉTAPE 0.2 - Contrat API Enterprise Export');
 console.log('=' .repeat(70));
@@ -200,7 +200,7 @@ async function validateTypeScriptTypes() {
       const compileCommand = `npx tsc --noEmit --skipLibCheck ${typesPath}`;
       await runCommand(compileCommand, 'Compilation TypeScript');
       console.log('✅ Types TypeScript compilent sans erreur');
-    } catch (error) {
+    } catch (_error) {
       // Fallback: vérifier la syntaxe basique
       console.log('⚠️  TSC non disponible, vérification syntaxe basique...');
       

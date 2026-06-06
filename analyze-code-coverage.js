@@ -389,7 +389,7 @@ class StaticCodeAnalyzer {
 
 // Lancement de l'analyse
 const analyzer = new StaticCodeAnalyzer();
-const results = analyzer.analyze();
+const _results = analyzer.analyze();
 
 console.log('📊 ANALYSE STATIQUE TERMINÉE');
 console.log('✅ Résultats disponibles pour évaluation');

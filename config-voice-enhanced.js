@@ -220,7 +220,7 @@ export class PRISMVoiceEnhancer {
   /**
    * Génère la configuration ElevenLabs optimisée
    */
-  getOptimizedVoiceConfig(text, taskType = 'general') {
+  getOptimizedVoiceConfig(text, _taskType = 'general') {
     const enhanced = this.enhanceText(text, null);
     
     return {

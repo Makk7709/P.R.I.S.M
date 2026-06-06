@@ -72,7 +72,7 @@ function logService(serviceName, message, type = 'info') {
 /**
  * Vérifie si un port est disponible
  */
-function checkPort(port) {
+function _checkPort(port) {
   return new Promise((resolve) => {
     const server = createServer();
     server.listen(port, () => {
@@ -328,7 +328,7 @@ function gracefulShutdown() {
   // Arrêter les containers Docker
   const dockerContainers = ['prism-prometheus', 'prism-grafana'];
   dockerContainers.forEach(container => {
-    exec(`docker stop ${container}`, (error, stdout, stderr) => {
+    exec(`docker stop ${container}`, (error, _stdout, _stderr) => {
       if (!error) {
         console.log(chalk.green(`✅ Container ${container} arrêté`));
       }
@@ -356,7 +356,7 @@ async function main() {
       });
     });
     logService('🐳 Docker', 'Disponible', 'success');
-  } catch (error) {
+  } catch (_error) {
     logService('🐳 Docker', 'Non disponible - Services Docker désactivés', 'warning');
   }
   

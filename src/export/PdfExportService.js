@@ -298,7 +298,7 @@ export class PdfExportService {
       doc.on('data', (chunk) => chunks.push(chunk));
 
       // Génération du contenu
-      const pageCount = 0;
+      const _pageCount = 0;
       const result = {
         success: true,
         metadata: {
@@ -511,7 +511,7 @@ export class PdfExportService {
   async _addInfographicPage(doc, messages, options) {
     const theme = this.config.theme;
     const pageWidth = doc.page.width;
-    const margins = this.config.layout.margins;
+    const _margins = this.config.layout.margins;
 
     doc.addPage();
 

@@ -7,7 +7,7 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
 
 // Liste des fichiers à mettre à jour
-const filesToUpdate = [
+const _filesToUpdate = [
   'prismGuardian.js',
   'prismStorage.js',
   'prismCleanup.js',

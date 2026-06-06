@@ -134,7 +134,7 @@ class PrismLoadBalancer {
     });
   }
 
-  async processItem(queueName, item) {
+  async processItem(_queueName, _item) {
     // Cette méthode doit être surchargée par les modules qui utilisent le load balancer
     throw new Error('processItem must be implemented by the consumer');
   }

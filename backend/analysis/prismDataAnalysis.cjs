@@ -138,7 +138,7 @@ class PrismDataAnalyzer {
    */
   _determineReportType(response) {
     const content = response.content || '';
-    const metadata = response.metadata || {};
+    const _metadata = response.metadata || {};
     const score = this._calculateEnterpriseScore(response);
     
     if (score >= 70) {

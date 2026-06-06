@@ -38,7 +38,7 @@ function percentile(values, p) {
 
 describe('TrustContext E2E Workflow - TRL 5', () => {
   let trustContext;
-  let orchestrator;
+  let _orchestrator;
   let keyRegistry;
   let testKeyDir;
   let approverPrivateKey;
@@ -63,7 +63,7 @@ describe('TrustContext E2E Workflow - TRL 5', () => {
     // WIPE répertoire de test au complet pour éviter pollution
     try {
       await fs.rm(testBase, { recursive: true, force: true });
-    } catch (error) {
+    } catch (_error) {
       // Ignorer si répertoire n'existe pas
     }
     await fs.mkdir(testKeyDir, { recursive: true });
@@ -99,7 +99,7 @@ describe('TrustContext E2E Workflow - TRL 5', () => {
     await trustContext.initialize();
 
     // Setup Orchestrator (mock providers pour staging)
-    orchestrator = new HybridOrchestrator({
+    _orchestrator = new HybridOrchestrator({
       trustContext: trustContext,
       consensusOptions: {
         timeoutMs: 5000,
@@ -117,7 +117,7 @@ describe('TrustContext E2E Workflow - TRL 5', () => {
       if (testKeyDir) {
         await fs.rm(path.dirname(testKeyDir), { recursive: true, force: true });
       }
-    } catch (error) {
+    } catch (_error) {
       // Ignorer
     }
   });
@@ -165,7 +165,7 @@ describe('TrustContext E2E Workflow - TRL 5', () => {
     expect(verifyResult).toBe(true);
 
     // 4. Check approval
-    const checkResult = trustContext.checkApproval(approvalToken);
+    const _checkResult = trustContext.checkApproval(approvalToken);
     // Après approbation, decision est dans history, pas pending
     const history = trustContext.getApprovalHistory(10);
     const approved = history.find((d) => d.status === 'approved');
@@ -265,7 +265,7 @@ describe('TrustContext E2E Workflow - TRL 5', () => {
     decision.data = { action: 'test', input: 'modified' }; // Modification
 
     // Créer approbation avec digest de la décision ORIGINALE (ne correspond plus)
-    const wrongDigestApproval = createSignedApproval({
+    const _wrongDigestApproval = createSignedApproval({
       approvalId: crypto.randomUUID(),
       decisionId: approvalToken,
       decisionDigest: decision.decisionDigest, // Utiliser digest original

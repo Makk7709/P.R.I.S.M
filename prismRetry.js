@@ -100,7 +100,7 @@ export const retry = async (fn, options = {}) => {
   }
 
   try {
-    let lastError;
+    let _lastError;
     let currentDelay = initialDelay;
     metrics.totalAttempts++;
 
@@ -113,7 +113,7 @@ export const retry = async (fn, options = {}) => {
         metrics.totalSuccesses++;
         return result;
       } catch (error) {
-        lastError = error;
+        _lastError = error;
         
         if (attempt === maxAttempts) {
           metrics.totalFailures++;

@@ -11,7 +11,7 @@ console.log('\n1️⃣ TEST DES IMPORTS...');
 
 try {
   console.log('   Testing prismBus...');
-  const prismBus = await import('./prismBus.js');
+  const _prismBus = await import('./prismBus.js');
   console.log('   ✅ prismBus: OK');
 } catch (e) {
   console.log('   ❌ prismBus: FAILED -', e.message);
@@ -19,7 +19,7 @@ try {
 
 try {
   console.log('   Testing prismLogger...');
-  const prismLogger = await import('./monitoring/prismLogger.js');
+  const _prismLogger = await import('./monitoring/prismLogger.js');
   console.log('   ✅ prismLogger: OK');
 } catch (e) {
   console.log('   ❌ prismLogger: FAILED -', e.message);
@@ -27,7 +27,7 @@ try {
 
 try {
   console.log('   Testing TrustContext...');
-  const { getTrustContext } = await import('./src/core/TrustContext.js');
+  const { _getTrustContext } = await import('./src/core/TrustContext.js');
   console.log('   ✅ TrustContext: OK');
 } catch (e) {
   console.log('   ❌ TrustContext: FAILED -', e.message);
@@ -70,15 +70,15 @@ try {
   await new Promise(resolve => setTimeout(resolve, 1000));
   
   console.log('   Testing getConsensusMetrics...');
-  const consensus = vitals.getConsensusMetrics();
+  const _consensus = vitals.getConsensusMetrics();
   console.log('   ✅ getConsensusMetrics: OK');
   
   console.log('   Testing getSecurityMetrics...');
-  const security = vitals.getSecurityMetrics();
+  const _security = vitals.getSecurityMetrics();
   console.log('   ✅ getSecurityMetrics: OK');
   
   console.log('   Testing getVitalsReport...');
-  const report = vitals.getVitalsReport();
+  const _report = vitals.getVitalsReport();
   console.log('   ✅ getVitalsReport: OK');
   
 } catch (e) {

@@ -6,7 +6,7 @@ import { handleUserInstruction } from './backend/orchestrator.js';
 const isBrowser = typeof window !== 'undefined';
 
 // Only use window.Conversation in browser environment
-const Conversation = isBrowser ? window.Conversation : null;
+const _Conversation = isBrowser ? window.Conversation : null;
 
 export class AudioManager {
   constructor() {
@@ -90,7 +90,7 @@ export class AudioManager {
   async initializeAudioContext() {
     try {
       this.audioContext = new (window.AudioContext || window.webkitAudioContext)();
-    } catch (error) {
+    } catch (_error) {
       throw new Error('Web Audio API not supported');
     }
   }
@@ -99,7 +99,7 @@ export class AudioManager {
     try {
       const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
       stream.getTracks().forEach(track => track.stop()); // Stop the stream after getting permission
-    } catch (error) {
+    } catch (_error) {
       throw new Error(config.MESSAGES.ERROR.MICROPHONE);
     }
   }

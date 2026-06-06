@@ -11,7 +11,7 @@ export class ProjectComplexityManager {
   /**
    * Détecte si une requête est un projet complexe
    */
-  detectComplexProject(query, context = {}) {
+  detectComplexProject(query, _context = {}) {
     const queryLower = query.toLowerCase();
     const complexityIndicators = {
       multiDomain: this._countDomains(query),
@@ -108,7 +108,7 @@ export class ProjectComplexityManager {
   findActiveProject(query) {
     const queryLower = query.toLowerCase();
     
-    for (const [id, project] of this.activeProjects.entries()) {
+    for (const [_id, project] of this.activeProjects.entries()) {
       const projectLower = (`${project.name  } ${  project.description}`).toLowerCase();
       
       // Vérifier si la requête est liée au projet
@@ -240,7 +240,7 @@ export class ProjectComplexityManager {
     return phases;
   }
 
-  _generateMilestones(project) {
+  _generateMilestones(_project) {
     return [
       { name: 'Conception validée', phase: 1, status: 'pending' },
       { name: 'Prototype fonctionnel', phase: 2, status: 'pending' },

@@ -209,7 +209,7 @@ export class HybridOrchestrator {
           setTimeout(() => reject(new Error('Consensus timeout')), this.consensusTimeout)
         )
       ]);
-    } catch (error) {
+    } catch (_error) {
       // Timeout ou erreur - générer des votes simulés et utiliser fallback
       consensusResult = await this._generateFallbackConsensus(input, taskType, classification);
     }
@@ -259,7 +259,7 @@ export class HybridOrchestrator {
       if (result && result.votes && result.votes.length >= 2) {
         return result;
       }
-    } catch (e) {
+    } catch (_e) {
       // Ignorer les erreurs du ConsensusManager réel
     }
     
@@ -311,7 +311,7 @@ export class HybridOrchestrator {
    */
   async _getProviderVote(provider, input, proposal) {
     // Utiliser le router pour obtenir une évaluation de la décision
-    const evaluationPrompt = `Évalue cette action critique et réponds uniquement par JSON: {"approve": true/false, "reasoning": "explication courte"}
+    const _evaluationPrompt = `Évalue cette action critique et réponds uniquement par JSON: {"approve": true/false, "reasoning": "explication courte"}
     
 Action demandée: "${input}"
 Type de criticité: ${proposal.type}

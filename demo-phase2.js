@@ -239,7 +239,7 @@ async function main() {
 }
 
 // Gestion des erreurs
-process.on('unhandledRejection', (reason, promise) => {
+process.on('unhandledRejection', (reason, _promise) => {
     console.error('❌ Unhandled Rejection:', reason);
     process.exit(1);
 });

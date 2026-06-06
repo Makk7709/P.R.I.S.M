@@ -128,7 +128,7 @@ export class Resilience {
    * Vérifie la cohérence de l'UI
    * @private
    */
-  isUIInconsistent(mutation) {
+  isUIInconsistent(_mutation) {
     const criticalElements = ['particle-container', 'status-message', 'transcript', 'btn-prism'];
     return criticalElements.some(id => {
       const element = document.getElementById(id);
@@ -479,7 +479,7 @@ export class Resilience {
    * Notifie les composants concernés
    * @private
    */
-  async notifyComponents(emergencyData) {
+  async notifyComponents(_emergencyData) {
     // Implémentation de la notification
     await new Promise(resolve => setTimeout(resolve, 100));
   }

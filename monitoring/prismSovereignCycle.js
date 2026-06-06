@@ -49,7 +49,7 @@ export class PrismSovereignCycle {
    * @param {Object} event - Événement d'alerte de vitalité
    */
   handleVitalityAlert(event) {
-    const { severity, type } = event;
+    const { severity, _type } = event;
     if (severity === 'critical') {
       this.forceRecalibration();
     }

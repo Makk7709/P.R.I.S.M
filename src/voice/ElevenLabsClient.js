@@ -224,7 +224,7 @@ export class ElevenLabsClient {
    * Annule toutes les requêtes en cours
    */
   cancelAllRequests() {
-    for (const [requestId, controller] of this._pendingRequests) {
+    for (const [_requestId, controller] of this._pendingRequests) {
       controller.abort();
     }
     this._pendingRequests.clear();

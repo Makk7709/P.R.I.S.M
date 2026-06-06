@@ -224,7 +224,7 @@ export const SECURITY_VALIDATION = Object.freeze({
         try {
           SECURITY_CONFIG.TRUST.MIN_APPROVAL_LEVEL = 'MODIFIED';
           return false; // Si on arrive ici, l'objet n'est pas figé
-        } catch (error) {
+        } catch (_error) {
           return true; // L'objet est correctement figé
         }
       };

@@ -228,7 +228,7 @@ export class ConsciousnessLayer {
 
     // Ajout de l'historique d'apprentissage
     if (this.reflectionHistory.length > 0) {
-      const recentReflections = this.reflectionHistory.slice(-5);
+      const _recentReflections = this.reflectionHistory.slice(-5);
       enriched += `\n\n## 📚 APPRENTISSAGE CONTINU\n`;
       enriched += `J'ai appris de ${this.reflectionHistory.length} interactions précédentes. `;
       enriched += `Je m'améliore continuellement grâce à la réflexion sur mes réponses. `;
@@ -359,7 +359,7 @@ export class ConsciousnessLayer {
 
   // ========== MÉTHODES PRIVÉES ==========
 
-  _assessQuality(response, context) {
+  _assessQuality(response, _context) {
     let score = 0.5; // Base
 
     // Longueur de la réponse
@@ -429,7 +429,7 @@ export class ConsciousnessLayer {
     return Math.min(score, 1.0);
   }
 
-  _generateUsefulnessReasoning(score, context) {
+  _generateUsefulnessReasoning(score, _context) {
     if (score >= 0.8) {
       return 'Réponse très utile et pertinente pour l\'utilisateur';
     } else if (score >= 0.6) {
@@ -439,7 +439,7 @@ export class ConsciousnessLayer {
     }
   }
 
-  _generateImprovementSuggestions(context) {
+  _generateImprovementSuggestions(_context) {
     return [
       'Utiliser un persona plus spécialisé',
       'Activer la recherche temps réel',

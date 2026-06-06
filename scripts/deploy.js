@@ -1,5 +1,5 @@
 const { execSync } = require('child_process');
-const path = require('path');
+const _path = require('path');
 require('dotenv').config();
 
 function deploy() {

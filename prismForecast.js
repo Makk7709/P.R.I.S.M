@@ -342,7 +342,7 @@ export class PrismForecast {
    * @param {Object} vitals - Données vitales brutes
    * @returns {number} Score normalisé
    */
-  #normalizeVitals(vitals) {
+  #normalizeVitals(_vitals) {
     // À implémenter selon les métriques spécifiques
     return 0.5;
   }
@@ -353,7 +353,7 @@ export class PrismForecast {
    * @param {Object} mood - Données d'humeur brutes
    * @returns {number} Score normalisé
    */
-  #normalizeMood(mood) {
+  #normalizeMood(_mood) {
     // À implémenter selon les métriques spécifiques
     return 0.5;
   }
@@ -364,7 +364,7 @@ export class PrismForecast {
    * @param {Object} noesis - Données noétiques brutes
    * @returns {number} Score normalisé
    */
-  #normalizeNoesis(noesis) {
+  #normalizeNoesis(_noesis) {
     // À implémenter selon les métriques spécifiques
     return 0.5;
   }
