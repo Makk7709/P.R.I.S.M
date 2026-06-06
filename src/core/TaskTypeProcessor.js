@@ -211,6 +211,8 @@ export class TaskTypeProcessor {
       // Étape 4: Recherche temps réel si nécessaire
       let researchData = null;
       if (needsResearch) {
+        // NOSONAR S4123: faux positif — RealTimeResearchEngine.search est `async`
+        // (renvoie une Promise). Retirer `await` assignerait la Promise non résolue.
         researchData = await this.researchEngine.search(userInput, taskType);
       }
 
