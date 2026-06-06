@@ -45,14 +45,14 @@ function parseArgs(): CLIArgs {
         break;
       case '--duration':
       case '-d':
-        parsed.duration = parseInt(args[++i]);
+        parsed.duration = Number.parseInt(args[++i]);
         break;
       case '--output':
       case '-o':
         parsed.output = args[++i];
         break;
       case '--seed':
-        parsed.seed = parseInt(args[++i]);
+        parsed.seed = Number.parseInt(args[++i]);
         break;
       case '--verbose':
       case '-v':

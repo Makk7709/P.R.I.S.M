@@ -9,8 +9,9 @@
  * NOT rewritten because `Number.isNaN`/`Number.isFinite` differ semantically
  * (no coercion) and would change behaviour.
  *
- * Scoped to .js/.mjs/.cjs files flagged for S7773 (the repo eslint has no TS
- * parser, so .ts is handled separately). Usage:
+ * Scoped to .js/.mjs/.cjs/.ts files flagged for S7773. (.ts support added once
+ * the eslint flat config gained a TypeScript parser; the rewrite is purely
+ * syntactic so it applies identically to TS.) Usage:
  *   node docs/audit/sonar/codemods/number-parse.mjs [TIER1,TIER2]
  */
 import fs from 'node:fs';
@@ -19,7 +20,7 @@ import path from 'node:path';
 const ROOT = process.cwd();
 const RULE = /(javascript|typescript):S7773/;
 const tiers = (process.argv[2] || 'TIER1,TIER2').split(',');
-const JS = /\.(js|mjs|cjs)$/;
+const JS = /\.(js|mjs|cjs|ts)$/;
 
 const targets = JSON.parse(fs.readFileSync('docs/audit/sonar/codemods/targets.json', 'utf8'));
 const files = new Set();
