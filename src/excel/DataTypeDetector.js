@@ -83,6 +83,117 @@ const PATTERNS = {
 };
 
 /**
+ * Renvoie le premier résultat dont le pattern correspond, sinon null. Pur.
+ * @param {string} trimmed
+ * @param {Array<{pattern: RegExp, result: Object}>} rules
+ * @returns {Object|null}
+ */
+function matchPatternRules(trimmed, rules) {
+  for (const rule of rules) {
+    if (rule.pattern.test(trimmed)) {
+      return rule.result;
+    }
+  }
+  return null;
+}
+
+/** Règles simples (un pattern → un type) ordonnées, entre boolean et date DD/MM. */
+const PRE_DATE_STRING_RULES = [
+  { pattern: PATTERNS.UUID, result: { type: DataType.UUID } },
+  { pattern: PATTERNS.EMAIL, result: { type: DataType.EMAIL } },
+  { pattern: PATTERNS.URL, result: { type: DataType.URL } },
+  { pattern: PATTERNS.PHONE_FR, result: { type: DataType.PHONE, details: { phoneFormat: 'FR' } } },
+  {
+    pattern: PATTERNS.PHONE_INTL,
+    result: { type: DataType.PHONE, details: { phoneFormat: 'INTERNATIONAL' } },
+  },
+  {
+    pattern: PATTERNS.POSTAL_FR,
+    result: { type: DataType.POSTAL_CODE, details: { postalFormat: 'FR' } },
+  },
+  {
+    pattern: PATTERNS.ISO8601_DATETIME,
+    result: { type: DataType.DATETIME, details: { dateFormat: 'ISO8601', hasTimeComponent: true } },
+  },
+  { pattern: PATTERNS.ISO8601, result: { type: DataType.DATE, details: { dateFormat: 'ISO8601' } } },
+  {
+    pattern: PATTERNS.FRENCH_DATE,
+    result: { type: DataType.DATE, details: { dateFormat: 'DD_MONTH_YYYY_FR' } },
+  },
+];
+
+const TIME_STRING_RULES = [{ pattern: PATTERNS.TIME, result: { type: DataType.TIME } }];
+const PERCENTAGE_STRING_RULES = [
+  { pattern: PATTERNS.PERCENTAGE, result: { type: DataType.PERCENTAGE } },
+];
+
+/**
+ * Détecte un boolean (true/false) avec format (oui_non/yes_no/true_false). Pur.
+ * @param {string} trimmed
+ * @returns {Object|null}
+ */
+function detectBooleanStringType(trimmed) {
+  if (PATTERNS.BOOLEAN_TRUE.test(trimmed)) {
+    const lower = trimmed.toLowerCase();
+    const format = lower === 'oui' ? 'oui_non' : lower === 'yes' ? 'yes_no' : 'true_false';
+    return { type: DataType.BOOLEAN, details: { booleanFormat: format } };
+  }
+  if (PATTERNS.BOOLEAN_FALSE.test(trimmed)) {
+    const lower = trimmed.toLowerCase();
+    const format = lower === 'non' ? 'oui_non' : lower === 'no' ? 'yes_no' : 'true_false';
+    return { type: DataType.BOOLEAN, details: { booleanFormat: format } };
+  }
+  return null;
+}
+
+/**
+ * Détecte une date numérique DD/MM/YYYY (ambiguë ou désambiguïsée par jour/mois). Pur.
+ * @param {string} trimmed
+ * @returns {Object|null}
+ */
+function detectDayMonthYearType(trimmed) {
+  if (!PATTERNS.DD_MM_YYYY.test(trimmed)) {
+    return null;
+  }
+  const match = trimmed.match(PATTERNS.DD_MM_YYYY);
+  const day = Number.parseInt(match[1]);
+  const month = Number.parseInt(match[2]);
+  if (day <= 12 && month <= 12) {
+    // Ambigu - pourrait être DD/MM ou MM/DD
+    return { type: DataType.DATE, details: { dateFormat: 'DD/MM/YYYY', ambiguous: true } };
+  }
+  if (day > 12) {
+    return { type: DataType.DATE, details: { dateFormat: 'DD/MM/YYYY' } };
+  }
+  if (month > 12) {
+    return { type: DataType.DATE, details: { dateFormat: 'MM/DD/YYYY' } };
+  }
+  return null;
+}
+
+/**
+ * Détecte une monnaie (€, $, £, ou code ISO). Pur.
+ * @param {string} trimmed
+ * @returns {Object|null}
+ */
+function detectCurrencyStringType(trimmed) {
+  if (PATTERNS.EUR.test(trimmed) || PATTERNS.EUR_ALT.test(trimmed)) {
+    return { type: DataType.CURRENCY, details: { currencySymbol: '€', currencyCode: 'EUR' } };
+  }
+  if (PATTERNS.USD.test(trimmed)) {
+    return { type: DataType.CURRENCY, details: { currencySymbol: '$', currencyCode: 'USD' } };
+  }
+  if (PATTERNS.GBP.test(trimmed)) {
+    return { type: DataType.CURRENCY, details: { currencySymbol: '£', currencyCode: 'GBP' } };
+  }
+  if (PATTERNS.CURRENCY_CODE.test(trimmed)) {
+    const code = trimmed.match(/EUR|USD|GBP|CHF|CAD/i)?.[0]?.toUpperCase();
+    return { type: DataType.CURRENCY, details: { currencyCode: code } };
+  }
+  return null;
+}
+
+/**
  * DataTypeDetector - Classe principale de détection de types
  */
 export class DataTypeDetector {
@@ -350,104 +461,18 @@ export class DataTypeDetector {
   _detectStringType(str, options) {
     const trimmed = str.trim();
 
-    // Boolean string
-    if (PATTERNS.BOOLEAN_TRUE.test(trimmed)) {
-      const format =
-        trimmed.toLowerCase() === 'oui'
-          ? 'oui_non'
-          : trimmed.toLowerCase() === 'yes'
-            ? 'yes_no'
-            : 'true_false';
-      return { type: DataType.BOOLEAN, details: { booleanFormat: format } };
-    }
-    if (PATTERNS.BOOLEAN_FALSE.test(trimmed)) {
-      const format =
-        trimmed.toLowerCase() === 'non'
-          ? 'oui_non'
-          : trimmed.toLowerCase() === 'no'
-            ? 'yes_no'
-            : 'true_false';
-      return { type: DataType.BOOLEAN, details: { booleanFormat: format } };
-    }
-
-    // UUID
-    if (PATTERNS.UUID.test(trimmed)) {
-      return { type: DataType.UUID };
-    }
-
-    // Email
-    if (PATTERNS.EMAIL.test(trimmed)) {
-      return { type: DataType.EMAIL };
-    }
-
-    // URL
-    if (PATTERNS.URL.test(trimmed)) {
-      return { type: DataType.URL };
-    }
-
-    // Téléphone
-    if (PATTERNS.PHONE_FR.test(trimmed)) {
-      return { type: DataType.PHONE, details: { phoneFormat: 'FR' } };
-    }
-    if (PATTERNS.PHONE_INTL.test(trimmed)) {
-      return { type: DataType.PHONE, details: { phoneFormat: 'INTERNATIONAL' } };
-    }
-
-    // Code postal français
-    if (PATTERNS.POSTAL_FR.test(trimmed)) {
-      return { type: DataType.POSTAL_CODE, details: { postalFormat: 'FR' } };
-    }
-
-    // Dates
-    if (PATTERNS.ISO8601_DATETIME.test(trimmed)) {
-      return {
-        type: DataType.DATETIME,
-        details: { dateFormat: 'ISO8601', hasTimeComponent: true },
-      };
-    }
-    if (PATTERNS.ISO8601.test(trimmed)) {
-      return { type: DataType.DATE, details: { dateFormat: 'ISO8601' } };
-    }
-    if (PATTERNS.FRENCH_DATE.test(trimmed)) {
-      return { type: DataType.DATE, details: { dateFormat: 'DD_MONTH_YYYY_FR' } };
-    }
-    if (PATTERNS.DD_MM_YYYY.test(trimmed)) {
-      const match = trimmed.match(PATTERNS.DD_MM_YYYY);
-      const day = Number.parseInt(match[1]);
-      const month = Number.parseInt(match[2]);
-      if (day <= 12 && month <= 12) {
-        // Ambigu - pourrait être DD/MM ou MM/DD
-        return { type: DataType.DATE, details: { dateFormat: 'DD/MM/YYYY', ambiguous: true } };
-      }
-      if (day > 12) {
-        return { type: DataType.DATE, details: { dateFormat: 'DD/MM/YYYY' } };
-      }
-      if (month > 12) {
-        return { type: DataType.DATE, details: { dateFormat: 'MM/DD/YYYY' } };
-      }
-    }
-    if (PATTERNS.TIME.test(trimmed)) {
-      return { type: DataType.TIME };
-    }
-
-    // Monnaie
-    if (PATTERNS.EUR.test(trimmed) || PATTERNS.EUR_ALT.test(trimmed)) {
-      return { type: DataType.CURRENCY, details: { currencySymbol: '€', currencyCode: 'EUR' } };
-    }
-    if (PATTERNS.USD.test(trimmed)) {
-      return { type: DataType.CURRENCY, details: { currencySymbol: '$', currencyCode: 'USD' } };
-    }
-    if (PATTERNS.GBP.test(trimmed)) {
-      return { type: DataType.CURRENCY, details: { currencySymbol: '£', currencyCode: 'GBP' } };
-    }
-    if (PATTERNS.CURRENCY_CODE.test(trimmed)) {
-      const code = trimmed.match(/EUR|USD|GBP|CHF|CAD/i)?.[0]?.toUpperCase();
-      return { type: DataType.CURRENCY, details: { currencyCode: code } };
-    }
-
-    // Pourcentage
-    if (PATTERNS.PERCENTAGE.test(trimmed)) {
-      return { type: DataType.PERCENTAGE };
+    // Détection ordonnée par familles (iso-comportement avec l'ancienne chaîne de if):
+    // boolean → patterns simples (uuid/email/url/phone/postal/dates ISO/FR) →
+    // date DD/MM/YYYY → time → monnaie → pourcentage.
+    const matched =
+      detectBooleanStringType(trimmed) ||
+      matchPatternRules(trimmed, PRE_DATE_STRING_RULES) ||
+      detectDayMonthYearType(trimmed) ||
+      matchPatternRules(trimmed, TIME_STRING_RULES) ||
+      detectCurrencyStringType(trimmed) ||
+      matchPatternRules(trimmed, PERCENTAGE_STRING_RULES);
+    if (matched) {
+      return matched;
     }
 
     // Nombre
