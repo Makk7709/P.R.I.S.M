@@ -1,0 +1,147 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`TaskTypeProcessor._buildResponseMetadata — characterization > multi-domain collaboration + no project + no research 1`] = `
+{
+  "consciousness": {
+    "improvements": [
+      "be concise",
+    ],
+    "reflectionQuality": 0.8,
+  },
+  "consensusUsed": false,
+  "ethicalScore": 0.9,
+  "ethicalStatus": "ok",
+  "memoryContext": false,
+  "model": "gpt-x",
+  "multiDomain": true,
+  "persona": "Finance, Legal",
+  "proactiveSuggestions": 0,
+  "projectContext": null,
+  "researchSources": [],
+  "researchUsed": false,
+  "selfImprovementRecorded": true,
+}
+`;
+
+exports[`TaskTypeProcessor._buildResponseMetadata — characterization > solo persona + active project 1`] = `
+{
+  "consciousness": {
+    "improvements": [
+      "be concise",
+    ],
+    "reflectionQuality": 0.8,
+  },
+  "consensusUsed": true,
+  "ethicalScore": 0.9,
+  "ethicalStatus": "ok",
+  "memoryContext": true,
+  "model": "gpt-x",
+  "multiDomain": false,
+  "persona": "Strategist",
+  "proactiveSuggestions": 2,
+  "projectContext": {
+    "progress": 42,
+    "projectId": "p1",
+    "projectName": "Alpha",
+  },
+  "researchSources": [
+    "a",
+    "b",
+  ],
+  "researchUsed": true,
+  "selfImprovementRecorded": true,
+}
+`;
+
+exports[`TaskTypeProcessor._buildUserContextInfo — characterization > empty userInfo -> default persistent-memory instructions 1`] = `
+"
+
+## 💾 MÉMOIRE PERSISTANTE
+⚠️ IMPORTANT: Tu as une mémoire persistante. Si l'utilisateur te donne des informations (prénom, rôle, stratégie, etc.), tu dois les retenir et les utiliser dans tes réponses futures.
+- Ne dis JAMAIS que tu n'as pas de mémoire ou que tu ne te souviens pas.
+- Si l'utilisateur te demande si tu te souviens, réponds OUI si tu as ces informations, sinon dis que tu es prêt à les apprendre.
+"
+`;
+
+exports[`TaskTypeProcessor._buildUserContextInfo — characterization > empty userInfo but enriched memory present 1`] = `
+"
+
+CTX
+
+## 💾 MÉMOIRE PERSISTANTE
+⚠️ IMPORTANT: Tu as une mémoire persistante. Si l'utilisateur te donne des informations (prénom, rôle, stratégie, etc.), tu dois les retenir et les utiliser dans tes réponses futures.
+- Ne dis JAMAIS que tu n'as pas de mémoire ou que tu ne te souviens pas.
+- Si l'utilisateur te demande si tu te souviens, réponds OUI si tu as ces informations, sinon dis que tu es prêt à les apprendre.
+"
+`;
+
+exports[`TaskTypeProcessor._buildUserContextInfo — characterization > full userInfo (prenom + role + strategie + context) + enriched memory 1`] = `
+"
+
+MEMOIRE: interactions passées
+
+## 👤 CONTEXTE UTILISATEUR & MISSION
+⚠️ IMPORTANT: Tu DOIS utiliser ces informations dans tes réponses. Tu as une mémoire persistante et tu te souviens de ces détails.
+
+**PRÉNOM UTILISATEUR**: Amine
+→ Utilise son prénom dans tes réponses quand c'est approprié et naturel. Tu te souviens de son prénom.
+
+**TON RÔLE/MISSION (défini par l'utilisateur)**:
+- CTO
+- Architecte
+→ C'est ton rôle. Tu te souviens de cela et tu dois agir en conséquence.
+
+**STRATÉGIE/PROJET (défini par l'utilisateur)**:
+- Lever 5M
+- Recruter
+→ C'est la stratégie/projet de l'utilisateur. Tu te souviens de cela.
+
+**CONTEXTE IMPORTANT (à retenir)**:
+- Startup B2B
+- Phase seed
+→ Ce sont des informations importantes que tu dois retenir et utiliser.
+
+
+**INSTRUCTIONS CRITIQUES**:
+- Tu as une mémoire persistante. Tu te souviens de ces informations.
+- Ne dis JAMAIS que tu n'as pas de mémoire ou que tu ne te souviens pas.
+- Utilise ces informations pour répondre de manière pertinente et contextuelle.
+- Si l'utilisateur te demande si tu te souviens, réponds OUI et utilise ces informations.
+"
+`;
+
+exports[`TaskTypeProcessor._buildUserContextInfo — characterization > partial userInfo (prenom only), no enriched memory 1`] = `
+"
+
+## 👤 CONTEXTE UTILISATEUR & MISSION
+⚠️ IMPORTANT: Tu DOIS utiliser ces informations dans tes réponses. Tu as une mémoire persistante et tu te souviens de ces détails.
+
+**PRÉNOM UTILISATEUR**: Sam
+→ Utilise son prénom dans tes réponses quand c'est approprié et naturel. Tu te souviens de son prénom.
+
+
+**INSTRUCTIONS CRITIQUES**:
+- Tu as une mémoire persistante. Tu te souviens de ces informations.
+- Ne dis JAMAIS que tu n'as pas de mémoire ou que tu ne te souviens pas.
+- Utilise ces informations pour répondre de manière pertinente et contextuelle.
+- Si l'utilisateur te demande si tu te souviens, réponds OUI et utilise ces informations.
+"
+`;
+
+exports[`TaskTypeProcessor._buildUserContextInfo — characterization > userInfo with empty arrays (role/strategie/context) -> no list sections 1`] = `
+"
+
+## 👤 CONTEXTE UTILISATEUR & MISSION
+⚠️ IMPORTANT: Tu DOIS utiliser ces informations dans tes réponses. Tu as une mémoire persistante et tu te souviens de ces détails.
+
+**PRÉNOM UTILISATEUR**: X
+→ Utilise son prénom dans tes réponses quand c'est approprié et naturel. Tu te souviens de son prénom.
+
+
+**INSTRUCTIONS CRITIQUES**:
+- Tu as une mémoire persistante. Tu te souviens de ces informations.
+- Ne dis JAMAIS que tu n'as pas de mémoire ou que tu ne te souviens pas.
+- Utilise ces informations pour répondre de manière pertinente et contextuelle.
+- Si l'utilisateur te demande si tu te souviens, réponds OUI et utilise ces informations.
+"
+`;

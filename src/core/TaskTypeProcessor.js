@@ -39,10 +39,27 @@ export class TaskTypeProcessor {
     // ✨ PERSONNALITÉ JARVIS
     this.jarvisPersonality = new JarvisPersonality();
 
-    // Initialiser MemoryRetrievalEngine
-    this.memoryEngine.initialize().catch((err) => {
-      console.warn('[TaskTypeProcessor] MemoryEngine init error:', err.message);
-    });
+    // S7059: pas d'opération asynchrone dans le constructeur. L'initialisation
+    // du MemoryRetrievalEngine est paresseuse — déclenchée une seule fois par
+    // _ensureMemoryInitialized(), appelée en tête de process(). Les erreurs
+    // d'init restent non bloquantes (mêmes sémantiques que l'ancien
+    // `.initialize().catch(warn)` lancé dans le constructeur).
+    this._memoryInitPromise = null;
+  }
+
+  /**
+   * Initialise paresseusement le MemoryRetrievalEngine (une seule fois).
+   * Les erreurs sont consignées sans interrompre le traitement.
+   * @private
+   * @returns {Promise<void>}
+   */
+  async _ensureMemoryInitialized() {
+    if (!this._memoryInitPromise) {
+      this._memoryInitPromise = Promise.resolve(this.memoryEngine.initialize()).catch((err) => {
+        console.warn('[TaskTypeProcessor] MemoryEngine init error:', err.message);
+      });
+    }
+    await this._memoryInitPromise;
   }
 
   /**
@@ -54,6 +71,10 @@ export class TaskTypeProcessor {
    */
   async process(userInput, taskType = 'general', options = {}) {
     const startTime = Date.now();
+
+    // S7059: garantir l'initialisation paresseuse de la mémoire avant usage
+    // (équivalent à l'ancien chargement « eager » lancé au constructeur).
+    await this._ensureMemoryInitialized();
 
     try {
       // ✨ ÉTAPE 0: Détection projet complexe
@@ -135,9 +156,6 @@ export class TaskTypeProcessor {
         projectContext: activeProject,
       });
 
-      // ✨ Ajouter TOUT le contexte utilisateur (prénom, rôle, stratégie, etc.)
-      let userContextInfo = '';
-
       // ✨ DEBUG: Log pour vérifier ce qui est récupéré
       console.log(`[TaskTypeProcessor] UserInfo récupéré:`, JSON.stringify(userInfo, null, 2));
       console.log(
@@ -145,57 +163,8 @@ export class TaskTypeProcessor {
         memoryContext.enrichedContext?.length || 0
       );
 
-      // Toujours ajouter le contexte mémoire enrichi (même si userInfo est vide)
-      if (memoryContext.enrichedContext && memoryContext.enrichedContext.length > 0) {
-        userContextInfo += `\n\n${memoryContext.enrichedContext}`;
-      }
-
-      // Ajouter les informations utilisateur si disponibles
-      if (Object.keys(userInfo).length > 0) {
-        userContextInfo += `\n\n## 👤 CONTEXTE UTILISATEUR & MISSION\n`;
-        userContextInfo += `⚠️ IMPORTANT: Tu DOIS utiliser ces informations dans tes réponses. Tu as une mémoire persistante et tu te souviens de ces détails.\n\n`;
-
-        if (userInfo.prenom) {
-          userContextInfo += `**PRÉNOM UTILISATEUR**: ${userInfo.prenom}\n`;
-          userContextInfo += `→ Utilise son prénom dans tes réponses quand c'est approprié et naturel. Tu te souviens de son prénom.\n\n`;
-        }
-
-        if (userInfo.role && userInfo.role.length > 0) {
-          userContextInfo += `**TON RÔLE/MISSION (défini par l'utilisateur)**:\n`;
-          userInfo.role.forEach((role) => {
-            userContextInfo += `- ${role}\n`;
-          });
-          userContextInfo += `→ C'est ton rôle. Tu te souviens de cela et tu dois agir en conséquence.\n\n`;
-        }
-
-        if (userInfo.strategie && userInfo.strategie.length > 0) {
-          userContextInfo += `**STRATÉGIE/PROJET (défini par l'utilisateur)**:\n`;
-          userInfo.strategie.forEach((strat) => {
-            userContextInfo += `- ${strat}\n`;
-          });
-          userContextInfo += `→ C'est la stratégie/projet de l'utilisateur. Tu te souviens de cela.\n\n`;
-        }
-
-        if (userInfo.context && userInfo.context.length > 0) {
-          userContextInfo += `**CONTEXTE IMPORTANT (à retenir)**:\n`;
-          userInfo.context.forEach((ctx) => {
-            userContextInfo += `- ${ctx}\n`;
-          });
-          userContextInfo += `→ Ce sont des informations importantes que tu dois retenir et utiliser.\n\n`;
-        }
-
-        userContextInfo += `\n**INSTRUCTIONS CRITIQUES**:\n`;
-        userContextInfo += `- Tu as une mémoire persistante. Tu te souviens de ces informations.\n`;
-        userContextInfo += `- Ne dis JAMAIS que tu n'as pas de mémoire ou que tu ne te souviens pas.\n`;
-        userContextInfo += `- Utilise ces informations pour répondre de manière pertinente et contextuelle.\n`;
-        userContextInfo += `- Si l'utilisateur te demande si tu te souviens, réponds OUI et utilise ces informations.\n`;
-      } else {
-        // Même si userInfo est vide, ajouter des instructions sur la mémoire
-        userContextInfo += `\n\n## 💾 MÉMOIRE PERSISTANTE\n`;
-        userContextInfo += `⚠️ IMPORTANT: Tu as une mémoire persistante. Si l'utilisateur te donne des informations (prénom, rôle, stratégie, etc.), tu dois les retenir et les utiliser dans tes réponses futures.\n`;
-        userContextInfo += `- Ne dis JAMAIS que tu n'as pas de mémoire ou que tu ne te souviens pas.\n`;
-        userContextInfo += `- Si l'utilisateur te demande si tu te souviens, réponds OUI si tu as ces informations, sinon dis que tu es prêt à les apprendre.\n`;
-      }
+      // ✨ Ajouter TOUT le contexte utilisateur (prénom, rôle, stratégie, etc.)
+      const userContextInfo = this._buildUserContextInfo(userInfo, memoryContext);
 
       // ✨ Appliquer la personnalité JARVIS
       const jarvisEnriched = this.jarvisPersonality.enrichBasePrompt(consciousnessEnriched, {
@@ -332,33 +301,19 @@ export class TaskTypeProcessor {
 
       return {
         ...response,
-        metadata: {
-          ...response.metadata,
-          persona: collaboration
-            ? collaboration.personas.map((p) => p.name).join(', ')
-            : persona.name,
-          researchUsed: needsResearch,
-          researchSources: researchData?.sources || [],
-          consensusUsed: criticality.isCritical || taskType === 'critical',
-          ethicalScore: ethicalCheck.score,
-          ethicalStatus: ethicalCheck.status,
-          selfImprovementRecorded: true,
-          // ✨ NOUVEAUX MÉTADONNÉES
-          consciousness: {
-            reflectionQuality: reflection.quality,
-            improvements: reflection.improvements,
-          },
-          memoryContext: memoryContext.enrichedContext ? true : false,
-          proactiveSuggestions: memoryContext.proactiveSuggestions?.length || 0,
-          multiDomain: collaboration !== null,
-          projectContext: activeProject
-            ? {
-                projectId: activeProject.id,
-                projectName: activeProject.name,
-                progress: activeProject.progress || 0,
-              }
-            : null,
-        },
+        metadata: this._buildResponseMetadata({
+          response,
+          collaboration,
+          persona,
+          needsResearch,
+          researchData,
+          criticality,
+          taskType,
+          ethicalCheck,
+          reflection,
+          memoryContext,
+          activeProject,
+        }),
       };
     } catch (error) {
       // Enregistrer l'erreur dans SelfImprovement
@@ -373,6 +328,117 @@ export class TaskTypeProcessor {
 
       throw error;
     }
+  }
+
+  /**
+   * Construit le bloc de contexte utilisateur injecté dans le prompt (prénom,
+   * rôle, stratégie, contexte) ou les instructions de mémoire par défaut.
+   * Fonction pure (chaîne dérivée de userInfo + memoryContext).
+   * @private
+   */
+  _buildUserContextInfo(userInfo, memoryContext) {
+    let userContextInfo = '';
+
+    // Toujours ajouter le contexte mémoire enrichi (même si userInfo est vide)
+    if (memoryContext.enrichedContext && memoryContext.enrichedContext.length > 0) {
+      userContextInfo += `\n\n${memoryContext.enrichedContext}`;
+    }
+
+    // Ajouter les informations utilisateur si disponibles
+    if (Object.keys(userInfo).length > 0) {
+      userContextInfo += `\n\n## 👤 CONTEXTE UTILISATEUR & MISSION\n`;
+      userContextInfo += `⚠️ IMPORTANT: Tu DOIS utiliser ces informations dans tes réponses. Tu as une mémoire persistante et tu te souviens de ces détails.\n\n`;
+
+      if (userInfo.prenom) {
+        userContextInfo += `**PRÉNOM UTILISATEUR**: ${userInfo.prenom}\n`;
+        userContextInfo += `→ Utilise son prénom dans tes réponses quand c'est approprié et naturel. Tu te souviens de son prénom.\n\n`;
+      }
+
+      if (userInfo.role && userInfo.role.length > 0) {
+        userContextInfo += `**TON RÔLE/MISSION (défini par l'utilisateur)**:\n`;
+        userInfo.role.forEach((role) => {
+          userContextInfo += `- ${role}\n`;
+        });
+        userContextInfo += `→ C'est ton rôle. Tu te souviens de cela et tu dois agir en conséquence.\n\n`;
+      }
+
+      if (userInfo.strategie && userInfo.strategie.length > 0) {
+        userContextInfo += `**STRATÉGIE/PROJET (défini par l'utilisateur)**:\n`;
+        userInfo.strategie.forEach((strat) => {
+          userContextInfo += `- ${strat}\n`;
+        });
+        userContextInfo += `→ C'est la stratégie/projet de l'utilisateur. Tu te souviens de cela.\n\n`;
+      }
+
+      if (userInfo.context && userInfo.context.length > 0) {
+        userContextInfo += `**CONTEXTE IMPORTANT (à retenir)**:\n`;
+        userInfo.context.forEach((ctx) => {
+          userContextInfo += `- ${ctx}\n`;
+        });
+        userContextInfo += `→ Ce sont des informations importantes que tu dois retenir et utiliser.\n\n`;
+      }
+
+      userContextInfo += `\n**INSTRUCTIONS CRITIQUES**:\n`;
+      userContextInfo += `- Tu as une mémoire persistante. Tu te souviens de ces informations.\n`;
+      userContextInfo += `- Ne dis JAMAIS que tu n'as pas de mémoire ou que tu ne te souviens pas.\n`;
+      userContextInfo += `- Utilise ces informations pour répondre de manière pertinente et contextuelle.\n`;
+      userContextInfo += `- Si l'utilisateur te demande si tu te souviens, réponds OUI et utilise ces informations.\n`;
+    } else {
+      // Même si userInfo est vide, ajouter des instructions sur la mémoire
+      userContextInfo += `\n\n## 💾 MÉMOIRE PERSISTANTE\n`;
+      userContextInfo += `⚠️ IMPORTANT: Tu as une mémoire persistante. Si l'utilisateur te donne des informations (prénom, rôle, stratégie, etc.), tu dois les retenir et les utiliser dans tes réponses futures.\n`;
+      userContextInfo += `- Ne dis JAMAIS que tu n'as pas de mémoire ou que tu ne te souviens pas.\n`;
+      userContextInfo += `- Si l'utilisateur te demande si tu te souviens, réponds OUI si tu as ces informations, sinon dis que tu es prêt à les apprendre.\n`;
+    }
+
+    return userContextInfo;
+  }
+
+  /**
+   * Assemble les métadonnées de la réponse finale de process().
+   * Fonction pure (dérivée de ses arguments).
+   * @private
+   */
+  _buildResponseMetadata({
+    response,
+    collaboration,
+    persona,
+    needsResearch,
+    researchData,
+    criticality,
+    taskType,
+    ethicalCheck,
+    reflection,
+    memoryContext,
+    activeProject,
+  }) {
+    return {
+      ...response.metadata,
+      persona: collaboration
+        ? collaboration.personas.map((p) => p.name).join(', ')
+        : persona.name,
+      researchUsed: needsResearch,
+      researchSources: researchData?.sources || [],
+      consensusUsed: criticality.isCritical || taskType === 'critical',
+      ethicalScore: ethicalCheck.score,
+      ethicalStatus: ethicalCheck.status,
+      selfImprovementRecorded: true,
+      // ✨ NOUVEAUX MÉTADONNÉES
+      consciousness: {
+        reflectionQuality: reflection.quality,
+        improvements: reflection.improvements,
+      },
+      memoryContext: memoryContext.enrichedContext ? true : false,
+      proactiveSuggestions: memoryContext.proactiveSuggestions?.length || 0,
+      multiDomain: collaboration !== null,
+      projectContext: activeProject
+        ? {
+            projectId: activeProject.id,
+            projectName: activeProject.name,
+            progress: activeProject.progress || 0,
+          }
+        : null,
+    };
   }
 
   /**
