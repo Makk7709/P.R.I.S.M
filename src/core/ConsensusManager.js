@@ -226,10 +226,19 @@ export class ConsensusManager extends EventEmitter {
     this.providerAdapters = null;
     this.isInitialized = false;
 
-    this.init();
+    // S7059: initialisation SYNCHRONE dans le constructeur (le corps ne contient
+    // aucun `await`). On appelle une méthode synchrone plutôt que l'ancienne
+    // `async init()`, ce qui supprime l'« opération asynchrone dans le
+    // constructeur » tout en gardant le comportement identique (isInitialized
+    // est positionné de façon synchrone, comme avant).
+    this._initialize();
   }
 
-  async init() {
+  /**
+   * Initialisation synchrone des dépendances (TrustContext + adaptateurs).
+   * @private
+   */
+  _initialize() {
     try {
       if (this.config.enableTrustContext) {
         this.trustContext = getTrustContext();
@@ -253,6 +262,14 @@ export class ConsensusManager extends EventEmitter {
     } catch (error) {
       console.warn('⚠️ ConsensusManager: Failed to initialize TrustContext:', error.message);
     }
+  }
+
+  /**
+   * Conservé pour compatibilité ascendante (anciennement appelé par le
+   * constructeur). Délègue à l'initialisation synchrone.
+   */
+  async init() {
+    this._initialize();
   }
 
   /**
