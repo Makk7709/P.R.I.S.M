@@ -1,0 +1,258 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`ExcelAnalyzer insight/quality helpers — characterization > _checkDataQuality 1`] = `
+{
+  "completeness": 93.33333333333333,
+  "completenessScore": 0.9333333333333332,
+  "duplicates": {
+    "count": 2,
+    "percentage": 28.57142857142857,
+  },
+  "filledCells": 14,
+  "issues": [
+    {
+      "column": "Revenue",
+      "count": 6,
+      "severity": "high",
+      "type": "outliers",
+    },
+  ],
+  "missingValues": {
+    "Region": 0,
+    "Revenue": 0,
+    "Temp": 0,
+    "email": 1,
+  },
+  "nullCells": 1,
+  "qualityScore": 87.33333333333333,
+  "totalCells": 15,
+}
+`;
+
+exports[`ExcelAnalyzer insight/quality helpers — characterization > _detectSensitiveColumns 1`] = `
+{
+  "empty": [],
+  "mixed": [
+    "phone_number",
+    "IBAN",
+    "home address",
+  ],
+  "nullSheet": [],
+  "rich": [
+    "email",
+  ],
+}
+`;
+
+exports[`ExcelAnalyzer insight/quality helpers — characterization > _generateColumnProfiles 1`] = `
+{
+  "Region": {
+    "frequency": {
+      "EU": 3,
+      "US": 1,
+    },
+    "nullCount": 0,
+    "nullPercentage": 0,
+    "sampleValues": [
+      "EU",
+      "EU",
+      "US",
+      "EU",
+    ],
+    "statistics": null,
+    "topValues": [
+      {
+        "count": 3,
+        "value": "EU",
+      },
+      {
+        "count": 1,
+        "value": "US",
+      },
+    ],
+    "totalCount": 4,
+    "type": "string",
+    "uniqueCount": 2,
+  },
+  "Revenue": {
+    "frequency": {
+      "100": 2,
+      "200": 1,
+      "5000": 1,
+    },
+    "nullCount": 0,
+    "nullPercentage": 0,
+    "sampleValues": [
+      100,
+      5000,
+      200,
+      100,
+    ],
+    "statistics": {
+      "coefficientOfVariation": 155.5,
+      "max": 5000,
+      "mean": 1350,
+      "median": 150,
+      "skewness": 1.8,
+      "standardDeviation": 2100,
+      "sum": 5400,
+    },
+    "topValues": [
+      {
+        "count": 2,
+        "value": "100",
+      },
+      {
+        "count": 1,
+        "value": "200",
+      },
+      {
+        "count": 1,
+        "value": "5000",
+      },
+    ],
+    "totalCount": 4,
+    "type": "number",
+    "uniqueCount": 3,
+  },
+  "Temp": {
+    "frequency": {
+      "20": 2,
+      "21": 1,
+    },
+    "nullCount": 0,
+    "nullPercentage": 0,
+    "sampleValues": [
+      20,
+      21,
+      20,
+    ],
+    "statistics": {
+      "mean": 20.3,
+      "median": 20,
+      "standardDeviation": 0.5,
+      "sum": 61,
+    },
+    "topValues": [
+      {
+        "count": 2,
+        "value": "20",
+      },
+      {
+        "count": 1,
+        "value": "21",
+      },
+    ],
+    "totalCount": 3,
+    "type": "number",
+    "uniqueCount": 2,
+  },
+  "email": {
+    "frequency": {
+      "a@x.com": 2,
+      "b@x.com": 1,
+    },
+    "nullCount": 1,
+    "nullPercentage": 25,
+    "sampleValues": [
+      "a@x.com",
+      "b@x.com",
+      "a@x.com",
+    ],
+    "statistics": null,
+    "topValues": [
+      {
+        "count": 2,
+        "value": "a@x.com",
+      },
+      {
+        "count": 1,
+        "value": "b@x.com",
+      },
+    ],
+    "totalCount": 4,
+    "type": "string",
+    "uniqueCount": 2,
+  },
+}
+`;
+
+exports[`ExcelAnalyzer insight/quality helpers — characterization > _generateHighlights 1`] = `
+[
+  {
+    "column": "Revenue",
+    "label": "Total Revenue: 5 400",
+    "type": "sum",
+    "value": 5400,
+  },
+  {
+    "column": "Region",
+    "label": "Region: 2 valeurs uniques",
+    "type": "categorical",
+    "uniqueCount": 2,
+  },
+  {
+    "column": "Temp",
+    "label": "Total Temp: 61",
+    "type": "sum",
+    "value": 61,
+  },
+]
+`;
+
+exports[`ExcelAnalyzer insight/quality helpers — characterization > _generateKeyInsights 1`] = `
+[
+  "La colonne "Revenue" montre une asymétrie à droite (queue longue vers les hautes valeurs)",
+  "La colonne "Revenue" présente une forte variabilité (CV: 155.5%)",
+  "La colonne "Revenue" a une moyenne significativement supérieure à la médiane, suggérant des valeurs extrêmes hautes",
+  "6 valeur(s) aberrante(s) détectée(s) dans "Revenue"",
+  "La catégorie "EU" domine dans "Region" (75%)",
+]
+`;
+
+exports[`ExcelAnalyzer insight/quality helpers — characterization > _generateRecommendations 1`] = `
+[
+  "Vous devriez investiguer les valeurs aberrantes détectées pour vérifier leur validité",
+  "Vous pourriez analyser les tendances temporelles pour identifier des patterns saisonniers",
+  "La forte variabilité suggère de segmenter les données par catégorie pour une analyse plus fine",
+  "Avec plusieurs colonnes numériques, une analyse de corrélation pourrait révéler des relations intéressantes",
+]
+`;
+
+exports[`ExcelAnalyzer insight/quality helpers — characterization > _identifyPatterns 1`] = `
+[
+  "Données temporelles détectées - analyse de tendances possible",
+  "1 dimension(s) catégorielle(s) pour segmentation",
+  "2 colonnes numériques identifiées pour analyse statistique",
+  "Données très concentrées autour de la moyenne pour "Temp"",
+]
+`;
+
+exports[`ExcelAnalyzer insight/quality helpers — characterization > _identifyTopPerformers 1`] = `
+[
+  "Valeur maximale exceptionnelle dans "Revenue": 5 000 (2x la moyenne)",
+  "Top "Region": EU (3 occurrences)",
+]
+`;
+
+exports[`ExcelAnalyzer insight/quality helpers — characterization > edge: empty sheets array 1`] = `
+{
+  "insights": [],
+  "patterns": [],
+  "profiles": {},
+  "quality": {
+    "completeness": 100,
+    "completenessScore": 1,
+    "duplicates": {
+      "count": 0,
+      "percentage": 0,
+    },
+    "filledCells": 0,
+    "issues": [],
+    "missingValues": {},
+    "nullCells": 0,
+    "qualityScore": 100,
+    "totalCells": 0,
+  },
+}
+`;
