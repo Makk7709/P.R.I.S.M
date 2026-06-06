@@ -1528,82 +1528,10 @@ ACTION_RECOMMANDÉE: [conversion/filtrage/aucune]
 `;
 
     // ✨ INCLURE TOUTES LES DONNÉES BRUTES (jusqu'à 100 lignes)
-    if (rows.length > 0 && headers.length > 0) {
-      prompt += `### DONNÉES COMPLÈTES DU FICHIER\n\n`;
-
-      // Header
-      prompt += `| ${headers.join(' | ')} |\n`;
-      prompt += `| ${headers.map(() => '---').join(' | ')} |\n`;
-
-      // Toutes les lignes (max 100 pour éviter prompt trop long)
-      const maxRows = Math.min(rows.length, 100);
-      for (let i = 0; i < maxRows; i++) {
-        const row = rows[i];
-        const values = headers.map((h) => {
-          const val = row[h];
-          if (val === null || val === undefined) return '';
-          return String(val).substring(0, 50);
-        });
-        prompt += `| ${values.join(' | ')} |\n`;
-      }
-
-      if (rows.length > 100) {
-        prompt += `\n... et ${rows.length - 100} lignes supplémentaires\n`;
-      }
-    }
+    prompt += this._formatRawDataTable(headers, rows);
 
     // ✨ AJOUTER DES AGRÉGATIONS PAR COLONNE pour aider l'IA
-    prompt += `\n### AGRÉGATIONS PAR COLONNE\n`;
-    for (const header of headers) {
-      const values = rows
-        .map((r) => r[header])
-        .filter((v) => v !== null && v !== undefined && v !== '');
-
-      // Vérifier si c'est numérique
-      const numericValues = values.map((v) => Number.parseFloat(v)).filter((v) => !isNaN(v));
-
-      if (numericValues.length > values.length * 0.5) {
-        // Colonne numérique
-        const sum = numericValues.reduce((a, b) => a + b, 0);
-        const avg = sum / numericValues.length;
-        const max = Math.max(...numericValues);
-        const min = Math.min(...numericValues);
-        prompt += `\n**${header}** (numérique):\n`;
-        prompt += `  - Somme totale: ${sum.toFixed(2)}\n`;
-        prompt += `  - Moyenne: ${avg.toFixed(2)}\n`;
-        prompt += `  - Max: ${max}, Min: ${min}\n`;
-      } else if (values.length > 0) {
-        // Colonne catégorielle - compter les occurrences
-        const counts = {};
-        for (const v of values) {
-          const key = String(v);
-          counts[key] = (counts[key] || 0) + 1;
-        }
-
-        // Calculer sommes par catégorie si il y a des colonnes numériques
-        const sortedCounts = Object.entries(counts).sort((a, b) => b[1] - a[1]);
-
-        prompt += `\n**${header}** (catégoriel - ${Object.keys(counts).length} valeurs uniques):\n`;
-        for (const [val, count] of sortedCounts.slice(0, 15)) {
-          // Calculer les sommes associées
-          let sumInfo = '';
-          for (const otherHeader of headers) {
-            if (otherHeader !== header) {
-              const relatedValues = rows
-                .filter((r) => String(r[header]) === val)
-                .map((r) => Number.parseFloat(r[otherHeader]))
-                .filter((v) => !isNaN(v));
-
-              if (relatedValues.length > 0) {
-                const total = relatedValues.reduce((a, b) => a + b, 0);
-                sumInfo += ` | ${otherHeader}: ${total.toFixed(2)}`;
-              }
-            }
-          }
-          prompt += `  - "${val}": ${count} fois${sumInfo}\n`;
-        }
-      }
-    }
+    prompt += this._formatColumnAggregations(headers, rows);
 
     prompt += `
 ## Question de l'utilisateur
@@ -1621,6 +1549,124 @@ ACTION_RECOMMANDÉE: [conversion/filtrage/aucune]
     console.log('[ExcelAnalyzer] Data rows included:', Math.min(rows.length, 100));
 
     return prompt;
+  }
+
+  /**
+   * Construit la section "données brutes" du prompt IA (max 100 lignes).
+   * @private
+   */
+  _formatRawDataTable(headers, rows) {
+    if (rows.length === 0 || headers.length === 0) {
+      return '';
+    }
+
+    let out = `### DONNÉES COMPLÈTES DU FICHIER\n\n`;
+
+    // Header
+    out += `| ${headers.join(' | ')} |\n`;
+    out += `| ${headers.map(() => '---').join(' | ')} |\n`;
+
+    // Toutes les lignes (max 100 pour éviter prompt trop long)
+    const maxRows = Math.min(rows.length, 100);
+    for (let i = 0; i < maxRows; i++) {
+      const row = rows[i];
+      const values = headers.map((h) => {
+        const val = row[h];
+        if (val === null || val === undefined) return '';
+        return String(val).substring(0, 50);
+      });
+      out += `| ${values.join(' | ')} |\n`;
+    }
+
+    if (rows.length > 100) {
+      out += `\n... et ${rows.length - 100} lignes supplémentaires\n`;
+    }
+
+    return out;
+  }
+
+  /**
+   * Construit la section "agrégations par colonne" du prompt IA.
+   * @private
+   */
+  _formatColumnAggregations(headers, rows) {
+    let out = `\n### AGRÉGATIONS PAR COLONNE\n`;
+
+    for (const header of headers) {
+      const values = rows
+        .map((r) => r[header])
+        .filter((v) => v !== null && v !== undefined && v !== '');
+
+      // Vérifier si c'est numérique
+      const numericValues = values.map((v) => Number.parseFloat(v)).filter((v) => !isNaN(v));
+
+      if (numericValues.length > values.length * 0.5) {
+        out += this._formatNumericColumnAggregation(header, numericValues);
+      } else if (values.length > 0) {
+        out += this._formatCategoricalColumnAggregation(header, headers, rows, values);
+      }
+    }
+
+    return out;
+  }
+
+  /**
+   * Agrégation d'une colonne numérique (somme, moyenne, min/max).
+   * @private
+   */
+  _formatNumericColumnAggregation(header, numericValues) {
+    const sum = numericValues.reduce((a, b) => a + b, 0);
+    const avg = sum / numericValues.length;
+    const max = Math.max(...numericValues);
+    const min = Math.min(...numericValues);
+    let out = `\n**${header}** (numérique):\n`;
+    out += `  - Somme totale: ${sum.toFixed(2)}\n`;
+    out += `  - Moyenne: ${avg.toFixed(2)}\n`;
+    out += `  - Max: ${max}, Min: ${min}\n`;
+    return out;
+  }
+
+  /**
+   * Agrégation d'une colonne catégorielle (top valeurs + sommes associées).
+   * @private
+   */
+  _formatCategoricalColumnAggregation(header, headers, rows, values) {
+    const counts = {};
+    for (const v of values) {
+      const key = String(v);
+      counts[key] = (counts[key] || 0) + 1;
+    }
+
+    // Calculer sommes par catégorie si il y a des colonnes numériques
+    const sortedCounts = Object.entries(counts).sort((a, b) => b[1] - a[1]);
+
+    let out = `\n**${header}** (catégoriel - ${Object.keys(counts).length} valeurs uniques):\n`;
+    for (const [val, count] of sortedCounts.slice(0, 15)) {
+      out += `  - "${val}": ${count} fois${this._relatedNumericSums(rows, header, val, headers)}\n`;
+    }
+    return out;
+  }
+
+  /**
+   * Calcule les sommes des autres colonnes numériques pour une valeur catégorielle donnée.
+   * @private
+   */
+  _relatedNumericSums(rows, header, val, headers) {
+    let sumInfo = '';
+    for (const otherHeader of headers) {
+      if (otherHeader !== header) {
+        const relatedValues = rows
+          .filter((r) => String(r[header]) === val)
+          .map((r) => Number.parseFloat(r[otherHeader]))
+          .filter((v) => !isNaN(v));
+
+        if (relatedValues.length > 0) {
+          const total = relatedValues.reduce((a, b) => a + b, 0);
+          sumInfo += ` | ${otherHeader}: ${total.toFixed(2)}`;
+        }
+      }
+    }
+    return sumInfo;
   }
 
   /**
