@@ -966,56 +966,81 @@ ACTION_RECOMMANDÉE: [conversion/filtrage/aucune]
     const insights = [];
 
     for (const sheet of sheets) {
-      // Insights sur les statistiques
-      for (const [col, stats] of Object.entries(sheet.statistics || {})) {
-        if (stats.skewness && Math.abs(stats.skewness) > 1) {
-          insights.push(
-            `La colonne "${col}" montre une asymétrie ${stats.skewness > 0 ? 'à droite (queue longue vers les hautes valeurs)' : 'à gauche (queue longue vers les basses valeurs)'}`
-          );
-        }
-        if (stats.coefficientOfVariation && stats.coefficientOfVariation > 100) {
-          insights.push(
-            `La colonne "${col}" présente une forte variabilité (CV: ${stats.coefficientOfVariation.toFixed(1)}%)`
-          );
-        }
-        if (stats.mean && stats.median) {
-          const ratio = stats.mean / stats.median;
-          if (ratio > 1.5) {
-            insights.push(
-              `La colonne "${col}" a une moyenne significativement supérieure à la médiane, suggérant des valeurs extrêmes hautes`
-            );
-          }
-        }
+      insights.push(...this._statisticsInsights(sheet));
+      insights.push(...this._outlierInsights(sheet));
+      insights.push(...this._categoricalDominanceInsights(sheet));
+    }
+
+    return insights.slice(0, 15);
+  }
+
+  /**
+   * Insights dérivés des statistiques numériques d'une feuille.
+   * @private
+   */
+  _statisticsInsights(sheet) {
+    const insights = [];
+    for (const [col, stats] of Object.entries(sheet.statistics || {})) {
+      if (stats.skewness && Math.abs(stats.skewness) > 1) {
+        insights.push(
+          `La colonne "${col}" montre une asymétrie ${stats.skewness > 0 ? 'à droite (queue longue vers les hautes valeurs)' : 'à gauche (queue longue vers les basses valeurs)'}`
+        );
       }
-
-      // Insights sur les outliers
-      if (sheet.outliers) {
-        for (const [col, outlierData] of Object.entries(sheet.outliers)) {
-          if (outlierData && outlierData.outliers?.length > 0) {
-            insights.push(
-              `${outlierData.outliers.length} valeur(s) aberrante(s) détectée(s) dans "${col}"`
-            );
-          }
-        }
+      if (stats.coefficientOfVariation && stats.coefficientOfVariation > 100) {
+        insights.push(
+          `La colonne "${col}" présente une forte variabilité (CV: ${stats.coefficientOfVariation.toFixed(1)}%)`
+        );
       }
-
-      // Insights sur les catégories
-      for (const [col, catData] of Object.entries(sheet.categoricalAnalysis || {})) {
-        const freq = catData.frequencies || {};
-        const values = Object.values(freq);
-        const total = values.reduce((a, b) => a + b, 0);
-        const max = Math.max(...values);
-
-        if (total > 0 && max / total > 0.6) {
-          const dominant = Object.entries(freq).find(([_, v]) => v === max)?.[0];
+      if (stats.mean && stats.median) {
+        const ratio = stats.mean / stats.median;
+        if (ratio > 1.5) {
           insights.push(
-            `La catégorie "${dominant}" domine dans "${col}" (${((max / total) * 100).toFixed(0)}%)`
+            `La colonne "${col}" a une moyenne significativement supérieure à la médiane, suggérant des valeurs extrêmes hautes`
           );
         }
       }
     }
+    return insights;
+  }
 
-    return insights.slice(0, 15);
+  /**
+   * Insights dérivés des valeurs aberrantes d'une feuille.
+   * @private
+   */
+  _outlierInsights(sheet) {
+    const insights = [];
+    if (sheet.outliers) {
+      for (const [col, outlierData] of Object.entries(sheet.outliers)) {
+        if (outlierData && outlierData.outliers?.length > 0) {
+          insights.push(
+            `${outlierData.outliers.length} valeur(s) aberrante(s) détectée(s) dans "${col}"`
+          );
+        }
+      }
+    }
+    return insights;
+  }
+
+  /**
+   * Insights de dominance catégorielle d'une feuille.
+   * @private
+   */
+  _categoricalDominanceInsights(sheet) {
+    const insights = [];
+    for (const [col, catData] of Object.entries(sheet.categoricalAnalysis || {})) {
+      const freq = catData.frequencies || {};
+      const values = Object.values(freq);
+      const total = values.reduce((a, b) => a + b, 0);
+      const max = Math.max(...values);
+
+      if (total > 0 && max / total > 0.6) {
+        const dominant = Object.entries(freq).find(([_, v]) => v === max)?.[0];
+        insights.push(
+          `La catégorie "${dominant}" domine dans "${col}" (${((max / total) * 100).toFixed(0)}%)`
+        );
+      }
+    }
+    return insights;
   }
 
   /**
@@ -1026,37 +1051,49 @@ ACTION_RECOMMANDÉE: [conversion/filtrage/aucune]
     const patterns = [];
 
     for (const sheet of sheets) {
-      // Pattern: colonnes corrélées
-      const numericCols = sheet.typeStats?.numericColumns || [];
-      if (numericCols.length >= 2) {
-        patterns.push(
-          `${numericCols.length} colonnes numériques identifiées pour analyse statistique`
-        );
-      }
+      patterns.push(...this._sheetPatterns(sheet));
+    }
 
-      // Pattern: données temporelles
-      if (sheet.hasTimeData) {
-        patterns.push('Données temporelles détectées - analyse de tendances possible');
-      }
+    return patterns.slice(0, 10);
+  }
 
-      // Pattern: répartition catégorielle
-      const catCols = Object.keys(sheet.categoricalAnalysis || {});
-      if (catCols.length > 0) {
-        patterns.push(`${catCols.length} dimension(s) catégorielle(s) pour segmentation`);
-      }
+  /**
+   * Identifie les patterns d'une feuille (numériques, temporels, catégoriels, concentration).
+   * @private
+   */
+  _sheetPatterns(sheet) {
+    const patterns = [];
 
-      // Pattern: concentration des données
-      for (const [col, stats] of Object.entries(sheet.statistics || {})) {
-        if (stats.standardDeviation && stats.mean && stats.mean !== 0) {
-          const cv = (stats.standardDeviation / Math.abs(stats.mean)) * 100;
-          if (cv < 20) {
-            patterns.push(`Données très concentrées autour de la moyenne pour "${col}"`);
-          }
+    // Pattern: colonnes corrélées
+    const numericCols = sheet.typeStats?.numericColumns || [];
+    if (numericCols.length >= 2) {
+      patterns.push(
+        `${numericCols.length} colonnes numériques identifiées pour analyse statistique`
+      );
+    }
+
+    // Pattern: données temporelles
+    if (sheet.hasTimeData) {
+      patterns.push('Données temporelles détectées - analyse de tendances possible');
+    }
+
+    // Pattern: répartition catégorielle
+    const catCols = Object.keys(sheet.categoricalAnalysis || {});
+    if (catCols.length > 0) {
+      patterns.push(`${catCols.length} dimension(s) catégorielle(s) pour segmentation`);
+    }
+
+    // Pattern: concentration des données
+    for (const [col, stats] of Object.entries(sheet.statistics || {})) {
+      if (stats.standardDeviation && stats.mean && stats.mean !== 0) {
+        const cv = (stats.standardDeviation / Math.abs(stats.mean)) * 100;
+        if (cv < 20) {
+          patterns.push(`Données très concentrées autour de la moyenne pour "${col}"`);
         }
       }
     }
 
-    return patterns.slice(0, 10);
+    return patterns;
   }
 
   /**
@@ -1186,38 +1223,7 @@ ACTION_RECOMMANDÉE: [conversion/filtrage/aucune]
       const rows = sheet.rows || (sheet._rawData ? sheet._rawData : []);
 
       for (const header of sheet.headers) {
-        // Collecter les valeurs de la colonne
-        const values = rows.map((r) => r[header]);
-        const nonNullValues = values.filter((v) => v !== null && v !== undefined && v !== '');
-
-        // Calculer les valeurs uniques
-        const uniqueSet = new Set(nonNullValues.map((v) => String(v)));
-
-        // Trouver les top valeurs pour les catégorielles
-        const valueCounts = {};
-        for (const v of nonNullValues) {
-          const key = String(v);
-          valueCounts[key] = (valueCounts[key] || 0) + 1;
-        }
-        const topValues = Object.entries(valueCounts)
-          .sort((a, b) => b[1] - a[1])
-          .slice(0, 5)
-          .map(([value, count]) => ({ value, count }));
-
-        const profile = {
-          type: sheet.columnTypes[header] || 'unknown',
-          statistics: sheet.statistics?.[header] || null,
-          nullCount: values.length - nonNullValues.length,
-          uniqueCount: uniqueSet.size,
-          totalCount: values.length,
-          nullPercentage:
-            values.length > 0 ? ((values.length - nonNullValues.length) / values.length) * 100 : 0,
-          sampleValues: nonNullValues.slice(0, 5),
-          topValues,
-          frequency: sheet.categoricalAnalysis?.[header]?.frequencies || valueCounts,
-        };
-
-        profiles[header] = profile;
+        profiles[header] = this._buildColumnProfile(sheet, header, rows);
       }
     }
 
@@ -1225,82 +1231,143 @@ ACTION_RECOMMANDÉE: [conversion/filtrage/aucune]
   }
 
   /**
+   * Construit le profil statistique d'une colonne (nulls, unicité, top valeurs).
+   * @private
+   */
+  _buildColumnProfile(sheet, header, rows) {
+    // Collecter les valeurs de la colonne
+    const values = rows.map((r) => r[header]);
+    const nonNullValues = values.filter((v) => v !== null && v !== undefined && v !== '');
+
+    // Calculer les valeurs uniques
+    const uniqueSet = new Set(nonNullValues.map((v) => String(v)));
+
+    // Trouver les top valeurs pour les catégorielles
+    const valueCounts = {};
+    for (const v of nonNullValues) {
+      const key = String(v);
+      valueCounts[key] = (valueCounts[key] || 0) + 1;
+    }
+    const topValues = Object.entries(valueCounts)
+      .sort((a, b) => b[1] - a[1])
+      .slice(0, 5)
+      .map(([value, count]) => ({ value, count }));
+
+    return {
+      type: sheet.columnTypes[header] || 'unknown',
+      statistics: sheet.statistics?.[header] || null,
+      nullCount: values.length - nonNullValues.length,
+      uniqueCount: uniqueSet.size,
+      totalCount: values.length,
+      nullPercentage:
+        values.length > 0 ? ((values.length - nonNullValues.length) / values.length) * 100 : 0,
+      sampleValues: nonNullValues.slice(0, 5),
+      topValues,
+      frequency: sheet.categoricalAnalysis?.[header]?.frequencies || valueCounts,
+    };
+  }
+
+  /**
    * Vérifie la qualité des données de manière exhaustive
    * @private
    */
   _checkDataQuality(sheets) {
-    let totalCells = 0;
-    let nullCells = 0;
-    let filledCells = 0;
-    const issues = [];
-    const missingValues = {};
-    let duplicateCount = 0;
-    const seenRows = new Set();
+    const acc = {
+      totalCells: 0,
+      nullCells: 0,
+      filledCells: 0,
+      issues: [],
+      missingValues: {},
+      duplicateCount: 0,
+      seenRows: new Set(),
+    };
 
     for (const sheet of sheets) {
       const rows = sheet.rows || (sheet._rawData ? sheet._rawData : []);
-      const cellCount = sheet.rowCount * sheet.columnCount;
-      totalCells += cellCount;
+      acc.totalCells += sheet.rowCount * sheet.columnCount;
 
-      // Analyser chaque colonne pour les valeurs manquantes
-      for (const header of sheet.headers) {
-        let nullsInCol = 0;
-
-        for (const row of rows) {
-          const value = row[header];
-          if (value === null || value === undefined || value === '') {
-            nullsInCol++;
-            nullCells++;
-          } else {
-            filledCells++;
-          }
-        }
-
-        missingValues[header] = nullsInCol;
-      }
-
-      // Détecter les doublons
-      for (const row of rows) {
-        // Créer une clé unique pour la ligne
-        const rowKey = JSON.stringify(row);
-        if (seenRows.has(rowKey)) {
-          duplicateCount++;
-        } else {
-          seenRows.add(rowKey);
-        }
-      }
-
-      // Compter les outliers comme issues
-      for (const [col, outlierData] of Object.entries(sheet.outliers || {})) {
-        if (outlierData && outlierData.outliers?.length > 0) {
-          issues.push({
-            type: 'outliers',
-            column: col,
-            count: outlierData.outliers.length,
-            severity: outlierData.outliers.length > 5 ? 'high' : 'low',
-          });
-        }
-      }
+      this._accumulateColumnNullStats(sheet, rows, acc);
+      this._accumulateDuplicateRows(rows, acc);
+      acc.issues.push(...this._collectOutlierIssues(sheet));
     }
 
     // Calculer le score de complétude en pourcentage
-    const completeness = totalCells > 0 ? (filledCells / totalCells) * 100 : 100;
+    const completeness = acc.totalCells > 0 ? (acc.filledCells / acc.totalCells) * 100 : 100;
 
     return {
-      totalCells,
-      filledCells,
-      nullCells,
+      totalCells: acc.totalCells,
+      filledCells: acc.filledCells,
+      nullCells: acc.nullCells,
       completeness,
       completenessScore: completeness / 100,
-      missingValues,
+      missingValues: acc.missingValues,
       duplicates: {
-        count: duplicateCount,
+        count: acc.duplicateCount,
         percentage:
-          seenRows.size > 0 ? (duplicateCount / (seenRows.size + duplicateCount)) * 100 : 0,
+          acc.seenRows.size > 0
+            ? (acc.duplicateCount / (acc.seenRows.size + acc.duplicateCount)) * 100
+            : 0,
       },
-      issues,
-      qualityScore: this._calculateQualityScore(completeness, duplicateCount, issues.length),
+      issues: acc.issues,
+      qualityScore: this._calculateQualityScore(completeness, acc.duplicateCount, acc.issues.length),
     };
+  }
+
+  /**
+   * Accumule les statistiques de valeurs nulles/remplies par colonne.
+   * @private
+   */
+  _accumulateColumnNullStats(sheet, rows, acc) {
+    for (const header of sheet.headers) {
+      let nullsInCol = 0;
+
+      for (const row of rows) {
+        const value = row[header];
+        if (value === null || value === undefined || value === '') {
+          nullsInCol++;
+          acc.nullCells++;
+        } else {
+          acc.filledCells++;
+        }
+      }
+
+      acc.missingValues[header] = nullsInCol;
+    }
+  }
+
+  /**
+   * Détecte et compte les lignes dupliquées (mise à jour de l'accumulateur).
+   * @private
+   */
+  _accumulateDuplicateRows(rows, acc) {
+    for (const row of rows) {
+      // Créer une clé unique pour la ligne
+      const rowKey = JSON.stringify(row);
+      if (acc.seenRows.has(rowKey)) {
+        acc.duplicateCount++;
+      } else {
+        acc.seenRows.add(rowKey);
+      }
+    }
+  }
+
+  /**
+   * Collecte les problèmes liés aux valeurs aberrantes d'une feuille.
+   * @private
+   */
+  _collectOutlierIssues(sheet) {
+    const issues = [];
+    for (const [col, outlierData] of Object.entries(sheet.outliers || {})) {
+      if (outlierData && outlierData.outliers?.length > 0) {
+        issues.push({
+          type: 'outliers',
+          column: col,
+          count: outlierData.outliers.length,
+          severity: outlierData.outliers.length > 5 ? 'high' : 'low',
+        });
+      }
+    }
+    return issues;
   }
 
   /**
