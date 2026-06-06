@@ -970,19 +970,34 @@ app.post('/api/export/pdf/preview', async (req, res) => {
 
 // Démarrer le serveur
 const PORT = process.env.PORT || 3000;
-app.listen(PORT, () => {
-  console.log('🚀 Serveur PRISM avec ElevenLabs démarré');
-  console.log(`✨ Interface disponible sur: http://localhost:${PORT}`);
-  console.log(`🎤 API Chat: http://localhost:${PORT}/api/chat`);
-  console.log(`🔊 Test vocal: http://localhost:${PORT}/api/test-voice`);
-  console.log('🎯 PRISM Voice Chat V2 - Prêt !');
 
-  // Vérifier la configuration ElevenLabs
-  const elevenlabs = config.config.CONFIG.ELEVENLABS;
-  if (elevenlabs.API_KEY && elevenlabs.API_KEY !== 'ta_clef_api_ici') {
-    console.log('✅ ElevenLabs configuré - Synthèse vocale premium active');
-  } else {
-    console.log('⚠️ ElevenLabs non configuré - Fallback sur TTS navigateur');
-    console.log('💡 Configurez ELEVENLABS_API_KEY pour activer la synthèse premium');
-  }
-});
+// Démarre l'écoute HTTP. Extrait en fonction pour que l'import du module (tests
+// supertest) NE lie PAS de port : seul un lancement direct (`node server.js`)
+// déclenche `app.listen` via le guard d'import ci-dessous.
+function startServer(port = PORT) {
+  return app.listen(port, () => {
+    console.log('🚀 Serveur PRISM avec ElevenLabs démarré');
+    console.log(`✨ Interface disponible sur: http://localhost:${port}`);
+    console.log(`🎤 API Chat: http://localhost:${port}/api/chat`);
+    console.log(`🔊 Test vocal: http://localhost:${port}/api/test-voice`);
+    console.log('🎯 PRISM Voice Chat V2 - Prêt !');
+
+    // Vérifier la configuration ElevenLabs
+    const elevenlabs = config.config.CONFIG.ELEVENLABS;
+    if (elevenlabs.API_KEY && elevenlabs.API_KEY !== 'ta_clef_api_ici') {
+      console.log('✅ ElevenLabs configuré - Synthèse vocale premium active');
+    } else {
+      console.log('⚠️ ElevenLabs non configuré - Fallback sur TTS navigateur');
+      console.log('💡 Configurez ELEVENLABS_API_KEY pour activer la synthèse premium');
+    }
+  });
+}
+
+// Guard d'import (ESM) : ne démarrer le serveur que lorsque ce fichier est
+// exécuté directement (`node server.js` / `npm start`), pas lorsqu'il est
+// importé par un harnais de test.
+if (process.argv[1] === __filename) {
+  startServer();
+}
+
+export { app, startServer, generateElevenLabsAudio };
