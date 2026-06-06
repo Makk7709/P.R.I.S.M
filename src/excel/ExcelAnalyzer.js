@@ -60,25 +60,26 @@ export class ExcelAnalyzer {
       'personal',
     ];
 
-    // Orchestrateurs seront chargés dynamiquement
+    // Orchestrateurs chargés paresseusement (S7059: pas d'opération asynchrone
+    // dans le constructeur — l'initialisation est déclenchée par
+    // ensureInitialized(), elle-même appelée par analyze()/analyzeWithAI()).
     this.hybridOrchestrator = null;
     this.taskProcessor = null;
     this._initPromise = null;
     this._initialized = false;
-
-    // Charger les orchestrateurs de manière asynchrone
-    this._initPromise = this._loadOrchestrators();
   }
 
   /**
-   * Attend que l'initialisation soit terminée
+   * Attend que l'initialisation soit terminée (déclenche le chargement
+   * paresseux des orchestrateurs au premier appel).
    * @returns {Promise<void>}
    */
   async ensureInitialized() {
     if (this._initialized) return;
-    if (this._initPromise) {
-      await this._initPromise;
+    if (!this._initPromise) {
+      this._initPromise = this._loadOrchestrators();
     }
+    await this._initPromise;
   }
 
   /**
@@ -119,17 +120,12 @@ export class ExcelAnalyzer {
    * @returns {Promise<Object>} Résultats de l'analyse
    */
   async analyze(buffer, optionsOrUserQuery = {}, options = {}) {
-    // Gérer la surcharge: analyze(buffer, userQuery) ou analyze(buffer, options)
-    let userQuery = '';
-    let mergedOptions = { ...this.options };
+    // S7059: les orchestrateurs sont chargés paresseusement; on garantit qu'ils
+    // sont prêts avant la résolution d'ambiguïtés par Consensus (comportement
+    // équivalent à l'ancien chargement « eager » lancé dans le constructeur).
+    await this.ensureInitialized();
 
-    if (typeof optionsOrUserQuery === 'string') {
-      userQuery = optionsOrUserQuery;
-      mergedOptions = { ...this.options, ...options };
-    } else {
-      mergedOptions = { ...this.options, ...optionsOrUserQuery, ...options };
-      userQuery = mergedOptions.userQuery || '';
-    }
+    const { userQuery, mergedOptions } = this._resolveAnalyzeArgs(optionsOrUserQuery, options);
 
     const warnings = [];
     const startTime = Date.now();
@@ -137,31 +133,9 @@ export class ExcelAnalyzer {
 
     try {
       // ✨ ÉTAPE 0: Validation TrustContext pour fichiers volumineux ou requêtes sensibles
-      const needsTrustContextValidation =
-        fileSize >= this.trustContextFileSizeThreshold ||
-        this.sensitiveKeywords.some((keyword) => userQuery.toLowerCase().includes(keyword));
-
+      const needsTrustContextValidation = this._needsTrustContextValidation(fileSize, userQuery);
       if (needsTrustContextValidation) {
-        try {
-          const approval = await this.trustContext.requestApproval({
-            action: 'excel_analysis',
-            fileSize: fileSize,
-            fileName: mergedOptions.filename || 'unknown.xlsx',
-            userQuery: userQuery,
-            criticality:
-              fileSize >= 20 * 1024 * 1024 ? CriticalityLevel.HIGH : CriticalityLevel.MEDIUM,
-          });
-
-          if (!approval.approved) {
-            throw new Error(
-              `Excel analysis rejected by TrustContext: ${approval.reason || 'File size or content requires approval'}`
-            );
-          }
-        } catch (error) {
-          // Si erreur TrustContext, rejeter par sécurité
-          console.error('[ExcelAnalyzer] TrustContext validation failed:', error.message);
-          throw new Error(`Security validation failed: ${error.message}`);
-        }
+        await this._runTrustContextGate(fileSize, userQuery, mergedOptions);
       }
 
       // 1. Parser le fichier
@@ -177,136 +151,26 @@ export class ExcelAnalyzer {
       }
 
       // ✨ Détecter colonnes sensibles après parsing
-      if (parsedData.sheets && parsedData.sheets.length > 0) {
-        const sensitiveColumns = this._detectSensitiveColumns(parsedData.sheets[0]);
-        if (sensitiveColumns.length > 0 && !needsTrustContextValidation) {
-          // Validation supplémentaire pour colonnes sensibles
-          try {
-            const approval = await this.trustContext.validateCriticalDecision({
-              action: 'excel_analysis_sensitive_columns',
-              fileSize: fileSize,
-              sensitiveColumns: sensitiveColumns,
-              userQuery: userQuery,
-              criticality: CriticalityLevel.MEDIUM,
-            });
-
-            if (!approval.approved) {
-              throw new Error(
-                `Analysis rejected: file contains sensitive columns (${sensitiveColumns.join(', ')})`
-              );
-            }
-          } catch (error) {
-            console.error(
-              '[ExcelAnalyzer] TrustContext validation for sensitive columns failed:',
-              error.message
-            );
-            throw error;
-          }
-        }
-      }
+      await this._validateSensitiveColumns(
+        parsedData,
+        needsTrustContextValidation,
+        fileSize,
+        userQuery
+      );
 
       // 2. Analyser chaque feuille
-      const analyzedSheets = [];
-      let correlations = null;
-      const allNumericData = {};
-      const ambiguousResolutions = []; // ✅ NOUVEAU: Stocker les résolutions d'ambiguïtés
+      const { analyzedSheets, allNumericData } = await this._analyzeAllSheets(
+        parsedData,
+        mergedOptions
+      );
 
-      for (const sheet of parsedData.sheets) {
-        const analyzedSheet = await this._analyzeSheet(sheet, mergedOptions);
-
-        // ✅ NOUVEAU: Résoudre les ambiguïtés via Consensus si activé
-        if (this.options.useConsensusForAmbiguous && analyzedSheet.ambiguousColumns?.length > 0) {
-          const resolutions = await this._resolveAmbiguitiesWithConsensus(
-            sheet,
-            analyzedSheet.ambiguousColumns,
-            mergedOptions
-          );
-          analyzedSheet.ambiguousResolutions = resolutions;
-          ambiguousResolutions.push(...resolutions);
-
-          // Appliquer les résolutions au sheet analysé
-          this._applyAmbiguityResolutions(analyzedSheet, resolutions);
-        }
-
-        analyzedSheets.push(analyzedSheet);
-
-        // Collecter les données numériques pour corrélations globales
-        for (const col of analyzedSheet.typeStats?.numericColumns || []) {
-          const key = `${sheet.name}.${col}`;
-          allNumericData[key] = sheet.rows
-            .map((r) => r[col])
-            .filter((v) => !isNaN(v) && v !== null);
-        }
-      }
-
-      // 3. Calculer les corrélations entre colonnes numériques
-      if (mergedOptions.computeCorrelations && Object.keys(allNumericData).length >= 2) {
-        const correlationResult = this.statsEngine.correlationMatrix(allNumericData);
-        correlations = correlationResult.matrix;
-      }
-
-      // 4. Identifier les corrélations fortes
-      let strongCorrelations = [];
-      if (correlations) {
-        strongCorrelations = this._findStrongCorrelations(correlations);
-      }
-
-      // 5. Analyse temporelle si demandée
-      let timeSeries = null;
-      if (mergedOptions.timeSeriesAnalysis && mergedOptions.dateColumn) {
-        timeSeries = this._analyzeTimeSeries(analyzedSheets, mergedOptions);
-      }
-
-      // 6. GroupBy si demandé
-      let groupedAnalysis = null;
-      if (mergedOptions.groupBy) {
-        groupedAnalysis = this._performGroupBy(parsedData.sheets, mergedOptions);
-      }
-
-      // 7. Pivot table si demandé
-      let pivotTable = null;
-      if (mergedOptions.pivotTable) {
-        pivotTable = this._createPivotTable(parsedData.sheets[0], mergedOptions.pivotTable);
-      }
-
-      // 8. Résumé et profils de colonnes
-      let summary = null;
-      let columnProfiles = null;
-
-      if (mergedOptions.generateSummary) {
-        summary = this._generateSummary(analyzedSheets, parsedData.metadata);
-      }
-
-      if (mergedOptions.profileColumns) {
-        columnProfiles = this._generateColumnProfiles(analyzedSheets);
-      }
-
-      // 9. Qualité des données
-      let dataQuality = null;
-      if (mergedOptions.checkDataQuality) {
-        dataQuality = this._checkDataQuality(analyzedSheets);
-      }
-
-      // 10. Agrégations personnalisées
-      let customResults = null;
-      if (mergedOptions.customAggregations) {
-        customResults = this._computeCustomAggregations(
-          parsedData.sheets[0],
-          mergedOptions.customAggregations
-        );
-      }
-
-      // 11. Détection de relations entre feuilles
-      let relationships = null;
-      if (mergedOptions.detectRelationships && parsedData.sheets.length > 1) {
-        relationships = this._detectSheetRelationships(parsedData.sheets);
-      }
-
-      // 12. Fusion de feuilles si demandée
-      let mergedData = null;
-      if (mergedOptions.mergeSheets) {
-        mergedData = this._mergeSheets(parsedData.sheets, mergedOptions.mergeSheets);
-      }
+      // 3-12. Dériver les analyses optionnelles (corrélations, résumé, qualité…)
+      const derived = this._buildDerivedResults(
+        analyzedSheets,
+        parsedData,
+        mergedOptions,
+        allNumericData
+      );
 
       const analysisTime = Date.now() - startTime;
 
@@ -318,17 +182,7 @@ export class ExcelAnalyzer {
           ...parsedData.metadata,
           analysisTimeMs: analysisTime,
         },
-        correlations,
-        strongCorrelations,
-        timeSeries,
-        groupedAnalysis,
-        pivotTable,
-        summary,
-        columnProfiles,
-        dataQuality,
-        customResults,
-        relationships,
-        mergedData,
+        ...derived,
         warnings: warnings.length > 0 ? warnings : undefined,
       };
     } catch (error) {
@@ -341,6 +195,202 @@ export class ExcelAnalyzer {
         },
       };
     }
+  }
+
+  /**
+   * Normalise les arguments surchargés analyze(buffer, userQuery) /
+   * analyze(buffer, options).
+   * @private
+   */
+  _resolveAnalyzeArgs(optionsOrUserQuery, options) {
+    if (typeof optionsOrUserQuery === 'string') {
+      return {
+        userQuery: optionsOrUserQuery,
+        mergedOptions: { ...this.options, ...options },
+      };
+    }
+    const mergedOptions = { ...this.options, ...optionsOrUserQuery, ...options };
+    return { userQuery: mergedOptions.userQuery || '', mergedOptions };
+  }
+
+  /**
+   * Indique si la validation TrustContext est requise (taille ou mot-clé sensible).
+   * @private
+   */
+  _needsTrustContextValidation(fileSize, userQuery) {
+    return (
+      fileSize >= this.trustContextFileSizeThreshold ||
+      this.sensitiveKeywords.some((keyword) => userQuery.toLowerCase().includes(keyword))
+    );
+  }
+
+  /**
+   * Demande l'approbation TrustContext (fichier volumineux / requête sensible).
+   * Rejette par sécurité en cas d'erreur.
+   * @private
+   */
+  async _runTrustContextGate(fileSize, userQuery, mergedOptions) {
+    try {
+      const approval = await this.trustContext.requestApproval({
+        action: 'excel_analysis',
+        fileSize: fileSize,
+        fileName: mergedOptions.filename || 'unknown.xlsx',
+        userQuery: userQuery,
+        criticality:
+          fileSize >= 20 * 1024 * 1024 ? CriticalityLevel.HIGH : CriticalityLevel.MEDIUM,
+      });
+
+      if (!approval.approved) {
+        throw new Error(
+          `Excel analysis rejected by TrustContext: ${approval.reason || 'File size or content requires approval'}`
+        );
+      }
+    } catch (error) {
+      console.error('[ExcelAnalyzer] TrustContext validation failed:', error.message);
+      throw new Error(`Security validation failed: ${error.message}`);
+    }
+  }
+
+  /**
+   * Validation TrustContext additionnelle si des colonnes sensibles sont
+   * détectées (et qu'aucune validation n'a déjà eu lieu).
+   * @private
+   */
+  async _validateSensitiveColumns(parsedData, needsTrustContextValidation, fileSize, userQuery) {
+    if (!(parsedData.sheets && parsedData.sheets.length > 0)) return;
+
+    const sensitiveColumns = this._detectSensitiveColumns(parsedData.sheets[0]);
+    if (!(sensitiveColumns.length > 0 && !needsTrustContextValidation)) return;
+
+    try {
+      const approval = await this.trustContext.validateCriticalDecision({
+        action: 'excel_analysis_sensitive_columns',
+        fileSize: fileSize,
+        sensitiveColumns: sensitiveColumns,
+        userQuery: userQuery,
+        criticality: CriticalityLevel.MEDIUM,
+      });
+
+      if (!approval.approved) {
+        throw new Error(
+          `Analysis rejected: file contains sensitive columns (${sensitiveColumns.join(', ')})`
+        );
+      }
+    } catch (error) {
+      console.error(
+        '[ExcelAnalyzer] TrustContext validation for sensitive columns failed:',
+        error.message
+      );
+      throw error;
+    }
+  }
+
+  /**
+   * Analyse chaque feuille du workbook, résout les ambiguïtés via Consensus si
+   * activé, et collecte les données numériques pour les corrélations globales.
+   * @private
+   */
+  async _analyzeAllSheets(parsedData, mergedOptions) {
+    const analyzedSheets = [];
+    const allNumericData = {};
+
+    for (const sheet of parsedData.sheets) {
+      const analyzedSheet = await this._analyzeSheet(sheet, mergedOptions);
+
+      if (this.options.useConsensusForAmbiguous && analyzedSheet.ambiguousColumns?.length > 0) {
+        const resolutions = await this._resolveAmbiguitiesWithConsensus(
+          sheet,
+          analyzedSheet.ambiguousColumns,
+          mergedOptions
+        );
+        analyzedSheet.ambiguousResolutions = resolutions;
+        this._applyAmbiguityResolutions(analyzedSheet, resolutions);
+      }
+
+      analyzedSheets.push(analyzedSheet);
+
+      for (const col of analyzedSheet.typeStats?.numericColumns || []) {
+        const key = `${sheet.name}.${col}`;
+        allNumericData[key] = sheet.rows.map((r) => r[col]).filter((v) => !isNaN(v) && v !== null);
+      }
+    }
+
+    return { analyzedSheets, allNumericData };
+  }
+
+  /**
+   * Construit les analyses dérivées optionnelles (étapes 3-12) à partir des
+   * feuilles analysées et des options.
+   * @private
+   */
+  _buildDerivedResults(analyzedSheets, parsedData, mergedOptions, allNumericData) {
+    // 3. Corrélations entre colonnes numériques
+    let correlations = null;
+    if (mergedOptions.computeCorrelations && Object.keys(allNumericData).length >= 2) {
+      correlations = this.statsEngine.correlationMatrix(allNumericData).matrix;
+    }
+
+    // 4. Corrélations fortes
+    const strongCorrelations = correlations ? this._findStrongCorrelations(correlations) : [];
+
+    // 5. Analyse temporelle
+    const timeSeries =
+      mergedOptions.timeSeriesAnalysis && mergedOptions.dateColumn
+        ? this._analyzeTimeSeries(analyzedSheets, mergedOptions)
+        : null;
+
+    // 6. GroupBy
+    const groupedAnalysis = mergedOptions.groupBy
+      ? this._performGroupBy(parsedData.sheets, mergedOptions)
+      : null;
+
+    // 7. Pivot table
+    const pivotTable = mergedOptions.pivotTable
+      ? this._createPivotTable(parsedData.sheets[0], mergedOptions.pivotTable)
+      : null;
+
+    // 8. Résumé et profils de colonnes
+    const summary = mergedOptions.generateSummary
+      ? this._generateSummary(analyzedSheets, parsedData.metadata)
+      : null;
+    const columnProfiles = mergedOptions.profileColumns
+      ? this._generateColumnProfiles(analyzedSheets)
+      : null;
+
+    // 9. Qualité des données
+    const dataQuality = mergedOptions.checkDataQuality
+      ? this._checkDataQuality(analyzedSheets)
+      : null;
+
+    // 10. Agrégations personnalisées
+    const customResults = mergedOptions.customAggregations
+      ? this._computeCustomAggregations(parsedData.sheets[0], mergedOptions.customAggregations)
+      : null;
+
+    // 11. Relations entre feuilles
+    const relationships =
+      mergedOptions.detectRelationships && parsedData.sheets.length > 1
+        ? this._detectSheetRelationships(parsedData.sheets)
+        : null;
+
+    // 12. Fusion de feuilles
+    const mergedData = mergedOptions.mergeSheets
+      ? this._mergeSheets(parsedData.sheets, mergedOptions.mergeSheets)
+      : null;
+
+    return {
+      correlations,
+      strongCorrelations,
+      timeSeries,
+      groupedAnalysis,
+      pivotTable,
+      summary,
+      columnProfiles,
+      dataQuality,
+      customResults,
+      relationships,
+      mergedData,
+    };
   }
 
   /**
@@ -443,97 +493,117 @@ export class ExcelAnalyzer {
       return result;
     }
 
-    // ✅ NOUVEAU: Détecter les colonnes ambiguës avant l'analyse
-    for (const header of sheet.headers) {
-      const values = sheet.rows.map((r) => r[header]).filter((v) => v !== null && v !== undefined);
-      if (values.length > 0) {
-        const detection = this.typeDetector.detectType(values);
-
-        // Vérifier si le type est ambigu
-        if (this._isAmbiguousType(detection)) {
-          result.ambiguousColumns.push({
-            column: header,
-            detectedType: detection.type,
-            confidence: detection.confidence,
-            ambiguityType: this._classifyAmbiguity(detection),
-            sampleValues: values.slice(0, 5),
-            possibleTypes: detection.mixedTypes || [detection.type],
-            details: detection,
-          });
-        }
-      }
-    }
-
-    // Analyser les colonnes numériques
-    for (const col of sheet.typeStats?.numericColumns || []) {
-      const values = sheet.rows.map((r) => r[col]).filter((v) => !isNaN(v) && v !== null);
-
-      if (values.length > 0) {
-        result.statistics[col] = this.statsEngine.descriptiveStats(values);
-
-        if (options.detectOutliers) {
-          result.outliers[col] = this.statsEngine.detectOutliers(values);
-        }
-
-        if (options.analyzeDistributions) {
-          result.distributions[col] = {
-            histogram: this.statsEngine.histogram(values),
-            normalityTest: this.statsEngine.normalityTest(values),
-          };
-        }
-      }
-    }
-
-    // Analyser les colonnes catégorielles avec structure enrichie
-    for (const col of sheet.typeStats?.textColumns || []) {
-      const values = sheet.rows.map((r) => r[col]).filter((v) => v !== null && v !== undefined);
-
-      if (values.length > 0) {
-        const freqTable = this.statsEngine.frequencyTable(values, { sortBy: 'count' });
-
-        // Transformer en structure enrichie
-        const frequencies = {};
-        let mode = null;
-        let maxCount = 0;
-
-        for (const [value, data] of Object.entries(freqTable)) {
-          const count = data.count || data;
-          frequencies[value] = count;
-          if (count > maxCount) {
-            maxCount = count;
-            mode = value;
-          }
-        }
-
-        // Créer les top values triées
-        const topValues = Object.entries(frequencies)
-          .sort((a, b) => b[1] - a[1])
-          .slice(0, 10)
-          .map(([value, count]) => ({ value, count }));
-
-        result.categoricalAnalysis[col] = {
-          frequencies,
-          uniqueCount: Object.keys(frequencies).length,
-          mode,
-          modeCount: maxCount,
-          topValues,
-          total: values.length,
-          entropy: this.statsEngine.entropy ? this.statsEngine.entropy(values) : null,
-        };
-      }
-    }
-
-    // Détecter les colonnes de date
-    for (const col of sheet.typeStats?.dateColumns || []) {
-      result.hasTimeData = true;
-      result.dateColumns.push(col);
-    }
+    this._detectAmbiguousColumns(sheet, result);
+    this._computeNumericStatistics(sheet, options, result);
+    this._computeCategoricalAnalysis(sheet, result);
+    this._detectDateColumns(sheet, result);
 
     // Stocker les données brutes pour le profiling (référence interne)
     result.rows = sheet.rows;
     result._rawData = sheet.rows;
 
     return result;
+  }
+
+  /**
+   * Détecte les colonnes au type ambigu (_analyzeSheet).
+   * @private
+   */
+  _detectAmbiguousColumns(sheet, result) {
+    for (const header of sheet.headers) {
+      const values = sheet.rows.map((r) => r[header]).filter((v) => v !== null && v !== undefined);
+      if (values.length === 0) continue;
+
+      const detection = this.typeDetector.detectType(values);
+      if (this._isAmbiguousType(detection)) {
+        result.ambiguousColumns.push({
+          column: header,
+          detectedType: detection.type,
+          confidence: detection.confidence,
+          ambiguityType: this._classifyAmbiguity(detection),
+          sampleValues: values.slice(0, 5),
+          possibleTypes: detection.mixedTypes || [detection.type],
+          details: detection,
+        });
+      }
+    }
+  }
+
+  /**
+   * Calcule statistiques descriptives / outliers / distributions des colonnes
+   * numériques (_analyzeSheet).
+   * @private
+   */
+  _computeNumericStatistics(sheet, options, result) {
+    for (const col of sheet.typeStats?.numericColumns || []) {
+      const values = sheet.rows.map((r) => r[col]).filter((v) => !isNaN(v) && v !== null);
+      if (values.length === 0) continue;
+
+      result.statistics[col] = this.statsEngine.descriptiveStats(values);
+
+      if (options.detectOutliers) {
+        result.outliers[col] = this.statsEngine.detectOutliers(values);
+      }
+
+      if (options.analyzeDistributions) {
+        result.distributions[col] = {
+          histogram: this.statsEngine.histogram(values),
+          normalityTest: this.statsEngine.normalityTest(values),
+        };
+      }
+    }
+  }
+
+  /**
+   * Construit l'analyse catégorielle enrichie des colonnes texte (_analyzeSheet).
+   * @private
+   */
+  _computeCategoricalAnalysis(sheet, result) {
+    for (const col of sheet.typeStats?.textColumns || []) {
+      const values = sheet.rows.map((r) => r[col]).filter((v) => v !== null && v !== undefined);
+      if (values.length === 0) continue;
+
+      const freqTable = this.statsEngine.frequencyTable(values, { sortBy: 'count' });
+
+      const frequencies = {};
+      let mode = null;
+      let maxCount = 0;
+
+      for (const [value, data] of Object.entries(freqTable)) {
+        const count = data.count || data;
+        frequencies[value] = count;
+        if (count > maxCount) {
+          maxCount = count;
+          mode = value;
+        }
+      }
+
+      const topValues = Object.entries(frequencies)
+        .sort((a, b) => b[1] - a[1])
+        .slice(0, 10)
+        .map(([value, count]) => ({ value, count }));
+
+      result.categoricalAnalysis[col] = {
+        frequencies,
+        uniqueCount: Object.keys(frequencies).length,
+        mode,
+        modeCount: maxCount,
+        topValues,
+        total: values.length,
+        entropy: this.statsEngine.entropy ? this.statsEngine.entropy(values) : null,
+      };
+    }
+  }
+
+  /**
+   * Marque les colonnes de date et active hasTimeData (_analyzeSheet).
+   * @private
+   */
+  _detectDateColumns(sheet, result) {
+    for (const col of sheet.typeStats?.dateColumns || []) {
+      result.hasTimeData = true;
+      result.dateColumns.push(col);
+    }
   }
 
   // ═══════════════════════════════════════════════════════════════════════════

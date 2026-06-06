@@ -1,0 +1,1819 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`ExcelAnalyzer.analyze / _analyzeSheet — characterization > _analyzeSheet — date columns set hasTimeData 1`] = `
+{
+  "_rawData": [
+    {
+      "Val": 1,
+      "When": "2024-01-01",
+    },
+    {
+      "Val": 2,
+      "When": "2024-01-02",
+    },
+  ],
+  "ambiguousColumns": [],
+  "categoricalAnalysis": {},
+  "columnCount": 2,
+  "columnTypes": {
+    "Val": "number",
+    "When": "date",
+  },
+  "dateColumns": [
+    "When",
+  ],
+  "distributions": {},
+  "hasTimeData": true,
+  "headers": [
+    "When",
+    "Val",
+  ],
+  "isEmpty": false,
+  "name": "Time",
+  "outliers": {},
+  "rowCount": 2,
+  "rows": [
+    {
+      "Val": 1,
+      "When": "2024-01-01",
+    },
+    {
+      "Val": 2,
+      "When": "2024-01-02",
+    },
+  ],
+  "statistics": {
+    "Val": {
+      "coefficientOfVariation": 33.333333,
+      "count": 2,
+      "excessKurtosis": -2,
+      "hasNoMode": true,
+      "interquartileRange": 0.5,
+      "isEmpty": false,
+      "isMultimodal": false,
+      "kurtosis": 1,
+      "max": 2,
+      "mean": 1.5,
+      "median": 1.5,
+      "min": 1,
+      "mode": [],
+      "nanCount": 0,
+      "nullCount": 0,
+      "quartiles": {
+        "Q1": 1.25,
+        "Q2": 1.5,
+        "Q3": 1.75,
+      },
+      "range": 1,
+      "sampleStandardDeviation": 0.707107,
+      "sampleVariance": 0.5,
+      "skewness": NaN,
+      "standardDeviation": 0.5,
+      "sum": 3,
+      "validCount": 2,
+      "variance": 0.25,
+    },
+  },
+  "typeStats": {
+    "dateColumns": [
+      "When",
+    ],
+    "numericColumns": [
+      "Val",
+    ],
+    "textColumns": [],
+  },
+}
+`;
+
+exports[`ExcelAnalyzer.analyze / _analyzeSheet — characterization > _analyzeSheet — empty sheet short-circuits 1`] = `
+{
+  "ambiguousColumns": [],
+  "categoricalAnalysis": {},
+  "columnCount": 1,
+  "columnTypes": {},
+  "dateColumns": [],
+  "distributions": {},
+  "hasTimeData": false,
+  "headers": [
+    "A",
+  ],
+  "isEmpty": true,
+  "name": "Empty",
+  "outliers": {},
+  "rowCount": 0,
+  "statistics": {},
+  "typeStats": {},
+}
+`;
+
+exports[`ExcelAnalyzer.analyze / _analyzeSheet — characterization > _analyzeSheet — numeric + categorical + outliers + distributions 1`] = `
+{
+  "_rawData": [
+    {
+      "Region": "EU",
+      "Revenue": 100,
+      "Units": 2,
+    },
+    {
+      "Region": "EU",
+      "Revenue": 5000,
+      "Units": 50,
+    },
+    {
+      "Region": "US",
+      "Revenue": 200,
+      "Units": 4,
+    },
+    {
+      "Region": "EU",
+      "Revenue": 150,
+      "Units": 3,
+    },
+  ],
+  "ambiguousColumns": [],
+  "categoricalAnalysis": {
+    "Region": {
+      "entropy": 0.811278,
+      "frequencies": {
+        "EU": 3,
+        "US": 1,
+      },
+      "mode": "EU",
+      "modeCount": 3,
+      "topValues": [
+        {
+          "count": 3,
+          "value": "EU",
+        },
+        {
+          "count": 1,
+          "value": "US",
+        },
+      ],
+      "total": 4,
+      "uniqueCount": 2,
+    },
+  },
+  "columnCount": 3,
+  "columnTypes": {
+    "Region": "string",
+    "Revenue": "number",
+    "Units": "number",
+  },
+  "dateColumns": [],
+  "distributions": {
+    "Revenue": {
+      "histogram": {
+        "binWidth": 1225,
+        "bins": [
+          {
+            "binEnd": 1325,
+            "binStart": 100,
+            "count": 3,
+            "frequency": 0.75,
+          },
+          {
+            "binEnd": 2550,
+            "binStart": 1325,
+            "count": 0,
+            "frequency": 0,
+          },
+          {
+            "binEnd": 3775,
+            "binStart": 2550,
+            "count": 0,
+            "frequency": 0,
+          },
+          {
+            "binEnd": 5000,
+            "binStart": 3775,
+            "count": 1,
+            "frequency": 0.25,
+          },
+        ],
+        "max": 5000,
+        "min": 100,
+        "totalCount": 4,
+      },
+      "normalityTest": {
+        "isNormal": false,
+        "kurtosis": 2.332578,
+        "pValue": 0.001,
+        "skewness": 3.076584,
+        "statistic": 3.410295,
+      },
+    },
+    "Units": {
+      "histogram": {
+        "binWidth": 12,
+        "bins": [
+          {
+            "binEnd": 14,
+            "binStart": 2,
+            "count": 3,
+            "frequency": 0.75,
+          },
+          {
+            "binEnd": 26,
+            "binStart": 14,
+            "count": 0,
+            "frequency": 0,
+          },
+          {
+            "binEnd": 38,
+            "binStart": 26,
+            "count": 0,
+            "frequency": 0,
+          },
+          {
+            "binEnd": 50,
+            "binStart": 38,
+            "count": 1,
+            "frequency": 0.25,
+          },
+        ],
+        "max": 50,
+        "min": 2,
+        "totalCount": 4,
+      },
+      "normalityTest": {
+        "isNormal": false,
+        "kurtosis": 2.330121,
+        "pValue": 0.001,
+        "skewness": 3.068068,
+        "statistic": 3.4030074999999997,
+      },
+    },
+  },
+  "hasTimeData": false,
+  "headers": [
+    "Revenue",
+    "Units",
+    "Region",
+  ],
+  "isEmpty": false,
+  "name": "Sales",
+  "outliers": {
+    "Revenue": {
+      "bounds": {
+        "iqr": 1262.5,
+        "lower": -1756.25,
+        "q1": 137.5,
+        "q3": 1400,
+        "upper": 3293.75,
+      },
+      "cleanData": [
+        100,
+        200,
+        150,
+      ],
+      "hasOutliers": true,
+      "method": "IQR",
+      "outlierCount": 1,
+      "outlierIndices": [
+        1,
+      ],
+      "outlierPercentage": 25,
+      "outliers": [
+        5000,
+      ],
+    },
+    "Units": {
+      "bounds": {
+        "iqr": 12.75,
+        "lower": -16.375,
+        "q1": 2.75,
+        "q3": 15.5,
+        "upper": 34.625,
+      },
+      "cleanData": [
+        2,
+        4,
+        3,
+      ],
+      "hasOutliers": true,
+      "method": "IQR",
+      "outlierCount": 1,
+      "outlierIndices": [
+        1,
+      ],
+      "outlierPercentage": 25,
+      "outliers": [
+        50,
+      ],
+    },
+  },
+  "rowCount": 4,
+  "rows": [
+    {
+      "Region": "EU",
+      "Revenue": 100,
+      "Units": 2,
+    },
+    {
+      "Region": "EU",
+      "Revenue": 5000,
+      "Units": 50,
+    },
+    {
+      "Region": "US",
+      "Revenue": 200,
+      "Units": 4,
+    },
+    {
+      "Region": "EU",
+      "Revenue": 150,
+      "Units": 3,
+    },
+  ],
+  "statistics": {
+    "Revenue": {
+      "coefficientOfVariation": 154.158472,
+      "count": 4,
+      "excessKurtosis": -0.667422,
+      "hasNoMode": true,
+      "interquartileRange": 1262.5,
+      "isEmpty": false,
+      "isMultimodal": false,
+      "kurtosis": 2.332578,
+      "max": 5000,
+      "mean": 1362.5,
+      "median": 175,
+      "min": 100,
+      "mode": [],
+      "nanCount": 0,
+      "nullCount": 0,
+      "quartiles": {
+        "Q1": 137.5,
+        "Q2": 175,
+        "Q3": 1400,
+      },
+      "range": 4900,
+      "sampleStandardDeviation": 2425.343618,
+      "sampleVariance": 5882291.666667,
+      "skewness": 3.076584,
+      "standardDeviation": 2100.409186,
+      "sum": 5450,
+      "validCount": 4,
+      "variance": 4411718.75,
+    },
+    "Units": {
+      "coefficientOfVariation": 138.060185,
+      "count": 4,
+      "excessKurtosis": -0.669879,
+      "hasNoMode": true,
+      "interquartileRange": 12.75,
+      "isEmpty": false,
+      "isMultimodal": false,
+      "kurtosis": 2.330121,
+      "max": 50,
+      "mean": 14.75,
+      "median": 3.5,
+      "min": 2,
+      "mode": [],
+      "nanCount": 0,
+      "nullCount": 0,
+      "quartiles": {
+        "Q1": 2.75,
+        "Q2": 3.5,
+        "Q3": 15.5,
+      },
+      "range": 48,
+      "sampleStandardDeviation": 23.51418,
+      "sampleVariance": 552.916667,
+      "skewness": 3.068068,
+      "standardDeviation": 20.363877,
+      "sum": 59,
+      "validCount": 4,
+      "variance": 414.6875,
+    },
+  },
+  "typeStats": {
+    "dateColumns": [],
+    "numericColumns": [
+      "Revenue",
+      "Units",
+    ],
+    "textColumns": [
+      "Region",
+    ],
+  },
+}
+`;
+
+exports[`ExcelAnalyzer.analyze / _analyzeSheet — characterization > error path — parser returns success:false 1`] = `
+{
+  "error": {
+    "code": "ANALYSIS_ERROR",
+    "details": "<stack>",
+    "message": "Parsing failed",
+  },
+  "success": false,
+}
+`;
+
+exports[`ExcelAnalyzer.analyze / _analyzeSheet — characterization > error path — parser throws 1`] = `
+{
+  "error": {
+    "code": "ANALYSIS_ERROR",
+    "details": "<stack>",
+    "message": "boom",
+  },
+  "success": false,
+}
+`;
+
+exports[`ExcelAnalyzer.analyze / _analyzeSheet — characterization > nominal — full options (stats, correlations, summary, quality, profiles) 1`] = `
+{
+  "columnProfiles": {
+    "Region": {
+      "frequency": {
+        "EU": 3,
+        "US": 1,
+      },
+      "nullCount": 0,
+      "nullPercentage": 0,
+      "sampleValues": [
+        "EU",
+        "EU",
+        "US",
+        "EU",
+      ],
+      "statistics": null,
+      "topValues": [
+        {
+          "count": 3,
+          "value": "EU",
+        },
+        {
+          "count": 1,
+          "value": "US",
+        },
+      ],
+      "totalCount": 4,
+      "type": "string",
+      "uniqueCount": 2,
+    },
+    "Revenue": {
+      "frequency": {
+        "100": 1,
+        "150": 1,
+        "200": 1,
+        "5000": 1,
+      },
+      "nullCount": 0,
+      "nullPercentage": 0,
+      "sampleValues": [
+        100,
+        5000,
+        200,
+        150,
+      ],
+      "statistics": {
+        "coefficientOfVariation": 154.158472,
+        "count": 4,
+        "excessKurtosis": -0.667422,
+        "hasNoMode": true,
+        "interquartileRange": 1262.5,
+        "isEmpty": false,
+        "isMultimodal": false,
+        "kurtosis": 2.332578,
+        "max": 5000,
+        "mean": 1362.5,
+        "median": 175,
+        "min": 100,
+        "mode": [],
+        "nanCount": 0,
+        "nullCount": 0,
+        "quartiles": {
+          "Q1": 137.5,
+          "Q2": 175,
+          "Q3": 1400,
+        },
+        "range": 4900,
+        "sampleStandardDeviation": 2425.343618,
+        "sampleVariance": 5882291.666667,
+        "skewness": 3.076584,
+        "standardDeviation": 2100.409186,
+        "sum": 5450,
+        "validCount": 4,
+        "variance": 4411718.75,
+      },
+      "topValues": [
+        {
+          "count": 1,
+          "value": "100",
+        },
+        {
+          "count": 1,
+          "value": "150",
+        },
+        {
+          "count": 1,
+          "value": "200",
+        },
+        {
+          "count": 1,
+          "value": "5000",
+        },
+      ],
+      "totalCount": 4,
+      "type": "number",
+      "uniqueCount": 4,
+    },
+    "Units": {
+      "frequency": {
+        "2": 1,
+        "3": 1,
+        "4": 1,
+        "50": 1,
+      },
+      "nullCount": 0,
+      "nullPercentage": 0,
+      "sampleValues": [
+        2,
+        50,
+        4,
+        3,
+      ],
+      "statistics": {
+        "coefficientOfVariation": 138.060185,
+        "count": 4,
+        "excessKurtosis": -0.669879,
+        "hasNoMode": true,
+        "interquartileRange": 12.75,
+        "isEmpty": false,
+        "isMultimodal": false,
+        "kurtosis": 2.330121,
+        "max": 50,
+        "mean": 14.75,
+        "median": 3.5,
+        "min": 2,
+        "mode": [],
+        "nanCount": 0,
+        "nullCount": 0,
+        "quartiles": {
+          "Q1": 2.75,
+          "Q2": 3.5,
+          "Q3": 15.5,
+        },
+        "range": 48,
+        "sampleStandardDeviation": 23.51418,
+        "sampleVariance": 552.916667,
+        "skewness": 3.068068,
+        "standardDeviation": 20.363877,
+        "sum": 59,
+        "validCount": 4,
+        "variance": 414.6875,
+      },
+      "topValues": [
+        {
+          "count": 1,
+          "value": "2",
+        },
+        {
+          "count": 1,
+          "value": "3",
+        },
+        {
+          "count": 1,
+          "value": "4",
+        },
+        {
+          "count": 1,
+          "value": "50",
+        },
+      ],
+      "totalCount": 4,
+      "type": "number",
+      "uniqueCount": 4,
+    },
+  },
+  "correlations": {
+    "Sales.Revenue": {
+      "Sales.Revenue": 1,
+      "Sales.Units": 0.99984,
+    },
+    "Sales.Units": {
+      "Sales.Revenue": 0.99984,
+      "Sales.Units": 1,
+    },
+  },
+  "customResults": null,
+  "dataQuality": {
+    "completeness": 100,
+    "completenessScore": 1,
+    "duplicates": {
+      "count": 0,
+      "percentage": 0,
+    },
+    "filledCells": 12,
+    "issues": [
+      {
+        "column": "Revenue",
+        "count": 1,
+        "severity": "low",
+        "type": "outliers",
+      },
+      {
+        "column": "Units",
+        "count": 1,
+        "severity": "low",
+        "type": "outliers",
+      },
+    ],
+    "missingValues": {
+      "Region": 0,
+      "Revenue": 0,
+      "Units": 0,
+    },
+    "nullCells": 0,
+    "qualityScore": 96,
+    "totalCells": 12,
+  },
+  "groupedAnalysis": null,
+  "mergedData": null,
+  "metadata": {
+    "analysisTimeMs": "<ms>",
+    "totalColumns": 3,
+    "totalRows": 4,
+  },
+  "parsedData": {
+    "metadata": {
+      "totalColumns": 3,
+      "totalRows": 4,
+    },
+    "sheets": [
+      {
+        "columnTypes": {
+          "Region": "string",
+          "Revenue": "number",
+          "Units": "number",
+        },
+        "headers": [
+          "Revenue",
+          "Units",
+          "Region",
+        ],
+        "isEmpty": false,
+        "name": "Sales",
+        "rows": [
+          {
+            "Region": "EU",
+            "Revenue": 100,
+            "Units": 2,
+          },
+          {
+            "Region": "EU",
+            "Revenue": 5000,
+            "Units": 50,
+          },
+          {
+            "Region": "US",
+            "Revenue": 200,
+            "Units": 4,
+          },
+          {
+            "Region": "EU",
+            "Revenue": 150,
+            "Units": 3,
+          },
+        ],
+        "typeStats": {
+          "dateColumns": [],
+          "numericColumns": [
+            "Revenue",
+            "Units",
+          ],
+          "textColumns": [
+            "Region",
+          ],
+        },
+      },
+    ],
+    "success": true,
+  },
+  "pivotTable": null,
+  "relationships": null,
+  "sheets": [
+    {
+      "_rawData": [
+        {
+          "Region": "EU",
+          "Revenue": 100,
+          "Units": 2,
+        },
+        {
+          "Region": "EU",
+          "Revenue": 5000,
+          "Units": 50,
+        },
+        {
+          "Region": "US",
+          "Revenue": 200,
+          "Units": 4,
+        },
+        {
+          "Region": "EU",
+          "Revenue": 150,
+          "Units": 3,
+        },
+      ],
+      "ambiguousColumns": [],
+      "categoricalAnalysis": {
+        "Region": {
+          "entropy": 0.811278,
+          "frequencies": {
+            "EU": 3,
+            "US": 1,
+          },
+          "mode": "EU",
+          "modeCount": 3,
+          "topValues": [
+            {
+              "count": 3,
+              "value": "EU",
+            },
+            {
+              "count": 1,
+              "value": "US",
+            },
+          ],
+          "total": 4,
+          "uniqueCount": 2,
+        },
+      },
+      "columnCount": 3,
+      "columnTypes": {
+        "Region": "string",
+        "Revenue": "number",
+        "Units": "number",
+      },
+      "dateColumns": [],
+      "distributions": {},
+      "hasTimeData": false,
+      "headers": [
+        "Revenue",
+        "Units",
+        "Region",
+      ],
+      "isEmpty": false,
+      "name": "Sales",
+      "outliers": {
+        "Revenue": {
+          "bounds": {
+            "iqr": 1262.5,
+            "lower": -1756.25,
+            "q1": 137.5,
+            "q3": 1400,
+            "upper": 3293.75,
+          },
+          "cleanData": [
+            100,
+            200,
+            150,
+          ],
+          "hasOutliers": true,
+          "method": "IQR",
+          "outlierCount": 1,
+          "outlierIndices": [
+            1,
+          ],
+          "outlierPercentage": 25,
+          "outliers": [
+            5000,
+          ],
+        },
+        "Units": {
+          "bounds": {
+            "iqr": 12.75,
+            "lower": -16.375,
+            "q1": 2.75,
+            "q3": 15.5,
+            "upper": 34.625,
+          },
+          "cleanData": [
+            2,
+            4,
+            3,
+          ],
+          "hasOutliers": true,
+          "method": "IQR",
+          "outlierCount": 1,
+          "outlierIndices": [
+            1,
+          ],
+          "outlierPercentage": 25,
+          "outliers": [
+            50,
+          ],
+        },
+      },
+      "rowCount": 4,
+      "rows": [
+        {
+          "Region": "EU",
+          "Revenue": 100,
+          "Units": 2,
+        },
+        {
+          "Region": "EU",
+          "Revenue": 5000,
+          "Units": 50,
+        },
+        {
+          "Region": "US",
+          "Revenue": 200,
+          "Units": 4,
+        },
+        {
+          "Region": "EU",
+          "Revenue": 150,
+          "Units": 3,
+        },
+      ],
+      "statistics": {
+        "Revenue": {
+          "coefficientOfVariation": 154.158472,
+          "count": 4,
+          "excessKurtosis": -0.667422,
+          "hasNoMode": true,
+          "interquartileRange": 1262.5,
+          "isEmpty": false,
+          "isMultimodal": false,
+          "kurtosis": 2.332578,
+          "max": 5000,
+          "mean": 1362.5,
+          "median": 175,
+          "min": 100,
+          "mode": [],
+          "nanCount": 0,
+          "nullCount": 0,
+          "quartiles": {
+            "Q1": 137.5,
+            "Q2": 175,
+            "Q3": 1400,
+          },
+          "range": 4900,
+          "sampleStandardDeviation": 2425.343618,
+          "sampleVariance": 5882291.666667,
+          "skewness": 3.076584,
+          "standardDeviation": 2100.409186,
+          "sum": 5450,
+          "validCount": 4,
+          "variance": 4411718.75,
+        },
+        "Units": {
+          "coefficientOfVariation": 138.060185,
+          "count": 4,
+          "excessKurtosis": -0.669879,
+          "hasNoMode": true,
+          "interquartileRange": 12.75,
+          "isEmpty": false,
+          "isMultimodal": false,
+          "kurtosis": 2.330121,
+          "max": 50,
+          "mean": 14.75,
+          "median": 3.5,
+          "min": 2,
+          "mode": [],
+          "nanCount": 0,
+          "nullCount": 0,
+          "quartiles": {
+            "Q1": 2.75,
+            "Q2": 3.5,
+            "Q3": 15.5,
+          },
+          "range": 48,
+          "sampleStandardDeviation": 23.51418,
+          "sampleVariance": 552.916667,
+          "skewness": 3.068068,
+          "standardDeviation": 20.363877,
+          "sum": 59,
+          "validCount": 4,
+          "variance": 414.6875,
+        },
+      },
+      "typeStats": {
+        "dateColumns": [],
+        "numericColumns": [
+          "Revenue",
+          "Units",
+        ],
+        "textColumns": [
+          "Region",
+        ],
+      },
+    },
+  ],
+  "strongCorrelations": [
+    {
+      "column1": "Sales.Revenue",
+      "column2": "Sales.Units",
+      "correlation": 0.99984,
+      "direction": "positive",
+      "strength": "very_strong",
+    },
+  ],
+  "success": true,
+  "summary": {
+    "categoricalColumnCount": 1,
+    "hasTimeData": false,
+    "highlights": [
+      {
+        "column": "Revenue",
+        "label": "Total Revenue: 5 450",
+        "type": "sum",
+        "value": 5450,
+      },
+      {
+        "column": "Units",
+        "label": "Total Units: 59",
+        "type": "sum",
+        "value": 59,
+      },
+      {
+        "column": "Region",
+        "label": "Region: 2 valeurs uniques",
+        "type": "categorical",
+        "uniqueCount": 2,
+      },
+    ],
+    "keyInsights": [
+      "La colonne "Revenue" montre une asymétrie à droite (queue longue vers les hautes valeurs)",
+      "La colonne "Revenue" présente une forte variabilité (CV: 154.2%)",
+      "La colonne "Revenue" a une moyenne significativement supérieure à la médiane, suggérant des valeurs extrêmes hautes",
+      "La colonne "Units" montre une asymétrie à droite (queue longue vers les hautes valeurs)",
+      "La colonne "Units" présente une forte variabilité (CV: 138.1%)",
+      "La colonne "Units" a une moyenne significativement supérieure à la médiane, suggérant des valeurs extrêmes hautes",
+      "1 valeur(s) aberrante(s) détectée(s) dans "Revenue"",
+      "1 valeur(s) aberrante(s) détectée(s) dans "Units"",
+      "La catégorie "EU" domine dans "Region" (75%)",
+    ],
+    "numericColumnCount": 2,
+    "observations": [
+      "2 colonnes numériques identifiées pour analyse statistique",
+      "1 dimension(s) catégorielle(s) pour segmentation",
+    ],
+    "patterns": [
+      "2 colonnes numériques identifiées pour analyse statistique",
+      "1 dimension(s) catégorielle(s) pour segmentation",
+    ],
+    "recommendations": [
+      "Vous devriez investiguer les valeurs aberrantes détectées pour vérifier leur validité",
+      "La forte variabilité suggère de segmenter les données par catégorie pour une analyse plus fine",
+    ],
+    "topPerformers": [
+      "Valeur maximale exceptionnelle dans "Revenue": 5 000 (2x la moyenne)",
+      "Valeur maximale exceptionnelle dans "Units": 50 (2x la moyenne)",
+      "Top "Region": EU (3 occurrences)",
+    ],
+    "totalColumns": 3,
+    "totalRows": 4,
+    "totalSheets": 1,
+  },
+  "timeSeries": null,
+  "warnings": undefined,
+}
+`;
+
+exports[`ExcelAnalyzer.analyze / _analyzeSheet — characterization > nominal — minimal options (no derived analysis) 1`] = `
+{
+  "columnProfiles": null,
+  "correlations": null,
+  "customResults": null,
+  "dataQuality": null,
+  "groupedAnalysis": null,
+  "mergedData": null,
+  "metadata": {
+    "analysisTimeMs": "<ms>",
+    "totalColumns": 3,
+    "totalRows": 4,
+  },
+  "parsedData": {
+    "metadata": {
+      "totalColumns": 3,
+      "totalRows": 4,
+    },
+    "sheets": [
+      {
+        "columnTypes": {
+          "Region": "string",
+          "Revenue": "number",
+          "Units": "number",
+        },
+        "headers": [
+          "Revenue",
+          "Units",
+          "Region",
+        ],
+        "isEmpty": false,
+        "name": "Sales",
+        "rows": [
+          {
+            "Region": "EU",
+            "Revenue": 100,
+            "Units": 2,
+          },
+          {
+            "Region": "EU",
+            "Revenue": 5000,
+            "Units": 50,
+          },
+          {
+            "Region": "US",
+            "Revenue": 200,
+            "Units": 4,
+          },
+          {
+            "Region": "EU",
+            "Revenue": 150,
+            "Units": 3,
+          },
+        ],
+        "typeStats": {
+          "dateColumns": [],
+          "numericColumns": [
+            "Revenue",
+            "Units",
+          ],
+          "textColumns": [
+            "Region",
+          ],
+        },
+      },
+    ],
+    "success": true,
+  },
+  "pivotTable": null,
+  "relationships": null,
+  "sheets": [
+    {
+      "_rawData": [
+        {
+          "Region": "EU",
+          "Revenue": 100,
+          "Units": 2,
+        },
+        {
+          "Region": "EU",
+          "Revenue": 5000,
+          "Units": 50,
+        },
+        {
+          "Region": "US",
+          "Revenue": 200,
+          "Units": 4,
+        },
+        {
+          "Region": "EU",
+          "Revenue": 150,
+          "Units": 3,
+        },
+      ],
+      "ambiguousColumns": [],
+      "categoricalAnalysis": {
+        "Region": {
+          "entropy": 0.811278,
+          "frequencies": {
+            "EU": 3,
+            "US": 1,
+          },
+          "mode": "EU",
+          "modeCount": 3,
+          "topValues": [
+            {
+              "count": 3,
+              "value": "EU",
+            },
+            {
+              "count": 1,
+              "value": "US",
+            },
+          ],
+          "total": 4,
+          "uniqueCount": 2,
+        },
+      },
+      "columnCount": 3,
+      "columnTypes": {
+        "Region": "string",
+        "Revenue": "number",
+        "Units": "number",
+      },
+      "dateColumns": [],
+      "distributions": {},
+      "hasTimeData": false,
+      "headers": [
+        "Revenue",
+        "Units",
+        "Region",
+      ],
+      "isEmpty": false,
+      "name": "Sales",
+      "outliers": {},
+      "rowCount": 4,
+      "rows": [
+        {
+          "Region": "EU",
+          "Revenue": 100,
+          "Units": 2,
+        },
+        {
+          "Region": "EU",
+          "Revenue": 5000,
+          "Units": 50,
+        },
+        {
+          "Region": "US",
+          "Revenue": 200,
+          "Units": 4,
+        },
+        {
+          "Region": "EU",
+          "Revenue": 150,
+          "Units": 3,
+        },
+      ],
+      "statistics": {
+        "Revenue": {
+          "coefficientOfVariation": 154.158472,
+          "count": 4,
+          "excessKurtosis": -0.667422,
+          "hasNoMode": true,
+          "interquartileRange": 1262.5,
+          "isEmpty": false,
+          "isMultimodal": false,
+          "kurtosis": 2.332578,
+          "max": 5000,
+          "mean": 1362.5,
+          "median": 175,
+          "min": 100,
+          "mode": [],
+          "nanCount": 0,
+          "nullCount": 0,
+          "quartiles": {
+            "Q1": 137.5,
+            "Q2": 175,
+            "Q3": 1400,
+          },
+          "range": 4900,
+          "sampleStandardDeviation": 2425.343618,
+          "sampleVariance": 5882291.666667,
+          "skewness": 3.076584,
+          "standardDeviation": 2100.409186,
+          "sum": 5450,
+          "validCount": 4,
+          "variance": 4411718.75,
+        },
+        "Units": {
+          "coefficientOfVariation": 138.060185,
+          "count": 4,
+          "excessKurtosis": -0.669879,
+          "hasNoMode": true,
+          "interquartileRange": 12.75,
+          "isEmpty": false,
+          "isMultimodal": false,
+          "kurtosis": 2.330121,
+          "max": 50,
+          "mean": 14.75,
+          "median": 3.5,
+          "min": 2,
+          "mode": [],
+          "nanCount": 0,
+          "nullCount": 0,
+          "quartiles": {
+            "Q1": 2.75,
+            "Q2": 3.5,
+            "Q3": 15.5,
+          },
+          "range": 48,
+          "sampleStandardDeviation": 23.51418,
+          "sampleVariance": 552.916667,
+          "skewness": 3.068068,
+          "standardDeviation": 20.363877,
+          "sum": 59,
+          "validCount": 4,
+          "variance": 414.6875,
+        },
+      },
+      "typeStats": {
+        "dateColumns": [],
+        "numericColumns": [
+          "Revenue",
+          "Units",
+        ],
+        "textColumns": [
+          "Region",
+        ],
+      },
+    },
+  ],
+  "strongCorrelations": [],
+  "success": true,
+  "summary": null,
+  "timeSeries": null,
+  "warnings": undefined,
+}
+`;
+
+exports[`ExcelAnalyzer.analyze / _analyzeSheet — characterization > string overload — analyze(buffer, userQuery) 1`] = `
+{
+  "columnProfiles": null,
+  "correlations": null,
+  "customResults": null,
+  "dataQuality": null,
+  "groupedAnalysis": null,
+  "mergedData": null,
+  "metadata": {
+    "analysisTimeMs": "<ms>",
+    "totalColumns": 3,
+    "totalRows": 4,
+  },
+  "parsedData": {
+    "metadata": {
+      "totalColumns": 3,
+      "totalRows": 4,
+    },
+    "sheets": [
+      {
+        "columnTypes": {
+          "Region": "string",
+          "Revenue": "number",
+          "Units": "number",
+        },
+        "headers": [
+          "Revenue",
+          "Units",
+          "Region",
+        ],
+        "isEmpty": false,
+        "name": "Sales",
+        "rows": [
+          {
+            "Region": "EU",
+            "Revenue": 100,
+            "Units": 2,
+          },
+          {
+            "Region": "EU",
+            "Revenue": 5000,
+            "Units": 50,
+          },
+          {
+            "Region": "US",
+            "Revenue": 200,
+            "Units": 4,
+          },
+          {
+            "Region": "EU",
+            "Revenue": 150,
+            "Units": 3,
+          },
+        ],
+        "typeStats": {
+          "dateColumns": [],
+          "numericColumns": [
+            "Revenue",
+            "Units",
+          ],
+          "textColumns": [
+            "Region",
+          ],
+        },
+      },
+    ],
+    "success": true,
+  },
+  "pivotTable": null,
+  "relationships": null,
+  "sheets": [
+    {
+      "_rawData": [
+        {
+          "Region": "EU",
+          "Revenue": 100,
+          "Units": 2,
+        },
+        {
+          "Region": "EU",
+          "Revenue": 5000,
+          "Units": 50,
+        },
+        {
+          "Region": "US",
+          "Revenue": 200,
+          "Units": 4,
+        },
+        {
+          "Region": "EU",
+          "Revenue": 150,
+          "Units": 3,
+        },
+      ],
+      "ambiguousColumns": [],
+      "categoricalAnalysis": {
+        "Region": {
+          "entropy": 0.811278,
+          "frequencies": {
+            "EU": 3,
+            "US": 1,
+          },
+          "mode": "EU",
+          "modeCount": 3,
+          "topValues": [
+            {
+              "count": 3,
+              "value": "EU",
+            },
+            {
+              "count": 1,
+              "value": "US",
+            },
+          ],
+          "total": 4,
+          "uniqueCount": 2,
+        },
+      },
+      "columnCount": 3,
+      "columnTypes": {
+        "Region": "string",
+        "Revenue": "number",
+        "Units": "number",
+      },
+      "dateColumns": [],
+      "distributions": {},
+      "hasTimeData": false,
+      "headers": [
+        "Revenue",
+        "Units",
+        "Region",
+      ],
+      "isEmpty": false,
+      "name": "Sales",
+      "outliers": {},
+      "rowCount": 4,
+      "rows": [
+        {
+          "Region": "EU",
+          "Revenue": 100,
+          "Units": 2,
+        },
+        {
+          "Region": "EU",
+          "Revenue": 5000,
+          "Units": 50,
+        },
+        {
+          "Region": "US",
+          "Revenue": 200,
+          "Units": 4,
+        },
+        {
+          "Region": "EU",
+          "Revenue": 150,
+          "Units": 3,
+        },
+      ],
+      "statistics": {
+        "Revenue": {
+          "coefficientOfVariation": 154.158472,
+          "count": 4,
+          "excessKurtosis": -0.667422,
+          "hasNoMode": true,
+          "interquartileRange": 1262.5,
+          "isEmpty": false,
+          "isMultimodal": false,
+          "kurtosis": 2.332578,
+          "max": 5000,
+          "mean": 1362.5,
+          "median": 175,
+          "min": 100,
+          "mode": [],
+          "nanCount": 0,
+          "nullCount": 0,
+          "quartiles": {
+            "Q1": 137.5,
+            "Q2": 175,
+            "Q3": 1400,
+          },
+          "range": 4900,
+          "sampleStandardDeviation": 2425.343618,
+          "sampleVariance": 5882291.666667,
+          "skewness": 3.076584,
+          "standardDeviation": 2100.409186,
+          "sum": 5450,
+          "validCount": 4,
+          "variance": 4411718.75,
+        },
+        "Units": {
+          "coefficientOfVariation": 138.060185,
+          "count": 4,
+          "excessKurtosis": -0.669879,
+          "hasNoMode": true,
+          "interquartileRange": 12.75,
+          "isEmpty": false,
+          "isMultimodal": false,
+          "kurtosis": 2.330121,
+          "max": 50,
+          "mean": 14.75,
+          "median": 3.5,
+          "min": 2,
+          "mode": [],
+          "nanCount": 0,
+          "nullCount": 0,
+          "quartiles": {
+            "Q1": 2.75,
+            "Q2": 3.5,
+            "Q3": 15.5,
+          },
+          "range": 48,
+          "sampleStandardDeviation": 23.51418,
+          "sampleVariance": 552.916667,
+          "skewness": 3.068068,
+          "standardDeviation": 20.363877,
+          "sum": 59,
+          "validCount": 4,
+          "variance": 414.6875,
+        },
+      },
+      "typeStats": {
+        "dateColumns": [],
+        "numericColumns": [
+          "Revenue",
+          "Units",
+        ],
+        "textColumns": [
+          "Region",
+        ],
+      },
+    },
+  ],
+  "strongCorrelations": [],
+  "success": true,
+  "summary": {
+    "categoricalColumnCount": 1,
+    "hasTimeData": false,
+    "highlights": [
+      {
+        "column": "Revenue",
+        "label": "Total Revenue: 5 450",
+        "type": "sum",
+        "value": 5450,
+      },
+      {
+        "column": "Units",
+        "label": "Total Units: 59",
+        "type": "sum",
+        "value": 59,
+      },
+      {
+        "column": "Region",
+        "label": "Region: 2 valeurs uniques",
+        "type": "categorical",
+        "uniqueCount": 2,
+      },
+    ],
+    "keyInsights": [
+      "La colonne "Revenue" montre une asymétrie à droite (queue longue vers les hautes valeurs)",
+      "La colonne "Revenue" présente une forte variabilité (CV: 154.2%)",
+      "La colonne "Revenue" a une moyenne significativement supérieure à la médiane, suggérant des valeurs extrêmes hautes",
+      "La colonne "Units" montre une asymétrie à droite (queue longue vers les hautes valeurs)",
+      "La colonne "Units" présente une forte variabilité (CV: 138.1%)",
+      "La colonne "Units" a une moyenne significativement supérieure à la médiane, suggérant des valeurs extrêmes hautes",
+      "La catégorie "EU" domine dans "Region" (75%)",
+    ],
+    "numericColumnCount": 2,
+    "observations": [
+      "2 colonnes numériques identifiées pour analyse statistique",
+      "1 dimension(s) catégorielle(s) pour segmentation",
+    ],
+    "patterns": [
+      "2 colonnes numériques identifiées pour analyse statistique",
+      "1 dimension(s) catégorielle(s) pour segmentation",
+    ],
+    "recommendations": [
+      "La forte variabilité suggère de segmenter les données par catégorie pour une analyse plus fine",
+    ],
+    "topPerformers": [
+      "Valeur maximale exceptionnelle dans "Revenue": 5 000 (2x la moyenne)",
+      "Valeur maximale exceptionnelle dans "Units": 50 (2x la moyenne)",
+      "Top "Region": EU (3 occurrences)",
+    ],
+    "totalColumns": 3,
+    "totalRows": 4,
+    "totalSheets": 1,
+  },
+  "timeSeries": null,
+  "warnings": undefined,
+}
+`;
+
+exports[`ExcelAnalyzer.analyze / _analyzeSheet — characterization > trust gate — rejection produces security error 1`] = `
+{
+  "error": {
+    "code": "ANALYSIS_ERROR",
+    "details": "<stack>",
+    "message": "Security validation failed: Excel analysis rejected by TrustContext: blocked",
+  },
+  "success": false,
+}
+`;
+
+exports[`ExcelAnalyzer.analyze / _analyzeSheet — characterization > trust gate — sensitive keyword triggers approval (approved) 1`] = `
+{
+  "calls": [
+    "excel_analysis",
+  ],
+  "result": {
+    "columnProfiles": null,
+    "correlations": null,
+    "customResults": null,
+    "dataQuality": null,
+    "groupedAnalysis": null,
+    "mergedData": null,
+    "metadata": {
+      "analysisTimeMs": "<ms>",
+      "totalColumns": 3,
+      "totalRows": 4,
+    },
+    "parsedData": {
+      "metadata": {
+        "totalColumns": 3,
+        "totalRows": 4,
+      },
+      "sheets": [
+        {
+          "columnTypes": {
+            "Region": "string",
+            "Revenue": "number",
+            "Units": "number",
+          },
+          "headers": [
+            "Revenue",
+            "Units",
+            "Region",
+          ],
+          "isEmpty": false,
+          "name": "Sales",
+          "rows": [
+            {
+              "Region": "EU",
+              "Revenue": 100,
+              "Units": 2,
+            },
+            {
+              "Region": "EU",
+              "Revenue": 5000,
+              "Units": 50,
+            },
+            {
+              "Region": "US",
+              "Revenue": 200,
+              "Units": 4,
+            },
+            {
+              "Region": "EU",
+              "Revenue": 150,
+              "Units": 3,
+            },
+          ],
+          "typeStats": {
+            "dateColumns": [],
+            "numericColumns": [
+              "Revenue",
+              "Units",
+            ],
+            "textColumns": [
+              "Region",
+            ],
+          },
+        },
+      ],
+      "success": true,
+    },
+    "pivotTable": null,
+    "relationships": null,
+    "sheets": [
+      {
+        "_rawData": [
+          {
+            "Region": "EU",
+            "Revenue": 100,
+            "Units": 2,
+          },
+          {
+            "Region": "EU",
+            "Revenue": 5000,
+            "Units": 50,
+          },
+          {
+            "Region": "US",
+            "Revenue": 200,
+            "Units": 4,
+          },
+          {
+            "Region": "EU",
+            "Revenue": 150,
+            "Units": 3,
+          },
+        ],
+        "ambiguousColumns": [],
+        "categoricalAnalysis": {
+          "Region": {
+            "entropy": 0.811278,
+            "frequencies": {
+              "EU": 3,
+              "US": 1,
+            },
+            "mode": "EU",
+            "modeCount": 3,
+            "topValues": [
+              {
+                "count": 3,
+                "value": "EU",
+              },
+              {
+                "count": 1,
+                "value": "US",
+              },
+            ],
+            "total": 4,
+            "uniqueCount": 2,
+          },
+        },
+        "columnCount": 3,
+        "columnTypes": {
+          "Region": "string",
+          "Revenue": "number",
+          "Units": "number",
+        },
+        "dateColumns": [],
+        "distributions": {},
+        "hasTimeData": false,
+        "headers": [
+          "Revenue",
+          "Units",
+          "Region",
+        ],
+        "isEmpty": false,
+        "name": "Sales",
+        "outliers": {},
+        "rowCount": 4,
+        "rows": [
+          {
+            "Region": "EU",
+            "Revenue": 100,
+            "Units": 2,
+          },
+          {
+            "Region": "EU",
+            "Revenue": 5000,
+            "Units": 50,
+          },
+          {
+            "Region": "US",
+            "Revenue": 200,
+            "Units": 4,
+          },
+          {
+            "Region": "EU",
+            "Revenue": 150,
+            "Units": 3,
+          },
+        ],
+        "statistics": {
+          "Revenue": {
+            "coefficientOfVariation": 154.158472,
+            "count": 4,
+            "excessKurtosis": -0.667422,
+            "hasNoMode": true,
+            "interquartileRange": 1262.5,
+            "isEmpty": false,
+            "isMultimodal": false,
+            "kurtosis": 2.332578,
+            "max": 5000,
+            "mean": 1362.5,
+            "median": 175,
+            "min": 100,
+            "mode": [],
+            "nanCount": 0,
+            "nullCount": 0,
+            "quartiles": {
+              "Q1": 137.5,
+              "Q2": 175,
+              "Q3": 1400,
+            },
+            "range": 4900,
+            "sampleStandardDeviation": 2425.343618,
+            "sampleVariance": 5882291.666667,
+            "skewness": 3.076584,
+            "standardDeviation": 2100.409186,
+            "sum": 5450,
+            "validCount": 4,
+            "variance": 4411718.75,
+          },
+          "Units": {
+            "coefficientOfVariation": 138.060185,
+            "count": 4,
+            "excessKurtosis": -0.669879,
+            "hasNoMode": true,
+            "interquartileRange": 12.75,
+            "isEmpty": false,
+            "isMultimodal": false,
+            "kurtosis": 2.330121,
+            "max": 50,
+            "mean": 14.75,
+            "median": 3.5,
+            "min": 2,
+            "mode": [],
+            "nanCount": 0,
+            "nullCount": 0,
+            "quartiles": {
+              "Q1": 2.75,
+              "Q2": 3.5,
+              "Q3": 15.5,
+            },
+            "range": 48,
+            "sampleStandardDeviation": 23.51418,
+            "sampleVariance": 552.916667,
+            "skewness": 3.068068,
+            "standardDeviation": 20.363877,
+            "sum": 59,
+            "validCount": 4,
+            "variance": 414.6875,
+          },
+        },
+        "typeStats": {
+          "dateColumns": [],
+          "numericColumns": [
+            "Revenue",
+            "Units",
+          ],
+          "textColumns": [
+            "Region",
+          ],
+        },
+      },
+    ],
+    "strongCorrelations": [],
+    "success": true,
+    "summary": {
+      "categoricalColumnCount": 1,
+      "hasTimeData": false,
+      "highlights": [
+        {
+          "column": "Revenue",
+          "label": "Total Revenue: 5 450",
+          "type": "sum",
+          "value": 5450,
+        },
+        {
+          "column": "Units",
+          "label": "Total Units: 59",
+          "type": "sum",
+          "value": 59,
+        },
+        {
+          "column": "Region",
+          "label": "Region: 2 valeurs uniques",
+          "type": "categorical",
+          "uniqueCount": 2,
+        },
+      ],
+      "keyInsights": [
+        "La colonne "Revenue" montre une asymétrie à droite (queue longue vers les hautes valeurs)",
+        "La colonne "Revenue" présente une forte variabilité (CV: 154.2%)",
+        "La colonne "Revenue" a une moyenne significativement supérieure à la médiane, suggérant des valeurs extrêmes hautes",
+        "La colonne "Units" montre une asymétrie à droite (queue longue vers les hautes valeurs)",
+        "La colonne "Units" présente une forte variabilité (CV: 138.1%)",
+        "La colonne "Units" a une moyenne significativement supérieure à la médiane, suggérant des valeurs extrêmes hautes",
+        "La catégorie "EU" domine dans "Region" (75%)",
+      ],
+      "numericColumnCount": 2,
+      "observations": [
+        "2 colonnes numériques identifiées pour analyse statistique",
+        "1 dimension(s) catégorielle(s) pour segmentation",
+      ],
+      "patterns": [
+        "2 colonnes numériques identifiées pour analyse statistique",
+        "1 dimension(s) catégorielle(s) pour segmentation",
+      ],
+      "recommendations": [
+        "La forte variabilité suggère de segmenter les données par catégorie pour une analyse plus fine",
+      ],
+      "topPerformers": [
+        "Valeur maximale exceptionnelle dans "Revenue": 5 000 (2x la moyenne)",
+        "Valeur maximale exceptionnelle dans "Units": 50 (2x la moyenne)",
+        "Top "Region": EU (3 occurrences)",
+      ],
+      "totalColumns": 3,
+      "totalRows": 4,
+      "totalSheets": 1,
+    },
+    "timeSeries": null,
+    "warnings": undefined,
+  },
+}
+`;
