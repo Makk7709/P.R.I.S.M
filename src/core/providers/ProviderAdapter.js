@@ -2,12 +2,12 @@
  * Base provider adapter interface with fail-closed ProviderResult normalization
  */
 
-import { 
+import {
   normalizeProviderResponse,
   withProviderTimeout,
-  createProviderResultError
+  createProviderResultError,
 } from './AdapterGuard.js';
-import crypto from 'crypto';
+import crypto from 'node:crypto';
 
 export class CircuitBreaker {
   constructor({ failureThreshold = 5, halfOpenAfterMs = 30000 } = {}) {
@@ -44,11 +44,11 @@ export class CircuitBreaker {
 }
 
 export class ProviderAdapter {
-  constructor({ 
-    timeoutMs = 1500, 
-    maxRetries = 2, 
+  constructor({
+    timeoutMs = 1500,
+    maxRetries = 2,
     backoffBaseMs = 200,
-    providerName = 'unknown' // Doit être défini dans sous-classes
+    providerName = 'unknown', // Doit être défini dans sous-classes
   } = {}) {
     this.timeoutMs = timeoutMs;
     this.maxRetries = maxRetries;
@@ -77,8 +77,8 @@ export class ProviderAdapter {
         correlationId: correlationIdFinal,
         requestId,
         error: {
-          message: 'Circuit breaker is OPEN - too many failures'
-        }
+          message: 'Circuit breaker is OPEN - too many failures',
+        },
       });
     }
 
@@ -104,7 +104,7 @@ export class ProviderAdapter {
           rawResponse,
           latencyMs,
           correlationId: correlationIdFinal,
-          requestId
+          requestId,
         });
 
         // Si succès, enregistrer et retourner
@@ -118,7 +118,6 @@ export class ProviderAdapter {
         }
 
         return result;
-
       } catch (err) {
         lastError = err;
         attempt += 1;
@@ -127,18 +126,18 @@ export class ProviderAdapter {
         if (attempt > this.maxRetries) {
           this.breaker.recordFailure();
           const latencyMs = Date.now() - startTime;
-          
+
           return normalizeProviderResponse({
             provider: this.providerName,
             rawResponse: err,
             latencyMs,
             correlationId: correlationIdFinal,
-            requestId
+            requestId,
           });
         }
 
         // Attendre avant retry (exponential backoff)
-        await new Promise(r => setTimeout(r, this.backoffBaseMs * Math.pow(2, attempt - 1)));
+        await new Promise((r) => setTimeout(r, this.backoffBaseMs * Math.pow(2, attempt - 1)));
       }
     }
 
@@ -150,8 +149,8 @@ export class ProviderAdapter {
       correlationId: correlationIdFinal,
       requestId,
       error: {
-        message: lastError?.message || 'Unknown error after retries'
-      }
+        message: lastError?.message || 'Unknown error after retries',
+      },
     });
   }
 
@@ -160,4 +159,3 @@ export class ProviderAdapter {
     throw new Error('_evaluate must be implemented in subclass');
   }
 }
-

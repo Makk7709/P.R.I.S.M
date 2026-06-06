@@ -1,7 +1,7 @@
 /**
  * ImageGenerator - Génération d'images via Google Gemini (Nano Banana Pro)
  * @module src/infographic/ImageGenerator
- * 
+ *
  * Fonctionnalités:
  * - Génération d'images via Google Gemini 2.5 Flash Image (Nano Banana Pro)
  * - Enrichissement de prompts automatique
@@ -9,11 +9,15 @@
  * - Support multi-formats (PNG, JPEG, WebP)
  */
 
-import crypto from 'crypto';
+import crypto from 'node:crypto';
 import { GoogleGenAI } from '@google/genai';
 
 // Modèles supportés
-const SUPPORTED_TEXT_MODELS = ['gemini-2.0-flash', 'gemini-2.0-flash-exp', 'gemini-2.5-flash-image'];
+const SUPPORTED_TEXT_MODELS = [
+  'gemini-2.0-flash',
+  'gemini-2.0-flash-exp',
+  'gemini-2.5-flash-image',
+];
 // Nano Banana Pro = gemini-2.0-flash-exp avec responseModalities: ["IMAGE"] + imageConfig 4K
 const IMAGE_MODEL = 'gemini-2.0-flash-exp';
 
@@ -22,33 +26,33 @@ const DOMAIN_STYLES = {
   finance: {
     style: 'corporate',
     colors: ['#1E3A5F', '#2ECC71', '#D4AF37'],
-    keywords: ['graphique', 'données', 'professionnel', 'moderne']
+    keywords: ['graphique', 'données', 'professionnel', 'moderne'],
   },
   strategie: {
     style: 'executive',
     colors: ['#6B46C1', '#D69E2E', '#805AD5'],
-    keywords: ['vision', 'roadmap', 'stratégique', 'élégant']
+    keywords: ['vision', 'roadmap', 'stratégique', 'élégant'],
   },
   marketing: {
     style: 'vibrant',
     colors: ['#DD6B20', '#319795', '#E53E3E'],
-    keywords: ['dynamique', 'coloré', 'impactant', 'moderne']
+    keywords: ['dynamique', 'coloré', 'impactant', 'moderne'],
   },
   recherche: {
     style: 'academic',
     colors: ['#4A5568', '#3182CE', '#48BB78'],
-    keywords: ['scientifique', 'données', 'analytique', 'précis']
+    keywords: ['scientifique', 'données', 'analytique', 'précis'],
   },
   technique: {
     style: 'technical',
     colors: ['#1A202C', '#00B5D8', '#68D391'],
-    keywords: ['technique', 'schématique', 'précis', 'moderne']
+    keywords: ['technique', 'schématique', 'précis', 'moderne'],
   },
   general: {
     style: 'clean',
     colors: ['#2D3748', '#4A5568', '#6366F1'],
-    keywords: ['professionnel', 'clair', 'moderne', 'élégant']
-  }
+    keywords: ['professionnel', 'clair', 'moderne', 'élégant'],
+  },
 };
 
 // Mots-clés de détection d'images
@@ -58,7 +62,7 @@ const IMAGE_REQUEST_PATTERNS = [
   /(?:peux-tu|pourrais-tu).*(?:illustrer|visualiser|représenter)/i,
   /(?:j'aimerais|je voudrais).*(?:voir|visualisation|représentation)/i,
   /(?:représentation|visualisation)\s+(?:visuelle|graphique)/i,
-  /(?:genere|génère|générer).*(?:infographie|image)/i
+  /(?:genere|génère|générer).*(?:infographie|image)/i,
 ];
 
 /**
@@ -89,7 +93,7 @@ export class ImageGenerator {
       imageSize: options.imageSize || 'landscape_16_9',
       numImages: options.numImages || 1,
       quality: options.quality || 'high',
-      apiKey: process.env.NANOBANANA_API_KEY || process.env.GEMINI_API_KEY || options.apiKey
+      apiKey: process.env.NANOBANANA_API_KEY || process.env.GEMINI_API_KEY || options.apiKey,
     };
 
     this.cache = new Map();
@@ -99,7 +103,7 @@ export class ImageGenerator {
     // Pour les tests
     this._simulateError = false;
     this._googleClient = null;
-    
+
     // Initialiser le client Google GenAI
     this._initGoogleClient();
   }
@@ -215,11 +219,28 @@ export class ImageGenerator {
     }
 
     // Vérifier les mots-clés combinés
-    const hasActionWord = ['génère', 'crée', 'dessine', 'produis', 'fais', 'montre', 'affiche', 'illustre', 'visualise']
-      .some(word => messageLower.includes(word));
-    
-    const hasObjectWord = ['image', 'graphique', 'diagramme', 'visualisation', 'illustration', 'infographie', 'schéma', 'visuel']
-      .some(word => messageLower.includes(word));
+    const hasActionWord = [
+      'génère',
+      'crée',
+      'dessine',
+      'produis',
+      'fais',
+      'montre',
+      'affiche',
+      'illustre',
+      'visualise',
+    ].some((word) => messageLower.includes(word));
+
+    const hasObjectWord = [
+      'image',
+      'graphique',
+      'diagramme',
+      'visualisation',
+      'illustration',
+      'infographie',
+      'schéma',
+      'visuel',
+    ].some((word) => messageLower.includes(word));
 
     return hasActionWord && hasObjectWord;
   }
@@ -254,9 +275,11 @@ Style requirements:
     }
 
     // Instructions pour les infographies (visuelles plutôt que textuelles)
-    if (prompt.toLowerCase().includes('infographie') || 
-        prompt.toLowerCase().includes('graphique') ||
-        prompt.toLowerCase().includes('diagramme')) {
+    if (
+      prompt.toLowerCase().includes('infographie') ||
+      prompt.toLowerCase().includes('graphique') ||
+      prompt.toLowerCase().includes('diagramme')
+    ) {
       enriched += `
 - Data visualization with clear visual hierarchy
 - Icons and symbols rather than long text
@@ -292,7 +315,7 @@ Technical specs: 4K quality, photorealistic details, masterpiece quality`;
     if (cached) {
       return {
         ...cached,
-        fromCache: true
+        fromCache: true,
       };
     }
 
@@ -303,8 +326,8 @@ Technical specs: 4K quality, photorealistic details, masterpiece quality`;
         error: 'API Error simulated for testing',
         metadata: {
           model: this.config.modelId,
-          generatedAt: new Date().toISOString()
-        }
+          generatedAt: new Date().toISOString(),
+        },
       };
     }
 
@@ -323,15 +346,18 @@ Technical specs: 4K quality, photorealistic details, masterpiece quality`;
         imageUrl,
         base64: imageData,
         downloadUrl: imageUrl,
-        downloadFilename: this.generateFilename(options.taskType || 'image', options.outputFormat || 'png'),
+        downloadFilename: this.generateFilename(
+          options.taskType || 'image',
+          options.outputFormat || 'png'
+        ),
         fromCache: false,
         metadata: {
           model: this.config.modelId,
           generatedAt: new Date().toISOString(),
           requestId: `req_${Date.now()}`,
           imageSize: options.imageSize || this.config.imageSize,
-          generationTime: Date.now() - startTime
-        }
+          generationTime: Date.now() - startTime,
+        },
       };
 
       // Mettre en cache
@@ -347,8 +373,8 @@ Technical specs: 4K quality, photorealistic details, masterpiece quality`;
         metadata: {
           model: this.config.modelId,
           generatedAt: new Date().toISOString(),
-          errorDetails: error.message
-        }
+          errorDetails: error.message,
+        },
       };
     }
   }
@@ -362,7 +388,7 @@ Technical specs: 4K quality, photorealistic details, masterpiece quality`;
     if (this._googleClient && this._googleClient.subscribe) {
       // Mock pour les tests (compatibilité avec l'ancien format)
       const result = await this._googleClient.subscribe(IMAGE_MODEL, {
-        input: { prompt }
+        input: { prompt },
       });
       if (result.data?.images?.[0]?.url) {
         return result.data.images[0].url;
@@ -376,7 +402,9 @@ Technical specs: 4K quality, photorealistic details, masterpiece quality`;
     }
 
     if (!this.config.apiKey) {
-      throw new Error('API key not configured. Set NANOBANANA_API_KEY or GEMINI_API_KEY environment variable.');
+      throw new Error(
+        'API key not configured. Set NANOBANANA_API_KEY or GEMINI_API_KEY environment variable.'
+      );
     }
 
     // Initialiser le client si nécessaire
@@ -384,8 +412,10 @@ Technical specs: 4K quality, photorealistic details, masterpiece quality`;
       this._googleClient = new GoogleGenAI({ apiKey: this.config.apiKey });
     }
 
-    console.log('[ImageGenerator] 🍌 Calling Nano Banana Pro (Gemini 2.0 Flash Exp) for image generation...');
-    console.log('[ImageGenerator] Prompt:', prompt.substring(0, 100) + '...');
+    console.log(
+      '[ImageGenerator] 🍌 Calling Nano Banana Pro (Gemini 2.0 Flash Exp) for image generation...'
+    );
+    console.log('[ImageGenerator] Prompt:', `${prompt.substring(0, 100)}...`);
 
     try {
       // Utiliser le SDK Google GenAI - Configuration qui fonctionne
@@ -393,14 +423,14 @@ Technical specs: 4K quality, photorealistic details, masterpiece quality`;
         model: IMAGE_MODEL,
         contents: prompt,
         config: {
-          responseModalities: ['TEXT', 'IMAGE']  // TEXT + IMAGE pour génération d'images
-        }
+          responseModalities: ['TEXT', 'IMAGE'], // TEXT + IMAGE pour génération d'images
+        },
       });
 
       // Extraire l'image de la réponse
       if (response.candidates && response.candidates[0]) {
         const parts = response.candidates[0].content?.parts || [];
-        
+
         for (const part of parts) {
           if (part.inlineData) {
             const imageData = part.inlineData.data;
@@ -414,10 +444,9 @@ Technical specs: 4K quality, photorealistic details, masterpiece quality`;
       console.log('[ImageGenerator] No image in SDK response, trying REST API...');
       const imageResponse = await this._callDirectImageAPI(prompt, options);
       return imageResponse;
-
     } catch (error) {
       console.error('[ImageGenerator] Nano Banana Pro API Error:', error.message);
-      
+
       // Fallback vers l'API REST directe
       console.log('[ImageGenerator] Trying REST API fallback...');
       return await this._callDirectImageAPI(prompt, options);
@@ -435,42 +464,49 @@ Technical specs: 4K quality, photorealistic details, masterpiece quality`;
     const response = await fetch(url, {
       method: 'POST',
       headers: {
-        'Content-Type': 'application/json'
+        'Content-Type': 'application/json',
       },
       body: JSON.stringify({
-        contents: [{
-          role: 'user',
-          parts: [{
-            text: prompt
-          }]
-        }],
+        contents: [
+          {
+            role: 'user',
+            parts: [
+              {
+                text: prompt,
+              },
+            ],
+          },
+        ],
         generationConfig: {
-          responseModalities: ['TEXT', 'IMAGE'],  // TEXT + IMAGE pour génération
+          responseModalities: ['TEXT', 'IMAGE'], // TEXT + IMAGE pour génération
           temperature: 1,
           topP: 0.95,
-          topK: 40
-        }
-      })
+          topK: 40,
+        },
+      }),
     });
 
     if (!response.ok) {
       const errorText = await response.text();
       console.error('[ImageGenerator] REST API Error Response:', errorText);
-      
+
       let errorMessage = `API Error: ${response.status}`;
       try {
         const errorJson = JSON.parse(errorText);
         errorMessage = errorJson.error?.message || errorMessage;
-        
+
         // Si c'est une erreur de région, essayer fal.ai
-        if (errorMessage.includes('not available in your country') || errorMessage.includes('region')) {
+        if (
+          errorMessage.includes('not available in your country') ||
+          errorMessage.includes('region')
+        ) {
           console.log('[ImageGenerator] Region restriction detected, trying fal.ai fallback...');
           return await this._callFalAIFallback(prompt, options);
         }
       } catch {
         errorMessage = errorText || errorMessage;
       }
-      
+
       throw new Error(errorMessage);
     }
 
@@ -480,7 +516,7 @@ Technical specs: 4K quality, photorealistic details, masterpiece quality`;
     // Extraire l'image de la réponse
     if (data.candidates && data.candidates[0]) {
       const parts = data.candidates[0].content?.parts || [];
-      
+
       for (const part of parts) {
         if (part.inlineData) {
           console.log('[ImageGenerator] ✅ Image generated successfully via REST API');
@@ -489,7 +525,9 @@ Technical specs: 4K quality, photorealistic details, masterpiece quality`;
       }
     }
 
-    throw new Error('No image data in API response. The model may not support image generation for this prompt.');
+    throw new Error(
+      'No image data in API response. The model may not support image generation for this prompt.'
+    );
   }
 
   /**
@@ -498,9 +536,11 @@ Technical specs: 4K quality, photorealistic details, masterpiece quality`;
    */
   async _callFalAIFallback(prompt, options = {}) {
     const falKey = process.env.FAL_KEY || process.env.FAL_API_KEY;
-    
+
     if (!falKey) {
-      throw new Error('Image generation is not available in your country and no FAL_KEY is configured for fallback.');
+      throw new Error(
+        'Image generation is not available in your country and no FAL_KEY is configured for fallback.'
+      );
     }
 
     console.log('[ImageGenerator] Using fal.ai fallback...');
@@ -508,15 +548,15 @@ Technical specs: 4K quality, photorealistic details, masterpiece quality`;
     const response = await fetch('https://queue.fal.run/fal-ai/flux/schnell', {
       method: 'POST',
       headers: {
-        'Authorization': `Key ${falKey}`,
-        'Content-Type': 'application/json'
+        Authorization: `Key ${falKey}`,
+        'Content-Type': 'application/json',
       },
       body: JSON.stringify({
         prompt: prompt,
         image_size: 'landscape_16_9',
         num_images: 1,
-        enable_safety_checker: true
-      })
+        enable_safety_checker: true,
+      }),
     });
 
     if (!response.ok) {
@@ -525,7 +565,7 @@ Technical specs: 4K quality, photorealistic details, masterpiece quality`;
     }
 
     const data = await response.json();
-    
+
     if (data.images && data.images[0]?.url) {
       // Télécharger l'image et la convertir en base64
       const imageResponse = await fetch(data.images[0].url);
@@ -556,7 +596,7 @@ Technical specs: 4K quality, photorealistic details, masterpiece quality`;
       ...options,
       style: style.style,
       colors: style.colors,
-      taskType
+      taskType,
     });
 
     return {
@@ -564,8 +604,8 @@ Technical specs: 4K quality, photorealistic details, masterpiece quality`;
       contextType: taskType,
       metadata: {
         ...result.metadata,
-        style: style.style
-      }
+        style: style.style,
+      },
     };
   }
 
@@ -575,7 +615,7 @@ Technical specs: 4K quality, photorealistic details, masterpiece quality`;
    */
   _buildContextualPrompt(message, taskType, previousMessages = []) {
     const style = DOMAIN_STYLES[taskType] || DOMAIN_STYLES.general;
-    
+
     let prompt = message;
 
     // Ajouter le contexte du domaine
@@ -596,7 +636,7 @@ Technical specs: 4K quality, photorealistic details, masterpiece quality`;
   generateFilename(taskType = 'image', format = 'png') {
     const timestamp = Date.now();
     const random = crypto.randomBytes(4).toString('hex');
-    
+
     return `prism-${taskType}-${timestamp}-${random}.${format}`;
   }
 
@@ -612,13 +652,13 @@ Technical specs: 4K quality, photorealistic details, masterpiece quality`;
       png: 'image/png',
       jpg: 'image/jpeg',
       jpeg: 'image/jpeg',
-      webp: 'image/webp'
+      webp: 'image/webp',
     };
 
     return {
       url: imageUrl,
       filename,
-      mimeType: mimeTypes[extension] || 'image/png'
+      mimeType: mimeTypes[extension] || 'image/png',
     };
   }
 
@@ -634,7 +674,7 @@ Technical specs: 4K quality, photorealistic details, masterpiece quality`;
       return {
         type: 'error',
         content: `Désolé, je n'ai pas pu générer l'image: ${result.error}`,
-        error: result.error
+        error: result.error,
       };
     }
 
@@ -651,13 +691,13 @@ Technical specs: 4K quality, photorealistic details, masterpiece quality`;
 
     return {
       type: 'image',
-      content: 'Voici l\'image générée:',
+      content: "Voici l'image générée:",
       imageUrl: result.imageUrl,
       downloadUrl: result.downloadUrl,
       downloadFilename: result.downloadFilename,
       html,
       actions: ['download', 'share', 'regenerate'],
-      metadata: result.metadata
+      metadata: result.metadata,
     };
   }
 
@@ -693,9 +733,7 @@ Technical specs: 4K quality, photorealistic details, masterpiece quality`;
    * @private
    */
   _getCacheKey(prompt, options) {
-    const hash = crypto.createHash('md5')
-      .update(JSON.stringify({ prompt, options }))
-      .digest('hex');
+    const hash = crypto.createHash('md5').update(JSON.stringify({ prompt, options })).digest('hex');
     return `image_${hash}`;
   }
 
@@ -719,7 +757,7 @@ Technical specs: 4K quality, photorealistic details, masterpiece quality`;
   _addToCache(key, data) {
     this.cache.set(key, {
       data,
-      timestamp: Date.now()
+      timestamp: Date.now(),
     });
   }
 }

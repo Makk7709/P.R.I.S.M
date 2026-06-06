@@ -1,6 +1,6 @@
 /**
  * TrustContext E2E Tests - TRL 5 Proof Pack
- * 
+ *
  * Tests end-to-end du workflow complet:
  * - Decision → Escalade → Approval → Audit
  * - Validation avec providers réels (optionnel)
@@ -9,10 +9,10 @@
 
 import { describe, it, expect, beforeEach, afterEach, afterAll } from 'vitest';
 import crypto from 'node:crypto';
-import fs from 'fs/promises';
-import path from 'path';
-import { fileURLToPath } from 'url';
-import { performance } from 'perf_hooks';
+import fs from 'node:fs/promises';
+import path from 'node:path';
+import { fileURLToPath } from 'node:url';
+import { performance } from 'node:perf_hooks';
 import { TrustContext, CriticalityLevel, createSignedApproval } from '../src/core/TrustContext.js';
 import { HybridOrchestrator } from '../src/orchestrator/HybridOrchestrator.js';
 import { KeyRegistry as KeyRegistryClass } from '../src/core/KeyRegistry.js';
@@ -24,7 +24,7 @@ const __dirname = path.dirname(__filename);
 const metrics = {
   verifyApproval: [],
   totalPipeline: [],
-  errors: []
+  errors: [],
 };
 
 /**
@@ -54,7 +54,7 @@ describe('TrustContext E2E Workflow - TRL 5', () => {
     approverKeyId = 'e2e-approver-001';
     const { publicKey, privateKey } = crypto.generateKeyPairSync('ed25519', {
       publicKeyEncoding: { type: 'spki', format: 'pem' },
-      privateKeyEncoding: { type: 'pkcs8', format: 'pem' }
+      privateKeyEncoding: { type: 'pkcs8', format: 'pem' },
     });
 
     approverPrivateKey = privateKey;
@@ -67,15 +67,20 @@ describe('TrustContext E2E Workflow - TRL 5', () => {
       // Ignorer si répertoire n'existe pas
     }
     await fs.mkdir(testKeyDir, { recursive: true });
-    
+
     // Setup KeyRegistry (créer nouvelle instance pour éviter singleton)
     const registryPath = path.join(testBase, 'key-registry.json');
     // Utiliser KeyRegistry directement (pas getKeyRegistry singleton)
     keyRegistry = new KeyRegistryClass({ registryPath });
     await keyRegistry.initialize();
-    
+
     // Enregistrer clé avec vérification keypair
-    await keyRegistry.registerKey(approverKeyId, approverPublicKey, ['owner', 'security'], approverPrivateKey);
+    await keyRegistry.registerKey(
+      approverKeyId,
+      approverPublicKey,
+      ['owner', 'security'],
+      approverPrivateKey
+    );
 
     // Setup TrustContext
     trustContext = new TrustContext({
@@ -85,10 +90,10 @@ describe('TrustContext E2E Workflow - TRL 5', () => {
         [CriticalityLevel.LOW]: ['lead', 'security', 'owner'],
         [CriticalityLevel.MEDIUM]: ['lead', 'security', 'owner'],
         [CriticalityLevel.HIGH]: ['security', 'owner'],
-        [CriticalityLevel.CRITICAL]: ['owner']
+        [CriticalityLevel.CRITICAL]: ['owner'],
       },
       minApprovalLevel: CriticalityLevel.HIGH,
-      mode: 'staging'
+      mode: 'staging',
     });
 
     await trustContext.initialize();
@@ -97,8 +102,8 @@ describe('TrustContext E2E Workflow - TRL 5', () => {
     orchestrator = new HybridOrchestrator({
       trustContext: trustContext,
       consensusOptions: {
-        timeoutMs: 5000
-      }
+        timeoutMs: 5000,
+      },
     });
 
     // Reset metrics
@@ -145,12 +150,12 @@ describe('TrustContext E2E Workflow - TRL 5', () => {
       approver: {
         id: 'approver-001',
         role: 'owner', // Authorized for HIGH (security aussi OK, mais utilisons owner pour être sûr)
-        keyId: approverKeyId
+        keyId: approverKeyId,
       },
       verdict: 'approve',
       reason: 'E2E test approval',
       issuedAt: Date.now(),
-      privateKeyPem: approverPrivateKey
+      privateKeyPem: approverPrivateKey,
     });
 
     // 3. Verify and approve
@@ -163,7 +168,7 @@ describe('TrustContext E2E Workflow - TRL 5', () => {
     const checkResult = trustContext.checkApproval(approvalToken);
     // Après approbation, decision est dans history, pas pending
     const history = trustContext.getApprovalHistory(10);
-    const approved = history.find(d => d.status === 'approved');
+    const approved = history.find((d) => d.status === 'approved');
     expect(approved).toBeDefined();
 
     const pipelineEnd = performance.now();
@@ -184,18 +189,18 @@ describe('TrustContext E2E Workflow - TRL 5', () => {
 
     // Ne pas approuver - vérifier que la décision reste pending ou expire
     const checkResult = trustContext.checkApproval(approvalToken);
-    
+
     // CRITICAL nécessite approval, donc ne doit PAS être auto-approved
     expect(checkResult.approved).toBe(false);
-    
+
     // Vérifier que validateCriticalDecision bloque
     try {
       const validation = await trustContext.validateCriticalDecision({
         action: 'critical_action',
         input: 'critical input',
-        criticality: CriticalityLevel.CRITICAL
+        criticality: CriticalityLevel.CRITICAL,
       });
-      
+
       // Si non approuvé, doit retourner approved=false
       expect(validation.approved).toBe(false);
       expect(validation.reason).toContain('approval');
@@ -216,9 +221,10 @@ describe('TrustContext E2E Workflow - TRL 5', () => {
       {}
     );
 
-      // Accès à pendingDecisions (Map privée)
-      const decision = trustContext.pendingDecisions?.get?.(approvalToken) || 
-        (trustContext['pendingDecisions']?.get?.(approvalToken));
+    // Accès à pendingDecisions (Map privée)
+    const decision =
+      trustContext.pendingDecisions?.get?.(approvalToken) ||
+      trustContext['pendingDecisions']?.get?.(approvalToken);
 
     const invalidApproval = {
       approvalId: crypto.randomUUID(),
@@ -227,11 +233,11 @@ describe('TrustContext E2E Workflow - TRL 5', () => {
       approver: {
         id: 'approver-001',
         role: 'security',
-        keyId: approverKeyId
+        keyId: approverKeyId,
       },
-        verdict: 'approve',
+      verdict: 'approve',
       issuedAt: Date.now(),
-      signature: 'invalid-signature-hex-12345'
+      signature: 'invalid-signature-hex-12345',
     };
 
     const result = await trustContext.approveDecision(invalidApproval);
@@ -252,9 +258,10 @@ describe('TrustContext E2E Workflow - TRL 5', () => {
     );
 
     // Modifier la décision (simuler altération)
-      // Accès à pendingDecisions (Map privée)
-      const decision = trustContext.pendingDecisions?.get?.(approvalToken) || 
-        (trustContext['pendingDecisions']?.get?.(approvalToken));
+    // Accès à pendingDecisions (Map privée)
+    const decision =
+      trustContext.pendingDecisions?.get?.(approvalToken) ||
+      trustContext['pendingDecisions']?.get?.(approvalToken);
     decision.data = { action: 'test', input: 'modified' }; // Modification
 
     // Créer approbation avec digest de la décision ORIGINALE (ne correspond plus)
@@ -265,11 +272,11 @@ describe('TrustContext E2E Workflow - TRL 5', () => {
       approver: {
         id: 'approver-001',
         role: 'security',
-        keyId: approverKeyId
+        keyId: approverKeyId,
       },
       verdict: 'approve',
       issuedAt: Date.now(),
-      privateKeyPem: approverPrivateKey
+      privateKeyPem: approverPrivateKey,
     });
 
     // Vérifier que le digest ne correspond plus (car décision modifiée)
@@ -283,11 +290,11 @@ describe('TrustContext E2E Workflow - TRL 5', () => {
       approver: {
         id: 'approver-001',
         role: 'security',
-        keyId: approverKeyId
+        keyId: approverKeyId,
       },
       verdict: 'approve',
       issuedAt: Date.now(),
-      privateKeyPem: approverPrivateKey
+      privateKeyPem: approverPrivateKey,
     });
 
     const result = await trustContext.approveDecision(wrongApproval);
@@ -302,12 +309,12 @@ describe('TrustContext E2E Workflow - TRL 5', () => {
   it('S5: Provider timeout/down handling', async () => {
     // Pour ce test, on simule un timeout dans ConsensusManager
     // En staging, on peut utiliser un mock provider qui timeout
-    
+
     // Test: TrustContext doit gérer proprement une requête même si provider timeout
     const validation = await trustContext.validateCriticalDecision({
       action: 'timeout_test',
       input: 'test',
-      criticality: CriticalityLevel.MEDIUM // Pas besoin d'approval pour MEDIUM
+      criticality: CriticalityLevel.MEDIUM, // Pas besoin d'approval pour MEDIUM
     });
 
     // MEDIUM devrait être auto-approved (pas besoin approval humaine)
@@ -339,9 +346,10 @@ describe('TrustContext E2E Workflow - TRL 5', () => {
       {}
     );
 
-      // Accès à pendingDecisions (Map privée)
-      const decision = trustContext.pendingDecisions?.get?.(approvalToken) || 
-        (trustContext['pendingDecisions']?.get?.(approvalToken));
+    // Accès à pendingDecisions (Map privée)
+    const decision =
+      trustContext.pendingDecisions?.get?.(approvalToken) ||
+      trustContext['pendingDecisions']?.get?.(approvalToken);
 
     // CRITICAL nécessite role 'owner', mais on utilise 'security' (non autorisé)
     const unauthorizedApproval = createSignedApproval({
@@ -351,11 +359,11 @@ describe('TrustContext E2E Workflow - TRL 5', () => {
       approver: {
         id: 'approver-001',
         role: 'security', // NON autorisé pour CRITICAL (nécessite 'owner')
-        keyId: approverKeyId
+        keyId: approverKeyId,
       },
       verdict: 'approve',
       issuedAt: Date.now(),
-      privateKeyPem: approverPrivateKey
+      privateKeyPem: approverPrivateKey,
     });
 
     const result = await trustContext.approveDecision(unauthorizedApproval);
@@ -378,7 +386,7 @@ afterAll(async () => {
           p99: percentile(metrics.verifyApproval, 99),
           min: Math.min(...metrics.verifyApproval),
           max: Math.max(...metrics.verifyApproval),
-          avg: metrics.verifyApproval.reduce((a, b) => a + b, 0) / metrics.verifyApproval.length
+          avg: metrics.verifyApproval.reduce((a, b) => a + b, 0) / metrics.verifyApproval.length,
         },
         totalPipeline: {
           count: metrics.totalPipeline.length,
@@ -387,16 +395,16 @@ afterAll(async () => {
           p99: percentile(metrics.totalPipeline, 99),
           min: Math.min(...metrics.totalPipeline),
           max: Math.max(...metrics.totalPipeline),
-          avg: metrics.totalPipeline.reduce((a, b) => a + b, 0) / metrics.totalPipeline.length
+          avg: metrics.totalPipeline.reduce((a, b) => a + b, 0) / metrics.totalPipeline.length,
         },
         errors: {
           count: metrics.errors.length,
           byType: metrics.errors.reduce((acc, e) => {
             acc[e.type] = (acc[e.type] || 0) + 1;
             return acc;
-          }, {})
-        }
-      }
+          }, {}),
+        },
+      },
     };
 
     const outputDir = process.env.METRICS_OUTPUT_DIR || path.join(__dirname, 'metrics');

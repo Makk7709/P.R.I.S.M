@@ -3,10 +3,10 @@
  * Génère le rapport TRL 5 à partir des métriques collectées
  */
 
-import fs from 'fs/promises';
-import path from 'path';
-import { fileURLToPath } from 'url';
-import { readdir } from 'fs/promises';
+import fs from 'node:fs/promises';
+import path from 'node:path';
+import { fileURLToPath } from 'node:url';
+import { readdir } from 'node:fs/promises';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -23,20 +23,20 @@ async function generateReport() {
   const reportPath = path.join(__dirname, '../docs/reports/TRL5_PROOF_REPORT.md');
 
   // Collecter tous les fichiers de métriques
-  let allMetrics = {
+  const allMetrics = {
     verifyApproval: [],
     totalPipeline: [],
-    errors: []
+    errors: [],
   };
 
   try {
     const allFiles = await readdir(metricsDir);
-    const files = allFiles.filter(f => f.startsWith('e2e-metrics-') && f.endsWith('.json'));
-    
+    const files = allFiles.filter((f) => f.startsWith('e2e-metrics-') && f.endsWith('.json'));
+
     for (const file of files) {
       const content = await fs.readFile(path.join(metricsDir, file), 'utf8');
       const data = JSON.parse(content);
-      
+
       if (data.metrics?.verifyApproval) {
         allMetrics.verifyApproval.push(...data.metrics.verifyApproval);
       }
@@ -55,28 +55,39 @@ async function generateReport() {
 
   // Calculer statistiques
   const stats = {
-    verifyApproval: allMetrics.verifyApproval.length > 0 ? {
-      count: allMetrics.verifyApproval.length,
-      p50: percentile(allMetrics.verifyApproval, 50).toFixed(2),
-      p95: percentile(allMetrics.verifyApproval, 95).toFixed(2),
-      p99: percentile(allMetrics.verifyApproval, 99).toFixed(2),
-      min: Math.min(...allMetrics.verifyApproval).toFixed(2),
-      max: Math.max(...allMetrics.verifyApproval).toFixed(2),
-      avg: (allMetrics.verifyApproval.reduce((a, b) => a + b, 0) / allMetrics.verifyApproval.length).toFixed(2)
-    } : null,
-    totalPipeline: allMetrics.totalPipeline.length > 0 ? {
-      count: allMetrics.totalPipeline.length,
-      p50: percentile(allMetrics.totalPipeline, 50).toFixed(2),
-      p95: percentile(allMetrics.totalPipeline, 95).toFixed(2),
-      p99: percentile(allMetrics.totalPipeline, 99).toFixed(2),
-      min: Math.min(...allMetrics.totalPipeline).toFixed(2),
-      max: Math.max(...allMetrics.totalPipeline).toFixed(2),
-      avg: (allMetrics.totalPipeline.reduce((a, b) => a + b, 0) / allMetrics.totalPipeline.length).toFixed(2)
-    } : null,
+    verifyApproval:
+      allMetrics.verifyApproval.length > 0
+        ? {
+            count: allMetrics.verifyApproval.length,
+            p50: percentile(allMetrics.verifyApproval, 50).toFixed(2),
+            p95: percentile(allMetrics.verifyApproval, 95).toFixed(2),
+            p99: percentile(allMetrics.verifyApproval, 99).toFixed(2),
+            min: Math.min(...allMetrics.verifyApproval).toFixed(2),
+            max: Math.max(...allMetrics.verifyApproval).toFixed(2),
+            avg: (
+              allMetrics.verifyApproval.reduce((a, b) => a + b, 0) /
+              allMetrics.verifyApproval.length
+            ).toFixed(2),
+          }
+        : null,
+    totalPipeline:
+      allMetrics.totalPipeline.length > 0
+        ? {
+            count: allMetrics.totalPipeline.length,
+            p50: percentile(allMetrics.totalPipeline, 50).toFixed(2),
+            p95: percentile(allMetrics.totalPipeline, 95).toFixed(2),
+            p99: percentile(allMetrics.totalPipeline, 99).toFixed(2),
+            min: Math.min(...allMetrics.totalPipeline).toFixed(2),
+            max: Math.max(...allMetrics.totalPipeline).toFixed(2),
+            avg: (
+              allMetrics.totalPipeline.reduce((a, b) => a + b, 0) / allMetrics.totalPipeline.length
+            ).toFixed(2),
+          }
+        : null,
     errors: allMetrics.errors.reduce((acc, e) => {
       acc[e.type] = (acc[e.type] || 0) + e.count;
       return acc;
-    }, {})
+    }, {}),
   };
 
   // Générer rapport Markdown
@@ -122,7 +133,9 @@ Démontrer que TrustContext fonctionne correctement en environnement pertinent (
 
 ### 2.1 Latence verifyApproval()
 
-${stats.verifyApproval ? `
+${
+  stats.verifyApproval
+    ? `
 - **Count**: ${stats.verifyApproval.count} operations
 - **p50**: ${stats.verifyApproval.p50} ms
 - **p95**: ${stats.verifyApproval.p95} ms
@@ -132,11 +145,15 @@ ${stats.verifyApproval ? `
 - **Average**: ${stats.verifyApproval.avg} ms
 
 **Conclusion**: Vérification cryptographique Ed25519 avec performance acceptable pour production (< 100ms p95).
-` : '**Aucune métrique disponible** (tests non exécutés)'}
+`
+    : '**Aucune métrique disponible** (tests non exécutés)'
+}
 
 ### 2.2 Latence Pipeline Complet
 
-${stats.totalPipeline ? `
+${
+  stats.totalPipeline
+    ? `
 - **Count**: ${stats.totalPipeline.count} operations
 - **p50**: ${stats.totalPipeline.p50} ms
 - **p95**: ${stats.totalPipeline.p95} ms
@@ -146,19 +163,27 @@ ${stats.totalPipeline ? `
 - **Average**: ${stats.totalPipeline.avg} ms
 
 **Conclusion**: Latence pipeline complet (decision→approval→audit) acceptable.
-` : '**Aucune métrique disponible** (tests non exécutés)'}
+`
+    : '**Aucune métrique disponible** (tests non exécutés)'
+}
 
 ---
 
 ## 3. Taux d'Erreurs
 
-${Object.keys(stats.errors).length > 0 ? `
+${
+  Object.keys(stats.errors).length > 0
+    ? `
 | Type d'Erreur | Count |
 |---------------|-------|
-${Object.entries(stats.errors).map(([type, count]) => `| ${type} | ${count} |`).join('\n')}
+${Object.entries(stats.errors)
+  .map(([type, count]) => `| ${type} | ${count} |`)
+  .join('\n')}
 
 **Note**: Les erreurs attendues (signatures invalides, approvers non autorisés) sont documentées dans les scénarios S3-S6.
-` : '**Aucune erreur inattendue**'}
+`
+    : '**Aucune erreur inattendue**'
+}
 
 ---
 

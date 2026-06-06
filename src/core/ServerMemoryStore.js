@@ -3,9 +3,9 @@
  * @module src/core/ServerMemoryStore
  */
 
-import fs from 'fs';
-import path from 'path';
-import { fileURLToPath } from 'url';
+import fs from 'node:fs';
+import path from 'node:path';
+import { fileURLToPath } from 'node:url';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -20,7 +20,7 @@ export class ServerMemoryStore {
       conversations: [],
       userInfo: {},
       interactions: [],
-      lastUpdated: null
+      lastUpdated: null,
     };
     this._ensureDirectory();
     this._loadMemory();
@@ -44,7 +44,9 @@ export class ServerMemoryStore {
       if (fs.existsSync(MEMORY_FILE)) {
         const data = fs.readFileSync(MEMORY_FILE, 'utf8');
         this.memory = JSON.parse(data);
-        console.log(`[ServerMemoryStore] Mémoire chargée: ${this.memory.conversations.length} conversations`);
+        console.log(
+          `[ServerMemoryStore] Mémoire chargée: ${this.memory.conversations.length} conversations`
+        );
       } else {
         // Fichier absent : initialiser depuis sample ou defaults
         if (fs.existsSync(MEMORY_SAMPLE)) {
@@ -58,7 +60,7 @@ export class ServerMemoryStore {
             conversations: [],
             userInfo: {},
             interactions: [],
-            lastUpdated: null
+            lastUpdated: null,
           };
           fs.writeFileSync(MEMORY_FILE, JSON.stringify(this.memory, null, 2), 'utf8');
           console.log('[ServerMemoryStore] Fichier mémoire initialisé avec defaults');
@@ -70,7 +72,7 @@ export class ServerMemoryStore {
         conversations: [],
         userInfo: {},
         interactions: [],
-        lastUpdated: null
+        lastUpdated: null,
       };
     }
   }
@@ -98,11 +100,11 @@ export class ServerMemoryStore {
       input,
       response,
       metadata,
-      timestamp: new Date().toISOString()
+      timestamp: new Date().toISOString(),
     };
 
     this.memory.interactions.unshift(interaction);
-    
+
     // Limiter à 1000 interactions
     if (this.memory.interactions.length > 1000) {
       this.memory.interactions = this.memory.interactions.slice(0, 1000);
@@ -120,7 +122,7 @@ export class ServerMemoryStore {
   _extractPersonalInfo(input, response) {
     const inputLower = input.toLowerCase();
     const responseLower = response.toLowerCase();
-    const fullText = (input + ' ' + response).toLowerCase();
+    const fullText = `${input} ${response}`.toLowerCase();
 
     // ✨ 1. Détecter prénom
     const prenomPatterns = [
@@ -129,7 +131,7 @@ export class ServerMemoryStore {
       /appelle-moi ([A-Za-zÀ-ÿ]+)/i,
       /mon nom est ([A-Za-zÀ-ÿ]+)/i,
       /je suis ([A-Za-zÀ-ÿ]+)/i,
-      /prénom[:\s]+([A-Za-zÀ-ÿ]+)/i
+      /prénom[:\s]+([A-Za-zÀ-ÿ]+)/i,
     ];
 
     for (const pattern of prenomPatterns) {
@@ -149,9 +151,9 @@ export class ServerMemoryStore {
       const responsePrenomPatterns = [
         /(?:votre|ton) prénom est ([A-Za-zÀ-ÿ]+)/i,
         /(?:vous vous appelez|tu t'appelles) ([A-Za-zÀ-ÿ]+)/i,
-        /(?:prénom|appelle)[\s:]+([A-Za-zÀ-ÿ]+)/i
+        /(?:prénom|appelle)[\s:]+([A-Za-zÀ-ÿ]+)/i,
       ];
-      
+
       for (const pattern of responsePrenomPatterns) {
         const match = response.match(pattern);
         if (match && match[1]) {
@@ -171,12 +173,12 @@ export class ServerMemoryStore {
       /(?:ton|votre) rôle est d'([^.!?]+)/i, // Cas spécifique "d'X"
       /(?:tu es|vous êtes) (?:un|une|mon|ma) ([^.!?]+)/i,
       /(?:mission|objectif|stratégie)[:\s]+([^.!?]+)/i, // "mission: X", "objectif: X", "stratégie: X" (peut être rôle OU stratégie)
-      /(?:explique|définis|définir) (?:ton|votre) (?:rôle|mission|stratégie)[:\s]+([^.!?]+)/i
+      /(?:explique|définis|définir) (?:ton|votre) (?:rôle|mission|stratégie)[:\s]+([^.!?]+)/i,
     ];
-    
+
     // Essayer chaque pattern (sans break pour permettre plusieurs rôles)
     // Utiliser input+response originaux (pas fullText en minuscules) pour préserver la casse
-    const originalText = input + ' ' + response;
+    const originalText = `${input} ${response}`;
     for (const pattern of rolePatterns) {
       const match = originalText.match(pattern);
       if (match && match[1]) {
@@ -188,12 +190,10 @@ export class ServerMemoryStore {
           }
           // Vérifier si le rôle n'est pas déjà présent (comparaison insensible à la casse + détection sous-chaînes)
           const roleLower = role.toLowerCase();
-          const exists = this.memory.userInfo.role.some(r => {
+          const exists = this.memory.userInfo.role.some((r) => {
             const rLower = r.toLowerCase();
             // Détecter doublons exacts ou sous-chaînes
-            return rLower === roleLower || 
-                   rLower.includes(roleLower) || 
-                   roleLower.includes(rLower);
+            return rLower === roleLower || rLower.includes(roleLower) || roleLower.includes(rLower);
           });
           if (!exists) {
             this.memory.userInfo.role.push(role);
@@ -203,14 +203,13 @@ export class ServerMemoryStore {
       }
     }
 
-
     // ✨ 3. Détecter stratégie/projet
     const strategyPatterns = [
       /(?:notre|ma|mon) (?:stratégie|projet|vision|objectif|plan) (?:est (?:de |d'|))([^.!?]+)/i, // "notre stratégie est de X", "notre projet est d'X" (sans capturer "est")
       /(?:notre|ma|mon) (?:stratégie|projet|vision|objectif|plan):\s+([^.!?]+)/i, // "notre stratégie: X" (uniquement avec ":")
       /(?:stratégie|projet|vision|plan):\s+([^.!?]+)/i, // "stratégie: X", "projet: X" (uniquement avec ":")
       /(?:on|nous) (?:veut|veulent|souhaite|souhaitons|cherche|cherchons|développe|développons|crée|créons) (?:de |d'|un|une|le|la|les )([^.!?]+)/i, // "on veut de X", "nous souhaitons créer X" (avec article)
-      /(?:on|nous) (?:veut|veulent|souhaite|souhaitons|cherche|cherchons|développe|développons|crée|créons) ([^.!?]+)/i // "on veut X", "nous souhaitons X" (sans article, doit être en dernier)
+      /(?:on|nous) (?:veut|veulent|souhaite|souhaitons|cherche|cherchons|développe|développons|crée|créons) ([^.!?]+)/i, // "on veut X", "nous souhaitons X" (sans article, doit être en dernier)
     ];
 
     // Essayer chaque pattern (sans break pour permettre plusieurs stratégies)
@@ -226,12 +225,14 @@ export class ServerMemoryStore {
           }
           // Vérifier si la stratégie n'est pas déjà présente (comparaison insensible à la casse + détection sous-chaînes)
           const strategyLower = strategy.toLowerCase();
-          const exists = this.memory.userInfo.strategie.some(s => {
+          const exists = this.memory.userInfo.strategie.some((s) => {
             const sLower = s.toLowerCase();
             // Détecter doublons exacts ou sous-chaînes (ex: "développer X" vs "est de développer X")
-            return sLower === strategyLower || 
-                   sLower.includes(strategyLower) || 
-                   strategyLower.includes(sLower);
+            return (
+              sLower === strategyLower ||
+              sLower.includes(strategyLower) ||
+              strategyLower.includes(sLower)
+            );
           });
           if (!exists) {
             this.memory.userInfo.strategie.push(strategy);
@@ -245,7 +246,7 @@ export class ServerMemoryStore {
     const contextPatterns = [
       /(?:important|essentiel|crucial|clé)[:\s]+([^.!?]+)/i, // "important: X", "essentiel: X"
       /(?:souviens-toi|retiens|note|mémorise)[:\s]+([^.!?]+)/i, // "souviens-toi: X", "retiens: X"
-      /(?:contexte|situation|projet)[:\s]+([^.!?]{10,500})/i // "contexte: X" (10-500 caractères, réduit de 20 à 10)
+      /(?:contexte|situation|projet)[:\s]+([^.!?]{10,500})/i, // "contexte: X" (10-500 caractères, réduit de 20 à 10)
     ];
 
     // Utiliser input+response originaux (pas fullText en minuscules) pour préserver la casse
@@ -261,10 +262,14 @@ export class ServerMemoryStore {
             }
             // Vérifier si le contexte n'est pas déjà présent (comparaison insensible à la casse)
             const contextLower = context.toLowerCase();
-            const exists = this.memory.userInfo.context.some(c => c.toLowerCase() === contextLower);
+            const exists = this.memory.userInfo.context.some(
+              (c) => c.toLowerCase() === contextLower
+            );
             if (!exists) {
               this.memory.userInfo.context.push(context);
-              console.log(`[ServerMemoryStore] Contexte important détecté: ${context.substring(0, 50)}...`);
+              console.log(
+                `[ServerMemoryStore] Contexte important détecté: ${context.substring(0, 50)}...`
+              );
             }
           }
         }
@@ -278,20 +283,100 @@ export class ServerMemoryStore {
   _isCommonWord(word) {
     const commonWords = [
       // Articles et déterminants
-      'le', 'la', 'les', 'un', 'une', 'des', 'de', 'du', 'au', 'aux',
+      'le',
+      'la',
+      'les',
+      'un',
+      'une',
+      'des',
+      'de',
+      'du',
+      'au',
+      'aux',
       // Possessifs
-      'mon', 'ma', 'mes', 'ton', 'ta', 'tes', 'son', 'sa', 'ses', 'notre', 'votre', 'leur',
+      'mon',
+      'ma',
+      'mes',
+      'ton',
+      'ta',
+      'tes',
+      'son',
+      'sa',
+      'ses',
+      'notre',
+      'votre',
+      'leur',
       // Pronoms
-      'je', 'tu', 'il', 'elle', 'on', 'nous', 'vous', 'ils', 'elles', 'ce', 'cela', 'ça',
+      'je',
+      'tu',
+      'il',
+      'elle',
+      'on',
+      'nous',
+      'vous',
+      'ils',
+      'elles',
+      'ce',
+      'cela',
+      'ça',
       // Verbes courants
-      'est', 'sont', 'être', 'avoir', 'faire', 'dire', 'aller', 'voir', 'savoir', 'pouvoir', 'vouloir', 'devoir', 'falloir',
+      'est',
+      'sont',
+      'être',
+      'avoir',
+      'faire',
+      'dire',
+      'aller',
+      'voir',
+      'savoir',
+      'pouvoir',
+      'vouloir',
+      'devoir',
+      'falloir',
       // Adjectifs/états courants qui peuvent suivre "je suis"
-      'prêt', 'prête', 'content', 'contente', 'heureux', 'heureuse', 'désolé', 'désolée',
-      'fatigué', 'fatiguée', 'occupé', 'occupée', 'disponible', 'libre', 'bien', 'mal',
-      'là', 'ici', 'parti', 'partie', 'arrivé', 'arrivée', 'rentré', 'rentrée',
-      'certain', 'certaine', 'sûr', 'sûre', 'curieux', 'curieuse', 'intéressé', 'intéressée',
+      'prêt',
+      'prête',
+      'content',
+      'contente',
+      'heureux',
+      'heureuse',
+      'désolé',
+      'désolée',
+      'fatigué',
+      'fatiguée',
+      'occupé',
+      'occupée',
+      'disponible',
+      'libre',
+      'bien',
+      'mal',
+      'là',
+      'ici',
+      'parti',
+      'partie',
+      'arrivé',
+      'arrivée',
+      'rentré',
+      'rentrée',
+      'certain',
+      'certaine',
+      'sûr',
+      'sûre',
+      'curieux',
+      'curieuse',
+      'intéressé',
+      'intéressée',
       // Autres mots courants
-      'oui', 'non', 'peut', 'très', 'aussi', 'plus', 'moins', 'tout', 'rien', 'quelque'
+      'oui',
+      'non',
+      'peut',
+      'très',
+      'aussi',
+      'plus',
+      'moins',
+      'tout',
+      'rien',
+      'quelque',
     ];
     return commonWords.includes(word.toLowerCase());
   }
@@ -320,16 +405,20 @@ export class ServerMemoryStore {
     for (const interaction of this.memory.interactions) {
       const inputLower = (interaction.input || '').toLowerCase();
       const responseLower = (interaction.response || '').toLowerCase();
-      
+
       // Calculer similarité basique
-      const queryWords = queryLower.split(/\s+/).filter(w => w.length > 2);
-      const inputWords = inputLower.split(/\s+/).filter(w => w.length > 2);
-      const commonWords = queryWords.filter(w => inputWords.includes(w));
-      
-      if (commonWords.length > 0 || inputLower.includes(queryLower) || responseLower.includes(queryLower)) {
+      const queryWords = queryLower.split(/\s+/).filter((w) => w.length > 2);
+      const inputWords = inputLower.split(/\s+/).filter((w) => w.length > 2);
+      const commonWords = queryWords.filter((w) => inputWords.includes(w));
+
+      if (
+        commonWords.length > 0 ||
+        inputLower.includes(queryLower) ||
+        responseLower.includes(queryLower)
+      ) {
         results.push({
           ...interaction,
-          relevance: commonWords.length / Math.max(queryWords.length, 1)
+          relevance: commonWords.length / Math.max(queryWords.length, 1),
         });
       }
     }
@@ -348,11 +437,11 @@ export class ServerMemoryStore {
     // ✨ Informations utilisateur complètes
     if (Object.keys(this.memory.userInfo).length > 0) {
       context += `## 👤 INFORMATIONS UTILISATEUR & CONTEXTE\n\n`;
-      
+
       if (this.memory.userInfo.prenom) {
         context += `**Prénom**: ${this.memory.userInfo.prenom}\n\n`;
       }
-      
+
       if (this.memory.userInfo.role && this.memory.userInfo.role.length > 0) {
         context += `**Rôle/Mission de PRISM**:\n`;
         this.memory.userInfo.role.forEach((role, idx) => {
@@ -360,7 +449,7 @@ export class ServerMemoryStore {
         });
         context += `\n`;
       }
-      
+
       if (this.memory.userInfo.strategie && this.memory.userInfo.strategie.length > 0) {
         context += `**Stratégie/Projet**:\n`;
         this.memory.userInfo.strategie.forEach((strat, idx) => {
@@ -368,7 +457,7 @@ export class ServerMemoryStore {
         });
         context += `\n`;
       }
-      
+
       if (this.memory.userInfo.context && this.memory.userInfo.context.length > 0) {
         context += `**Contexte Important**:\n`;
         this.memory.userInfo.context.forEach((ctx, idx) => {
@@ -383,7 +472,7 @@ export class ServerMemoryStore {
     if (relatedConversations.length > 0) {
       context += `## 💬 CONVERSATIONS PRÉCÉDENTES\n\n`;
       context += `Dans nos conversations précédentes, nous avons discuté de :\n\n`;
-      
+
       relatedConversations.forEach((conv, idx) => {
         context += `${idx + 1}. **Question**: ${conv.input.substring(0, 100)}...\n`;
         context += `   **Réponse**: ${conv.response.substring(0, 150)}...\n\n`;
@@ -396,4 +485,3 @@ export class ServerMemoryStore {
 
 // Singleton
 export const serverMemoryStore = new ServerMemoryStore();
-

@@ -1,13 +1,13 @@
 /**
  * FileContextManager - Gestionnaire de contexte de fichiers
- * 
+ *
  * Gère le stockage temporaire des fichiers uploadés dans le chat
  * pour permettre les questions de suivi.
- * 
+ *
  * @module src/chat/FileContextManager
  */
 
-import crypto from 'crypto';
+import crypto from 'node:crypto';
 
 /**
  * FileContextManager - Classe de gestion du contexte fichier
@@ -24,7 +24,7 @@ export class FileContextManager {
       contextTTL: options.contextTTL || 30 * 60 * 1000, // 30 minutes
       maxContexts: options.maxContexts || 100,
       maxFileSize: options.maxFileSize || 50 * 1024 * 1024,
-      ...options
+      ...options,
     };
 
     this.contexts = new Map();
@@ -51,20 +51,20 @@ export class FileContextManager {
       file: {
         buffer: file.buffer,
         mimetype: file.mimetype,
-        size: file.size
+        size: file.size,
       },
       metadata: {
         originalName: metadata.originalName,
         type: metadata.type,
         uploadedAt: new Date().toISOString(),
-        ...metadata
+        ...metadata,
       },
       parsedData: null,
       analysis: null,
       columns: null,
       dataPreview: null,
       createdAt: Date.now(),
-      lastAccessed: Date.now()
+      lastAccessed: Date.now(),
     };
 
     // Stocker
@@ -83,13 +83,13 @@ export class FileContextManager {
    */
   async get(sessionId) {
     const context = this.contexts.get(sessionId);
-    
+
     if (context) {
       context.lastAccessed = Date.now();
       // Reprogrammer le nettoyage
       this._scheduleCleanup(sessionId);
     }
-    
+
     return context;
   }
 
@@ -100,7 +100,7 @@ export class FileContextManager {
    */
   async enrichContext(sessionId, enrichment) {
     const context = this.contexts.get(sessionId);
-    
+
     if (context) {
       if (enrichment.columns) {
         context.columns = enrichment.columns;
@@ -117,7 +117,7 @@ export class FileContextManager {
       if (enrichment.parsedData) {
         context.parsedData = enrichment.parsedData;
       }
-      
+
       context.lastAccessed = Date.now();
     }
   }
@@ -133,7 +133,7 @@ export class FileContextManager {
       clearTimeout(timer);
       this.cleanupTimers.delete(sessionId);
     }
-    
+
     this.contexts.delete(sessionId);
   }
 
@@ -151,7 +151,7 @@ export class FileContextManager {
    */
   getStats() {
     let totalMemoryUsage = 0;
-    
+
     for (const context of this.contexts.values()) {
       if (context.file?.buffer) {
         totalMemoryUsage += context.file.buffer.length;
@@ -162,7 +162,7 @@ export class FileContextManager {
       activeContexts: this.contexts.size,
       totalMemoryUsage,
       maxContexts: this.options.maxContexts,
-      contextTTL: this.options.contextTTL
+      contextTTL: this.options.contextTTL,
     };
   }
 

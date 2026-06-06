@@ -1,15 +1,15 @@
 /**
  * ChatFileProcessor - Processeur de fichiers pour le chat
- * 
+ *
  * Gère l'upload et l'analyse de fichiers directement dans l'interface de chat.
  * Supporte les fichiers Excel, CSV et autres formats de données.
- * 
+ *
  * @module src/chat/ChatFileProcessor
  */
 
 import { FileContextManager } from './FileContextManager.js';
 import { ExcelAnalyzer } from '../excel/ExcelAnalyzer.js';
-import path from 'path';
+import path from 'node:path';
 
 /**
  * Types de fichiers supportés avec leurs MIME types
@@ -20,7 +20,7 @@ const SUPPORTED_FILE_TYPES = {
   'text/csv': 'csv',
   'application/csv': 'csv',
   'text/plain': 'csv', // Parfois les CSV sont envoyés comme text/plain
-  'application/vnd.oasis.opendocument.spreadsheet': 'ods'
+  'application/vnd.oasis.opendocument.spreadsheet': 'ods',
 };
 
 /**
@@ -30,7 +30,7 @@ const EXTENSION_MAP = {
   '.xlsx': 'xlsx',
   '.xls': 'xls',
   '.csv': 'csv',
-  '.ods': 'ods'
+  '.ods': 'ods',
 };
 
 /**
@@ -43,7 +43,7 @@ const ANALYSIS_INTENT_PATTERNS = {
   aggregation: [/average/i, /mean/i, /sum/i, /total/i, /count/i, /moyenne/i],
   outlier_detection: [/outlier/i, /anomal/i, /unusual/i, /extreme/i, /aberrant/i],
   correlation: [/correlat/i, /relation/i, /link/i, /associat/i],
-  distribution: [/distribut/i, /histogram/i, /spread/i, /répartition/i]
+  distribution: [/distribut/i, /histogram/i, /spread/i, /répartition/i],
 };
 
 /**
@@ -59,17 +59,17 @@ export class ChatFileProcessor {
       contextTTL: options.contextTTL || 30 * 60 * 1000, // 30 min
       processingTimeout: options.processingTimeout || 60000, // 60s
       enableAI: options.enableAI !== false,
-      ...options
+      ...options,
     };
 
     this.fileContextManager = new FileContextManager({
       contextTTL: this.options.contextTTL,
-      maxFileSize: this.options.maxFileSize
+      maxFileSize: this.options.maxFileSize,
     });
 
     this.excelAnalyzer = new ExcelAnalyzer({
       maxFileSize: this.options.maxFileSize,
-      enableAI: this.options.enableAI
+      enableAI: this.options.enableAI,
     });
 
     this.supportedTypes = ['xlsx', 'xls', 'csv', 'ods'];
@@ -132,11 +132,11 @@ export class ChatFileProcessor {
    */
   sanitizeFileName(fileName) {
     if (!fileName) return 'unknown';
-    
+
     // Supprimer les caractères dangereux
     return fileName
       .replace(/\.\./g, '')
-      .replace(/[\/\\]/g, '_')
+      .replace(/[/\\]/g, '_')
       .replace(/[<>:"|?*]/g, '_')
       .substring(0, 255);
   }
@@ -180,9 +180,9 @@ export class ChatFileProcessor {
         success: false,
         error: {
           code: 'VALIDATION_ERROR',
-          message: error.message
+          message: error.message,
         },
-        userMessage: `Erreur de validation: ${error.message}`
+        userMessage: `Erreur de validation: ${error.message}`,
       };
     }
 
@@ -195,9 +195,10 @@ export class ChatFileProcessor {
         success: false,
         error: {
           code: 'UNSUPPORTED_TYPE',
-          message: error.message
+          message: error.message,
         },
-        userMessage: 'Ce type de fichier n\'est pas supporté. Formats acceptés: Excel (.xlsx, .xls), CSV.'
+        userMessage:
+          "Ce type de fichier n'est pas supporté. Formats acceptés: Excel (.xlsx, .xls), CSV.",
       };
     }
 
@@ -206,7 +207,7 @@ export class ChatFileProcessor {
     const fileContext = await this.fileContextManager.store(sessionId, file, {
       originalName: sanitizedName,
       type: fileType,
-      uploadedAt: new Date().toISOString()
+      uploadedAt: new Date().toISOString(),
     });
 
     // Détecter l'intention d'analyse
@@ -220,7 +221,7 @@ export class ChatFileProcessor {
       computeCorrelations: analysisType === 'correlation',
       detectOutliers: analysisType === 'outlier_detection',
       analyzeDistributions: analysisType === 'distribution',
-      checkDataQuality: true
+      checkDataQuality: true,
     };
 
     try {
@@ -233,9 +234,9 @@ export class ChatFileProcessor {
           success: false,
           error: {
             code: 'PARSE_ERROR',
-            message: analysis.error?.message || 'Parsing failed'
+            message: analysis.error?.message || 'Parsing failed',
           },
-          userMessage: 'Impossible de lire ce fichier. Vérifiez qu\'il n\'est pas corrompu.'
+          userMessage: "Impossible de lire ce fichier. Vérifiez qu'il n'est pas corrompu.",
         };
       }
 
@@ -244,7 +245,7 @@ export class ChatFileProcessor {
         columns: analysis.sheets?.[0]?.headers,
         analysis: analysis.summary,
         statistics: analysis.sheets?.[0]?.statistics,
-        parsedData: analysis.parsedData
+        parsedData: analysis.parsedData,
       });
 
       // Générer la réponse
@@ -262,23 +263,22 @@ export class ChatFileProcessor {
           rowCount: analysis.metadata?.totalRows,
           columnCount: analysis.metadata?.totalColumns,
           analyzedAt: new Date().toISOString(),
-          analysisTimeMs: analysis.metadata?.analysisTimeMs || 0
+          analysisTimeMs: analysis.metadata?.analysisTimeMs || 0,
         },
         analysisOptions,
         visualizations: this._generateVisualizations(analysis),
-        queryType: analysisType
+        queryType: analysisType,
       };
-
     } catch (error) {
       console.error('[ChatFileProcessor] Processing error:', error);
-      
+
       return {
         success: false,
         error: {
           code: 'PARSE_ERROR',
-          message: error.message
+          message: error.message,
         },
-        userMessage: 'Une erreur est survenue lors de l\'analyse du fichier.'
+        userMessage: "Une erreur est survenue lors de l'analyse du fichier.",
       };
     }
   }
@@ -311,7 +311,7 @@ export class ChatFileProcessor {
       enrichedPrompt,
       analysisType,
       columns: context.columns,
-      statistics: context.statistics
+      statistics: context.statistics,
     };
   }
 
@@ -357,7 +357,7 @@ Réponds en utilisant les données du fichier.
             type: 'histogram',
             column: col,
             data: dist.histogram,
-            title: `Distribution: ${col}`
+            title: `Distribution: ${col}`,
           });
         }
       }
@@ -368,7 +368,7 @@ Réponds en utilisant les données du fichier.
       visualizations.push({
         type: 'correlation_list',
         data: analysis.strongCorrelations,
-        title: 'Corrélations fortes'
+        title: 'Corrélations fortes',
       });
     }
 

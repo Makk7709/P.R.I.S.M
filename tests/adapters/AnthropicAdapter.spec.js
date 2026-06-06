@@ -4,12 +4,12 @@ import AnthropicAdapter from '../../src/core/providers/AnthropicAdapter.js';
 // Mock Anthropic client
 const mockAnthropic = {
   messages: {
-    create: vi.fn()
-  }
+    create: vi.fn(),
+  },
 };
 
 vi.mock('@anthropic-ai/sdk', () => ({
-  default: vi.fn(() => mockAnthropic)
+  default: vi.fn(() => mockAnthropic),
 }));
 
 describe('AnthropicAdapter', () => {
@@ -19,17 +19,17 @@ describe('AnthropicAdapter', () => {
   beforeEach(() => {
     // Store original environment
     originalEnv = { ...process.env };
-    
+
     // Set test environment
     process.env.ANTHROPIC_API_KEY = 'test-anthropic-key';
     process.env.ANTHROPIC_MODEL = 'claude-3-5-sonnet-20240620';
-    
+
     adapter = new AnthropicAdapter({
       timeoutMs: 100,
       maxRetries: 2,
-      backoffBaseMs: 10
+      backoffBaseMs: 10,
     });
-    
+
     vi.clearAllMocks();
   });
 
@@ -62,76 +62,84 @@ describe('AnthropicAdapter', () => {
   describe('Success Cases', () => {
     it('should return valid decision for successful API call', async () => {
       const mockResponse = {
-        content: [{
-          text: '{"decision": true, "reasoning": "Valid decision based on context"}'
-        }]
+        content: [
+          {
+            text: '{"decision": true, "reasoning": "Valid decision based on context"}',
+          },
+        ],
       };
-      
+
       mockAnthropic.messages.create.mockResolvedValue(mockResponse);
-      
+
       const result = await adapter.evaluate({
         type: 'test',
-        payload: { value: 42 }
+        payload: { value: 42 },
       });
-      
+
       expect(result.decision).toBe(true);
       expect(result.reasoning).toBe('Valid decision based on context');
       expect(mockAnthropic.messages.create).toHaveBeenCalledWith({
         model: 'claude-3-5-sonnet-20240620',
         max_tokens: 64,
         temperature: 0,
-        messages: [{
-          role: 'user',
-          content: expect.stringContaining('test')
-        }]
+        messages: [
+          {
+            role: 'user',
+            content: expect.stringContaining('test'),
+          },
+        ],
       });
     });
 
     it('should handle false decision response', async () => {
       const mockResponse = {
-        content: [{
-          text: '{"decision": false, "reasoning": "Insufficient evidence"}'
-        }]
+        content: [
+          {
+            text: '{"decision": false, "reasoning": "Insufficient evidence"}',
+          },
+        ],
       };
-      
+
       mockAnthropic.messages.create.mockResolvedValue(mockResponse);
-      
+
       const result = await adapter.evaluate({
         type: 'validation',
-        payload: { insufficient: true }
+        payload: { insufficient: true },
       });
-      
+
       expect(result.decision).toBe(false);
       expect(result.reasoning).toBe('Insufficient evidence');
     });
 
     it('should handle complex payload structures', async () => {
       const mockResponse = {
-        content: [{
-          text: '{"decision": true, "reasoning": "Complex analysis completed"}'
-        }]
+        content: [
+          {
+            text: '{"decision": true, "reasoning": "Complex analysis completed"}',
+          },
+        ],
       };
-      
+
       mockAnthropic.messages.create.mockResolvedValue(mockResponse);
-      
+
       const complexPayload = {
         analysis: { metrics: [1, 2, 3] },
-        context: { domain: 'finance' }
+        context: { domain: 'finance' },
       };
-      
+
       const result = await adapter.evaluate({
         type: 'complex_analysis',
-        payload: complexPayload
+        payload: complexPayload,
       });
-      
+
       expect(result.decision).toBe(true);
       expect(mockAnthropic.messages.create).toHaveBeenCalledWith(
         expect.objectContaining({
           messages: expect.arrayContaining([
             expect.objectContaining({
-              content: expect.stringContaining('complex_analysis')
-            })
-          ])
+              content: expect.stringContaining('complex_analysis'),
+            }),
+          ]),
         })
       );
     });
@@ -140,14 +148,14 @@ describe('AnthropicAdapter', () => {
   describe('Error Cases', () => {
     it('should handle API timeout', async () => {
       mockAnthropic.messages.create.mockImplementation(
-        () => new Promise(resolve => setTimeout(resolve, 200))
+        () => new Promise((resolve) => setTimeout(resolve, 200))
       );
-      
+
       const result = await adapter.evaluate({
         type: 'timeout_test',
-        payload: {}
+        payload: {},
       });
-      
+
       expect(result.decision).toBe(false);
       expect(result.reasoning).toContain('provider_error:timeout');
     });
@@ -156,46 +164,48 @@ describe('AnthropicAdapter', () => {
       const error = new Error('Rate limit exceeded');
       error.status = 429;
       mockAnthropic.messages.create.mockRejectedValue(error);
-      
+
       const result = await adapter.evaluate({
         type: 'rate_limit_test',
-        payload: {}
+        payload: {},
       });
-      
+
       expect(result.decision).toBe(false);
       expect(result.reasoning).toContain('provider_error:Rate limit exceeded');
     });
 
     it('should handle invalid JSON response', async () => {
       const mockResponse = {
-        content: [{
-          text: 'This is not valid JSON'
-        }]
+        content: [
+          {
+            text: 'This is not valid JSON',
+          },
+        ],
       };
-      
+
       mockAnthropic.messages.create.mockResolvedValue(mockResponse);
-      
+
       const result = await adapter.evaluate({
         type: 'invalid_json',
-        payload: {}
+        payload: {},
       });
-      
+
       expect(result.decision).toBe(false);
       expect(result.reasoning).toBe('parse_error');
     });
 
     it('should handle missing response content', async () => {
       const mockResponse = {
-        content: []
+        content: [],
       };
-      
+
       mockAnthropic.messages.create.mockResolvedValue(mockResponse);
-      
+
       const result = await adapter.evaluate({
         type: 'missing_content',
-        payload: {}
+        payload: {},
       });
-      
+
       expect(result.decision).toBe(false);
       expect(result.reasoning).toBe('parse_error');
     });
@@ -204,14 +214,14 @@ describe('AnthropicAdapter', () => {
       const mockResponse = {
         // Missing content array
       };
-      
+
       mockAnthropic.messages.create.mockResolvedValue(mockResponse);
-      
+
       const result = await adapter.evaluate({
         type: 'malformed_response',
-        payload: {}
+        payload: {},
       });
-      
+
       expect(result.decision).toBe(false);
       expect(result.reasoning).toBe('parse_error');
     });
@@ -226,32 +236,32 @@ describe('AnthropicAdapter', () => {
           throw new Error('Temporary service error');
         }
         return {
-          content: [{
-            text: '{"decision": true, "reasoning": "Success after retry"}'
-          }]
+          content: [
+            {
+              text: '{"decision": true, "reasoning": "Success after retry"}',
+            },
+          ],
         };
       });
-      
+
       const result = await adapter.evaluate({
         type: 'retry_test',
-        payload: {}
+        payload: {},
       });
-      
+
       expect(callCount).toBe(2);
       expect(result.decision).toBe(true);
       expect(result.reasoning).toBe('Success after retry');
     });
 
     it('should fail after max retries', async () => {
-      mockAnthropic.messages.create.mockRejectedValue(
-        new Error('Persistent service error')
-      );
-      
+      mockAnthropic.messages.create.mockRejectedValue(new Error('Persistent service error'));
+
       const result = await adapter.evaluate({
         type: 'max_retry_test',
-        payload: {}
+        payload: {},
       });
-      
+
       expect(result.decision).toBe(false);
       expect(result.reasoning).toContain('provider_error:Persistent service error');
       expect(mockAnthropic.messages.create).toHaveBeenCalledTimes(3); // 1 + maxRetries
@@ -260,24 +270,22 @@ describe('AnthropicAdapter', () => {
 
   describe('Circuit Breaker', () => {
     it('should open circuit after threshold failures', async () => {
-      mockAnthropic.messages.create.mockRejectedValue(
-        new Error('Service unavailable')
-      );
-      
+      mockAnthropic.messages.create.mockRejectedValue(new Error('Service unavailable'));
+
       // Trigger failures to open circuit
       for (let i = 0; i < 5; i++) {
         await adapter.evaluate({ type: 'circuit_test', payload: {} });
       }
-      
+
       // Clear mock to reset call count
       mockAnthropic.messages.create.mockClear();
-      
+
       // Circuit should be open now
       const result = await adapter.evaluate({
         type: 'circuit_open_test',
-        payload: {}
+        payload: {},
       });
-      
+
       expect(result.decision).toBe(false);
       expect(result.reasoning).toBe('circuit_open');
       expect(mockAnthropic.messages.create).toHaveBeenCalledTimes(0); // No new calls when circuit is open
@@ -287,49 +295,53 @@ describe('AnthropicAdapter', () => {
   describe('Security & Injection Tests', () => {
     it('should handle malicious payload injection', async () => {
       const mockResponse = {
-        content: [{
-          text: '{"decision": false, "reasoning": "Potential security threat detected"}'
-        }]
+        content: [
+          {
+            text: '{"decision": false, "reasoning": "Potential security threat detected"}',
+          },
+        ],
       };
-      
+
       mockAnthropic.messages.create.mockResolvedValue(mockResponse);
-      
+
       const maliciousPayload = {
         injection: '{{7*7}}',
-        xss: '<img src=x onerror=alert(1)>'
+        xss: '<img src=x onerror=alert(1)>',
       };
-      
+
       const result = await adapter.evaluate({
         type: 'security_test',
-        payload: maliciousPayload
+        payload: maliciousPayload,
       });
-      
+
       expect(result.decision).toBe(false);
       expect(mockAnthropic.messages.create).toHaveBeenCalledWith(
         expect.objectContaining({
           messages: expect.arrayContaining([
             expect.objectContaining({
-              content: expect.stringContaining('security_test')
-            })
-          ])
+              content: expect.stringContaining('security_test'),
+            }),
+          ]),
         })
       );
     });
 
     it('should sanitize JSON parsing', async () => {
       const mockResponse = {
-        content: [{
-          text: '{"decision": true, "reasoning": "Valid", "extra": "malicious<script>alert(1)</script>"}'
-        }]
+        content: [
+          {
+            text: '{"decision": true, "reasoning": "Valid", "extra": "malicious<script>alert(1)</script>"}',
+          },
+        ],
       };
-      
+
       mockAnthropic.messages.create.mockResolvedValue(mockResponse);
-      
+
       const result = await adapter.evaluate({
         type: 'sanitization_test',
-        payload: {}
+        payload: {},
       });
-      
+
       expect(result.decision).toBe(true);
       expect(result.reasoning).toBe('Valid');
       // Should not include extra fields
@@ -341,23 +353,25 @@ describe('AnthropicAdapter', () => {
     it('should use different Claude models', async () => {
       process.env.ANTHROPIC_MODEL = 'claude-3-haiku-20240307';
       const haikuAdapter = new AnthropicAdapter();
-      
+
       const mockResponse = {
-        content: [{
-          text: '{"decision": true, "reasoning": "Haiku model response"}'
-        }]
+        content: [
+          {
+            text: '{"decision": true, "reasoning": "Haiku model response"}',
+          },
+        ],
       };
-      
+
       mockAnthropic.messages.create.mockResolvedValue(mockResponse);
-      
+
       await haikuAdapter.evaluate({
         type: 'model_test',
-        payload: {}
+        payload: {},
       });
-      
+
       expect(mockAnthropic.messages.create).toHaveBeenCalledWith(
         expect.objectContaining({
-          model: 'claude-3-haiku-20240307'
+          model: 'claude-3-haiku-20240307',
         })
       );
     });
@@ -365,8 +379,9 @@ describe('AnthropicAdapter', () => {
 
   describe('Invariants', () => {
     it('INV-001: Should not contain hardcoded secrets', () => {
-      const adapterCode = require('fs').readFileSync(
-        '/Users/aminemohamed/Desktop/APP/PRISM INCUBATEUR/P.R.I.S.M/src/core/providers/AnthropicAdapter.js', 'utf8'
+      const adapterCode = require('node:fs').readFileSync(
+        '/Users/aminemohamed/Desktop/APP/PRISM INCUBATEUR/P.R.I.S.M/src/core/providers/AnthropicAdapter.js',
+        'utf8'
       );
       expect(adapterCode).not.toMatch(/sk-ant-[a-zA-Z0-9]{20,}/);
       expect(adapterCode).not.toMatch(/api[_-]?key[_-]?[=:]\s*['"][^'"]{10,}['"]/i);
@@ -378,18 +393,20 @@ describe('AnthropicAdapter', () => {
 
     it('INV-003: Should reject invalid response schemas', async () => {
       const mockResponse = {
-        content: [{
-          text: '{"invalid": "schema", "missing_decision": true}'
-        }]
+        content: [
+          {
+            text: '{"invalid": "schema", "missing_decision": true}',
+          },
+        ],
       };
-      
+
       mockAnthropic.messages.create.mockResolvedValue(mockResponse);
-      
+
       const result = await adapter.evaluate({
         type: 'invalid_schema',
-        payload: {}
+        payload: {},
       });
-      
+
       expect(result.decision).toBe(false);
       expect(result.reasoning).toBe(''); // Empty string when decision is false and no reasoning field
     });
@@ -397,36 +414,38 @@ describe('AnthropicAdapter', () => {
     it('INV-004: Should not make calls without API key', async () => {
       delete process.env.ANTHROPIC_API_KEY;
       const adapterNoKey = new AnthropicAdapter();
-      
+
       const error = new Error('API key required');
       mockAnthropic.messages.create.mockRejectedValue(error);
-      
+
       const result = await adapterNoKey.evaluate({
         type: 'no_key_test',
-        payload: {}
+        payload: {},
       });
-      
+
       expect(result.decision).toBe(false);
       expect(result.reasoning).toContain('provider_error');
     });
 
     it('INV-005: Should respect max_tokens constraint', async () => {
       const mockResponse = {
-        content: [{
-          text: '{"decision": true, "reasoning": "Short response"}'
-        }]
+        content: [
+          {
+            text: '{"decision": true, "reasoning": "Short response"}',
+          },
+        ],
       };
-      
+
       mockAnthropic.messages.create.mockResolvedValue(mockResponse);
-      
+
       await adapter.evaluate({
         type: 'token_limit_test',
-        payload: {}
+        payload: {},
       });
-      
+
       expect(mockAnthropic.messages.create).toHaveBeenCalledWith(
         expect.objectContaining({
-          max_tokens: 64
+          max_tokens: 64,
         })
       );
     });

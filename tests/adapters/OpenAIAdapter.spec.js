@@ -5,13 +5,13 @@ import OpenAIAdapter from '../../src/core/providers/OpenAIAdapter.js';
 const mockOpenAI = {
   chat: {
     completions: {
-      create: vi.fn()
-    }
-  }
+      create: vi.fn(),
+    },
+  },
 };
 
 vi.mock('openai', () => ({
-  default: vi.fn(() => mockOpenAI)
+  default: vi.fn(() => mockOpenAI),
 }));
 
 describe('OpenAIAdapter', () => {
@@ -21,17 +21,17 @@ describe('OpenAIAdapter', () => {
   beforeEach(() => {
     // Store original environment
     originalEnv = { ...process.env };
-    
+
     // Set test environment
     process.env.OPENAI_API_KEY = 'test-openai-key';
     process.env.OPENAI_MODEL = 'gpt-4o-mini';
-    
+
     adapter = new OpenAIAdapter({
       timeoutMs: 100,
       maxRetries: 2,
-      backoffBaseMs: 10
+      backoffBaseMs: 10,
     });
-    
+
     vi.clearAllMocks();
   });
 
@@ -63,81 +63,90 @@ describe('OpenAIAdapter', () => {
   describe('Success Cases', () => {
     it('should return valid decision for successful API call', async () => {
       const mockResponse = {
-        choices: [{
-          message: {
-            content: '{"decision": true, "reasoning": "Valid decision"}'
-          }
-        }]
+        choices: [
+          {
+            message: {
+              content: '{"decision": true, "reasoning": "Valid decision"}',
+            },
+          },
+        ],
       };
-      
+
       mockOpenAI.chat.completions.create.mockResolvedValue(mockResponse);
-      
+
       const result = await adapter.evaluate({
         type: 'test',
-        payload: { value: 42 }
+        payload: { value: 42 },
       });
-      
+
       expect(result.decision).toBe(true);
       expect(result.reasoning).toBe('Valid decision');
       expect(mockOpenAI.chat.completions.create).toHaveBeenCalledWith({
         model: 'gpt-4o-mini',
         messages: [
-          { role: 'system', content: 'Answer with a JSON: {"decision": true|false, "reasoning": "..."}' },
-          { role: 'user', content: expect.stringContaining('test') }
+          {
+            role: 'system',
+            content: 'Answer with a JSON: {"decision": true|false, "reasoning": "..."}',
+          },
+          { role: 'user', content: expect.stringContaining('test') },
         ],
-        temperature: 0
+        temperature: 0,
       });
     });
 
     it('should handle false decision response', async () => {
       const mockResponse = {
-        choices: [{
-          message: {
-            content: '{"decision": false, "reasoning": "Invalid input"}'
-          }
-        }]
+        choices: [
+          {
+            message: {
+              content: '{"decision": false, "reasoning": "Invalid input"}',
+            },
+          },
+        ],
       };
-      
+
       mockOpenAI.chat.completions.create.mockResolvedValue(mockResponse);
-      
+
       const result = await adapter.evaluate({
         type: 'validation',
-        payload: { invalid: true }
+        payload: { invalid: true },
       });
-      
+
       expect(result.decision).toBe(false);
       expect(result.reasoning).toBe('Invalid input');
     });
 
     it('should handle complex payload structures', async () => {
       const mockResponse = {
-        choices: [{
-          message: {
-            content: '{"decision": true, "reasoning": "Complex data processed"}'
-          }
-        }]
+        choices: [
+          {
+            message: {
+              content: '{"decision": true, "reasoning": "Complex data processed"}',
+            },
+          },
+        ],
       };
-      
+
       mockOpenAI.chat.completions.create.mockResolvedValue(mockResponse);
-      
+
       const complexPayload = {
         nested: { data: [1, 2, 3] },
-        metadata: { timestamp: Date.now() }
+        metadata: { timestamp: Date.now() },
       };
-      
+
       const result = await adapter.evaluate({
         type: 'complex',
-        payload: complexPayload
+        payload: complexPayload,
       });
-      
+
       expect(result.decision).toBe(true);
       expect(mockOpenAI.chat.completions.create).toHaveBeenCalledWith(
         expect.objectContaining({
           messages: expect.arrayContaining([
             expect.objectContaining({
-              content: expect.stringContaining('complex')
-            })
-          ])
+              content: expect.stringContaining('complex'),
+            }),
+          ]),
         })
       );
     });
@@ -146,14 +155,14 @@ describe('OpenAIAdapter', () => {
   describe('Error Cases', () => {
     it('should handle API timeout', async () => {
       mockOpenAI.chat.completions.create.mockImplementation(
-        () => new Promise(resolve => setTimeout(resolve, 200))
+        () => new Promise((resolve) => setTimeout(resolve, 200))
       );
-      
+
       const result = await adapter.evaluate({
         type: 'timeout_test',
-        payload: {}
+        payload: {},
       });
-      
+
       expect(result.decision).toBe(false);
       expect(result.reasoning).toContain('provider_error:timeout');
     });
@@ -162,66 +171,70 @@ describe('OpenAIAdapter', () => {
       const error = new Error('Internal Server Error');
       error.status = 500;
       mockOpenAI.chat.completions.create.mockRejectedValue(error);
-      
+
       const result = await adapter.evaluate({
         type: 'error_test',
-        payload: {}
+        payload: {},
       });
-      
+
       expect(result.decision).toBe(false);
       expect(result.reasoning).toContain('provider_error:Internal Server Error');
     });
 
     it('should handle invalid JSON response', async () => {
       const mockResponse = {
-        choices: [{
-          message: {
-            content: 'Invalid JSON response'
-          }
-        }]
+        choices: [
+          {
+            message: {
+              content: 'Invalid JSON response',
+            },
+          },
+        ],
       };
-      
+
       mockOpenAI.chat.completions.create.mockResolvedValue(mockResponse);
-      
+
       const result = await adapter.evaluate({
         type: 'invalid_json',
-        payload: {}
+        payload: {},
       });
-      
+
       expect(result.decision).toBe(false);
       expect(result.reasoning).toBe('parse_error');
     });
 
     it('should handle missing response content', async () => {
       const mockResponse = {
-        choices: [{
-          message: {}
-        }]
+        choices: [
+          {
+            message: {},
+          },
+        ],
       };
-      
+
       mockOpenAI.chat.completions.create.mockResolvedValue(mockResponse);
-      
+
       const result = await adapter.evaluate({
         type: 'missing_content',
-        payload: {}
+        payload: {},
       });
-      
+
       expect(result.decision).toBe(false);
       expect(result.reasoning).toBe('parse_error');
     });
 
     it('should handle empty choices array', async () => {
       const mockResponse = {
-        choices: []
+        choices: [],
       };
-      
+
       mockOpenAI.chat.completions.create.mockResolvedValue(mockResponse);
-      
+
       const result = await adapter.evaluate({
         type: 'empty_choices',
-        payload: {}
+        payload: {},
       });
-      
+
       expect(result.decision).toBe(false);
       expect(result.reasoning).toBe('parse_error');
     });
@@ -236,34 +249,34 @@ describe('OpenAIAdapter', () => {
           throw new Error('Rate limit');
         }
         return {
-          choices: [{
-            message: {
-              content: '{"decision": true, "reasoning": "Success after retry"}'
-            }
-          }]
+          choices: [
+            {
+              message: {
+                content: '{"decision": true, "reasoning": "Success after retry"}',
+              },
+            },
+          ],
         };
       });
-      
+
       const result = await adapter.evaluate({
         type: 'retry_test',
-        payload: {}
+        payload: {},
       });
-      
+
       expect(callCount).toBe(2);
       expect(result.decision).toBe(true);
       expect(result.reasoning).toBe('Success after retry');
     });
 
     it('should fail after max retries', async () => {
-      mockOpenAI.chat.completions.create.mockRejectedValue(
-        new Error('Persistent error')
-      );
-      
+      mockOpenAI.chat.completions.create.mockRejectedValue(new Error('Persistent error'));
+
       const result = await adapter.evaluate({
         type: 'max_retry_test',
-        payload: {}
+        payload: {},
       });
-      
+
       expect(result.decision).toBe(false);
       expect(result.reasoning).toContain('provider_error:Persistent error');
       expect(mockOpenAI.chat.completions.create).toHaveBeenCalledTimes(3); // 1 + maxRetries
@@ -272,24 +285,22 @@ describe('OpenAIAdapter', () => {
 
   describe('Circuit Breaker', () => {
     it('should open circuit after threshold failures', async () => {
-      mockOpenAI.chat.completions.create.mockRejectedValue(
-        new Error('Service unavailable')
-      );
-      
+      mockOpenAI.chat.completions.create.mockRejectedValue(new Error('Service unavailable'));
+
       // Trigger failures to open circuit
       for (let i = 0; i < 5; i++) {
         await adapter.evaluate({ type: 'circuit_test', payload: {} });
       }
-      
+
       // Clear mock to reset call count
       mockOpenAI.chat.completions.create.mockClear();
-      
+
       // Circuit should be open now
       const result = await adapter.evaluate({
         type: 'circuit_open_test',
-        payload: {}
+        payload: {},
       });
-      
+
       expect(result.decision).toBe(false);
       expect(result.reasoning).toBe('circuit_open');
       expect(mockOpenAI.chat.completions.create).toHaveBeenCalledTimes(0); // No new calls when circuit is open
@@ -299,53 +310,58 @@ describe('OpenAIAdapter', () => {
   describe('Security & Injection Tests', () => {
     it('should handle malicious payload injection', async () => {
       const mockResponse = {
-        choices: [{
-          message: {
-            content: '{"decision": false, "reasoning": "Malicious input detected"}'
-          }
-        }]
+        choices: [
+          {
+            message: {
+              content: '{"decision": false, "reasoning": "Malicious input detected"}',
+            },
+          },
+        ],
       };
-      
+
       mockOpenAI.chat.completions.create.mockResolvedValue(mockResponse);
-      
+
       const maliciousPayload = {
         script: '<script>alert("xss")</script>',
-        sql: "'; DROP TABLE users; --"
+        sql: "'; DROP TABLE users; --",
       };
-      
+
       const result = await adapter.evaluate({
         type: 'security_test',
-        payload: maliciousPayload
+        payload: maliciousPayload,
       });
-      
+
       expect(result.decision).toBe(false);
       expect(mockOpenAI.chat.completions.create).toHaveBeenCalledWith(
         expect.objectContaining({
           messages: expect.arrayContaining([
             expect.objectContaining({
-              content: expect.stringContaining('security_test')
-            })
-          ])
+              content: expect.stringContaining('security_test'),
+            }),
+          ]),
         })
       );
     });
 
     it('should sanitize JSON parsing', async () => {
       const mockResponse = {
-        choices: [{
-          message: {
-            content: '{"decision": true, "reasoning": "Valid", "extra": "<script>alert(1)</script>"}'
-          }
-        }]
+        choices: [
+          {
+            message: {
+              content:
+                '{"decision": true, "reasoning": "Valid", "extra": "<script>alert(1)</script>"}',
+            },
+          },
+        ],
       };
-      
+
       mockOpenAI.chat.completions.create.mockResolvedValue(mockResponse);
-      
+
       const result = await adapter.evaluate({
         type: 'sanitization_test',
-        payload: {}
+        payload: {},
       });
-      
+
       expect(result.decision).toBe(true);
       expect(result.reasoning).toBe('Valid');
       // Should not include extra fields
@@ -355,8 +371,9 @@ describe('OpenAIAdapter', () => {
 
   describe('Invariants', () => {
     it('INV-001: Should not contain hardcoded secrets', () => {
-      const adapterCode = require('fs').readFileSync(
-        '/Users/aminemohamed/Desktop/APP/PRISM INCUBATEUR/P.R.I.S.M/src/core/providers/OpenAIAdapter.js', 'utf8'
+      const adapterCode = require('node:fs').readFileSync(
+        '/Users/aminemohamed/Desktop/APP/PRISM INCUBATEUR/P.R.I.S.M/src/core/providers/OpenAIAdapter.js',
+        'utf8'
       );
       expect(adapterCode).not.toMatch(/sk-[a-zA-Z0-9]{20,}/);
       expect(adapterCode).not.toMatch(/api[_-]?key[_-]?[=:]\s*['"][^'"]{10,}['"]/i);
@@ -368,20 +385,22 @@ describe('OpenAIAdapter', () => {
 
     it('INV-003: Should reject invalid response schemas', async () => {
       const mockResponse = {
-        choices: [{
-          message: {
-            content: '{"invalid": "schema"}'
-          }
-        }]
+        choices: [
+          {
+            message: {
+              content: '{"invalid": "schema"}',
+            },
+          },
+        ],
       };
-      
+
       mockOpenAI.chat.completions.create.mockResolvedValue(mockResponse);
-      
+
       const result = await adapter.evaluate({
         type: 'invalid_schema',
-        payload: {}
+        payload: {},
       });
-      
+
       expect(result.decision).toBe(false);
       expect(result.reasoning).toBe(''); // Empty string when decision is false and no reasoning field
     });
@@ -389,15 +408,15 @@ describe('OpenAIAdapter', () => {
     it('INV-004: Should not make calls without API key', async () => {
       delete process.env.OPENAI_API_KEY;
       const adapterNoKey = new OpenAIAdapter();
-      
+
       const error = new Error('API key required');
       mockOpenAI.chat.completions.create.mockRejectedValue(error);
-      
+
       const result = await adapterNoKey.evaluate({
         type: 'no_key_test',
-        payload: {}
+        payload: {},
       });
-      
+
       expect(result.decision).toBe(false);
       expect(result.reasoning).toContain('provider_error');
     });

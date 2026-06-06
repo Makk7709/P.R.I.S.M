@@ -1,21 +1,33 @@
 /**
  * Route d'export Enterprise PDF
  * Phase 2 - Micro-étape 2.1 - TDD Cycle GREEN
- * 
+ *
  * Route principale avec validation, sécurité, middleware, orchestration services
  */
 
 import express from 'express';
-import crypto from 'crypto';
-import path from 'path';
-import fs from 'fs/promises';
-import { createRequire } from 'module';
+import crypto from 'node:crypto';
+import path from 'node:path';
+import fs from 'node:fs/promises';
+import { createRequire } from 'node:module';
 
 const require = createRequire(import.meta.url);
 
 // Import des middleware Phase 2
-const { validateEnterpriseExportRequest, sanitizeInput, checkPayloadSize } = require('../middleware/validation.js');
-const { enterpriseExportRateLimit, csrfProtection, getCSRFToken, securityHeaders, requestTimeout, securityLogger, sanitizeErrors } = require('../middleware/security.js');
+const {
+  validateEnterpriseExportRequest,
+  sanitizeInput,
+  checkPayloadSize,
+} = require('../middleware/validation.js');
+const {
+  enterpriseExportRateLimit,
+  csrfProtection,
+  getCSRFToken,
+  securityHeaders,
+  requestTimeout,
+  securityLogger,
+  sanitizeErrors,
+} = require('../middleware/security.js');
 
 const router = express.Router();
 
@@ -23,10 +35,10 @@ const router = express.Router();
 const generatedFiles = new Map();
 
 // Services instances - peut être injecté pour les tests
-let serviceInstances = {
+const serviceInstances = {
   detectionService: null,
   sanitizer: null,
-  pdfService: null
+  pdfService: null,
 };
 
 // Fonction d'injection de services pour les tests
@@ -68,7 +80,8 @@ router.use(express.json({ limit: '10mb' }));
 router.get('/csrf-token', getCSRFToken);
 
 // Route principale d'export Enterprise
-router.post('/enterprise-report',
+router.post(
+  '/enterprise-report',
   checkPayloadSize,
   enterpriseExportRateLimit,
   csrfProtection,
@@ -91,16 +104,16 @@ async function generateEnterpriseReport(req, res) {
     requestId,
     reportType: data.metadata.reportType,
     contentLength: data.content.length,
-    ip: req.ip
+    ip: req.ip,
   });
 
-  let timings = {
+  const timings = {
     validation: req.validationTime || 0,
     sanitization: 0,
     detection: 0,
     sanitize: 0,
     generation: 0,
-    storage: 0
+    storage: 0,
   };
 
   try {
@@ -109,14 +122,14 @@ async function generateEnterpriseReport(req, res) {
 
     // ÉTAPE 1: Détection Enterprise
     const detectionStart = Date.now();
-    
+
     const isEnterprise = services.detectionService.isEnterpriseReport(data.content, data.metadata);
-    
+
     if (!isEnterprise) {
       console.log('[ENTERPRISE] Content not suitable for enterprise report', {
         timestamp: new Date().toISOString(),
         requestId,
-        contentLength: data.content.length
+        contentLength: data.content.length,
       });
 
       return res.status(422).json({
@@ -127,10 +140,10 @@ async function generateEnterpriseReport(req, res) {
           suggestions: [
             'Ensure content contains business analysis',
             'Include metrics or strategic insights',
-            'Use professional tone and formatting'
-          ]
+            'Use professional tone and formatting',
+          ],
         },
-        requestId
+        requestId,
       });
     }
 
@@ -142,17 +155,17 @@ async function generateEnterpriseReport(req, res) {
       requestId,
       detectedType: detectedReportType,
       providedType: data.metadata.reportType,
-      detectionTime: timings.detection + 'ms'
+      detectionTime: `${timings.detection}ms`,
     });
 
     // ÉTAPE 2: Sanitisation Enterprise
     const sanitizeStart = Date.now();
-    
+
     const sanitizationResult = services.sanitizer.removeEmojisAndCasualContent(
-      data.content, 
+      data.content,
       data.metadata
     );
-    
+
     timings.sanitize = Date.now() - sanitizeStart;
 
     console.log('[ENTERPRISE] Content sanitized', {
@@ -161,12 +174,12 @@ async function generateEnterpriseReport(req, res) {
       changes: sanitizationResult.changes,
       originalLength: data.content.length,
       sanitizedLength: sanitizationResult.content.length,
-      sanitizeTime: timings.sanitize + 'ms'
+      sanitizeTime: `${timings.sanitize}ms`,
     });
 
     // ÉTAPE 3: Génération PDF
     const generationStart = Date.now();
-    
+
     const sanitizedData = {
       content: sanitizationResult.content,
       metadata: {
@@ -174,19 +187,19 @@ async function generateEnterpriseReport(req, res) {
         reportType: detectedReportType, // Utiliser le type détecté
         sanitizationChanges: sanitizationResult.changes,
         requestId,
-        generatedAt: new Date().toISOString()
+        generatedAt: new Date().toISOString(),
       },
       options: data.options || {},
       metrics: {
         enterpriseScore: sanitizationResult.enterpriseScore || 85,
-        qualityScore: sanitizationResult.qualityScore || 82
-      }
+        qualityScore: sanitizationResult.qualityScore || 82,
+      },
     };
 
     const pdfResult = await services.pdfService.generateExecutiveReport(sanitizedData);
-    
+
     if (!pdfResult || !pdfResult.success) {
-      throw new Error('PDF generation failed: ' + (pdfResult?.error || 'Unknown error'));
+      throw new Error(`PDF generation failed: ${pdfResult?.error || 'Unknown error'}`);
     }
 
     timings.generation = Date.now() - generationStart;
@@ -196,12 +209,12 @@ async function generateEnterpriseReport(req, res) {
       requestId,
       pages: pdfResult.metadata.pages,
       size: pdfResult.metadata.size,
-      generationTime: timings.generation + 'ms'
+      generationTime: `${timings.generation}ms`,
     });
 
     // ÉTAPE 4: Stockage du fichier
     const storageStart = Date.now();
-    
+
     const filename = `enterprise-report-${requestId}-${Date.now()}.pdf`;
     const downloadId = crypto.randomUUID();
     const downloadUrl = `/download/${downloadId}.pdf`;
@@ -213,7 +226,7 @@ async function generateEnterpriseReport(req, res) {
       metadata: pdfResult.metadata,
       createdAt: Date.now(),
       requestId,
-      expiresAt: Date.now() + (24 * 60 * 60 * 1000) // 24h
+      expiresAt: Date.now() + 24 * 60 * 60 * 1000, // 24h
     });
 
     timings.storage = Date.now() - storageStart;
@@ -224,13 +237,13 @@ async function generateEnterpriseReport(req, res) {
     console.log('[ENTERPRISE] Report generation completed', {
       timestamp: new Date().toISOString(),
       requestId,
-      totalTime: timings.totalTime + 'ms',
+      totalTime: `${timings.totalTime}ms`,
       downloadUrl,
-      fileSize: pdfResult.metadata.size
+      fileSize: pdfResult.metadata.size,
     });
 
     // Cleanup des fichiers expirés (async)
-    cleanupExpiredFiles().catch(err => {
+    cleanupExpiredFiles().catch((err) => {
       console.error('[ENTERPRISE] Cleanup error:', err.message);
     });
 
@@ -249,28 +262,27 @@ async function generateEnterpriseReport(req, res) {
           generator: 'PRISM Enterprise',
           version: '1.0.0',
           confidentiality: sanitizedData.metadata.confidentiality,
-          sanitizationChanges: sanitizationResult.changes
-        }
+          sanitizationChanges: sanitizationResult.changes,
+        },
       },
       processing: {
         detectionTime: timings.detection,
         sanitizationTime: timings.sanitize,
         generationTime: timings.generation,
         totalTime: timings.totalTime,
-        requestId
-      }
+        requestId,
+      },
     });
-
   } catch (error) {
     const errorTime = Date.now() - startTime;
-    
+
     console.error('[ENTERPRISE] Report generation failed', {
       timestamp: new Date().toISOString(),
       requestId,
       error: error.message,
-      errorTime: errorTime + 'ms',
+      errorTime: `${errorTime}ms`,
       stack: error.stack?.substring(0, 500),
-      ip: req.ip
+      ip: req.ip,
     });
 
     // Déterminer le type d'erreur et le code de statut approprié
@@ -292,15 +304,18 @@ async function generateEnterpriseReport(req, res) {
       success: false,
       error: errorMessage,
       details: {
-        message: process.env.NODE_ENV === 'development' ? error.message : 'Internal server error during report generation',
+        message:
+          process.env.NODE_ENV === 'development'
+            ? error.message
+            : 'Internal server error during report generation',
         requestId,
-        errorTime
+        errorTime,
       },
       processing: {
         detectionTime: timings.detection,
         sanitizationTime: timings.sanitize,
-        totalTime: errorTime
-      }
+        totalTime: errorTime,
+      },
     });
   }
 }
@@ -314,7 +329,7 @@ router.get('/download/:fileId', async (req, res) => {
     console.log('[ENTERPRISE] File not found', {
       timestamp: new Date().toISOString(),
       fileId,
-      ip: req.ip
+      ip: req.ip,
     });
 
     return res.status(404).json({
@@ -322,28 +337,28 @@ router.get('/download/:fileId', async (req, res) => {
       error: 'File not found or expired',
       details: {
         message: 'The requested file does not exist or has expired',
-        maxAge: '24 hours'
-      }
+        maxAge: '24 hours',
+      },
     });
   }
 
   // Vérifier expiration
   if (Date.now() > file.expiresAt) {
     generatedFiles.delete(fileId);
-    
+
     console.log('[ENTERPRISE] File expired', {
       timestamp: new Date().toISOString(),
       fileId,
       requestId: file.requestId,
-      age: Math.floor((Date.now() - file.createdAt) / 1000) + 's'
+      age: `${Math.floor((Date.now() - file.createdAt) / 1000)}s`,
     });
 
     return res.status(410).json({
       success: false,
       error: 'File expired',
       details: {
-        message: 'The requested file has expired and is no longer available'
-      }
+        message: 'The requested file has expired and is no longer available',
+      },
     });
   }
 
@@ -353,7 +368,7 @@ router.get('/download/:fileId', async (req, res) => {
     requestId: file.requestId,
     filename: file.filename,
     size: file.buffer.length,
-    ip: req.ip
+    ip: req.ip,
   });
 
   // Headers pour le téléchargement
@@ -370,23 +385,25 @@ router.get('/download/:fileId', async (req, res) => {
 // Route de statut pour monitoring
 router.get('/status', (req, res) => {
   const fileCount = generatedFiles.size;
-  const totalSize = Array.from(generatedFiles.values())
-    .reduce((sum, file) => sum + file.buffer.length, 0);
+  const totalSize = Array.from(generatedFiles.values()).reduce(
+    (sum, file) => sum + file.buffer.length,
+    0
+  );
 
   res.json({
     success: true,
     status: 'operational',
     metrics: {
       activeFiles: fileCount,
-      totalStorageUsed: Math.floor(totalSize / 1024) + 'KB',
+      totalStorageUsed: `${Math.floor(totalSize / 1024)}KB`,
       uptime: process.uptime(),
-      timestamp: new Date().toISOString()
+      timestamp: new Date().toISOString(),
     },
     services: {
       detection: !!serviceInstances.detectionService,
       sanitizer: !!serviceInstances.sanitizer,
-      pdfGenerator: !!serviceInstances.pdfService
-    }
+      pdfGenerator: !!serviceInstances.pdfService,
+    },
   });
 });
 
@@ -404,12 +421,12 @@ async function cleanupExpiredFiles() {
   }
 
   if (expiredKeys.length > 0) {
-    expiredKeys.forEach(key => generatedFiles.delete(key));
-    
+    expiredKeys.forEach((key) => generatedFiles.delete(key));
+
     console.log('[ENTERPRISE] Cleanup completed', {
       timestamp: new Date().toISOString(),
       removedFiles: expiredKeys.length,
-      remainingFiles: generatedFiles.size
+      remainingFiles: generatedFiles.size,
     });
   }
 }
@@ -418,4 +435,4 @@ async function cleanupExpiredFiles() {
 router.use(sanitizeErrors);
 
 export { router as enterpriseExportRouter, injectServices };
-export default router; 
+export default router;

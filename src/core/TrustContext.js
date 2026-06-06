@@ -6,16 +6,16 @@
  */
 
 import crypto from 'node:crypto';
-import fs from 'fs/promises';
-import path from 'path';
-import { fileURLToPath } from 'url';
-import { EventEmitter } from 'events';
+import fs from 'node:fs/promises';
+import path from 'node:path';
+import { fileURLToPath } from 'node:url';
+import { EventEmitter } from 'node:events';
 import {
   validateCriticalDecisionRequest,
   validateApprovalRequest,
   validateApprovalResponse,
   validateSignedApproval,
-  SignedApprovalSchema
+  SignedApprovalSchema,
 } from '../security/contracts/trustcontext.js';
 import { getKeyRegistry } from './KeyRegistry.js';
 
@@ -30,7 +30,7 @@ export const CriticalityLevel = {
   LOW: 'low',
   MEDIUM: 'medium',
   HIGH: 'high',
-  CRITICAL: 'critical'
+  CRITICAL: 'critical',
 };
 
 /**
@@ -41,7 +41,7 @@ export const ApprovalStatus = {
   PENDING: 'pending',
   APPROVED: 'approved',
   REJECTED: 'rejected',
-  EXPIRED: 'expired'
+  EXPIRED: 'expired',
 };
 
 /**
@@ -52,61 +52,64 @@ export const ApprovalStatus = {
 export class TrustContext extends EventEmitter {
   constructor(config = {}) {
     super();
-    
+
     this.config = {
       // Superviseurs autorisés (identifiants cryptographiques)
       allowedSupervisors: config.allowedSupervisors || [
         'supervisor_001_sha256_hash',
         'supervisor_002_sha256_hash',
-        'admin_master_key_hash'
+        'admin_master_key_hash',
       ],
-      
+
       // Répertoire pour clés publiques des approvers (legacy: fichiers .pub)
       keyDir: config.keyDir || path.join(process.cwd(), 'keys', 'approvers'),
-      
+
       // KeyRegistry (TRL 5: gestion centralisée avec révocation)
-      keyRegistry: config.keyRegistry || getKeyRegistry({
-        registryPath: process.env.TRUSTCONTEXT_KEYREGISTRY_PATH || 
-          path.join(process.cwd(), 'data', 'key-registry.json')
-      }),
-      
+      keyRegistry:
+        config.keyRegistry ||
+        getKeyRegistry({
+          registryPath:
+            process.env.TRUSTCONTEXT_KEYREGISTRY_PATH ||
+            path.join(process.cwd(), 'data', 'key-registry.json'),
+        }),
+
       // Mapping approver keyId → clé publique PEM (legacy, fallback si KeyRegistry non disponible)
       approverPublicKeys: config.approverPublicKeys || new Map(),
-      
+
       // Politique de gouvernance: criticité → rôles autorisés
       governancePolicy: config.governancePolicy || {
         [CriticalityLevel.LOW]: ['lead', 'security', 'owner'],
         [CriticalityLevel.MEDIUM]: ['lead', 'security', 'owner'],
         [CriticalityLevel.HIGH]: ['security', 'owner'],
-        [CriticalityLevel.CRITICAL]: ['owner'] // Option double-approval désactivable
+        [CriticalityLevel.CRITICAL]: ['owner'], // Option double-approval désactivable
       },
-      
+
       // Délai d'expiration pour les approbations (30 minutes par défaut)
       approvalTimeoutMs: config.approvalTimeoutMs || 30 * 60 * 1000,
-      
+
       // Cooldown entre les auto-améliorations (30 minutes par défaut)
       selfImprovementCooldownMs: config.selfImprovementCooldownMs || 30 * 60 * 1000,
-      
+
       // Niveau minimum nécessitant une approbation humaine
       minApprovalLevel: config.minApprovalLevel || CriticalityLevel.HIGH,
-      
+
       // Mode de fonctionnement
-      mode: process.env.PRISM_MODE || 'PROD'
+      mode: process.env.PRISM_MODE || 'PROD',
     };
 
     // Registre des décisions en attente d'approbation
     this.pendingDecisions = new Map();
-    
+
     // Historique des approbations/rejets
     this.approvalHistory = [];
-    
+
     // Dernière auto-amélioration
     this.lastSelfImprovement = null;
-    
+
     // Intervalles (pour cleanup)
     this._cleanupInterval = null;
     this._metricsInterval = null;
-    
+
     // Métriques de sécurité
     this.securityMetrics = {
       totalDecisions: 0,
@@ -114,7 +117,7 @@ export class TrustContext extends EventEmitter {
       rejectedDecisions: 0,
       expiredDecisions: 0,
       humanApprovalRate: 0,
-      averageApprovalTime: 0
+      averageApprovalTime: 0,
     };
 
     // Initialisation (async, mais constructeur sync - initialisation différée)
@@ -129,10 +132,10 @@ export class TrustContext extends EventEmitter {
    */
   async _ensureInitialized() {
     if (this._initialized) return;
-    
+
     // Charger clés publiques des approvers si disponible
     await this._loadApproverPublicKeys();
-    
+
     // Nettoyage périodique des décisions expirées (seulement une fois)
     if (!this._cleanupInterval) {
       this._cleanupInterval = setInterval(() => {
@@ -172,18 +175,23 @@ export class TrustContext extends EventEmitter {
           const publicKeyPem = this.config.keyRegistry.getPublicKey(key.keyId);
           if (publicKeyPem) {
             this.config.approverPublicKeys.set(key.keyId, publicKeyPem);
-            console.log(`[TrustContext] Loaded key from registry: ${key.keyId} (roles: ${key.roleBindings.join(', ')})`);
+            console.log(
+              `[TrustContext] Loaded key from registry: ${key.keyId} (roles: ${key.roleBindings.join(', ')})`
+            );
           }
         }
       } catch (error) {
-        console.warn('[TrustContext] KeyRegistry initialization failed, falling back to file-based keys:', error.message);
+        console.warn(
+          '[TrustContext] KeyRegistry initialization failed, falling back to file-based keys:',
+          error.message
+        );
       }
-      
+
       // 2. Fallback: charger depuis fichiers .pub (legacy)
       try {
         await fs.mkdir(this.config.keyDir, { recursive: true });
         const files = await fs.readdir(this.config.keyDir).catch(() => []);
-        
+
         for (const file of files) {
           if (file.endsWith('.pub')) {
             const keyId = path.basename(file, '.pub');
@@ -226,7 +234,7 @@ export class TrustContext extends EventEmitter {
       CriticalityLevel.LOW,
       CriticalityLevel.MEDIUM,
       CriticalityLevel.HIGH,
-      CriticalityLevel.CRITICAL
+      CriticalityLevel.CRITICAL,
     ];
 
     const decisionIndex = criticalityOrder.indexOf(criticalityLevel);
@@ -248,7 +256,7 @@ export class TrustContext extends EventEmitter {
     await this._ensureInitialized();
     // Créer le token d'approbation
     const approvalToken = this.generateApprovalToken();
-    
+
     // Calculer le DecisionDigest stable (sans timestamp)
     // Le digest doit être calculable de manière identique lors de la vérification
     const decisionDigest = this.computeDecisionDigest(
@@ -258,7 +266,7 @@ export class TrustContext extends EventEmitter {
       decisionData,
       context
     );
-    
+
     // Enregistrer la décision en attente
     const decision = {
       token: approvalToken,
@@ -272,7 +280,7 @@ export class TrustContext extends EventEmitter {
       status: ApprovalStatus.PENDING,
       requestedBy: context.requestedBy || 'system',
       approvedBy: null,
-      approvalTimestamp: null
+      approvalTimestamp: null,
     };
 
     this.pendingDecisions.set(approvalToken, decision);
@@ -285,14 +293,14 @@ export class TrustContext extends EventEmitter {
       criticality: criticalityLevel,
       decisionDigest,
       summary: this.generateDecisionSummary(decision),
-      expiresAt: decision.expiresAt
+      expiresAt: decision.expiresAt,
     });
 
     // Logger la demande
     console.log(`🔐 Human approval requested for ${decisionType} (${criticalityLevel})`, {
       token: approvalToken,
       decisionDigest,
-      expiresAt: new Date(decision.expiresAt).toISOString()
+      expiresAt: new Date(decision.expiresAt).toISOString(),
     });
 
     return approvalToken;
@@ -305,12 +313,12 @@ export class TrustContext extends EventEmitter {
    */
   checkApproval(approvalToken) {
     const decision = this.pendingDecisions.get(approvalToken);
-    
+
     if (!decision) {
       return {
         status: 'not_found',
         approved: false,
-        message: 'Decision not found or already processed'
+        message: 'Decision not found or already processed',
       };
     }
 
@@ -320,11 +328,11 @@ export class TrustContext extends EventEmitter {
       this.securityMetrics.expiredDecisions++;
       this.moveToHistory(decision);
       this.pendingDecisions.delete(approvalToken);
-      
+
       return {
         status: ApprovalStatus.EXPIRED,
         approved: false,
-        message: 'Approval request has expired'
+        message: 'Approval request has expired',
       };
     }
 
@@ -333,7 +341,7 @@ export class TrustContext extends EventEmitter {
       approved: decision.status === ApprovalStatus.APPROVED,
       approvedBy: decision.approvedBy,
       approvalTimestamp: decision.approvalTimestamp,
-      message: this.getStatusMessage(decision.status)
+      message: this.getStatusMessage(decision.status),
     };
   }
 
@@ -352,17 +360,17 @@ export class TrustContext extends EventEmitter {
     } catch (error) {
       console.warn('🚫 FAIL-CLOSED: Invalid signed approval schema', {
         error: error.message,
-        decisionId: signedApproval?.decisionId
+        decisionId: signedApproval?.decisionId,
       });
       return false;
     }
 
     const decision = this.pendingDecisions.get(validatedApproval.decisionId);
-    
+
     if (!decision || decision.status !== ApprovalStatus.PENDING) {
       console.warn('🚫 Invalid approval attempt', {
         decisionId: validatedApproval.decisionId,
-        status: decision?.status
+        status: decision?.status,
       });
       return false;
     }
@@ -378,7 +386,7 @@ export class TrustContext extends EventEmitter {
 
     // Vérifier l'approbation signée (signature + digest + autorisation)
     const verification = await this.verifyApproval(validatedApproval, decision);
-    
+
     if (!verification.valid) {
       // Audit entry explicite pour rejet
       const auditEntry = {
@@ -390,14 +398,14 @@ export class TrustContext extends EventEmitter {
         approverId: validatedApproval.approver.id,
         approverRole: validatedApproval.approver.role,
         errorCode: verification.errorCode,
-        error: verification.error
+        error: verification.error,
       };
-      
+
       console.warn('🚫 FAIL-CLOSED: Approval verification failed', auditEntry);
-      
+
       // Émettre événement audit
       this.emit('approval_verification_failed', auditEntry);
-      
+
       return false;
     }
 
@@ -406,7 +414,7 @@ export class TrustContext extends EventEmitter {
     decision.approvedBy = validatedApproval.approver.id;
     decision.approvalTimestamp = Date.now();
     decision.signedApproval = validatedApproval; // Stocker l'approbation complète pour audit
-    
+
     this.securityMetrics.approvedDecisions++;
     this.moveToHistory(decision);
     this.pendingDecisions.delete(validatedApproval.decisionId);
@@ -418,15 +426,18 @@ export class TrustContext extends EventEmitter {
       approvedBy: validatedApproval.approver.id,
       approverRole: validatedApproval.approver.role,
       timestamp: decision.approvalTimestamp,
-      decisionDigest: decision.decisionDigest
+      decisionDigest: decision.decisionDigest,
     });
 
-    console.log(`✅ Decision approved by ${validatedApproval.approver.id} (${validatedApproval.approver.role})`, {
-      token: validatedApproval.decisionId,
-      type: decision.type,
-      criticality: decision.criticality,
-      decisionDigest: decision.decisionDigest
-    });
+    console.log(
+      `✅ Decision approved by ${validatedApproval.approver.id} (${validatedApproval.approver.role})`,
+      {
+        token: validatedApproval.decisionId,
+        type: decision.type,
+        criticality: decision.criticality,
+        decisionDigest: decision.decisionDigest,
+      }
+    );
 
     return true;
   }
@@ -446,7 +457,7 @@ export class TrustContext extends EventEmitter {
     } catch (error) {
       console.warn('🚫 FAIL-CLOSED: Invalid signed rejection schema', {
         error: error.message,
-        decisionId: signedApproval?.decisionId
+        decisionId: signedApproval?.decisionId,
       });
       return false;
     }
@@ -455,24 +466,24 @@ export class TrustContext extends EventEmitter {
     if (validatedApproval.verdict !== 'reject') {
       console.warn('🚫 FAIL-CLOSED: Invalid verdict for rejection', {
         decisionId: validatedApproval.decisionId,
-        verdict: validatedApproval.verdict
+        verdict: validatedApproval.verdict,
       });
       return false;
     }
 
     const decision = this.pendingDecisions.get(validatedApproval.decisionId);
-    
+
     if (!decision || decision.status !== ApprovalStatus.PENDING) {
       console.warn('🚫 Invalid rejection attempt', {
         decisionId: validatedApproval.decisionId,
-        status: decision?.status
+        status: decision?.status,
       });
       return false;
     }
 
     // Vérifier l'approbation signée (signature + digest + autorisation)
     const verification = await this.verifyApproval(validatedApproval, decision);
-    
+
     if (!verification.valid) {
       // Audit entry explicite pour rejet
       const auditEntry = {
@@ -484,12 +495,12 @@ export class TrustContext extends EventEmitter {
         approverId: validatedApproval.approver.id,
         approverRole: validatedApproval.approver.role,
         errorCode: verification.errorCode,
-        error: verification.error
+        error: verification.error,
       };
-      
+
       console.warn('🚫 FAIL-CLOSED: Rejection verification failed', auditEntry);
       this.emit('approval_verification_failed', auditEntry);
-      
+
       return false;
     }
 
@@ -499,7 +510,7 @@ export class TrustContext extends EventEmitter {
     decision.approvalTimestamp = Date.now();
     decision.rejectionReason = validatedApproval.reason || '';
     decision.signedApproval = validatedApproval; // Stocker pour audit
-    
+
     this.securityMetrics.rejectedDecisions++;
     this.moveToHistory(decision);
     this.pendingDecisions.delete(validatedApproval.decisionId);
@@ -512,14 +523,17 @@ export class TrustContext extends EventEmitter {
       approverRole: validatedApproval.approver.role,
       reason: validatedApproval.reason || '',
       timestamp: decision.approvalTimestamp,
-      decisionDigest: decision.decisionDigest
+      decisionDigest: decision.decisionDigest,
     });
 
-    console.log(`❌ Decision rejected by ${validatedApproval.approver.id} (${validatedApproval.approver.role})`, {
-      token: validatedApproval.decisionId,
-      type: decision.type,
-      reason: validatedApproval.reason
-    });
+    console.log(
+      `❌ Decision rejected by ${validatedApproval.approver.id} (${validatedApproval.approver.role})`,
+      {
+        token: validatedApproval.decisionId,
+        type: decision.type,
+        reason: validatedApproval.reason,
+      }
+    );
 
     return true;
   }
@@ -541,7 +555,7 @@ export class TrustContext extends EventEmitter {
         allowed: false,
         message: 'Self-improvement cooldown active',
         cooldownRemainingMs: cooldownRemaining,
-        nextAllowedAt: new Date(Date.now() + cooldownRemaining).toISOString()
+        nextAllowedAt: new Date(Date.now() + cooldownRemaining).toISOString(),
       };
     }
 
@@ -555,12 +569,12 @@ export class TrustContext extends EventEmitter {
   recordSelfImprovement(improvementData) {
     this.lastSelfImprovement = {
       timestamp: Date.now(),
-      data: improvementData
+      data: improvementData,
     };
 
     console.log('📊 Self-improvement recorded in TrustContext', {
       timestamp: this.lastSelfImprovement.timestamp,
-      type: improvementData.type || 'unknown'
+      type: improvementData.type || 'unknown',
     });
   }
 
@@ -582,9 +596,12 @@ export class TrustContext extends EventEmitter {
         module: 'TrustContext.validateCriticalDecision',
         error: error.message,
         action: request?.action,
-        criticality: request?.criticality
+        criticality: request?.criticality,
       };
-      console.error('🚫 FAIL-CLOSED: Critical decision request rejected (schema validation):', logEntry);
+      console.error(
+        '🚫 FAIL-CLOSED: Critical decision request rejected (schema validation):',
+        logEntry
+      );
       throw error; // Fail-closed: rejeter explicitement
     }
 
@@ -600,9 +617,9 @@ export class TrustContext extends EventEmitter {
       const response = {
         approved: true,
         reason: 'Auto-approved (low criticality)',
-        timestamp: Date.now()
+        timestamp: Date.now(),
       };
-      
+
       // VALIDATION FAIL-CLOSED: Vérifier la réponse
       try {
         return validateApprovalResponse(response);
@@ -625,9 +642,11 @@ export class TrustContext extends EventEmitter {
 
     const response = {
       approved: approvalStatus.approved,
-      reason: approvalStatus.message || (approvalStatus.approved ? 'Approved' : 'Requires human approval'),
+      reason:
+        approvalStatus.message ||
+        (approvalStatus.approved ? 'Approved' : 'Requires human approval'),
       timestamp: Date.now(),
-      approvalId: approvalToken
+      approvalId: approvalToken,
     };
 
     // VALIDATION FAIL-CLOSED: Vérifier la réponse
@@ -656,16 +675,17 @@ export class TrustContext extends EventEmitter {
         event: 'schema_validation_failed',
         module: 'TrustContext.requestApproval',
         error: error.message,
-        action: request?.action
+        action: request?.action,
       };
       console.error('🚫 FAIL-CLOSED: Approval request rejected (schema validation):', logEntry);
       throw error; // Fail-closed: rejeter explicitement
     }
 
     // Déterminer le niveau de criticité si non fourni
-    const criticality = validatedRequest.criticality || 
-      (validatedRequest.fileSize && validatedRequest.fileSize >= 20 * 1024 * 1024 
-        ? CriticalityLevel.HIGH 
+    const criticality =
+      validatedRequest.criticality ||
+      (validatedRequest.fileSize && validatedRequest.fileSize >= 20 * 1024 * 1024
+        ? CriticalityLevel.HIGH
         : CriticalityLevel.MEDIUM);
 
     // Vérifier si approbation humaine requise
@@ -680,9 +700,9 @@ export class TrustContext extends EventEmitter {
       const response = {
         approved: true,
         reason: 'Auto-approved',
-        timestamp: Date.now()
+        timestamp: Date.now(),
       };
-      
+
       // VALIDATION FAIL-CLOSED: Vérifier la réponse
       try {
         return validateApprovalResponse(response);
@@ -705,9 +725,11 @@ export class TrustContext extends EventEmitter {
 
     const response = {
       approved: approvalStatus.approved,
-      reason: approvalStatus.message || (approvalStatus.approved ? 'Approved' : 'Requires human approval'),
+      reason:
+        approvalStatus.message ||
+        (approvalStatus.approved ? 'Approved' : 'Requires human approval'),
       timestamp: Date.now(),
-      approvalId: approvalToken
+      approvalId: approvalToken,
     };
 
     // VALIDATION FAIL-CLOSED: Vérifier la réponse
@@ -730,7 +752,7 @@ export class TrustContext extends EventEmitter {
       decisionHash: proposal.decisionHash,
       type: proposal.type,
       votes: Object.fromEntries(proposal.votes || new Map()),
-      reason: 'consensus_rejection'
+      reason: 'consensus_rejection',
     };
 
     // Ajouter à l'historique
@@ -747,7 +769,7 @@ export class TrustContext extends EventEmitter {
     console.log('📝 Consensus rejection recorded', {
       proposalId: proposal.id,
       type: proposal.type,
-      timestamp: rejectionRecord.timestamp
+      timestamp: rejectionRecord.timestamp,
     });
   }
 
@@ -768,12 +790,12 @@ export class TrustContext extends EventEmitter {
       type: decisionType,
       criticality,
       data: this._canonicalizeObject(decisionData),
-      context: this._canonicalizeObject(context)
+      context: this._canonicalizeObject(context),
     };
-    
+
     // JSON.stringify avec replacer pour garantir ordre stable
     const canonicalString = JSON.stringify(canonical, Object.keys(canonical).sort());
-    
+
     return crypto.createHash('sha256').update(canonicalString, 'utf8').digest('hex');
   }
 
@@ -785,9 +807,9 @@ export class TrustContext extends EventEmitter {
     if (obj === null || obj === undefined) return obj;
     if (typeof obj !== 'object') return obj;
     if (Array.isArray(obj)) {
-      return obj.map(item => this._canonicalizeObject(item));
+      return obj.map((item) => this._canonicalizeObject(item));
     }
-    
+
     const sorted = {};
     for (const key of Object.keys(obj).sort()) {
       sorted[key] = this._canonicalizeObject(obj[key]);
@@ -808,9 +830,9 @@ export class TrustContext extends EventEmitter {
       type: decisionType,
       data: decisionData,
       context: context,
-      timestamp: Date.now()
+      timestamp: Date.now(),
     });
-    
+
     return crypto.createHash('sha256').update(hashInput).digest('hex');
   }
 
@@ -837,7 +859,7 @@ export class TrustContext extends EventEmitter {
 
     // Récupérer les rôles autorisés pour cette criticité
     const allowedRoles = this.config.governancePolicy[criticality] || [];
-    
+
     // Si aucune politique définie pour cette criticité => default deny
     if (allowedRoles.length === 0) {
       return false;
@@ -861,7 +883,7 @@ export class TrustContext extends EventEmitter {
       return {
         valid: false,
         error: `Schema validation failed: ${error.message}`,
-        errorCode: 'SCHEMA_INVALID'
+        errorCode: 'SCHEMA_INVALID',
       };
     }
 
@@ -870,7 +892,7 @@ export class TrustContext extends EventEmitter {
       return {
         valid: false,
         error: 'Decision digest mismatch',
-        errorCode: 'DIGEST_MISMATCH'
+        errorCode: 'DIGEST_MISMATCH',
       };
     }
 
@@ -879,7 +901,7 @@ export class TrustContext extends EventEmitter {
       return {
         valid: false,
         error: 'Decision ID mismatch',
-        errorCode: 'DECISION_ID_MISMATCH'
+        errorCode: 'DECISION_ID_MISMATCH',
       };
     }
 
@@ -888,7 +910,7 @@ export class TrustContext extends EventEmitter {
       return {
         valid: false,
         error: 'Approval signature expired',
-        errorCode: 'EXPIRED'
+        errorCode: 'EXPIRED',
       };
     }
 
@@ -897,7 +919,7 @@ export class TrustContext extends EventEmitter {
       return {
         valid: false,
         error: `Approver role '${signedApproval.approver.role}' not authorized for criticality '${decision.criticality}'`,
-        errorCode: 'AUTHORIZATION_FAILED'
+        errorCode: 'AUTHORIZATION_FAILED',
       };
     }
 
@@ -928,15 +950,15 @@ export class TrustContext extends EventEmitter {
       verdict: approval.verdict,
       reason: approval.reason,
       issuedAt: approval.issuedAt,
-      expiresAt: approval.expiresAt
+      expiresAt: approval.expiresAt,
       // nonce: omis si undefined/null (comme dans createSignedApproval)
     };
-    
+
     // Si nonce est présent et défini, l'inclure
     if (approval.nonce !== undefined && approval.nonce !== null) {
       payload.nonce = approval.nonce;
     }
-    
+
     // Tri stable des clés pour canonicalisation
     return JSON.stringify(payload, Object.keys(payload).sort());
   }
@@ -955,7 +977,7 @@ export class TrustContext extends EventEmitter {
 
     // Récupérer la clé publique (KeyRegistry prioritaire)
     let publicKeyPem = null;
-    
+
     // 1. Essayer KeyRegistry (TRL 5)
     if (this.config.keyRegistry) {
       try {
@@ -967,7 +989,7 @@ export class TrustContext extends EventEmitter {
           return {
             valid: false,
             error: `Key ${signedApproval.approver.keyId} is revoked or inactive`,
-            errorCode: 'KEY_UNKNOWN'
+            errorCode: 'KEY_UNKNOWN',
           };
         }
       } catch (error) {
@@ -975,17 +997,17 @@ export class TrustContext extends EventEmitter {
         console.warn('[TrustContext] KeyRegistry lookup failed, using fallback:', error.message);
       }
     }
-    
+
     // 2. Fallback: Map legacy
     if (!publicKeyPem) {
       publicKeyPem = this.config.approverPublicKeys.get(signedApproval.approver.keyId);
     }
-    
+
     if (!publicKeyPem) {
       return {
         valid: false,
         error: `Public key not found for keyId: ${signedApproval.approver.keyId}`,
-        errorCode: 'KEY_UNKNOWN'
+        errorCode: 'KEY_UNKNOWN',
       };
     }
 
@@ -995,7 +1017,7 @@ export class TrustContext extends EventEmitter {
         return {
           valid: false,
           error: 'Signature missing or invalid format',
-          errorCode: 'SIGNATURE_INVALID'
+          errorCode: 'SIGNATURE_INVALID',
         };
       }
 
@@ -1003,7 +1025,7 @@ export class TrustContext extends EventEmitter {
       // Utiliser la fonction partagée pour garantir identité
       const canonicalPayload = this._canonicalizeApprovalPayload(signedApproval);
       const messageBuffer = Buffer.from(canonicalPayload, 'utf8');
-      
+
       // Signature en hex (unifié avec createSignedApproval)
       const signatureBuffer = Buffer.from(signedApproval.signature, 'hex');
 
@@ -1019,7 +1041,7 @@ export class TrustContext extends EventEmitter {
         return {
           valid: false,
           error: 'Ed25519 signature verification failed',
-          errorCode: 'SIGNATURE_INVALID'
+          errorCode: 'SIGNATURE_INVALID',
         };
       }
 
@@ -1028,7 +1050,7 @@ export class TrustContext extends EventEmitter {
       return {
         valid: false,
         error: `Signature verification error: ${error.message}`,
-        errorCode: 'SIGNATURE_INVALID'
+        errorCode: 'SIGNATURE_INVALID',
       };
     }
   }
@@ -1054,9 +1076,9 @@ export class TrustContext extends EventEmitter {
       [ApprovalStatus.PENDING]: 'Awaiting human approval',
       [ApprovalStatus.APPROVED]: 'Approved by supervisor',
       [ApprovalStatus.REJECTED]: 'Rejected by supervisor',
-      [ApprovalStatus.EXPIRED]: 'Approval request expired'
+      [ApprovalStatus.EXPIRED]: 'Approval request expired',
     };
-    
+
     return messages[status] || 'Unknown status';
   }
 
@@ -1068,7 +1090,7 @@ export class TrustContext extends EventEmitter {
   moveToHistory(decision) {
     this.approvalHistory.push({
       ...decision,
-      processedAt: Date.now()
+      processedAt: Date.now(),
     });
 
     // Garder seulement les 1000 dernières décisions
@@ -1095,7 +1117,7 @@ export class TrustContext extends EventEmitter {
     }
 
     // Supprimer les décisions expirées
-    expiredTokens.forEach(token => {
+    expiredTokens.forEach((token) => {
       this.pendingDecisions.delete(token);
       this.emit('decision_expired', { token });
     });
@@ -1110,23 +1132,25 @@ export class TrustContext extends EventEmitter {
    * @private
    */
   updateMetrics() {
-    const totalProcessed = this.securityMetrics.approvedDecisions + 
-                          this.securityMetrics.rejectedDecisions + 
-                          this.securityMetrics.expiredDecisions;
+    const totalProcessed =
+      this.securityMetrics.approvedDecisions +
+      this.securityMetrics.rejectedDecisions +
+      this.securityMetrics.expiredDecisions;
 
     if (totalProcessed > 0) {
-      this.securityMetrics.humanApprovalRate = 
+      this.securityMetrics.humanApprovalRate =
         this.securityMetrics.approvedDecisions / totalProcessed;
     }
 
     // Calculer le temps moyen d'approbation
-    const approvedDecisions = this.approvalHistory.filter(d => 
-      d.status === ApprovalStatus.APPROVED && d.approvalTimestamp
+    const approvedDecisions = this.approvalHistory.filter(
+      (d) => d.status === ApprovalStatus.APPROVED && d.approvalTimestamp
     );
 
     if (approvedDecisions.length > 0) {
-      const totalApprovalTime = approvedDecisions.reduce((sum, d) => 
-        sum + (d.approvalTimestamp - d.timestamp), 0
+      const totalApprovalTime = approvedDecisions.reduce(
+        (sum, d) => sum + (d.approvalTimestamp - d.timestamp),
+        0
       );
       this.securityMetrics.averageApprovalTime = totalApprovalTime / approvedDecisions.length;
     }
@@ -1135,7 +1159,7 @@ export class TrustContext extends EventEmitter {
     this.emit('security_metrics', {
       ...this.securityMetrics,
       pendingDecisions: this.pendingDecisions.size,
-      timestamp: Date.now()
+      timestamp: Date.now(),
     });
   }
 
@@ -1147,7 +1171,7 @@ export class TrustContext extends EventEmitter {
     return {
       ...this.securityMetrics,
       pendingDecisions: this.pendingDecisions.size,
-      lastUpdate: Date.now()
+      lastUpdate: Date.now(),
     };
   }
 
@@ -1156,14 +1180,14 @@ export class TrustContext extends EventEmitter {
    * @returns {Array} Liste des décisions en attente
    */
   getPendingDecisions() {
-    return Array.from(this.pendingDecisions.values()).map(decision => ({
+    return Array.from(this.pendingDecisions.values()).map((decision) => ({
       token: decision.token,
       type: decision.type,
       criticality: decision.criticality,
       summary: this.generateDecisionSummary(decision),
       timestamp: decision.timestamp,
       expiresAt: decision.expiresAt,
-      timeRemaining: Math.max(0, decision.expiresAt - Date.now())
+      timeRemaining: Math.max(0, decision.expiresAt - Date.now()),
     }));
   }
 
@@ -1173,18 +1197,17 @@ export class TrustContext extends EventEmitter {
    * @returns {Array} Historique
    */
   getApprovalHistory(limit = 100) {
-    return this.approvalHistory
-      .slice(-limit)
-      .map(decision => ({
-        type: decision.type,
-        criticality: decision.criticality,
-        status: decision.status,
-        timestamp: decision.timestamp,
-        approvedBy: decision.approvedBy,
-        approvalTimestamp: decision.approvalTimestamp,
-        processingTime: decision.approvalTimestamp ? 
-          decision.approvalTimestamp - decision.timestamp : null
-      }));
+    return this.approvalHistory.slice(-limit).map((decision) => ({
+      type: decision.type,
+      criticality: decision.criticality,
+      status: decision.status,
+      timestamp: decision.timestamp,
+      approvedBy: decision.approvedBy,
+      approvalTimestamp: decision.approvalTimestamp,
+      processingTime: decision.approvalTimestamp
+        ? decision.approvalTimestamp - decision.timestamp
+        : null,
+    }));
   }
 }
 
@@ -1233,14 +1256,14 @@ function canonicalizeApprovalPayload(approval) {
     verdict: approval.verdict,
     reason: approval.reason,
     issuedAt: approval.issuedAt,
-    expiresAt: approval.expiresAt
+    expiresAt: approval.expiresAt,
   };
-  
+
   // Si nonce est présent et défini, l'inclure
   if (approval.nonce !== undefined && approval.nonce !== null) {
     payload.nonce = approval.nonce;
   }
-  
+
   // Tri stable des clés pour canonicalisation
   return JSON.stringify(payload, Object.keys(payload).sort());
 }
@@ -1255,7 +1278,7 @@ export function createSignedApproval({
   issuedAt,
   expiresAt,
   nonce,
-  privateKeyPem
+  privateKeyPem,
 }) {
   // Créer payload (sans signature)
   const payload = {
@@ -1267,7 +1290,7 @@ export function createSignedApproval({
     reason,
     issuedAt,
     expiresAt,
-    nonce
+    nonce,
   };
 
   // Canonicaliser (MÊME fonction que verify)
@@ -1281,8 +1304,8 @@ export function createSignedApproval({
 
   return {
     ...payload,
-    signature: signatureHex
+    signature: signatureHex,
   };
 }
 
-export default TrustContext; 
+export default TrustContext;

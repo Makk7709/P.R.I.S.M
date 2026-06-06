@@ -3,30 +3,34 @@ import OpenAIAdapter from '../../src/core/providers/OpenAIAdapter.js';
 import AnthropicAdapter from '../../src/core/providers/AnthropicAdapter.js';
 import PerplexityAdapter from '../../src/core/providers/PerplexityAdapter.js';
 import { ProviderAdapter } from '../../src/core/providers/ProviderAdapter.js';
-import fs from 'fs';
-import path from 'path';
+import fs from 'node:fs';
+import path from 'node:path';
 
 // Mock the providers to avoid API key issues
 const mockOpenAI = {
   chat: {
     completions: {
-      create: () => Promise.resolve({ choices: [{ message: { content: '{"decision": true, "reasoning": "test"}' } }] })
-    }
-  }
+      create: () =>
+        Promise.resolve({
+          choices: [{ message: { content: '{"decision": true, "reasoning": "test"}' } }],
+        }),
+    },
+  },
 };
 
 const mockAnthropic = {
   messages: {
-    create: () => Promise.resolve({ content: [{ text: '{"decision": true, "reasoning": "test"}' }] })
-  }
+    create: () =>
+      Promise.resolve({ content: [{ text: '{"decision": true, "reasoning": "test"}' }] }),
+  },
 };
 
 vi.mock('openai', () => ({
-  default: vi.fn(() => mockOpenAI)
+  default: vi.fn(() => mockOpenAI),
 }));
 
 vi.mock('@anthropic-ai/sdk', () => ({
-  default: vi.fn(() => mockAnthropic)
+  default: vi.fn(() => mockAnthropic),
 }));
 
 describe('Adapters Invariants - Critical Security & Quality Gates', () => {
@@ -42,18 +46,18 @@ describe('Adapters Invariants - Critical Security & Quality Gates', () => {
   afterEach(() => {
     process.env = originalEnv;
   });
-  
+
   describe('INV-001: No Hardcoded Secrets', () => {
     const adapterFiles = [
       '/Users/aminemohamed/Desktop/APP/PRISM INCUBATEUR/P.R.I.S.M/src/core/providers/OpenAIAdapter.js',
       '/Users/aminemohamed/Desktop/APP/PRISM INCUBATEUR/P.R.I.S.M/src/core/providers/AnthropicAdapter.js',
-      '/Users/aminemohamed/Desktop/APP/PRISM INCUBATEUR/P.R.I.S.M/src/core/providers/PerplexityAdapter.js'
+      '/Users/aminemohamed/Desktop/APP/PRISM INCUBATEUR/P.R.I.S.M/src/core/providers/PerplexityAdapter.js',
     ];
 
-    adapterFiles.forEach(filePath => {
+    adapterFiles.forEach((filePath) => {
       it(`should not contain hardcoded secrets in ${path.basename(filePath)}`, () => {
         const code = fs.readFileSync(filePath, 'utf8');
-        
+
         // Check for various API key patterns
         expect(code).not.toMatch(/sk-[a-zA-Z0-9]{20,}/); // OpenAI
         expect(code).not.toMatch(/sk-ant-[a-zA-Z0-9]{20,}/); // Anthropic
@@ -61,15 +65,18 @@ describe('Adapters Invariants - Critical Security & Quality Gates', () => {
         expect(code).not.toMatch(/api[_-]?key[_-]?[=:]\s*['"][^'"]{10,}['"]/i);
         expect(code).not.toMatch(/secret[_-]?key[_-]?[=:]\s*['"][^'"]{10,}['"]/i);
         expect(code).not.toMatch(/access[_-]?token[_-]?[=:]\s*['"][^'"]{10,}['"]/i);
-        
+
         // Ensure environment variables are used
         expect(code).toMatch(/process\.env\./);
       });
     });
 
     it('should not contain hardcoded secrets in ProviderAdapter.js', () => {
-      const code = fs.readFileSync('/Users/aminemohamed/Desktop/APP/PRISM INCUBATEUR/P.R.I.S.M/src/core/providers/ProviderAdapter.js', 'utf8');
-      
+      const code = fs.readFileSync(
+        '/Users/aminemohamed/Desktop/APP/PRISM INCUBATEUR/P.R.I.S.M/src/core/providers/ProviderAdapter.js',
+        'utf8'
+      );
+
       // ProviderAdapter is a base class, doesn't need environment variables
       expect(code).not.toMatch(/sk-[a-zA-Z0-9]{20,}/);
       expect(code).not.toMatch(/sk-ant-[a-zA-Z0-9]{20,}/);
@@ -85,10 +92,10 @@ describe('Adapters Invariants - Critical Security & Quality Gates', () => {
       const adapters = [
         new OpenAIAdapter({ timeoutMs: 100 }),
         new AnthropicAdapter({ timeoutMs: 100 }),
-        new PerplexityAdapter({ timeoutMs: 100 })
+        new PerplexityAdapter({ timeoutMs: 100 }),
       ];
 
-      adapters.forEach(adapter => {
+      adapters.forEach((adapter) => {
         expect(adapter.timeoutMs).toBeLessThanOrEqual(300);
         expect(adapter.timeoutMs).toBeGreaterThan(0);
       });
@@ -97,7 +104,7 @@ describe('Adapters Invariants - Critical Security & Quality Gates', () => {
     it('should have consistent timeout behavior', () => {
       const baseAdapter = new ProviderAdapter({ timeoutMs: 100 });
       const openaiAdapter = new OpenAIAdapter({ timeoutMs: 100 });
-      
+
       expect(baseAdapter.timeoutMs).toBeLessThanOrEqual(300);
       expect(openaiAdapter.timeoutMs).toBeLessThanOrEqual(300);
     });
@@ -106,7 +113,7 @@ describe('Adapters Invariants - Critical Security & Quality Gates', () => {
   describe('INV-003: Response Schema Validation', () => {
     it('should reject invalid response schemas', async () => {
       const adapter = new OpenAIAdapter();
-      
+
       // This should be handled by the adapter's parsing logic
       // The adapter should return a standardized response format
       expect(typeof adapter.evaluate).toBe('function');
@@ -116,7 +123,7 @@ describe('Adapters Invariants - Critical Security & Quality Gates', () => {
       // All adapters should return the same response structure
       const responseStructure = {
         decision: expect.any(Boolean),
-        reasoning: expect.any(String)
+        reasoning: expect.any(String),
       };
 
       // This is verified in the individual adapter tests
@@ -128,16 +135,12 @@ describe('Adapters Invariants - Critical Security & Quality Gates', () => {
     it('should not make calls without API key', async () => {
       // Test with missing API keys
       const originalEnv = { ...process.env };
-      
+
       delete process.env.OPENAI_API_KEY;
       delete process.env.ANTHROPIC_API_KEY;
       delete process.env.PERPLEXITY_API_KEY;
 
-      const adapters = [
-        new OpenAIAdapter(),
-        new AnthropicAdapter(),
-        new PerplexityAdapter()
-      ];
+      const adapters = [new OpenAIAdapter(), new AnthropicAdapter(), new PerplexityAdapter()];
 
       for (const adapter of adapters) {
         // Adapters should gracefully handle missing API keys
@@ -159,13 +162,9 @@ describe('Adapters Invariants - Critical Security & Quality Gates', () => {
 
   describe('INV-005: Circuit Breaker Consistency', () => {
     it('should have consistent circuit breaker behavior', () => {
-      const adapters = [
-        new OpenAIAdapter(),
-        new AnthropicAdapter(),
-        new PerplexityAdapter()
-      ];
+      const adapters = [new OpenAIAdapter(), new AnthropicAdapter(), new PerplexityAdapter()];
 
-      adapters.forEach(adapter => {
+      adapters.forEach((adapter) => {
         expect(adapter.breaker).toBeDefined();
         expect(adapter.breaker.failureThreshold).toBeDefined();
         expect(adapter.breaker.halfOpenAfterMs).toBeDefined();
@@ -176,7 +175,7 @@ describe('Adapters Invariants - Critical Security & Quality Gates', () => {
     it('should have consistent failure thresholds', () => {
       const baseAdapter = new ProviderAdapter();
       const openaiAdapter = new OpenAIAdapter();
-      
+
       expect(baseAdapter.breaker.failureThreshold).toBe(openaiAdapter.breaker.failureThreshold);
       expect(baseAdapter.breaker.halfOpenAfterMs).toBe(openaiAdapter.breaker.halfOpenAfterMs);
     });
@@ -184,16 +183,12 @@ describe('Adapters Invariants - Critical Security & Quality Gates', () => {
 
   describe('INV-006: Retry Logic Consistency', () => {
     it('should have consistent retry configuration', () => {
-      const adapters = [
-        new OpenAIAdapter(),
-        new AnthropicAdapter(),
-        new PerplexityAdapter()
-      ];
+      const adapters = [new OpenAIAdapter(), new AnthropicAdapter(), new PerplexityAdapter()];
 
       const maxRetries = adapters[0].maxRetries;
       const backoffBaseMs = adapters[0].backoffBaseMs;
 
-      adapters.forEach(adapter => {
+      adapters.forEach((adapter) => {
         expect(adapter.maxRetries).toBe(maxRetries);
         expect(adapter.backoffBaseMs).toBe(backoffBaseMs);
       });
@@ -210,11 +205,11 @@ describe('Adapters Invariants - Critical Security & Quality Gates', () => {
   describe('INV-007: Error Handling Consistency', () => {
     it('should handle errors consistently', async () => {
       const adapter = new OpenAIAdapter();
-      
+
       // Test that all adapters return the same error format
       const errorResponse = {
         decision: false,
-        reasoning: expect.stringMatching(/^(circuit_open|provider_error:|parse_error)$/)
+        reasoning: expect.stringMatching(/^(circuit_open|provider_error:|parse_error)$/),
       };
 
       // This is verified in individual adapter tests
@@ -225,7 +220,7 @@ describe('Adapters Invariants - Critical Security & Quality Gates', () => {
   describe('INV-008: Security Boundaries', () => {
     it('should not expose internal implementation details', () => {
       const adapter = new OpenAIAdapter();
-      
+
       // Private methods should not be accessible (but _evaluate and _withTimeout are part of the interface)
       expect(adapter['#buildPrompt']).toBeUndefined();
       expect(adapter['#parseDecision']).toBeUndefined();
@@ -243,10 +238,10 @@ describe('Adapters Invariants - Critical Security & Quality Gates', () => {
       const adapters = [
         new OpenAIAdapter({ timeoutMs: 100 }),
         new AnthropicAdapter({ timeoutMs: 100 }),
-        new PerplexityAdapter({ timeoutMs: 100 })
+        new PerplexityAdapter({ timeoutMs: 100 }),
       ];
 
-      adapters.forEach(adapter => {
+      adapters.forEach((adapter) => {
         expect(adapter.timeoutMs).toBeLessThanOrEqual(300);
         expect(adapter.maxRetries).toBeLessThanOrEqual(3);
         expect(adapter.backoffBaseMs).toBeLessThanOrEqual(1000);
@@ -257,7 +252,7 @@ describe('Adapters Invariants - Critical Security & Quality Gates', () => {
   describe('INV-010: Model Configuration', () => {
     it('should use environment variables for model configuration', () => {
       const originalEnv = { ...process.env };
-      
+
       process.env.OPENAI_MODEL = 'test-model';
       process.env.ANTHROPIC_MODEL = 'test-claude';
       process.env.PERPLEXITY_MODEL = 'test-perplexity';
@@ -273,13 +268,9 @@ describe('Adapters Invariants - Critical Security & Quality Gates', () => {
 
   describe('INV-INTEGRATION-001: Cross-Adapter Consistency', () => {
     it('should maintain consistent interfaces across adapters', () => {
-      const adapters = [
-        new OpenAIAdapter(),
-        new AnthropicAdapter(),
-        new PerplexityAdapter()
-      ];
+      const adapters = [new OpenAIAdapter(), new AnthropicAdapter(), new PerplexityAdapter()];
 
-      adapters.forEach(adapter => {
+      adapters.forEach((adapter) => {
         expect(typeof adapter.evaluate).toBe('function');
         expect(adapter.breaker).toBeDefined();
         expect(adapter.timeoutMs).toBeDefined();
@@ -296,15 +287,11 @@ describe('Adapters Invariants - Critical Security & Quality Gates', () => {
 
   describe('INV-INTEGRATION-002: Consensus Compatibility', () => {
     it('should be compatible with consensus decision making', async () => {
-      const adapters = [
-        new OpenAIAdapter(),
-        new AnthropicAdapter(),
-        new PerplexityAdapter()
-      ];
+      const adapters = [new OpenAIAdapter(), new AnthropicAdapter(), new PerplexityAdapter()];
 
       // All adapters should return the same response format for consensus
       const testDecision = { type: 'consensus_test', payload: {} };
-      
+
       // This is verified in integration tests
       expect(adapters.length).toBe(3);
       expect(testDecision.type).toBe('consensus_test');
@@ -313,14 +300,10 @@ describe('Adapters Invariants - Critical Security & Quality Gates', () => {
 
   describe('INV-INTEGRATION-003: Failover Behavior', () => {
     it('should support failover scenarios', () => {
-      const adapters = [
-        new OpenAIAdapter(),
-        new AnthropicAdapter(),
-        new PerplexityAdapter()
-      ];
+      const adapters = [new OpenAIAdapter(), new AnthropicAdapter(), new PerplexityAdapter()];
 
       // All adapters should have circuit breaker for failover
-      adapters.forEach(adapter => {
+      adapters.forEach((adapter) => {
         expect(adapter.breaker.state).toBe('CLOSED');
         expect(adapter.breaker.canPass()).toBe(true);
       });

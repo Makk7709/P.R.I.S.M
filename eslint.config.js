@@ -44,6 +44,32 @@ export default [
       'prefer-template': 'warn',
     },
   },
+  {
+    // Test runner globals (vitest/jest) — provided at runtime by `globals: true`.
+    files: [
+      '**/*.{test,spec}.{js,ts,mjs,cjs}',
+      '**/__tests__/**',
+      '**/tests/**',
+      '**/simulation/**',
+      '**/staging/**',
+    ],
+    languageOptions: {
+      globals: {
+        describe: 'readonly',
+        it: 'readonly',
+        test: 'readonly',
+        expect: 'readonly',
+        suite: 'readonly',
+        beforeAll: 'readonly',
+        afterAll: 'readonly',
+        beforeEach: 'readonly',
+        afterEach: 'readonly',
+        vi: 'readonly',
+        vitest: 'readonly',
+        jest: 'readonly',
+      },
+    },
+  },
   prettier, // Must be last to override other configs
   {
     ignores: [

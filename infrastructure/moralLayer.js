@@ -1,7 +1,7 @@
-import fs from 'fs';
-import path from 'path';
+import fs from 'node:fs';
+import path from 'node:path';
 import { createLogger, format, transports } from 'winston';
-import { fileURLToPath } from 'url';
+import { fileURLToPath } from 'node:url';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -17,21 +17,23 @@ const CONTENT_CATEGORIES = {
   MENTAL_HEALTH: 'sante_mentale',
   RELATIONSHIPS: 'relations_humaines',
   ABSURD: 'croyances_absurdes',
-  EMOTIONAL: 'contenu_emotionnel'
+  EMOTIONAL: 'contenu_emotionnel',
 };
 
 // Configuration des règles de blocage avec des patterns plus stricts
 const BLOCKED_CONTENT = {
   EXPLICIT_PORN: /\b(pornographi(e|que)|sexe explicite|contenu adulte|obscène)\b/i,
-  SADISTIC_VIOLENCE: /\b(violence sadique|torture|mutilation|sadisme|très violent|extrêmement violent)\b/i,
-  PURE_HATE: /\b(discours haineux|incitation à la haine|discrimination raciale|xénophob(e|ie))\b/i
+  SADISTIC_VIOLENCE:
+    /\b(violence sadique|torture|mutilation|sadisme|très violent|extrêmement violent)\b/i,
+  PURE_HATE: /\b(discours haineux|incitation à la haine|discrimination raciale|xénophob(e|ie))\b/i,
 };
 
 // Configuration des règles de surveillance avec des patterns plus précis
 const MONITORED_CONTENT = {
-  ABSURD_BELIEFS: /\b(théorie du complot|pseudoscience|croyances irrationnelles|reptilien|illuminati)\b/i,
+  ABSURD_BELIEFS:
+    /\b(théorie du complot|pseudoscience|croyances irrationnelles|reptilien|illuminati)\b/i,
   EMOTIONAL_CONTENT: /\b(suicide|dépression|anxiété sévère|détresse psychologique)\b/i,
-  CONSPIRACY: /\b(conspiration mondiale|nouvel ordre mondial|manipulation de masse)\b/i
+  CONSPIRACY: /\b(conspiration mondiale|nouvel ordre mondial|manipulation de masse)\b/i,
 };
 
 // Configuration du logger avec création forcée du répertoire
@@ -45,20 +47,17 @@ const createLoggerInstance = () => {
     }
 
     return createLogger({
-      format: format.combine(
-        format.timestamp(),
-        format.json()
-      ),
+      format: format.combine(format.timestamp(), format.json()),
       transports: [
-        new transports.File({ 
+        new transports.File({
           filename: path.join(logDir, 'blocked.log'),
-          level: 'error'
+          level: 'error',
         }),
-        new transports.File({ 
+        new transports.File({
           filename: path.join(logDir, 'monitored.log'),
-          level: 'warn'
-        })
-      ]
+          level: 'warn',
+        }),
+      ],
     });
   } catch (error) {
     console.error('Erreur lors de la création du logger:', error);
@@ -166,21 +165,32 @@ export class MoralLayer {
     const textLower = text.toLowerCase();
 
     // Vérification prioritaire pour la religion
-    if (textLower.includes('religion') || textLower.includes('croyance') || 
-        textLower.includes('spiritualité') || textLower.includes('foi')) {
+    if (
+      textLower.includes('religion') ||
+      textLower.includes('croyance') ||
+      textLower.includes('spiritualité') ||
+      textLower.includes('foi')
+    ) {
       return CONTENT_CATEGORIES.BELIEF;
     }
 
     const categories = {
-      [CONTENT_CATEGORIES.VIOLENCE]: /\b(violence|agression|combat|brutalité|tuer|meurtre|torture)\b/i,
+      [CONTENT_CATEGORIES.VIOLENCE]:
+        /\b(violence|agression|combat|brutalité|tuer|meurtre|torture)\b/i,
       [CONTENT_CATEGORIES.LOVE]: /\b(amour|affection|romance|passion|tendresse|intimité)\b/i,
       [CONTENT_CATEGORIES.WAR]: /\b(guerre|conflit|bataille|combat|armée|militaire|stratégie)\b/i,
-      [CONTENT_CATEGORIES.POLITICS]: /\b(politique|gouvernement|élection|débat|parti|démocratie|réforme)\b/i,
-      [CONTENT_CATEGORIES.HATE]: /\b(haine|discrimination|préjugé|racisme|xénophobie|antisémitisme)\b/i,
-      [CONTENT_CATEGORIES.MENTAL_HEALTH]: /\b(santé mentale|psychologie|thérapie|dépression|anxiété|bien-être mental)\b/i,
-      [CONTENT_CATEGORIES.RELATIONSHIPS]: /\b(relation|amitié|ami|famille|couple|social|humain|discussion)\b/i,
-      [CONTENT_CATEGORIES.ABSURD]: /\b(absurde|irrationnel|illogique|théorie du complot|pseudoscience)\b/i,
-      [CONTENT_CATEGORIES.EMOTIONAL]: /\b(émotion|sentiment|affect|humeur|joie|tristesse|colère)\b/i
+      [CONTENT_CATEGORIES.POLITICS]:
+        /\b(politique|gouvernement|élection|débat|parti|démocratie|réforme)\b/i,
+      [CONTENT_CATEGORIES.HATE]:
+        /\b(haine|discrimination|préjugé|racisme|xénophobie|antisémitisme)\b/i,
+      [CONTENT_CATEGORIES.MENTAL_HEALTH]:
+        /\b(santé mentale|psychologie|thérapie|dépression|anxiété|bien-être mental)\b/i,
+      [CONTENT_CATEGORIES.RELATIONSHIPS]:
+        /\b(relation|amitié|ami|famille|couple|social|humain|discussion)\b/i,
+      [CONTENT_CATEGORIES.ABSURD]:
+        /\b(absurde|irrationnel|illogique|théorie du complot|pseudoscience)\b/i,
+      [CONTENT_CATEGORIES.EMOTIONAL]:
+        /\b(émotion|sentiment|affect|humeur|joie|tristesse|colère)\b/i,
     };
 
     // Vérifier les patterns exacts
@@ -216,7 +226,7 @@ export class MoralLayer {
     }
 
     const textLower = text.toLowerCase();
-    
+
     // Pour les contenus très violents ou haineux
     if (textLower.includes('très violent') || textLower.includes('extrêmement violent')) {
       return 0.8;
@@ -232,30 +242,33 @@ export class MoralLayer {
     const categoryFactor = this.getCategoryFactor(category);
     const wordCount = text.split(/\s+/).length;
     const complexityFactor = Math.min(wordCount / 200, 0.05);
-    
+
     const severityFactor = this.calculateSeverityFactor(textLower);
-    
-    return Math.min(baseScore + lengthFactor + categoryFactor + complexityFactor + severityFactor, 1);
+
+    return Math.min(
+      baseScore + lengthFactor + categoryFactor + complexityFactor + severityFactor,
+      1
+    );
   }
 
   calculateSeverityFactor(text) {
     let severity = 0;
-    
+
     // Mots-clés de haute gravité
     const highSeverityWords = ['violence', 'haine', 'torture', 'meurtre', 'suicide'];
     // Mots-clés de gravité moyenne
     const mediumSeverityWords = ['discrimination', 'préjugé', 'conflit', 'dépression'];
-    
+
     // Vérifier les mots de haute gravité
-    highSeverityWords.forEach(word => {
+    highSeverityWords.forEach((word) => {
       if (text.includes(word)) severity += 0.3;
     });
-    
+
     // Vérifier les mots de gravité moyenne
-    mediumSeverityWords.forEach(word => {
+    mediumSeverityWords.forEach((word) => {
       if (text.includes(word)) severity += 0.15;
     });
-    
+
     return Math.min(severity, 0.4); // Limiter le facteur de gravité à 0.4
   }
 
@@ -276,7 +289,7 @@ export class MoralLayer {
       [CONTENT_CATEGORIES.RELATIONSHIPS]: 0.1,
       [CONTENT_CATEGORIES.ABSURD]: 0.2,
       [CONTENT_CATEGORIES.EMOTIONAL]: 0.15,
-      'non_catégorisé': 0.1
+      non_catégorisé: 0.1,
     };
 
     return categoryFactors[category] || 0.1;
@@ -295,11 +308,13 @@ export class MoralLayer {
         timestamp,
         text: text.substring(0, 500) + (text.length > 500 ? '...' : ''),
         category,
-        status
+        status,
       };
 
       if (!this.logger) {
-        console.warn(`[${timestamp}] [${status.toUpperCase()}] ${category}: ${text.substring(0, 500)}`);
+        console.warn(
+          `[${timestamp}] [${status.toUpperCase()}] ${category}: ${text.substring(0, 500)}`
+        );
         return;
       }
 
@@ -312,7 +327,7 @@ export class MoralLayer {
       // Forcer l'écriture synchrone pour les tests
       if (process.env.NODE_ENV === 'test') {
         const logPath = path.join(logDir, `${status === 'bloqué' ? 'blocked' : 'monitored'}.log`);
-        fs.appendFileSync(logPath, JSON.stringify(logEntry) + '\n');
+        fs.appendFileSync(logPath, `${JSON.stringify(logEntry)}\n`);
       }
     } catch (error) {
       console.warn('Error logging content:', error);
@@ -320,7 +335,4 @@ export class MoralLayer {
   }
 }
 
-export {
-    createLoggerInstance,
-    CONTENT_CATEGORIES
-}; 
+export { createLoggerInstance, CONTENT_CATEGORIES };

@@ -1,5 +1,5 @@
-import fs from 'fs';
-import path from 'path';
+import fs from 'node:fs';
+import path from 'node:path';
 import { prismStateStore } from '@/persistence/prismStateStore.js';
 import { closeDb } from '@/backend/database.js';
 
@@ -69,4 +69,4 @@ describe('prismStateStore Integration Test (SQLite)', () => {
       key3: true,
     });
   });
-}); 
+});

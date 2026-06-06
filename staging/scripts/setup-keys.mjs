@@ -4,10 +4,10 @@
  * Wipe registry + regenerate keys + verify keypair match
  */
 
-import crypto from 'crypto';
-import fs from 'fs/promises';
-import path from 'path';
-import { fileURLToPath } from 'url';
+import crypto from 'node:crypto';
+import fs from 'node:fs/promises';
+import path from 'node:path';
+import { fileURLToPath } from 'node:url';
 import { getKeyRegistry } from '../../src/core/KeyRegistry.js';
 import { verifyKeypairMatch, fingerprintPublicKey } from '../../src/core/cryptoUtils.js';
 
@@ -19,7 +19,7 @@ async function setupKeys() {
   await fs.mkdir(keysDir, { recursive: true });
 
   const registryPath = path.join(process.cwd(), 'data', 'key-registry.json');
-  
+
   // WIPE registry existant (pour staging, on régénère à chaque fois)
   try {
     await fs.unlink(registryPath);
@@ -48,13 +48,13 @@ async function setupKeys() {
   const approvers = [
     { keyId: 'staging-owner-001', roles: ['owner'] },
     { keyId: 'staging-security-001', roles: ['security'] },
-    { keyId: 'staging-lead-001', roles: ['lead'] }
+    { keyId: 'staging-lead-001', roles: ['lead'] },
   ];
 
   for (const approver of approvers) {
     const { publicKey, privateKey } = crypto.generateKeyPairSync('ed25519', {
       publicKeyEncoding: { type: 'spki', format: 'pem' },
-      privateKeyEncoding: { type: 'pkcs8', format: 'pem' }
+      privateKeyEncoding: { type: 'pkcs8', format: 'pem' },
     });
 
     // Vérifier keypair match AVANT enregistrement

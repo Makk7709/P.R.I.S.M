@@ -1,16 +1,16 @@
 /**
  * PRISM PDF Export Service - Export Premium des Conversations
- * 
+ *
  * Service d'export PDF haute qualité pour les conversations PRISM.
  * Design corporate avec thèmes premium et branding personnalisable.
- * 
+ *
  * @author PRISM Team
  * @version 1.0.0
  */
 
 import PDFDocument from 'pdfkit';
-import fs from 'fs';
-import path from 'path';
+import fs from 'node:fs';
+import path from 'node:path';
 import { InfographicGenerator } from '../infographic/InfographicGenerator.js';
 
 // ============================================================================
@@ -99,7 +99,7 @@ const THEMES = {
     userTextColor: '#1A1A1A',
     assistantTextColor: '#FFFFFF',
     headerColor: '#050B14',
-    footerColor: '#6B7280'
+    footerColor: '#6B7280',
   },
   'prism-light': {
     name: 'prism-light',
@@ -112,7 +112,7 @@ const THEMES = {
     userTextColor: '#1E40AF',
     assistantTextColor: '#166534',
     headerColor: '#3B82F6',
-    footerColor: '#9CA3AF'
+    footerColor: '#9CA3AF',
   },
   'prism-executive': {
     name: 'prism-executive',
@@ -125,8 +125,8 @@ const THEMES = {
     userTextColor: '#374151',
     assistantTextColor: '#F9FAFB',
     headerColor: '#1F2937',
-    footerColor: '#6B7280'
-  }
+    footerColor: '#6B7280',
+  },
 };
 
 const DEFAULT_CONFIG = {
@@ -135,13 +135,13 @@ const DEFAULT_CONFIG = {
     logo: null,
     companyName: 'PRISM',
     tagline: 'Advanced AI Orchestration System',
-    website: 'prism.ai'
+    website: 'prism.ai',
   },
   layout: {
     margins: { top: 60, bottom: 60, left: 50, right: 50 },
     pageSize: 'A4',
-    orientation: 'portrait'
-  }
+    orientation: 'portrait',
+  },
 };
 
 // ============================================================================
@@ -151,12 +151,12 @@ const DEFAULT_CONFIG = {
 export class PdfExportService {
   constructor(config = {}) {
     this.config = this._mergeConfig(DEFAULT_CONFIG, config);
-    
+
     // Appliquer le thème si nom fourni
     if (config.theme?.name && THEMES[config.theme.name]) {
       this.config.theme = { ...THEMES[config.theme.name], ...config.theme };
     }
-    
+
     // ✨ Générateur d'infographies
     this.infographicGenerator = new InfographicGenerator();
   }
@@ -177,11 +177,11 @@ export class PdfExportService {
   formatMessage(message) {
     const role = message.role || 'user';
     const timestamp = this._parseTimestamp(message.timestamp);
-    
+
     const displayNames = {
       user: 'Utilisateur',
       assistant: 'PRISM',
-      system: 'Système'
+      system: 'Système',
     };
 
     const formatted = {
@@ -195,7 +195,7 @@ export class PdfExportService {
       isPremiumModel: this._isPremiumModel(message.model),
       style: this._getMessageStyle(role),
       contentRich: this._parseRichContent(message.content),
-      links: this._extractLinks(message.content)
+      links: this._extractLinks(message.content),
     };
 
     return formatted;
@@ -215,42 +215,38 @@ export class PdfExportService {
         durationFormatted: '0 minutes',
         totalWords: 0,
         modelsUsed: [],
-        averageResponseTime: 0
+        averageResponseTime: 0,
       };
     }
 
-    const userMessages = messages.filter(m => m.role === 'user').length;
-    const assistantMessages = messages.filter(m => m.role === 'assistant').length;
-    
+    const userMessages = messages.filter((m) => m.role === 'user').length;
+    const assistantMessages = messages.filter((m) => m.role === 'assistant').length;
+
     // Durée
-    const timestamps = messages.map(m => this._parseTimestamp(m.timestamp).getTime());
+    const timestamps = messages.map((m) => this._parseTimestamp(m.timestamp).getTime());
     const duration = Math.max(...timestamps) - Math.min(...timestamps);
-    
+
     // Mots
     const totalWords = messages.reduce((acc, m) => {
-      return acc + (m.content || '').split(/\s+/).filter(w => w.length > 0).length;
+      return acc + (m.content || '').split(/\s+/).filter((w) => w.length > 0).length;
     }, 0);
-    
+
     // Modèles
-    const modelsUsed = [...new Set(
-      messages
-        .filter(m => m.model)
-        .map(m => m.model)
-    )];
-    
+    const modelsUsed = [...new Set(messages.filter((m) => m.model).map((m) => m.model))];
+
     // Temps de réponse moyen
     let totalResponseTime = 0;
     let responseCount = 0;
-    
+
     for (let i = 1; i < messages.length; i++) {
-      if (messages[i].role === 'assistant' && messages[i-1].role === 'user') {
-        const userTime = this._parseTimestamp(messages[i-1].timestamp).getTime();
+      if (messages[i].role === 'assistant' && messages[i - 1].role === 'user') {
+        const userTime = this._parseTimestamp(messages[i - 1].timestamp).getTime();
         const assistantTime = this._parseTimestamp(messages[i].timestamp).getTime();
-        totalResponseTime += (assistantTime - userTime);
+        totalResponseTime += assistantTime - userTime;
         responseCount++;
       }
     }
-    
+
     return {
       totalMessages: messages.length,
       userMessages,
@@ -259,7 +255,7 @@ export class PdfExportService {
       durationFormatted: this._formatDuration(duration),
       totalWords,
       modelsUsed,
-      averageResponseTime: responseCount > 0 ? totalResponseTime / responseCount : 0
+      averageResponseTime: responseCount > 0 ? totalResponseTime / responseCount : 0,
     };
   }
 
@@ -274,7 +270,7 @@ export class PdfExportService {
     if (!messages || messages.length === 0) {
       return {
         success: false,
-        error: 'La liste de messages est vide'
+        error: 'La liste de messages est vide',
       };
     }
 
@@ -294,21 +290,21 @@ export class PdfExportService {
           Author: options.author || 'PRISM User',
           Creator: 'PRISM Export Service',
           Producer: 'PRISM v2.0',
-          CreationDate: new Date()
-        }
+          CreationDate: new Date(),
+        },
       });
 
       const chunks = [];
-      doc.on('data', chunk => chunks.push(chunk));
+      doc.on('data', (chunk) => chunks.push(chunk));
 
       // Génération du contenu
-      let pageCount = 0;
+      const pageCount = 0;
       const result = {
         success: true,
         metadata: {
           title: options.title || 'Conversation PRISM',
           author: options.author || 'PRISM User',
-          creator: 'PRISM Export Service'
+          creator: 'PRISM Export Service',
         },
         appliedTheme: this.config.theme.name,
         hasCoverPage: false,
@@ -316,7 +312,7 @@ export class PdfExportService {
         hasPageNumbers: options.includePageNumbers || false,
         hasHeader: options.includeHeader || false,
         hasFooter: options.includeFooter || false,
-        hasSummaryPage: options.includeSummaryPage || false
+        hasSummaryPage: options.includeSummaryPage || false,
       };
 
       // Page de couverture
@@ -363,7 +359,7 @@ export class PdfExportService {
       doc.end();
 
       // Attendre la fin
-      await new Promise(resolve => doc.on('end', resolve));
+      await new Promise((resolve) => doc.on('end', resolve));
 
       const buffer = Buffer.concat(chunks);
       result.buffer = buffer;
@@ -376,11 +372,10 @@ export class PdfExportService {
       }
 
       return result;
-
     } catch (error) {
       return {
         success: false,
-        error: error.message
+        error: error.message,
       };
     }
   }
@@ -392,9 +387,9 @@ export class PdfExportService {
    */
   async generateForDownload(messages, options = {}) {
     const filename = options.filename || `prism-chat-${this._formatDateFilename(new Date())}.pdf`;
-    
+
     const result = await this.generatePdf(messages, options);
-    
+
     if (!result.success) {
       return result;
     }
@@ -406,7 +401,7 @@ export class PdfExportService {
       filename,
       mimeType: 'application/pdf',
       fileSize,
-      fileSizeFormatted: this._formatFileSize(fileSize)
+      fileSizeFormatted: this._formatFileSize(fileSize),
     };
   }
 
@@ -419,87 +414,89 @@ export class PdfExportService {
     const pageHeight = doc.page.height;
 
     // Fond
-    doc.rect(0, 0, pageWidth, pageHeight)
-       .fill(theme.primaryColor);
+    doc.rect(0, 0, pageWidth, pageHeight).fill(theme.primaryColor);
 
     // Accent doré en haut
-    doc.rect(0, 0, pageWidth, 8)
-       .fill(theme.accentColor);
+    doc.rect(0, 0, pageWidth, 8).fill(theme.accentColor);
 
     // Titre PRISM
-    doc.fontSize(48)
-       .fillColor(theme.accentColor)
-       .font('Helvetica-Bold')
-       .text(branding.companyName, 0, pageHeight * 0.35, {
-         align: 'center',
-         width: pageWidth
-       });
+    doc
+      .fontSize(48)
+      .fillColor(theme.accentColor)
+      .font('Helvetica-Bold')
+      .text(branding.companyName, 0, pageHeight * 0.35, {
+        align: 'center',
+        width: pageWidth,
+      });
 
     // Tagline
-    doc.fontSize(14)
-       .fillColor('#FFFFFF')
-       .font('Helvetica')
-       .text(branding.tagline, 0, pageHeight * 0.35 + 60, {
-         align: 'center',
-         width: pageWidth
-       });
+    doc
+      .fontSize(14)
+      .fillColor('#FFFFFF')
+      .font('Helvetica')
+      .text(branding.tagline, 0, pageHeight * 0.35 + 60, {
+        align: 'center',
+        width: pageWidth,
+      });
 
     // Titre du document
     const title = options.title || 'Conversation Export';
-    doc.fontSize(24)
-       .fillColor('#FFFFFF')
-       .font('Helvetica-Bold')
-       .text(title, 0, pageHeight * 0.55, {
-         align: 'center',
-         width: pageWidth
-       });
+    doc
+      .fontSize(24)
+      .fillColor('#FFFFFF')
+      .font('Helvetica-Bold')
+      .text(title, 0, pageHeight * 0.55, {
+        align: 'center',
+        width: pageWidth,
+      });
 
     // Date
-    doc.fontSize(12)
-       .fillColor('#9CA3AF')
-       .font('Helvetica')
-       .text(this._formatDate(new Date()), 0, pageHeight * 0.55 + 40, {
-         align: 'center',
-         width: pageWidth
-       });
+    doc
+      .fontSize(12)
+      .fillColor('#9CA3AF')
+      .font('Helvetica')
+      .text(this._formatDate(new Date()), 0, pageHeight * 0.55 + 40, {
+        align: 'center',
+        width: pageWidth,
+      });
 
     // Stats rapides
     const stats = this.calculateStats(messages);
-    doc.fontSize(11)
-       .fillColor('#6B7280')
-       .text(`${stats.totalMessages} messages • ${stats.durationFormatted}`, 0, pageHeight * 0.70, {
-         align: 'center',
-         width: pageWidth
-       });
+    doc
+      .fontSize(11)
+      .fillColor('#6B7280')
+      .text(`${stats.totalMessages} messages • ${stats.durationFormatted}`, 0, pageHeight * 0.7, {
+        align: 'center',
+        width: pageWidth,
+      });
 
     // Ligne dorée en bas
-    doc.rect(0, pageHeight - 8, pageWidth, 8)
-       .fill(theme.accentColor);
+    doc.rect(0, pageHeight - 8, pageWidth, 8).fill(theme.accentColor);
   }
 
   _addTableOfContents(doc, messages) {
     const theme = this.config.theme;
 
-    doc.fontSize(24)
-       .fillColor(theme.primaryColor)
-       .font('Helvetica-Bold')
-       .text('Table des Matières', { align: 'center' });
+    doc
+      .fontSize(24)
+      .fillColor(theme.primaryColor)
+      .font('Helvetica-Bold')
+      .text('Table des Matières', { align: 'center' });
 
     doc.moveDown(2);
 
-    doc.fontSize(12)
-       .fillColor(theme.textColor)
-       .font('Helvetica');
+    doc.fontSize(12).fillColor(theme.textColor).font('Helvetica');
 
     // Grouper par date
     const messagesByDate = this._groupMessagesByDate(messages);
-    
+
     let tocIndex = 1;
     for (const [date, msgs] of Object.entries(messagesByDate)) {
-      doc.font('Helvetica-Bold')
-         .text(`${tocIndex}. ${date}`, { continued: true })
-         .font('Helvetica')
-         .text(` (${msgs.length} messages)`, { align: 'right' });
+      doc
+        .font('Helvetica-Bold')
+        .text(`${tocIndex}. ${date}`, { continued: true })
+        .font('Helvetica')
+        .text(` (${msgs.length} messages)`, { align: 'right' });
       doc.moveDown(0.5);
       tocIndex++;
     }
@@ -515,17 +512,18 @@ export class PdfExportService {
     const theme = this.config.theme;
     const pageWidth = doc.page.width;
     const margins = this.config.layout.margins;
-    
+
     doc.addPage();
-    
+
     // Titre de la page
-    doc.fontSize(24)
-       .fillColor(theme.primaryColor)
-       .font('Helvetica-Bold')
-       .text('📊 Synthèse Visuelle', { align: 'center' });
-    
+    doc
+      .fontSize(24)
+      .fillColor(theme.primaryColor)
+      .font('Helvetica-Bold')
+      .text('📊 Synthèse Visuelle', { align: 'center' });
+
     doc.moveDown(0.5);
-    
+
     // Sous-titre avec type de tâche
     const taskTypeLabels = {
       finance: 'Analyse Financière',
@@ -533,31 +531,32 @@ export class PdfExportService {
       marketing: 'Performance Marketing',
       recherche: 'Résultats de Recherche',
       technique: 'Rapport Technique',
-      general: 'Synthèse Générale'
+      general: 'Synthèse Générale',
     };
-    
+
     const taskType = options.taskType || 'general';
     const taskLabel = taskTypeLabels[taskType] || taskTypeLabels.general;
-    
-    doc.fontSize(14)
-       .fillColor(theme.accentColor)
-       .font('Helvetica')
-       .text(taskLabel, { align: 'center' });
-    
+
+    doc
+      .fontSize(14)
+      .fillColor(theme.accentColor)
+      .font('Helvetica')
+      .text(taskLabel, { align: 'center' });
+
     doc.moveDown(2);
-    
+
     try {
       // Générer l'infographie
       const infographic = await this.infographicGenerator.generateForPdf({
         messages,
         taskType,
-        metadata: options.metadata
+        metadata: options.metadata,
       });
-      
+
       if (infographic && infographic.buffer) {
         // Centrer l'image
         const imageX = (pageWidth - infographic.width) / 2;
-        
+
         // Insérer l'image SVG
         if (infographic.format === 'svg') {
           // PDFKit ne supporte pas directement SVG, donc on affiche un placeholder élégant
@@ -565,27 +564,26 @@ export class PdfExportService {
         } else {
           doc.image(infographic.buffer, imageX, doc.y, {
             width: infographic.width,
-            height: infographic.height
+            height: infographic.height,
           });
         }
-        
+
         doc.moveDown(1);
-        
+
         // Légende
-        doc.fontSize(10)
-           .fillColor('#6B7280')
-           .font('Helvetica-Oblique')
-           .text('Infographie générée automatiquement par PRISM / KOREV AI', { 
-             align: 'center' 
-           });
+        doc
+          .fontSize(10)
+          .fillColor('#6B7280')
+          .font('Helvetica-Oblique')
+          .text('Infographie générée automatiquement par PRISM / KOREV AI', {
+            align: 'center',
+          });
       }
     } catch (error) {
       console.warn('[PdfExport] Infographic insertion failed:', error.message);
-      
+
       // Afficher un message d'erreur élégant
-      doc.fontSize(12)
-         .fillColor('#9CA3AF')
-         .text('Infographie non disponible', { align: 'center' });
+      doc.fontSize(12).fillColor('#9CA3AF').text('Infographie non disponible', { align: 'center' });
     }
   }
 
@@ -598,23 +596,22 @@ export class PdfExportService {
     const width = infographic.width;
     const height = infographic.height;
     const y = doc.y;
-    
+
     // Fond avec dégradé simulé
-    doc.rect(x, y, width, height)
-       .fill('#F8FAFC');
-    
-    doc.rect(x, y, width, 4)
-       .fill(theme.accentColor);
-    
+    doc.rect(x, y, width, height).fill('#F8FAFC');
+
+    doc.rect(x, y, width, 4).fill(theme.accentColor);
+
     // Titre dans le placeholder
-    doc.fontSize(18)
-       .fillColor(theme.primaryColor)
-       .font('Helvetica-Bold')
-       .text('PRISM Analytics', x, y + 30, { 
-         width, 
-         align: 'center' 
-       });
-    
+    doc
+      .fontSize(18)
+      .fillColor(theme.primaryColor)
+      .font('Helvetica-Bold')
+      .text('PRISM Analytics', x, y + 30, {
+        width,
+        align: 'center',
+      });
+
     // Type de rapport
     const taskLabels = {
       finance: '💰 Rapport Financier',
@@ -622,46 +619,49 @@ export class PdfExportService {
       marketing: '📈 Métriques Marketing',
       recherche: '🔬 Données de Recherche',
       technique: '⚙️ Rapport Technique',
-      general: '📋 Synthèse Générale'
+      general: '📋 Synthèse Générale',
     };
-    
-    doc.fontSize(14)
-       .fillColor(theme.accentColor)
-       .font('Helvetica')
-       .text(taskLabels[taskType] || taskLabels.general, x, y + 60, { 
-         width, 
-         align: 'center' 
-       });
-    
+
+    doc
+      .fontSize(14)
+      .fillColor(theme.accentColor)
+      .font('Helvetica')
+      .text(taskLabels[taskType] || taskLabels.general, x, y + 60, {
+        width,
+        align: 'center',
+      });
+
     // Extraire quelques métriques du chat
     const extractedData = this.infographicGenerator.extractDataFromChat(messages, taskType);
-    
+
     if (extractedData.metrics && extractedData.metrics.length > 0) {
       doc.moveDown(2);
-      
+
       // Afficher les métriques clés
-      doc.fontSize(12)
-         .fillColor(theme.textColor)
-         .font('Helvetica-Bold')
-         .text('Métriques Clés:', x + 20, y + 100, { width: width - 40 });
-      
+      doc
+        .fontSize(12)
+        .fillColor(theme.textColor)
+        .font('Helvetica-Bold')
+        .text('Métriques Clés:', x + 20, y + 100, { width: width - 40 });
+
       doc.font('Helvetica');
       let metricY = y + 120;
-      
+
       for (const metric of extractedData.metrics.slice(0, 4)) {
         doc.text(`• ${metric.value}`, x + 30, metricY, { width: width - 60 });
         metricY += 18;
       }
     }
-    
+
     // Footer KOREV AI
-    doc.fontSize(10)
-       .fillColor('#9CA3AF')
-       .text('KOREV AI', x, y + height - 25, { 
-         width, 
-         align: 'center' 
-       });
-    
+    doc
+      .fontSize(10)
+      .fillColor('#9CA3AF')
+      .text('KOREV AI', x, y + height - 25, {
+        width,
+        align: 'center',
+      });
+
     // Mettre à jour la position Y
     doc.y = y + height + 10;
   }
@@ -680,8 +680,7 @@ export class PdfExportService {
       doc.y = margins.top + 30; // Espace après le header
     }
 
-    doc.fontSize(10)
-       .fillColor(theme.textColor);
+    doc.fontSize(10).fillColor(theme.textColor);
 
     let currentDate = null;
 
@@ -694,13 +693,14 @@ export class PdfExportService {
       if (msgDate !== currentDate) {
         currentDate = msgDate;
         doc.moveDown(0.5);
-        doc.fontSize(10)
-           .fillColor('#6B7280')
-           .font('Helvetica-Bold')
-           .text(`── ${msgDate} ──`, margins.left, doc.y, { 
-             align: 'center',
-             width: contentWidth
-           });
+        doc
+          .fontSize(10)
+          .fillColor('#6B7280')
+          .font('Helvetica-Bold')
+          .text(`── ${msgDate} ──`, margins.left, doc.y, {
+            align: 'center',
+            width: contentWidth,
+          });
         doc.moveDown(0.5);
       }
 
@@ -724,16 +724,16 @@ export class PdfExportService {
       this._addFooter(doc);
     }
   }
-  
+
   _estimateMessageHeight(doc, formatted, contentWidth) {
     const bubbleWidth = contentWidth * 0.75;
     const bubblePadding = 12;
-    
+
     doc.fontSize(11).font('Helvetica');
     const textHeight = doc.heightOfString(formatted.content || ' ', {
-      width: bubbleWidth - bubblePadding * 2
+      width: bubbleWidth - bubblePadding * 2,
     });
-    
+
     return textHeight + bubblePadding * 2 + 20 + 15; // header + padding + espacement
   }
 
@@ -747,15 +747,21 @@ export class PdfExportService {
     const borderRadius = 8;
 
     // Position X selon le rôle
-    const x = isUser ? 
-      doc.page.width - this.config.layout.margins.right - bubbleWidth :
-      this.config.layout.margins.left;
+    const x = isUser
+      ? doc.page.width - this.config.layout.margins.right - bubbleWidth
+      : this.config.layout.margins.left;
 
     // Couleurs
-    const bgColor = isUser ? theme.userBubbleColor : 
-                    isSystem ? '#F3F4F6' : theme.assistantBubbleColor;
-    const textColor = isUser ? theme.userTextColor :
-                      isSystem ? '#6B7280' : theme.assistantTextColor;
+    const bgColor = isUser
+      ? theme.userBubbleColor
+      : isSystem
+        ? '#F3F4F6'
+        : theme.assistantBubbleColor;
+    const textColor = isUser
+      ? theme.userTextColor
+      : isSystem
+        ? '#6B7280'
+        : theme.assistantTextColor;
 
     // ✅ CORRECTION: Sauvegarder la position Y de départ
     const startY = doc.y;
@@ -763,53 +769,61 @@ export class PdfExportService {
     // Calculer hauteur du texte
     doc.fontSize(11).font(isSystem ? 'Helvetica-Oblique' : 'Helvetica');
     const textHeight = doc.heightOfString(formatted.content || ' ', {
-      width: bubbleWidth - bubblePadding * 2
+      width: bubbleWidth - bubblePadding * 2,
     });
 
     const headerHeight = 20;
     const bubbleHeight = textHeight + bubblePadding * 2 + headerHeight;
 
     // ✅ Dessiner la bulle à la position de départ
-    doc.roundedRect(x, startY, bubbleWidth, bubbleHeight, borderRadius)
-       .fill(bgColor);
+    doc.roundedRect(x, startY, bubbleWidth, bubbleHeight, borderRadius).fill(bgColor);
 
     // ✅ Header du message - position absolue depuis startY
-    doc.fontSize(9)
-       .fillColor(isUser ? '#6B7280' : (isSystem ? '#9CA3AF' : theme.accentColor))
-       .font('Helvetica-Bold')
-       .text(formatted.displayName, x + bubblePadding, startY + bubblePadding, {
-         width: bubbleWidth - bubblePadding * 2 - 80,
-         lineBreak: false
-       });
+    doc
+      .fontSize(9)
+      .fillColor(isUser ? '#6B7280' : isSystem ? '#9CA3AF' : theme.accentColor)
+      .font('Helvetica-Bold')
+      .text(formatted.displayName, x + bubblePadding, startY + bubblePadding, {
+        width: bubbleWidth - bubblePadding * 2 - 80,
+        lineBreak: false,
+      });
 
     // ✅ Timestamp à droite du header
-    doc.fontSize(8)
-       .fillColor('#9CA3AF')
-       .text(formatted.formattedTime, x + bubbleWidth - bubblePadding - 50, startY + bubblePadding, {
-         width: 50,
-         align: 'right',
-         lineBreak: false
-       });
+    doc
+      .fontSize(8)
+      .fillColor('#9CA3AF')
+      .text(formatted.formattedTime, x + bubbleWidth - bubblePadding - 50, startY + bubblePadding, {
+        width: 50,
+        align: 'right',
+        lineBreak: false,
+      });
 
     // ✅ Badge modèle si assistant (sous le timestamp)
     if (formatted.model && !isUser && !isSystem && formatted.modelBadge) {
-      doc.fontSize(7)
-         .fillColor(theme.accentColor)
-         .text(formatted.modelBadge, x + bubbleWidth - bubblePadding - 60, startY + bubblePadding + 10, {
-           width: 60,
-           align: 'right',
-           lineBreak: false
-         });
+      doc
+        .fontSize(7)
+        .fillColor(theme.accentColor)
+        .text(
+          formatted.modelBadge,
+          x + bubbleWidth - bubblePadding - 60,
+          startY + bubblePadding + 10,
+          {
+            width: 60,
+            align: 'right',
+            lineBreak: false,
+          }
+        );
     }
 
     // ✅ Contenu du message - position absolue
-    doc.fontSize(11)
-       .fillColor(textColor)
-       .font(isSystem ? 'Helvetica-Oblique' : 'Helvetica')
-       .text(formatted.content || '', x + bubblePadding, startY + bubblePadding + headerHeight, {
-         width: bubbleWidth - bubblePadding * 2,
-         lineGap: 3
-       });
+    doc
+      .fontSize(11)
+      .fillColor(textColor)
+      .font(isSystem ? 'Helvetica-Oblique' : 'Helvetica')
+      .text(formatted.content || '', x + bubblePadding, startY + bubblePadding + headerHeight, {
+        width: bubbleWidth - bubblePadding * 2,
+        lineGap: 3,
+      });
 
     // ✅ Avancer Y à la fin de la bulle + espacement
     doc.y = startY + bubbleHeight + 15;
@@ -820,21 +834,23 @@ export class PdfExportService {
     const branding = this.config.branding;
 
     // Ligne de séparation
-    doc.moveTo(this.config.layout.margins.left, 40)
-       .lineTo(doc.page.width - this.config.layout.margins.right, 40)
-       .strokeColor(theme.accentColor)
-       .lineWidth(2)
-       .stroke();
+    doc
+      .moveTo(this.config.layout.margins.left, 40)
+      .lineTo(doc.page.width - this.config.layout.margins.right, 40)
+      .strokeColor(theme.accentColor)
+      .lineWidth(2)
+      .stroke();
 
-    doc.fontSize(10)
-       .fillColor(theme.headerColor)
-       .font('Helvetica-Bold')
-       .text(branding.companyName, this.config.layout.margins.left, 25, {
-         continued: true
-       })
-       .font('Helvetica')
-       .fillColor('#9CA3AF')
-       .text(` | ${branding.tagline}`);
+    doc
+      .fontSize(10)
+      .fillColor(theme.headerColor)
+      .font('Helvetica-Bold')
+      .text(branding.companyName, this.config.layout.margins.left, 25, {
+        continued: true,
+      })
+      .font('Helvetica')
+      .fillColor('#9CA3AF')
+      .text(` | ${branding.tagline}`);
   }
 
   _addFooter(doc) {
@@ -842,35 +858,39 @@ export class PdfExportService {
     const branding = this.config.branding;
     const pageHeight = doc.page.height;
 
-    doc.fontSize(8)
-       .fillColor(theme.footerColor)
-       .text(
-         `Généré par ${branding.companyName} Export Service • ${this._formatDate(new Date())}`,
-         this.config.layout.margins.left,
-         pageHeight - 35,
-         {
-           align: 'center',
-           width: doc.page.width - this.config.layout.margins.left - this.config.layout.margins.right
-         }
-       );
+    doc
+      .fontSize(8)
+      .fillColor(theme.footerColor)
+      .text(
+        `Généré par ${branding.companyName} Export Service • ${this._formatDate(new Date())}`,
+        this.config.layout.margins.left,
+        pageHeight - 35,
+        {
+          align: 'center',
+          width:
+            doc.page.width - this.config.layout.margins.left - this.config.layout.margins.right,
+        }
+      );
   }
 
   _addPageNumbers(doc) {
     const pages = doc.bufferedPageRange();
-    
+
     for (let i = 0; i < pages.count; i++) {
       doc.switchToPage(i);
-      doc.fontSize(9)
-         .fillColor('#9CA3AF')
-         .text(
-           `Page ${i + 1} / ${pages.count}`,
-           this.config.layout.margins.left,
-           doc.page.height - 25,
-           {
-             align: 'center',
-             width: doc.page.width - this.config.layout.margins.left - this.config.layout.margins.right
-           }
-         );
+      doc
+        .fontSize(9)
+        .fillColor('#9CA3AF')
+        .text(
+          `Page ${i + 1} / ${pages.count}`,
+          this.config.layout.margins.left,
+          doc.page.height - 25,
+          {
+            align: 'center',
+            width:
+              doc.page.width - this.config.layout.margins.left - this.config.layout.margins.right,
+          }
+        );
     }
   }
 
@@ -879,10 +899,11 @@ export class PdfExportService {
     const stats = this.calculateStats(messages);
 
     // Titre
-    doc.fontSize(24)
-       .fillColor(theme.primaryColor)
-       .font('Helvetica-Bold')
-       .text('Résumé de la Conversation', { align: 'center' });
+    doc
+      .fontSize(24)
+      .fillColor(theme.primaryColor)
+      .font('Helvetica-Bold')
+      .text('Résumé de la Conversation', { align: 'center' });
 
     doc.moveDown(2);
 
@@ -894,29 +915,36 @@ export class PdfExportService {
       { label: 'Durée', value: stats.durationFormatted },
       { label: 'Mots échangés', value: stats.totalWords },
       { label: 'Modèles utilisés', value: stats.modelsUsed.join(', ') || 'N/A' },
-      { label: 'Temps de réponse moyen', value: stats.averageResponseTime > 0 ? 
-        `${(stats.averageResponseTime / 1000).toFixed(1)}s` : 'N/A' }
+      {
+        label: 'Temps de réponse moyen',
+        value:
+          stats.averageResponseTime > 0
+            ? `${(stats.averageResponseTime / 1000).toFixed(1)}s`
+            : 'N/A',
+      },
     ];
 
     for (const item of statsItems) {
-      doc.fontSize(12)
-         .font('Helvetica-Bold')
-         .fillColor(theme.textColor)
-         .text(item.label + ': ', { continued: true })
-         .font('Helvetica')
-         .fillColor(theme.accentColor)
-         .text(String(item.value));
+      doc
+        .fontSize(12)
+        .font('Helvetica-Bold')
+        .fillColor(theme.textColor)
+        .text(`${item.label}: `, { continued: true })
+        .font('Helvetica')
+        .fillColor(theme.accentColor)
+        .text(String(item.value));
       doc.moveDown(0.5);
     }
 
     // Note de pied
     doc.moveDown(3);
-    doc.fontSize(9)
-       .fillColor('#9CA3AF')
-       .font('Helvetica-Oblique')
-       .text('Ce document a été généré automatiquement par PRISM Export Service.', {
-         align: 'center'
-       });
+    doc
+      .fontSize(9)
+      .fillColor('#9CA3AF')
+      .font('Helvetica-Oblique')
+      .text('Ce document a été généré automatiquement par PRISM Export Service.', {
+        align: 'center',
+      });
   }
 
   // ============ MÉTHODES UTILITAIRES ============
@@ -925,11 +953,11 @@ export class PdfExportService {
     return {
       theme: { ...defaults.theme, ...custom.theme },
       branding: { ...defaults.branding, ...custom.branding },
-      layout: { 
-        ...defaults.layout, 
+      layout: {
+        ...defaults.layout,
         ...custom.layout,
-        margins: { ...defaults.layout.margins, ...custom.layout?.margins }
-      }
+        margins: { ...defaults.layout.margins, ...custom.layout?.margins },
+      },
     };
   }
 
@@ -955,10 +983,10 @@ export class PdfExportService {
   }
 
   _formatDate(date) {
-    return date.toLocaleDateString('fr-FR', { 
-      day: 'numeric', 
-      month: 'long', 
-      year: 'numeric' 
+    return date.toLocaleDateString('fr-FR', {
+      day: 'numeric',
+      month: 'long',
+      year: 'numeric',
     });
   }
 
@@ -985,7 +1013,7 @@ export class PdfExportService {
 
   _formatModelBadge(model) {
     if (!model) return null;
-    
+
     const badges = {
       'gpt-4': 'GPT-4',
       'gpt-4-turbo': 'GPT-4 Turbo',
@@ -993,83 +1021,83 @@ export class PdfExportService {
       'claude-3': 'Claude-3',
       'claude-3-opus': 'Claude-3 Opus',
       'claude-3-sonnet': 'Claude-3 Sonnet',
-      'perplexity': 'Perplexity'
+      perplexity: 'Perplexity',
     };
-    
+
     return badges[model] || model.charAt(0).toUpperCase() + model.slice(1);
   }
 
   _isPremiumModel(model) {
     if (!model) return false;
     const premiumModels = ['gpt-4', 'gpt-4-turbo', 'claude-3-opus'];
-    return premiumModels.some(pm => model.toLowerCase().includes(pm));
+    return premiumModels.some((pm) => model.toLowerCase().includes(pm));
   }
 
   _getMessageStyle(role) {
     const theme = this.config.theme;
-    
+
     const styles = {
       user: {
         backgroundColor: theme.userBubbleColor,
         textColor: theme.userTextColor,
         alignment: 'right',
-        isItalic: false
+        isItalic: false,
       },
       assistant: {
         backgroundColor: theme.assistantBubbleColor,
         textColor: theme.assistantTextColor,
         alignment: 'left',
-        isItalic: false
+        isItalic: false,
       },
       system: {
         backgroundColor: '#F3F4F6',
         textColor: '#6B7280',
         alignment: 'center',
-        isItalic: true
-      }
+        isItalic: true,
+      },
     };
-    
+
     return styles[role] || styles.user;
   }
 
   _parseRichContent(content) {
     if (!content) return { segments: [], lineCount: 0 };
-    
+
     const lines = content.split('\n');
     const segments = [];
-    
+
     for (const line of lines) {
       // Parser le markdown basique
       let text = line;
       const formatting = [];
-      
+
       // Bold
       text = text.replace(/\*\*(.*?)\*\*/g, (_, match) => {
         formatting.push({ type: 'bold', text: match });
         return match;
       });
-      
+
       // Italic
       text = text.replace(/\*(.*?)\*/g, (_, match) => {
         formatting.push({ type: 'italic', text: match });
         return match;
       });
-      
+
       // Code
       text = text.replace(/`(.*?)`/g, (_, match) => {
         formatting.push({ type: 'code', text: match });
         return match;
       });
-      
+
       segments.push({ text, formatting });
     }
-    
+
     return { segments, lineCount: lines.length };
   }
 
   _extractLinks(content) {
     if (!content) return [];
-    
+
     const urlRegex = /https?:\/\/[^\s]+/g;
     const matches = content.match(urlRegex);
     return matches || [];
@@ -1077,7 +1105,7 @@ export class PdfExportService {
 
   _groupMessagesByDate(messages) {
     const groups = {};
-    
+
     for (const msg of messages) {
       const date = this._formatDate(this._parseTimestamp(msg.timestamp));
       if (!groups[date]) {
@@ -1085,20 +1113,19 @@ export class PdfExportService {
       }
       groups[date].push(msg);
     }
-    
+
     return groups;
   }
 
   async _writeFile(filePath, buffer) {
     const dir = path.dirname(filePath);
-    
+
     if (!fs.existsSync(dir)) {
       fs.mkdirSync(dir, { recursive: true });
     }
-    
+
     fs.writeFileSync(filePath, buffer);
   }
 }
 
 export default PdfExportService;
-

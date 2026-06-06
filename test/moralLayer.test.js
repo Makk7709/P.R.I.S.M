@@ -1,8 +1,8 @@
 import { MoralLayer } from '../infrastructure/moralLayer.js';
 import { jest } from '@jest/globals';
-import fs from 'fs';
-import path from 'path';
-import { fileURLToPath } from 'url';
+import fs from 'node:fs';
+import path from 'node:path';
+import { fileURLToPath } from 'node:url';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -23,16 +23,16 @@ describe('MoralLayer', () => {
     if (!fs.existsSync(logDir)) {
       fs.mkdirSync(logDir, { recursive: true, mode: 0o755 });
     }
-    
+
     // Create empty log files with correct permissions
     const logFiles = ['blocked.log', 'monitored.log'];
-    logFiles.forEach(file => {
+    logFiles.forEach((file) => {
       const logPath = path.join(logDir, file);
       if (!fs.existsSync(logPath)) {
         fs.writeFileSync(logPath, '', { mode: 0o644 });
       }
     });
-    
+
     moralLayer = new MoralLayer();
   });
 
@@ -40,7 +40,7 @@ describe('MoralLayer', () => {
     // Clean up log files
     try {
       const logFiles = ['blocked.log', 'monitored.log'];
-      logFiles.forEach(file => {
+      logFiles.forEach((file) => {
         const logPath = path.join(logDir, file);
         if (fs.existsSync(logPath)) {
           fs.unlinkSync(logPath);
@@ -79,7 +79,7 @@ describe('MoralLayer', () => {
     test('devrait créer les fichiers de log', () => {
       const blockedLogPath = path.join(logDir, 'blocked.log');
       const monitoredLogPath = path.join(logDir, 'monitored.log');
-      
+
       expect(fs.existsSync(blockedLogPath)).toBe(true);
       expect(fs.existsSync(monitoredLogPath)).toBe(true);
     });
@@ -124,7 +124,9 @@ describe('MoralLayer', () => {
     });
 
     test('devrait accepter la discussion sur la religion', () => {
-      const result = moralLayer.analyzeContent('Discussion sur les différentes croyances religieuses');
+      const result = moralLayer.analyzeContent(
+        'Discussion sur les différentes croyances religieuses'
+      );
       expect(result.status).toBe('accepté');
       expect(result.score).toBeGreaterThan(0);
       expect(result.category).toBe('croyance');
@@ -162,10 +164,10 @@ describe('MoralLayer', () => {
     test('devrait logger les contenus bloqués', async () => {
       const result = moralLayer.analyzeContent('Contenu violent à bloquer');
       expect(result.status).toBe('bloqué');
-      
+
       // Allow time for logging
-      await new Promise(resolve => setTimeout(resolve, 100));
-      
+      await new Promise((resolve) => setTimeout(resolve, 100));
+
       const log = fs.readFileSync(path.join(logDir, 'blocked.log'), 'utf8');
       expect(log).toContain('Contenu violent à bloquer');
     });
@@ -173,20 +175,20 @@ describe('MoralLayer', () => {
     test('devrait logger les contenus surveillés', async () => {
       const result = moralLayer.analyzeContent('Contenu sensible à surveiller');
       expect(result.status).toBe('surveillé');
-      
+
       // Allow time for logging
-      await new Promise(resolve => setTimeout(resolve, 100));
-      
+      await new Promise((resolve) => setTimeout(resolve, 100));
+
       const log = fs.readFileSync(path.join(logDir, 'monitored.log'), 'utf8');
       expect(log).toContain('Contenu sensible à surveiller');
     });
 
     test('devrait inclure le timestamp dans les logs', async () => {
       moralLayer.analyzeContent('Contenu à bloquer avec timestamp');
-      
+
       // Allow time for logging
-      await new Promise(resolve => setTimeout(resolve, 100));
-      
+      await new Promise((resolve) => setTimeout(resolve, 100));
+
       const log = fs.readFileSync(path.join(logDir, 'blocked.log'), 'utf8');
       expect(log).toMatch(/\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}/);
     });
@@ -198,8 +200,8 @@ describe('MoralLayer', () => {
       expect(category).toBe('violence');
     });
 
-    test('devrait catégoriser correctement l\'amour', () => {
-      const category = moralLayer.categorizeContent('histoire d\'amour');
+    test("devrait catégoriser correctement l'amour", () => {
+      const category = moralLayer.categorizeContent("histoire d'amour");
       expect(category).toBe('amour');
     });
 
@@ -219,7 +221,7 @@ describe('MoralLayer', () => {
     });
 
     test('devrait catégoriser correctement les relations humaines', () => {
-      const category = moralLayer.categorizeContent('discussion sur l\'amitié');
+      const category = moralLayer.categorizeContent("discussion sur l'amitié");
       expect(category).toBe('relations_humaines');
     });
   });
@@ -232,11 +234,11 @@ describe('MoralLayer', () => {
     });
 
     test('devrait être thread-safe', () => {
-      const promises = Array(10).fill().map(() => 
-        Promise.resolve(moralLayer.analyzeContent('test'))
-      );
-      return Promise.all(promises).then(results => {
-        expect(results.every(r => r.status === 'accepté')).toBe(true);
+      const promises = Array(10)
+        .fill()
+        .map(() => Promise.resolve(moralLayer.analyzeContent('test')));
+      return Promise.all(promises).then((results) => {
+        expect(results.every((r) => r.status === 'accepté')).toBe(true);
       });
     });
   });
@@ -257,4 +259,4 @@ describe('MoralLayer', () => {
       expect(result.score).toBeLessThan(0.3);
     });
   });
-}); 
+});

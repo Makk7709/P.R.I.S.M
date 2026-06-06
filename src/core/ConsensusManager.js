@@ -4,17 +4,17 @@
  * Implémente une règle de majorité qualifiée (2/3) entre les IA fournisseurs
  */
 
-import { EventEmitter } from 'events';
-import crypto from 'crypto';
+import { EventEmitter } from 'node:events';
+import crypto from 'node:crypto';
 import { getTrustContext } from './TrustContext.js';
 import OpenAIAdapter from './providers/OpenAIAdapter.js';
 import AnthropicAdapter from './providers/AnthropicAdapter.js';
 import PerplexityAdapter from './providers/PerplexityAdapter.js';
-import { 
-  validateStrict, 
-  DecisionProposalSchema, 
+import {
+  validateStrict,
+  DecisionProposalSchema,
   VoteSchema,
-  ConsensusResultSchema 
+  ConsensusResultSchema,
 } from '../security/contracts/consensus.js';
 
 /**
@@ -25,7 +25,7 @@ export const DecisionType = {
   CRITICAL: 'critical',
   SELF_IMPROVEMENT: 'self_improvement',
   SYSTEM_MODIFICATION: 'system_modification',
-  DATA_ACCESS: 'data_access'
+  DATA_ACCESS: 'data_access',
 };
 
 /**
@@ -35,7 +35,7 @@ export const VoteType = {
   APPROVE: 'approve',
   REJECT: 'reject',
   ABSTAIN: 'abstain',
-  UNAVAILABLE: 'unavailable'
+  UNAVAILABLE: 'unavailable',
 };
 
 /**
@@ -45,7 +45,7 @@ export const ConsensusStatus = {
   PENDING: 'PENDING',
   APPROVED: 'APPROVED',
   REJECTED: 'REJECTED',
-  TIMEOUT: 'TIMEOUT'
+  TIMEOUT: 'TIMEOUT',
 };
 
 /**
@@ -54,7 +54,7 @@ export const ConsensusStatus = {
 export const AIProvider = {
   GPT4: 'gpt-4.1',
   CLAUDE3: 'claude-3',
-  PERPLEXITY: 'perplexity'
+  PERPLEXITY: 'perplexity',
 };
 
 /**
@@ -70,23 +70,23 @@ class DecisionProposal {
     this.votes = new Map();
     this.status = ConsensusStatus.PENDING;
     this.timeout = null;
-    this.requiredVotes = Math.ceil(Object.keys(AIProvider).length * 2 / 3); // 2/3 majorité
+    this.requiredVotes = Math.ceil((Object.keys(AIProvider).length * 2) / 3); // 2/3 majorité
   }
 
   addVote(provider, vote, reasoning = '') {
     this.votes.set(provider, {
       vote: vote, // VoteType.APPROVE, VoteType.REJECT, VoteType.ABSTAIN, VoteType.UNAVAILABLE
       reasoning: reasoning,
-      timestamp: Date.now()
+      timestamp: Date.now(),
     });
   }
 
   getVoteCount() {
     const values = Array.from(this.votes.values());
-    const approvals = values.filter(v => v.vote === VoteType.APPROVE || v.vote === true).length;
-    const rejections = values.filter(v => v.vote === VoteType.REJECT || v.vote === false).length;
-    const abstentions = values.filter(v => v.vote === VoteType.ABSTAIN).length;
-    const unavailable = values.filter(v => v.vote === VoteType.UNAVAILABLE).length;
+    const approvals = values.filter((v) => v.vote === VoteType.APPROVE || v.vote === true).length;
+    const rejections = values.filter((v) => v.vote === VoteType.REJECT || v.vote === false).length;
+    const abstentions = values.filter((v) => v.vote === VoteType.ABSTAIN).length;
+    const unavailable = values.filter((v) => v.vote === VoteType.UNAVAILABLE).length;
     return { approvals, rejections, abstentions, unavailable, total: this.votes.size };
   }
 
@@ -95,30 +95,35 @@ class DecisionProposal {
     const totalProviders = Object.keys(AIProvider).length;
     const effectiveVotes = approvals + rejections; // Abstentions ne comptent pas dans le quorum
     const availableProviders = totalProviders - unavailable;
-    
+
     // Quorum dynamique : 2/3 des fournisseurs totaux
-    const requiredQuorum = Math.ceil(totalProviders * 2 / 3);
-    
+    const requiredQuorum = Math.ceil((totalProviders * 2) / 3);
+
     // Debug logging pour comprendre le problème
     if (process.env.NODE_ENV === 'test') {
       console.log('DEBUG isComplete:', {
-        approvals, rejections, abstentions, unavailable, total,
-        totalProviders, requiredQuorum
+        approvals,
+        rejections,
+        abstentions,
+        unavailable,
+        total,
+        totalProviders,
+        requiredQuorum,
       });
     }
-    
+
     // Consensus atteint si 2/3 des fournisseurs totaux approuvent
     if (approvals >= requiredQuorum) {
       this.status = ConsensusStatus.APPROVED;
       return true;
     }
-    
+
     // Consensus rejeté si 2/3 des fournisseurs totaux rejettent
     if (rejections >= requiredQuorum) {
       this.status = ConsensusStatus.REJECTED;
       return true;
     }
-    
+
     // Fail-open : si plus de la moitié des fournisseurs sont indisponibles/abstentions
     if (unavailable + abstentions >= totalProviders / 2) {
       // et qu'il y a au moins un vote d'approbation qui domine les rejets
@@ -127,7 +132,7 @@ class DecisionProposal {
         return true;
       }
     }
-    
+
     // Impossible d'atteindre le consensus si tous les fournisseurs ont voté
     if (total === totalProviders) {
       if (approvals >= requiredQuorum) {
@@ -137,7 +142,7 @@ class DecisionProposal {
       }
       return true;
     }
-    
+
     return false;
   }
 }
@@ -148,16 +153,16 @@ class DecisionProposal {
 export class ConsensusManager extends EventEmitter {
   constructor(config = {}) {
     super();
-    
+
     this.config = {
       timeoutMs: config.timeoutMs || 1000, // 1 seconde timeout strict
       maxConcurrentProposals: config.maxConcurrentProposals || 10,
       enableTrustContext: config.enableTrustContext !== false,
       cleanupDelayMs: config.cleanupDelayMs || 100, // Délai de nettoyage configurable
       autoRequestVotes: config.autoRequestVotes !== false, // Demande automatique des votes
-      ...config
+      ...config,
     };
-    
+
     this.proposals = new Map();
     this.recentProposals = new Map(); // Cache temporaire pour getProposalStatus
     this.metrics = {
@@ -166,13 +171,13 @@ export class ConsensusManager extends EventEmitter {
       rejectedProposals: 0,
       timeoutProposals: 0,
       averageDecisionTime: 0,
-      consensusSuccessRate: 0
+      consensusSuccessRate: 0,
     };
-    
+
     this.trustContext = null;
     this.providerAdapters = null;
     this.isInitialized = false;
-    
+
     this.init();
   }
 
@@ -184,9 +189,15 @@ export class ConsensusManager extends EventEmitter {
       // Initialiser adaptateurs réels si demandé et si clés présentes
       if (this.config.useRealProviders) {
         this.providerAdapters = {
-          [AIProvider.GPT4]: process.env.OPENAI_API_KEY ? new OpenAIAdapter(this.config.providers?.openai || {}) : null,
-          [AIProvider.CLAUDE3]: process.env.ANTHROPIC_API_KEY ? new AnthropicAdapter(this.config.providers?.anthropic || {}) : null,
-          [AIProvider.PERPLEXITY]: process.env.PERPLEXITY_API_KEY ? new PerplexityAdapter(this.config.providers?.perplexity || {}) : null,
+          [AIProvider.GPT4]: process.env.OPENAI_API_KEY
+            ? new OpenAIAdapter(this.config.providers?.openai || {})
+            : null,
+          [AIProvider.CLAUDE3]: process.env.ANTHROPIC_API_KEY
+            ? new AnthropicAdapter(this.config.providers?.anthropic || {})
+            : null,
+          [AIProvider.PERPLEXITY]: process.env.PERPLEXITY_API_KEY
+            ? new PerplexityAdapter(this.config.providers?.perplexity || {})
+            : null,
         };
       }
       this.isInitialized = true;
@@ -224,7 +235,7 @@ export class ConsensusManager extends EventEmitter {
         module: 'ConsensusManager.propose',
         error: error.message,
         decisionHash,
-        type
+        type,
       };
       console.error('🚫 FAIL-CLOSED: Decision proposal rejected (schema validation):', logEntry);
       throw error; // Fail-closed: rejeter explicitement
@@ -246,7 +257,7 @@ export class ConsensusManager extends EventEmitter {
       decisionHash,
       payload,
       type,
-      timestamp: proposal.timestamp
+      timestamp: proposal.timestamp,
     });
 
     // Demander les votes des IA fournisseurs (si activé)
@@ -263,9 +274,9 @@ export class ConsensusManager extends EventEmitter {
    */
   async requestVotes(proposal) {
     const providers = Object.values(AIProvider);
-    
+
     // Demander les votes en parallèle pour optimiser le temps
-    const votePromises = providers.map(provider => 
+    const votePromises = providers.map((provider) =>
       this.requestVoteFromProvider(provider, proposal)
     );
 
@@ -284,10 +295,10 @@ export class ConsensusManager extends EventEmitter {
    */
   async requestVoteFromProvider(provider, proposal) {
     const correlationId = crypto.randomUUID();
-    
+
     try {
       let providerResult;
-      
+
       if (this.providerAdapters && this.providerAdapters[provider]) {
         // Utiliser adapter qui retourne ProviderResult strict
         providerResult = await this.providerAdapters[provider].evaluate(
@@ -303,33 +314,31 @@ export class ConsensusManager extends EventEmitter {
           verdict: simulatedVote.decision ? 'approve' : 'reject',
           rationale: simulatedVote.reasoning,
           latencyMs: 100,
-          correlationId
+          correlationId,
         };
       }
-      
+
       // Mapper ProviderResult vers VoteType selon "No False-Approve" invariant
       // Si status !== OK, jamais APPROVE (abstain ou unavailable)
       if (providerResult.status === 'OK' && providerResult.verdict) {
         // Succès: mapper verdict directement
-        const voteType = providerResult.verdict === 'approve' ? VoteType.APPROVE :
-                        providerResult.verdict === 'reject' ? VoteType.REJECT :
-                        VoteType.ABSTAIN;
-        this.submitVote(
-          proposal.id, 
-          provider, 
-          voteType, 
-          providerResult.rationale || ''
-        );
+        const voteType =
+          providerResult.verdict === 'approve'
+            ? VoteType.APPROVE
+            : providerResult.verdict === 'reject'
+              ? VoteType.REJECT
+              : VoteType.ABSTAIN;
+        this.submitVote(proposal.id, provider, voteType, providerResult.rationale || '');
       } else {
         // Échec provider: abstain (jamais approve) - No False-Approve
         const errorReason = providerResult.error?.message || `Provider ${providerResult.status}`;
         this.submitVote(
-          proposal.id, 
-          provider, 
-          VoteType.UNAVAILABLE, 
+          proposal.id,
+          provider,
+          VoteType.UNAVAILABLE,
           `Provider error: ${errorReason}`
         );
-        
+
         // Log structuré
         console.warn({
           timestamp: Date.now(),
@@ -339,7 +348,7 @@ export class ConsensusManager extends EventEmitter {
           status: providerResult.status,
           proposalId: proposal.id,
           correlationId,
-          reason: 'No False-Approve: status != OK => excluded from consensus'
+          reason: 'No False-Approve: status != OK => excluded from consensus',
         });
       }
     } catch (error) {
@@ -351,15 +360,10 @@ export class ConsensusManager extends EventEmitter {
         provider,
         proposalId: proposal.id,
         correlationId,
-        error: error.message
+        error: error.message,
       });
-      
-      this.submitVote(
-        proposal.id, 
-        provider, 
-        VoteType.UNAVAILABLE, 
-        `Fatal error: ${error.message}`
-      );
+
+      this.submitVote(proposal.id, provider, VoteType.UNAVAILABLE, `Fatal error: ${error.message}`);
     }
   }
 
@@ -372,7 +376,7 @@ export class ConsensusManager extends EventEmitter {
   async simulateAIVote(provider, proposal) {
     // Simulation basée sur le type de décision et le fournisseur
     const { type, payload } = proposal;
-    
+
     let decision = false;
     let reasoning = '';
 
@@ -382,13 +386,13 @@ export class ConsensusManager extends EventEmitter {
         decision = type !== DecisionType.SECURITY || payload.riskLevel < 0.7;
         reasoning = decision ? 'Innovation beneficial' : 'Security risk too high';
         break;
-        
+
       case AIProvider.CLAUDE3:
         // Claude-3 tend à être plus conservateur sur l'éthique
         decision = !payload.ethicalConcerns && payload.riskLevel < 0.5;
         reasoning = decision ? 'Ethically sound decision' : 'Ethical concerns identified';
         break;
-        
+
       case AIProvider.PERPLEXITY:
         // Perplexity se base sur les faits et données
         decision = payload.evidenceQuality > 0.6 && payload.riskLevel < 0.6;
@@ -397,8 +401,8 @@ export class ConsensusManager extends EventEmitter {
     }
 
     // Ajouter un délai réaliste
-    await new Promise(resolve => setTimeout(resolve, Math.random() * 200 + 50));
-    
+    await new Promise((resolve) => setTimeout(resolve, Math.random() * 200 + 50));
+
     return { decision, reasoning };
   }
 
@@ -432,13 +436,16 @@ export class ConsensusManager extends EventEmitter {
       } else {
         voteType = vote; // Utiliser tel quel
       }
-      
-      validateStrict({
-        vote: voteType,
-        reasoning: reasoning || '',
-        timestamp: Date.now(),
-        provider: provider || 'unknown'
-      }, VoteSchema);
+
+      validateStrict(
+        {
+          vote: voteType,
+          reasoning: reasoning || '',
+          timestamp: Date.now(),
+          provider: provider || 'unknown',
+        },
+        VoteSchema
+      );
     } catch (error) {
       // Log structuré du rejet
       const logEntry = {
@@ -447,21 +454,28 @@ export class ConsensusManager extends EventEmitter {
         module: 'ConsensusManager.submitVote',
         error: error.message,
         proposalId,
-        provider
+        provider,
       };
       console.error('🚫 FAIL-CLOSED: Vote rejected (schema validation):', logEntry);
       throw error; // Fail-closed: rejeter explicitement
     }
 
     // Utiliser voteType normalisé
-    const finalVoteType = typeof vote === 'boolean' 
-      ? (vote ? VoteType.APPROVE : VoteType.REJECT)
-      : (vote === 'approve' ? VoteType.APPROVE :
-         vote === 'reject' ? VoteType.REJECT :
-         vote === 'abstain' ? VoteType.ABSTAIN :
-         vote === 'unavailable' ? VoteType.UNAVAILABLE :
-         vote);
-    
+    const finalVoteType =
+      typeof vote === 'boolean'
+        ? vote
+          ? VoteType.APPROVE
+          : VoteType.REJECT
+        : vote === 'approve'
+          ? VoteType.APPROVE
+          : vote === 'reject'
+            ? VoteType.REJECT
+            : vote === 'abstain'
+              ? VoteType.ABSTAIN
+              : vote === 'unavailable'
+                ? VoteType.UNAVAILABLE
+                : vote;
+
     proposal.addVote(provider, finalVoteType, reasoning);
 
     this.emit('voteSubmitted', {
@@ -469,7 +483,7 @@ export class ConsensusManager extends EventEmitter {
       provider,
       vote,
       reasoning,
-      timestamp: Date.now()
+      timestamp: Date.now(),
     });
 
     // Vérifier si le consensus est atteint
@@ -504,7 +518,7 @@ export class ConsensusManager extends EventEmitter {
       status: proposal.status,
       votes: Object.fromEntries(proposal.votes),
       decisionTime,
-      timestamp: Date.now()
+      timestamp: Date.now(),
     });
 
     // Notifier TrustContext si nécessaire
@@ -514,7 +528,7 @@ export class ConsensusManager extends EventEmitter {
 
     // Garder dans le cache temporaire pour les tests
     this.recentProposals.set(proposalId, proposal);
-    
+
     // Nettoyer la proposition après un délai configurable
     setTimeout(() => {
       this.proposals.delete(proposalId);
@@ -553,9 +567,9 @@ export class ConsensusManager extends EventEmitter {
       proposal: {
         decisionHash: proposal.decisionHash,
         type: proposal.type,
-        votes: Object.fromEntries(proposal.votes)
+        votes: Object.fromEntries(proposal.votes),
       },
-      timestamp: Date.now()
+      timestamp: Date.now(),
     });
 
     this.finalizeProposal(proposalId);
@@ -575,12 +589,13 @@ export class ConsensusManager extends EventEmitter {
 
     // Mettre à jour le temps moyen de décision
     const totalDecisions = this.metrics.approvedProposals + this.metrics.rejectedProposals;
-    this.metrics.averageDecisionTime = 
+    this.metrics.averageDecisionTime =
       (this.metrics.averageDecisionTime * (totalDecisions - 1) + decisionTime) / totalDecisions;
 
     // Calculer le taux de succès du consensus
-    this.metrics.consensusSuccessRate = 
-      (this.metrics.approvedProposals + this.metrics.rejectedProposals) / this.metrics.totalProposals;
+    this.metrics.consensusSuccessRate =
+      (this.metrics.approvedProposals + this.metrics.rejectedProposals) /
+      this.metrics.totalProposals;
   }
 
   /**
@@ -590,9 +605,10 @@ export class ConsensusManager extends EventEmitter {
   getMetrics() {
     return {
       ...this.metrics,
-      activePendingProposals: Array.from(this.proposals.values())
-        .filter(p => p.status === ConsensusStatus.PENDING).length,
-      timestamp: Date.now()
+      activePendingProposals: Array.from(this.proposals.values()).filter(
+        (p) => p.status === ConsensusStatus.PENDING
+      ).length,
+      timestamp: Date.now(),
     };
   }
 
@@ -614,8 +630,9 @@ export class ConsensusManager extends EventEmitter {
       status: proposal.status,
       votes: Object.fromEntries(proposal.votes),
       voteCount: proposal.getVoteCount(),
-      timeRemaining: proposal.timeout ? 
-        Math.max(0, this.config.timeoutMs - (Date.now() - proposal.timestamp)) : 0
+      timeRemaining: proposal.timeout
+        ? Math.max(0, this.config.timeoutMs - (Date.now() - proposal.timestamp))
+        : 0,
     };
   }
 
@@ -629,11 +646,11 @@ export class ConsensusManager extends EventEmitter {
         clearTimeout(proposal.timeout);
       }
     }
-    
+
     this.proposals.clear();
     this.recentProposals.clear();
     this.removeAllListeners();
   }
 }
 
-export default ConsensusManager; 
+export default ConsensusManager;

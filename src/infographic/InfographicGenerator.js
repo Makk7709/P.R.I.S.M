@@ -1,7 +1,7 @@
 /**
  * InfographicGenerator - Génération d'infographies PRISM via Nano Banana / Gemini
  * @module src/infographic/InfographicGenerator
- * 
+ *
  * Fonctionnalités:
  * - Génération d'infographies par domaine (finance, stratégie, marketing, etc.)
  * - Templates visuels personnalisés
@@ -9,7 +9,7 @@
  * - Caching intelligent
  */
 
-import crypto from 'crypto';
+import crypto from 'node:crypto';
 
 /**
  * Templates par domaine avec éléments visuels spécifiques
@@ -19,38 +19,44 @@ const DOMAIN_TEMPLATES = {
     elements: ['bar_chart', 'kpi_cards', 'trend_line', 'comparison_table'],
     style: 'corporate',
     colorScheme: 'blue_green',
-    layout: 'dashboard'
+    layout: 'dashboard',
   },
   strategie: {
     elements: ['timeline', 'roadmap', 'objectives', 'milestone_tracker', 'swot_grid'],
     style: 'executive',
     colorScheme: 'purple_gold',
-    layout: 'presentation'
+    layout: 'presentation',
   },
   marketing: {
     elements: ['funnel', 'pie_chart', 'metrics_grid', 'channel_comparison', 'roi_tracker'],
     style: 'modern',
     colorScheme: 'orange_teal',
-    layout: 'campaign'
+    layout: 'campaign',
   },
   recherche: {
-    elements: ['data_table', 'source_citations', 'insights_panel', 'trend_analysis', 'comparison_chart'],
+    elements: [
+      'data_table',
+      'source_citations',
+      'insights_panel',
+      'trend_analysis',
+      'comparison_chart',
+    ],
     style: 'academic',
     colorScheme: 'gray_blue',
-    layout: 'research'
+    layout: 'research',
   },
   technique: {
     elements: ['architecture_diagram', 'flow_chart', 'metrics_dashboard', 'code_snippets'],
     style: 'technical',
     colorScheme: 'dark_cyan',
-    layout: 'technical'
+    layout: 'technical',
   },
   general: {
     elements: ['summary_card', 'key_points', 'action_items', 'highlights'],
     style: 'clean',
     colorScheme: 'neutral',
-    layout: 'simple'
-  }
+    layout: 'simple',
+  },
 };
 
 /**
@@ -62,43 +68,43 @@ const COLOR_PALETTES = {
     secondary: '#2ECC71',
     accent: '#3498DB',
     background: '#F8FAFC',
-    text: '#1A1A2E'
+    text: '#1A1A2E',
   },
   strategie: {
     primary: '#6B46C1',
     secondary: '#D69E2E',
     accent: '#805AD5',
     background: '#FAF5FF',
-    text: '#1A1A2E'
+    text: '#1A1A2E',
   },
   marketing: {
     primary: '#DD6B20',
     secondary: '#319795',
     accent: '#ED8936',
     background: '#FFFAF0',
-    text: '#1A1A2E'
+    text: '#1A1A2E',
   },
   recherche: {
     primary: '#4A5568',
     secondary: '#3182CE',
     accent: '#63B3ED',
     background: '#F7FAFC',
-    text: '#1A1A2E'
+    text: '#1A1A2E',
   },
   technique: {
     primary: '#1A202C',
     secondary: '#00B5D8',
     accent: '#0BC5EA',
     background: '#1A202C',
-    text: '#E2E8F0'
+    text: '#E2E8F0',
   },
   general: {
     primary: '#2D3748',
     secondary: '#4A5568',
     accent: '#718096',
     background: '#FFFFFF',
-    text: '#1A1A2E'
-  }
+    text: '#1A1A2E',
+  },
 };
 
 /**
@@ -108,22 +114,22 @@ const PRISM_STYLE = {
   branding: {
     name: 'PRISM',
     company: 'KOREV AI',
-    tagline: 'Intelligence Artificielle de Confiance'
+    tagline: 'Intelligence Artificielle de Confiance',
   },
   fonts: {
     primary: 'Inter',
     secondary: 'Space Grotesk',
-    mono: 'JetBrains Mono'
+    mono: 'JetBrains Mono',
   },
   colors: {
     brand: '#6366F1',
     brandDark: '#4F46E5',
-    brandLight: '#818CF8'
+    brandLight: '#818CF8',
   },
   logo: {
     position: 'top-right',
-    size: 'small'
-  }
+    size: 'small',
+  },
 };
 
 export class InfographicGenerator {
@@ -132,11 +138,11 @@ export class InfographicGenerator {
     this.templates = { ...DOMAIN_TEMPLATES };
     this.colorPalettes = { ...COLOR_PALETTES };
     this.prismStyle = { ...PRISM_STYLE };
-    
+
     // Cache pour les infographies
     this.cache = new Map();
     this.cacheTTL = options.cacheTTL || 30 * 60 * 1000; // 30 minutes par défaut
-    
+
     // Pour les tests
     this._simulateError = false;
   }
@@ -209,12 +215,14 @@ export class InfographicGenerator {
     const palette = this.colorPalettes[domain] || this.colorPalettes.general;
 
     const domainDescriptions = {
-      finance: 'financière avec graphiques de performance, indicateurs clés (KPIs), tendances et analyses chiffrées',
+      finance:
+        'financière avec graphiques de performance, indicateurs clés (KPIs), tendances et analyses chiffrées',
       strategie: 'stratégique avec timeline, roadmap, objectifs et jalons clés',
-      marketing: 'marketing avec entonnoir de conversion, métriques de campagne et comparaisons de canaux',
-      recherche: 'de recherche avec tableau de données, citations de sources et panel d\'insights',
-      technique: 'technique avec diagrammes d\'architecture et métriques système',
-      general: 'générale avec résumé, points clés et actions recommandées'
+      marketing:
+        'marketing avec entonnoir de conversion, métriques de campagne et comparaisons de canaux',
+      recherche: "de recherche avec tableau de données, citations de sources et panel d'insights",
+      technique: "technique avec diagrammes d'architecture et métriques système",
+      general: 'générale avec résumé, points clés et actions recommandées',
     };
 
     let prompt = `Crée une infographie ${domainDescriptions[domain] || domainDescriptions.general}.
@@ -229,42 +237,42 @@ STYLE VISUEL:
 - Layout: ${template.layout}
 
 ÉLÉMENTS À INCLURE:
-${template.elements.map(el => `- ${el.replace(/_/g, ' ')}`).join('\n')}
+${template.elements.map((el) => `- ${el.replace(/_/g, ' ')}`).join('\n')}
 
 `;
 
     // Ajouter les données spécifiques
     if (data.metrics && data.metrics.length > 0) {
       prompt += '\nMÉTRIQUES:\n';
-      data.metrics.forEach(m => {
+      data.metrics.forEach((m) => {
         prompt += `- ${m.label || m.name}: ${m.value}${m.change ? ` (${m.change})` : ''}\n`;
       });
     }
 
     if (data.insights && data.insights.length > 0) {
       prompt += '\nINSIGHTS CLÉS:\n';
-      data.insights.forEach(i => {
+      data.insights.forEach((i) => {
         prompt += `- ${i}\n`;
       });
     }
 
     if (data.objectives && data.objectives.length > 0) {
       prompt += '\nOBJECTIFS:\n';
-      data.objectives.forEach(o => {
+      data.objectives.forEach((o) => {
         prompt += `- ${o}\n`;
       });
     }
 
     if (data.kpis && data.kpis.length > 0) {
       prompt += '\nKPIs:\n';
-      data.kpis.forEach(k => {
+      data.kpis.forEach((k) => {
         prompt += `- ${k.name}: ${k.value}\n`;
       });
     }
 
     if (data.channels && data.channels.length > 0) {
       prompt += '\nCANAUX:\n';
-      data.channels.forEach(c => {
+      data.channels.forEach((c) => {
         prompt += `- ${c}\n`;
       });
     }
@@ -297,14 +305,14 @@ FORMAT: Image haute résolution, ratio 16:9, optimisée pour insertion PDF`;
   async generateInfographic(domain, data) {
     const startTime = Date.now();
     const prompt = this.buildInfographicPrompt(domain, data);
-    
+
     // Vérifier le cache
     const cacheKey = this._getCacheKey(domain, data);
     const cached = this._getFromCache(cacheKey);
     if (cached) {
       return {
         ...cached,
-        fromCache: true
+        fromCache: true,
       };
     }
 
@@ -317,8 +325,8 @@ FORMAT: Image haute résolution, ratio 16:9, optimisée pour insertion PDF`;
         metadata: {
           generatedAt: new Date().toISOString(),
           promptUsed: prompt,
-          model: 'fallback'
-        }
+          model: 'fallback',
+        },
       };
     }
 
@@ -336,8 +344,8 @@ FORMAT: Image haute résolution, ratio 16:9, optimisée pour insertion PDF`;
           promptUsed: prompt,
           model: 'gemini-pro-vision',
           brandingIncluded: data.includeBranding !== false,
-          generationTime: Date.now() - startTime
-        }
+          generationTime: Date.now() - startTime,
+        },
       };
 
       // Mettre en cache
@@ -354,8 +362,8 @@ FORMAT: Image haute résolution, ratio 16:9, optimisée pour insertion PDF`;
           generatedAt: new Date().toISOString(),
           promptUsed: prompt,
           model: 'fallback',
-          errorDetails: error.message
-        }
+          errorDetails: error.message,
+        },
       };
     }
   }
@@ -372,31 +380,38 @@ FORMAT: Image haute résolution, ratio 16:9, optimisée pour insertion PDF`;
 
     // Appel réel à l'API Gemini/Nano Banana
     try {
-      const response = await fetch('https://generativelanguage.googleapis.com/v1/models/gemini-pro:generateContent', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'x-goog-api-key': this.apiKey
-        },
-        body: JSON.stringify({
-          contents: [{
-            parts: [{
-              text: prompt
-            }]
-          }],
-          generationConfig: {
-            temperature: 0.7,
-            maxOutputTokens: 2048
-          }
-        })
-      });
+      const response = await fetch(
+        'https://generativelanguage.googleapis.com/v1/models/gemini-pro:generateContent',
+        {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'x-goog-api-key': this.apiKey,
+          },
+          body: JSON.stringify({
+            contents: [
+              {
+                parts: [
+                  {
+                    text: prompt,
+                  },
+                ],
+              },
+            ],
+            generationConfig: {
+              temperature: 0.7,
+              maxOutputTokens: 2048,
+            },
+          }),
+        }
+      );
 
       if (!response.ok) {
         throw new Error(`API Error: ${response.status}`);
       }
 
       const data = await response.json();
-      
+
       // Pour l'instant, retourner un placeholder car Gemini Pro ne génère pas d'images directement
       // Une intégration avec Imagen ou DALL-E serait nécessaire pour de vraies images
       return this._generatePlaceholderImage(domain);
@@ -412,7 +427,7 @@ FORMAT: Image haute résolution, ratio 16:9, optimisée pour insertion PDF`;
    */
   _generatePlaceholderImage(domain) {
     const palette = this.colorPalettes[domain] || this.colorPalettes.general;
-    
+
     // SVG placeholder avec le style du domaine
     const svg = `
       <svg xmlns="http://www.w3.org/2000/svg" width="800" height="450" viewBox="0 0 800 450">
@@ -455,14 +470,14 @@ FORMAT: Image haute résolution, ratio 16:9, optimisée pour insertion PDF`;
    */
   async generateForPdf(chatData) {
     const { messages, taskType, metadata } = chatData;
-    
+
     // Extraire les données du chat
     const extractedData = this.extractDataFromChat(messages, taskType);
-    
+
     // Générer l'infographie
     const infographic = await this.generateInfographic(taskType || 'general', {
       ...extractedData,
-      includeBranding: true
+      includeBranding: true,
     });
 
     // Convertir en format compatible PDFKit
@@ -484,7 +499,7 @@ FORMAT: Image haute résolution, ratio 16:9, optimisée pour insertion PDF`;
       width: 500, // Largeur optimale pour PDF A4
       height: 280, // Ratio 16:9 ajusté
       format: 'svg',
-      ...infographic
+      ...infographic,
     };
   }
 
@@ -503,42 +518,47 @@ FORMAT: Image haute résolution, ratio 16:9, optimisée pour insertion PDF`;
     const metricPatterns = [
       /(\d+(?:[.,]\d+)?)\s*([KMB]?€|%|\s*(?:euros?|dollars?|unités?|ventes?))/gi,
       /([+-]?\d+(?:[.,]\d+)?)\s*%/gi,
-      /(\d+(?:[.,]\d+)?)\s*[KMB]€/gi
+      /(\d+(?:[.,]\d+)?)\s*[KMB]€/gi,
     ];
 
     // Analyser les messages assistant
-    const assistantMessages = messages.filter(m => m.role === 'assistant');
-    
+    const assistantMessages = messages.filter((m) => m.role === 'assistant');
+
     for (const msg of assistantMessages) {
       const content = msg.content || '';
-      
+
       // Extraire les métriques
       for (const pattern of metricPatterns) {
         const matches = content.matchAll(pattern);
         for (const match of matches) {
           metrics.push({
             label: `Métrique`,
-            value: match[0].trim()
+            value: match[0].trim(),
           });
         }
       }
-      
+
       // Extraire les insights (phrases clés)
-      const sentences = content.split(/[.!?]+/).filter(s => s.trim().length > 20);
+      const sentences = content.split(/[.!?]+/).filter((s) => s.trim().length > 20);
       for (const sentence of sentences.slice(0, 3)) {
-        if (sentence.includes('hausse') || sentence.includes('baisse') || 
-            sentence.includes('croissance') || sentence.includes('performance') ||
-            sentence.includes('résultat') || sentence.includes('objectif')) {
+        if (
+          sentence.includes('hausse') ||
+          sentence.includes('baisse') ||
+          sentence.includes('croissance') ||
+          sentence.includes('performance') ||
+          sentence.includes('résultat') ||
+          sentence.includes('objectif')
+        ) {
           insights.push(sentence.trim());
         }
       }
     }
 
     // Générer un titre basé sur le premier message utilisateur
-    const userMessage = messages.find(m => m.role === 'user');
+    const userMessage = messages.find((m) => m.role === 'user');
     if (userMessage && userMessage.content) {
       const firstWords = userMessage.content.split(' ').slice(0, 5).join(' ');
-      title = firstWords.length > 30 ? firstWords.substring(0, 30) + '...' : firstWords;
+      title = firstWords.length > 30 ? `${firstWords.substring(0, 30)}...` : firstWords;
     }
 
     // Dédupliquer les métriques
@@ -555,7 +575,7 @@ FORMAT: Image haute résolution, ratio 16:9, optimisée pour insertion PDF`;
       title,
       metrics: uniqueMetrics.slice(0, 6), // Max 6 métriques
       insights: insights.slice(0, 3), // Max 3 insights
-      taskType
+      taskType,
     };
   }
 
@@ -564,9 +584,7 @@ FORMAT: Image haute résolution, ratio 16:9, optimisée pour insertion PDF`;
    * @private
    */
   _getCacheKey(domain, data) {
-    const hash = crypto.createHash('md5')
-      .update(JSON.stringify({ domain, data }))
-      .digest('hex');
+    const hash = crypto.createHash('md5').update(JSON.stringify({ domain, data })).digest('hex');
     return `infographic_${domain}_${hash}`;
   }
 
@@ -590,13 +608,10 @@ FORMAT: Image haute résolution, ratio 16:9, optimisée pour insertion PDF`;
   _addToCache(key, data) {
     this.cache.set(key, {
       data,
-      timestamp: Date.now()
+      timestamp: Date.now(),
     });
   }
 }
 
 // Export singleton
 export const infographicGenerator = new InfographicGenerator();
-
-
-

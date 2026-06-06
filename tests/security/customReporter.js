@@ -3,8 +3,8 @@
  * @module tests/security/customReporter
  */
 
-const fs = require('fs');
-const path = require('path');
+const fs = require('node:fs');
+const path = require('node:path');
 
 class SecurityReporter {
   constructor(globalConfig, options) {
@@ -20,16 +20,16 @@ class SecurityReporter {
 
   generateSecurityReport(results) {
     const { testResults, coverageMap } = results;
-    
+
     // Analyser les résultats de couverture
     const coverage = this.analyzeCoverage(results);
-    
+
     // Analyser les tests passés/échoués
     const testAnalysis = this.analyzeTests(testResults);
-    
+
     // Vérifier le fonctionnement du veto humain
     const vetoAnalysis = this.analyzeVetoFunctionality(testResults);
-    
+
     return {
       timestamp: new Date().toISOString(),
       summary: {
@@ -38,7 +38,7 @@ class SecurityReporter {
         tests_total: testAnalysis.total,
         success_rate: testAnalysis.successRate,
         veto_working: vetoAnalysis.working,
-        coverage_threshold_met: coverage.thresholdMet
+        coverage_threshold_met: coverage.thresholdMet,
       },
       coverage: {
         statements: coverage.statements,
@@ -46,14 +46,14 @@ class SecurityReporter {
         functions: coverage.functions,
         lines: coverage.lines,
         threshold: 95,
-        files: coverage.files
+        files: coverage.files,
       },
       security_verification: {
         trust_context_functional: vetoAnalysis.trustContextFunctional,
         human_approval_required: vetoAnalysis.humanApprovalRequired,
         critical_events_blocked: vetoAnalysis.criticalEventsBlocked,
         cooldown_enforced: vetoAnalysis.cooldownEnforced,
-        unauthorized_access_blocked: vetoAnalysis.unauthorizedBlocked
+        unauthorized_access_blocked: vetoAnalysis.unauthorizedBlocked,
       },
       test_details: testAnalysis.details,
       recommendations: this.generateRecommendations(coverage, vetoAnalysis),
@@ -61,14 +61,14 @@ class SecurityReporter {
         security_threshold_95_percent: coverage.thresholdMet,
         human_veto_mandatory: vetoAnalysis.working,
         no_bypass_possible: vetoAnalysis.noBypass,
-        execution_time_under_30s: results.runTime < 30000
-      }
+        execution_time_under_30s: results.runTime < 30000,
+      },
     };
   }
 
   analyzeCoverage(results) {
     const coverage = results.coverageMap;
-    
+
     if (!coverage) {
       return {
         statements: 0,
@@ -76,23 +76,23 @@ class SecurityReporter {
         functions: 0,
         lines: 0,
         thresholdMet: false,
-        files: {}
+        files: {},
       };
     }
 
     const summary = coverage.getCoverageSummary();
     const files = {};
-    
+
     // Analyser chaque fichier
-    coverage.files().forEach(filePath => {
+    coverage.files().forEach((filePath) => {
       const fileCoverage = coverage.fileCoverageFor(filePath);
       const fileSummary = fileCoverage.toSummary();
-      
+
       files[filePath] = {
         statements: fileSummary.statements.pct,
         branches: fileSummary.branches.pct,
         functions: fileSummary.functions.pct,
-        lines: fileSummary.lines.pct
+        lines: fileSummary.lines.pct,
       };
     });
 
@@ -107,7 +107,7 @@ class SecurityReporter {
       functions,
       lines,
       thresholdMet: statements >= 95 && branches >= 95 && functions >= 95 && lines >= 95,
-      files
+      files,
     };
   }
 
@@ -117,8 +117,8 @@ class SecurityReporter {
     let total = 0;
     const details = [];
 
-    testResults.forEach(testResult => {
-      testResult.testResults.forEach(test => {
+    testResults.forEach((testResult) => {
+      testResult.testResults.forEach((test) => {
         total++;
         if (test.status === 'passed') {
           passed++;
@@ -130,7 +130,7 @@ class SecurityReporter {
           name: test.fullName,
           status: test.status,
           duration: test.duration,
-          file: testResult.testFilePath
+          file: testResult.testFilePath,
         });
       });
     });
@@ -140,7 +140,7 @@ class SecurityReporter {
       failed,
       total,
       successRate: total > 0 ? (passed / total) * 100 : 0,
-      details
+      details,
     };
   }
 
@@ -153,8 +153,8 @@ class SecurityReporter {
     let noBypass = true;
 
     // Analyser les noms et résultats des tests pour détecter les fonctionnalités de sécurité
-    testResults.forEach(testResult => {
-      testResult.testResults.forEach(test => {
+    testResults.forEach((testResult) => {
+      testResult.testResults.forEach((test) => {
         const testName = test.fullName.toLowerCase();
         const passed = test.status === 'passed';
 
@@ -191,7 +191,7 @@ class SecurityReporter {
       criticalEventsBlocked,
       cooldownEnforced,
       unauthorizedBlocked,
-      noBypass
+      noBypass,
     };
   }
 
@@ -202,7 +202,8 @@ class SecurityReporter {
       recommendations.push({
         type: 'coverage',
         priority: 'high',
-        message: 'Couverture de tests inférieure à 95%. Ajouter des tests pour les branches non couvertes.'
+        message:
+          'Couverture de tests inférieure à 95%. Ajouter des tests pour les branches non couvertes.',
       });
     }
 
@@ -210,7 +211,7 @@ class SecurityReporter {
       recommendations.push({
         type: 'security',
         priority: 'critical',
-        message: 'Le système de veto humain ne fonctionne pas correctement. Vérifier TrustContext.'
+        message: 'Le système de veto humain ne fonctionne pas correctement. Vérifier TrustContext.',
       });
     }
 
@@ -218,7 +219,7 @@ class SecurityReporter {
       recommendations.push({
         type: 'security',
         priority: 'critical',
-        message: 'Les approbations humaines ne sont pas requises pour les décisions critiques.'
+        message: 'Les approbations humaines ne sont pas requises pour les décisions critiques.',
       });
     }
 
@@ -226,7 +227,7 @@ class SecurityReporter {
       recommendations.push({
         type: 'security',
         priority: 'critical',
-        message: 'Les événements critiques ne sont pas bloqués sans approbation.'
+        message: 'Les événements critiques ne sont pas bloqués sans approbation.',
       });
     }
 
@@ -234,7 +235,7 @@ class SecurityReporter {
       recommendations.push({
         type: 'security',
         priority: 'critical',
-        message: 'Des mécanismes de bypass ont été détectés. Sécurité compromise.'
+        message: 'Des mécanismes de bypass ont été détectés. Sécurité compromise.',
       });
     }
 
@@ -242,7 +243,7 @@ class SecurityReporter {
       recommendations.push({
         type: 'success',
         priority: 'info',
-        message: 'Tous les tests de sécurité sont conformes. Système sécurisé.'
+        message: 'Tous les tests de sécurité sont conformes. Système sécurisé.',
       });
     }
 
@@ -259,12 +260,11 @@ class SecurityReporter {
 
       // Écrire le rapport
       fs.writeFileSync(this.outputFile, JSON.stringify(report, null, 2));
-      
+
       console.log(`\n🔒 Security verification report generated: ${this.outputFile}`);
-      
+
       // Afficher un résumé dans la console
       this.printSummary(report);
-      
     } catch (error) {
       console.error('Failed to write security report:', error);
     }
@@ -273,25 +273,33 @@ class SecurityReporter {
   printSummary(report) {
     console.log('\n📊 SECURITY VERIFICATION SUMMARY');
     console.log('=====================================');
-    
+
     const { summary, coverage, security_verification, compliance } = report;
-    
-    console.log(`Tests: ${summary.tests_passed}/${summary.tests_total} passed (${summary.success_rate.toFixed(1)}%)`);
+
+    console.log(
+      `Tests: ${summary.tests_passed}/${summary.tests_total} passed (${summary.success_rate.toFixed(1)}%)`
+    );
     console.log(`Coverage: ${coverage.statements}% statements, ${coverage.branches}% branches`);
     console.log(`Veto System: ${summary.veto_working ? '✅ WORKING' : '❌ FAILED'}`);
-    
+
     console.log('\n🛡️ Security Checks:');
-    console.log(`  Human Approval Required: ${security_verification.human_approval_required ? '✅' : '❌'}`);
-    console.log(`  Critical Events Blocked: ${security_verification.critical_events_blocked ? '✅' : '❌'}`);
+    console.log(
+      `  Human Approval Required: ${security_verification.human_approval_required ? '✅' : '❌'}`
+    );
+    console.log(
+      `  Critical Events Blocked: ${security_verification.critical_events_blocked ? '✅' : '❌'}`
+    );
     console.log(`  Cooldown Enforced: ${security_verification.cooldown_enforced ? '✅' : '❌'}`);
-    console.log(`  Unauthorized Access Blocked: ${security_verification.unauthorized_access_blocked ? '✅' : '❌'}`);
-    
+    console.log(
+      `  Unauthorized Access Blocked: ${security_verification.unauthorized_access_blocked ? '✅' : '❌'}`
+    );
+
     console.log('\n📋 Compliance:');
     console.log(`  Coverage ≥95%: ${compliance.security_threshold_95_percent ? '✅' : '❌'}`);
     console.log(`  Human Veto Mandatory: ${compliance.human_veto_mandatory ? '✅' : '❌'}`);
     console.log(`  No Bypass Possible: ${compliance.no_bypass_possible ? '✅' : '❌'}`);
     console.log(`  Execution <30s: ${compliance.execution_time_under_30s ? '✅' : '❌'}`);
-    
+
     if (summary.veto_working && compliance.security_threshold_95_percent) {
       console.log('\n🎉 ✅ Veto humain requis : PASS');
       console.log('🔒 Système de sécurité CONFORME');
@@ -302,4 +310,4 @@ class SecurityReporter {
   }
 }
 
-module.exports = SecurityReporter; 
+module.exports = SecurityReporter;

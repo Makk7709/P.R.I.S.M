@@ -4,7 +4,7 @@
  */
 
 import prismBus from './prismBus.js';
-import http from 'http';
+import http from 'node:http';
 
 // Configuration sécurisée par défaut
 const SECURITY_CONFIG = {
@@ -14,9 +14,9 @@ const SECURITY_CONFIG = {
     ALERT_THRESHOLDS: {
       APPROVAL_FAILURE_RATE: 0.7, // 70% au lieu de 80%
       PENDING_DECISIONS_THRESHOLD: 50, // Plus permissif
-      AVERAGE_APPROVAL_TIME_MS: 300000 // 5 minutes
-    }
-  }
+      AVERAGE_APPROVAL_TIME_MS: 300000, // 5 minutes
+    },
+  },
 };
 
 const VITALS_CYCLE = 5;
@@ -31,19 +31,19 @@ class SimpleLogger {
   constructor() {
     this.logs = [];
   }
-  
+
   info(message, data = {}) {
     const entry = { level: 'INFO', message, data, timestamp: new Date().toISOString() };
     this.logs.push(entry);
     console.log(`[PRISM INFO] ${message}`, data);
   }
-  
+
   warn(message, data = {}) {
     const entry = { level: 'WARN', message, data, timestamp: new Date().toISOString() };
     this.logs.push(entry);
     console.warn(`[PRISM WARN] ${message}`, data);
   }
-  
+
   error(message, data = {}) {
     const entry = { level: 'ERROR', message, data, timestamp: new Date().toISOString() };
     this.logs.push(entry);
@@ -66,26 +66,26 @@ class SimpleTrustContext {
       rejectedDecisions: 0,
       expiredDecisions: 0,
       averageApprovalTime: 1000,
-      blockedEvents: 0
+      blockedEvents: 0,
     };
     this.listeners = new Map();
   }
-  
+
   on(event, callback) {
     if (!this.listeners.has(event)) {
       this.listeners.set(event, []);
     }
     this.listeners.get(event).push(callback);
   }
-  
+
   getSecurityMetrics() {
     return { ...this.metrics };
   }
-  
+
   getPendingDecisions() {
     return [];
   }
-  
+
   getApprovalHistory(limit = 10) {
     return [];
   }
@@ -105,7 +105,7 @@ export default class PrismVitals {
     this.memoryUsage = [];
     this.isInitialized = false;
     this.alertCooldown = new Map(); // Éviter les boucles d'alertes
-    
+
     // Security monitoring
     this.trustContext = new SimpleTrustContext();
     this.securityMetrics = {
@@ -113,7 +113,7 @@ export default class PrismVitals {
       pendingDecisions: 0,
       securityChecks: 0,
       blockedEvents: 0,
-      lastSecurityUpdate: null
+      lastSecurityUpdate: null,
     };
 
     // Consensus monitoring
@@ -124,7 +124,7 @@ export default class PrismVitals {
       rejectedConsensus: 0,
       timeoutConsensus: 0,
       averageConsensusTime: 10, // Valeur par défaut faible
-      lastConsensusUpdate: null
+      lastConsensusUpdate: null,
     };
 
     // Self-improvement tracking
@@ -133,7 +133,7 @@ export default class PrismVitals {
       approvedImprovements: 0,
       rejectedImprovements: 0,
       improvementHistory: [],
-      lastImprovementUpdate: null
+      lastImprovementUpdate: null,
     };
 
     // Prometheus metrics
@@ -144,19 +144,19 @@ export default class PrismVitals {
       prism_consensus_success_rate: 1.0,
       prism_memory_usage_bytes: 0,
       prism_queue_size: 0,
-      prism_cpu_usage_percent: 0
+      prism_cpu_usage_percent: 0,
     };
 
     // Prometheus server
     this.prometheusServer = null;
     this.prometheusPort = process.env.PROMETHEUS_PORT || 9090;
-    
+
     // Bind des méthodes
     this.updateSecurityMetrics = this.updateSecurityMetrics.bind(this);
     this.updateConsensusMetrics = this.updateConsensusMetrics.bind(this);
     this.recordSelfImprovement = this.recordSelfImprovement.bind(this);
     this.updatePrometheusMetrics = this.updatePrometheusMetrics.bind(this);
-    
+
     // Initialisation synchrone pour éviter les problèmes
     this.initializeSync();
   }
@@ -169,16 +169,15 @@ export default class PrismVitals {
       this.initializeVitals();
       this.initializeConsensusMonitoring();
       this.initializePrometheusExporter();
-      
+
       this.isInitialized = true;
       console.log('✅ PrismVitals: Initialization complete (safe mode)');
-      
+
       // Émettre un événement d'initialisation
       prismBus.emit('prism:vitals:initialized', {
         timestamp: Date.now(),
-        version: '1.0.0-safe'
+        version: '1.0.0-safe',
       });
-      
     } catch (error) {
       console.error('❌ PrismVitals: Initialization failed:', error);
       this.isInitialized = false;
@@ -210,7 +209,6 @@ export default class PrismVitals {
       setInterval(() => {
         this.updatePrometheusMetrics();
       }, 5000); // Toutes les 5 secondes
-
     } catch (error) {
       console.warn('⚠️ Failed to initialize Prometheus exporter:', error.message);
     }
@@ -222,9 +220,9 @@ export default class PrismVitals {
   handleMetricsRequest(req, res) {
     try {
       const metrics = this.generatePrometheusMetrics();
-      
+
       res.writeHead(200, {
-        'Content-Type': 'text/plain; version=0.0.4; charset=utf-8'
+        'Content-Type': 'text/plain; version=0.0.4; charset=utf-8',
       });
       res.end(metrics);
     } catch (error) {
@@ -242,7 +240,7 @@ export default class PrismVitals {
       status: this.isInitialized ? 'healthy' : 'unhealthy',
       timestamp: new Date().toISOString(),
       uptime: process.uptime(),
-      version: '1.0.0-safe'
+      version: '1.0.0-safe',
     };
 
     res.writeHead(200, { 'Content-Type': 'application/json' });
@@ -257,11 +255,11 @@ export default class PrismVitals {
       // Récupérer les métriques du système
       const vitals = this.getVitalsReport();
       const consensus = this.getConsensusMetrics();
-      
+
       // Mettre à jour les métriques Prometheus
       this.prometheusMetrics.prism_consensus_success_rate = consensus.consensus_success_rate;
       this.prometheusMetrics.prism_latency_seconds = vitals.averageLatency / 1000; // Convertir en secondes
-      
+
       // Métriques de mémoire
       if (process.memoryUsage) {
         const memUsage = process.memoryUsage();
@@ -271,10 +269,9 @@ export default class PrismVitals {
       // CPU usage (approximation basée sur la charge)
       if (process.cpuUsage) {
         const cpuUsage = process.cpuUsage();
-        this.prometheusMetrics.prism_cpu_usage_percent = 
+        this.prometheusMetrics.prism_cpu_usage_percent =
           (cpuUsage.user + cpuUsage.system) / 1000000; // Convertir en pourcentage approximatif
       }
-
     } catch (error) {
       console.warn('Warning: Failed to update Prometheus metrics:', error.message);
     }
@@ -285,7 +282,7 @@ export default class PrismVitals {
    */
   generatePrometheusMetrics() {
     const timestamp = Date.now();
-    
+
     return `# HELP prism_events_total Total number of events processed
 # TYPE prism_events_total counter
 prism_events_total ${this.prometheusMetrics.prism_events_total} ${timestamp}
@@ -378,8 +375,8 @@ prism_uptime_seconds ${process.uptime()} ${timestamp}
     const now = Date.now();
     const lastAlert = this.alertCooldown.get(alertKey);
     const cooldownPeriod = 30000; // 30 secondes
-    
-    if (!lastAlert || (now - lastAlert) > cooldownPeriod) {
+
+    if (!lastAlert || now - lastAlert > cooldownPeriod) {
       this.alertCooldown.set(alertKey, now);
       return true;
     }
@@ -408,19 +405,21 @@ prism_uptime_seconds ${process.uptime()} ${timestamp}
    */
   updateConsensusMetrics(consensusResult) {
     const { status, decisionTime } = consensusResult;
-    
+
     this.consensusMetrics.totalConsensusRequests++;
-    
+
     if (status === 'APPROVED') {
       this.consensusMetrics.approvedConsensus++;
     } else if (status === 'REJECTED') {
       this.consensusMetrics.rejectedConsensus++;
     }
 
-    const totalDecisions = this.consensusMetrics.approvedConsensus + this.consensusMetrics.rejectedConsensus;
+    const totalDecisions =
+      this.consensusMetrics.approvedConsensus + this.consensusMetrics.rejectedConsensus;
     if (totalDecisions > 0) {
-      this.consensusMetrics.averageConsensusTime = 
-        (this.consensusMetrics.averageConsensusTime * (totalDecisions - 1) + decisionTime) / totalDecisions;
+      this.consensusMetrics.averageConsensusTime =
+        (this.consensusMetrics.averageConsensusTime * (totalDecisions - 1) + decisionTime) /
+        totalDecisions;
     }
 
     this.updateConsensusSuccessRate();
@@ -431,10 +430,12 @@ prism_uptime_seconds ${process.uptime()} ${timestamp}
    * Met à jour le taux de succès du consensus
    */
   updateConsensusSuccessRate() {
-    const totalDecisions = this.consensusMetrics.approvedConsensus + this.consensusMetrics.rejectedConsensus;
-    this.consensusMetrics.consensus_success_rate = 
-      this.consensusMetrics.totalConsensusRequests > 0 ? 
-        totalDecisions / this.consensusMetrics.totalConsensusRequests : 1.0;
+    const totalDecisions =
+      this.consensusMetrics.approvedConsensus + this.consensusMetrics.rejectedConsensus;
+    this.consensusMetrics.consensus_success_rate =
+      this.consensusMetrics.totalConsensusRequests > 0
+        ? totalDecisions / this.consensusMetrics.totalConsensusRequests
+        : 1.0;
   }
 
   /**
@@ -442,7 +443,7 @@ prism_uptime_seconds ${process.uptime()} ${timestamp}
    */
   recordSelfImprovement(improvementData) {
     this.selfImprovementMetrics.totalImprovements++;
-    
+
     if (improvementData.adjustments && improvementData.adjustments.length > 0) {
       this.selfImprovementMetrics.approvedImprovements++;
     } else {
@@ -454,7 +455,7 @@ prism_uptime_seconds ${process.uptime()} ${timestamp}
       batchAnalysis: improvementData.batchAnalysis,
       adjustments: improvementData.adjustments,
       consensusMetrics: improvementData.consensusMetrics,
-      sessionCount: improvementData.sessionCount
+      sessionCount: improvementData.sessionCount,
     });
 
     if (this.selfImprovementMetrics.improvementHistory.length > 100) {
@@ -465,10 +466,12 @@ prism_uptime_seconds ${process.uptime()} ${timestamp}
 
     prismBus.emit('prism:self_improvement:recorded', {
       metrics: this.selfImprovementMetrics,
-      timestamp: Date.now()
+      timestamp: Date.now(),
     });
 
-    console.log(`📊 Self-improvement recorded: ${this.selfImprovementMetrics.totalImprovements} total`);
+    console.log(
+      `📊 Self-improvement recorded: ${this.selfImprovementMetrics.totalImprovements} total`
+    );
   }
 
   /**
@@ -478,7 +481,7 @@ prism_uptime_seconds ${process.uptime()} ${timestamp}
     this.securityMetrics = {
       ...this.securityMetrics,
       ...metrics,
-      lastSecurityUpdate: Date.now()
+      lastSecurityUpdate: Date.now(),
     };
 
     // Vérifier les alertes avec cooldown
@@ -491,7 +494,9 @@ prism_uptime_seconds ${process.uptime()} ${timestamp}
   checkSecurityAlertsSafe(metrics) {
     // Vérifier le taux d'approbation seulement si très bas
     if (metrics.humanApprovalRate < 0.3 && this.canEmitAlert('low_approval_rate')) {
-      console.warn(`🚨 Security Alert: Very low approval rate: ${(metrics.humanApprovalRate * 100).toFixed(1)}%`);
+      console.warn(
+        `🚨 Security Alert: Very low approval rate: ${(metrics.humanApprovalRate * 100).toFixed(1)}%`
+      );
     }
 
     // Vérifier les décisions en attente seulement si très élevé
@@ -511,7 +516,7 @@ prism_uptime_seconds ${process.uptime()} ${timestamp}
       memory: 100,
       security: 100,
       consensus: 100,
-      timestamp: Date.now()
+      timestamp: Date.now(),
     };
 
     console.log('💓 PrismVitals initialized (safe mode)');
@@ -523,7 +528,7 @@ prism_uptime_seconds ${process.uptime()} ${timestamp}
   getConsensusMetrics() {
     return {
       ...this.consensusMetrics,
-      timestamp: Date.now()
+      timestamp: Date.now(),
     };
   }
 
@@ -541,7 +546,7 @@ prism_uptime_seconds ${process.uptime()} ${timestamp}
       expiredDecisions: this.trustContext.metrics.expiredDecisions,
       averageApprovalTime: this.trustContext.metrics.averageApprovalTime,
       pendingDecisions: [],
-      approvalHistory: []
+      approvalHistory: [],
     };
   }
 
@@ -551,9 +556,12 @@ prism_uptime_seconds ${process.uptime()} ${timestamp}
   getSelfImprovementMetrics() {
     return {
       ...this.selfImprovementMetrics,
-      improvementRate: this.selfImprovementMetrics.totalImprovements > 0 ? 
-        this.selfImprovementMetrics.approvedImprovements / this.selfImprovementMetrics.totalImprovements : 1.0,
-      timestamp: Date.now()
+      improvementRate:
+        this.selfImprovementMetrics.totalImprovements > 0
+          ? this.selfImprovementMetrics.approvedImprovements /
+            this.selfImprovementMetrics.totalImprovements
+          : 1.0,
+      timestamp: Date.now(),
     };
   }
 
@@ -569,7 +577,7 @@ prism_uptime_seconds ${process.uptime()} ${timestamp}
       performance: { averageResponseTime: 10, throughput: 100, errorRate: 0, samples: 1 },
       trends: { energy: 'stable', performance: 'stable', security: 'stable', consensus: 'stable' },
       alerts: [],
-      timestamp: Date.now()
+      timestamp: Date.now(),
     };
   }
-} 
+}
