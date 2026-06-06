@@ -4,4 +4,4 @@
 
 export { TamperEvidentAuditLog } from './TamperEvidentAuditLog.js';
 
-export default TamperEvidentAuditLog;
+export { default } from './TamperEvidentAuditLog.js';

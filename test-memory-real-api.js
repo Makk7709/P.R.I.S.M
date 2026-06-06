@@ -282,9 +282,10 @@ class RealMemoryTester {
       
       console.log(`   ✅ Stockage IA: ${aiMemoryId ? 'SUCCÈS' : 'ÉCHEC'}`);
       
+      let retrieved = null;
       if (aiMemoryId) {
         // Test récupération immédiate
-        const retrieved = await this.asiMemory.retrieveKnowledge(aiMemoryId);
+        retrieved = await this.asiMemory.retrieveKnowledge(aiMemoryId);
         console.log(`   🔍 Récupération immédiate: ${retrieved ? 'SUCCÈS' : 'ÉCHEC'}`);
         
         if (retrieved) {

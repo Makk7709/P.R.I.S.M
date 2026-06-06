@@ -2,7 +2,7 @@
 
 import { exec } from 'child_process';
 import { promisify } from 'util';
-import { writeFile } from 'fs/promises';
+import { writeFile, readFile } from 'fs/promises';
 import path from 'path';
 
 const execAsync = promisify(exec);

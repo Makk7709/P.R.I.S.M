@@ -34,8 +34,9 @@ async function runBatch3(nbRuns = 50) {
   const results = [];
 
   for (let i = 0; i < nbRuns; i++) {
+    let randomPrompt;
     try {
-      const randomPrompt = prompts.length > 0 
+      randomPrompt = prompts.length > 0 
         ? prompts[Math.floor(Math.random() * prompts.length)]
         : { prompt: "Simulated complex prompt" };
       
