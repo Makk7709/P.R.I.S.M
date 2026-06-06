@@ -173,6 +173,22 @@ const ATTENUATORS = [
   { pattern: /simulation|hypotheti/i, weight: -0.3 }
 ];
 
+/**
+ * Somme les poids des règles {pattern, weight} dont le pattern matche l'entrée. Pur.
+ * @param {Array<{pattern: RegExp, weight: number}>} rules
+ * @param {string} normalizedInput
+ * @returns {number}
+ */
+function sumMatchingWeights(rules, normalizedInput) {
+  let total = 0;
+  for (const rule of rules) {
+    if (rule.pattern.test(normalizedInput)) {
+      total += rule.weight;
+    }
+  }
+  return total;
+}
+
 export class CriticalityClassifier {
   
   constructor(options = {}) {
@@ -188,74 +204,32 @@ export class CriticalityClassifier {
    */
   classify(input, context = null) {
     const normalizedInput = input.toLowerCase().trim();
-    
-    // Calculer le score de base
-    let baseScore = 0;
-    let detectedType = CriticalityType.NORMAL;
-    const matchedPatterns = [];
-    
-    // Vérifier chaque catégorie de patterns critiques
-    for (const [category, config] of Object.entries(CRITICAL_PATTERNS)) {
-      for (const pattern of config.patterns) {
-        if (pattern.test(normalizedInput)) {
-          const patternScore = config.weight;
-          if (patternScore > baseScore) {
-            baseScore = patternScore;
-            detectedType = config.type;
-          }
-          matchedPatterns.push({
-            category,
-            pattern: pattern.toString(),
-            weight: config.weight
-          });
-        }
-      }
-    }
-    
-    // Appliquer les amplificateurs
-    let amplifierBonus = 0;
-    for (const amp of AMPLIFIERS) {
-      if (amp.pattern.test(normalizedInput)) {
-        amplifierBonus += amp.weight;
-      }
-    }
-    
-    // Appliquer les atténuateurs
-    let attenuatorPenalty = 0;
-    for (const att of ATTENUATORS) {
-      if (att.pattern.test(normalizedInput)) {
-        attenuatorPenalty += att.weight;
-      }
-    }
-    
+
+    // Calculer le score de base (patterns critiques)
+    const { baseScore, detectedType, matchedPatterns } = this._scoreBasePatterns(normalizedInput);
+
+    // Appliquer amplificateurs / atténuateurs
+    const amplifierBonus = sumMatchingWeights(AMPLIFIERS, normalizedInput);
+    const attenuatorPenalty = sumMatchingWeights(ATTENUATORS, normalizedInput);
+
     // Calculer le score avec contexte
-    let contextBonus = 0;
-    let contextInfluenced = false;
-    
-    if (context && context.previousMessages && context.previousMessages.length > 0) {
-      contextBonus = this._analyzeContext(context.previousMessages, normalizedInput);
-      if (contextBonus > 0) {
-        contextInfluenced = true;
-      }
-    }
-    
+    const contextBonus = this._scoreContext(context, normalizedInput);
+    const contextInfluenced = contextBonus > 0;
+
     // Score final
-    const finalScore = Math.min(1, Math.max(0, 
-      baseScore + amplifierBonus + attenuatorPenalty + contextBonus
-    ));
-    
+    const finalScore = Math.min(
+      1,
+      Math.max(0, baseScore + amplifierBonus + attenuatorPenalty + contextBonus)
+    );
+
     // Déterminer le niveau
-    let level = CriticalityLevel.NORMAL;
-    if (finalScore >= this.criticalThreshold) {
-      level = CriticalityLevel.CRITICAL;
-    } else if (finalScore >= this.highThreshold) {
-      level = CriticalityLevel.HIGH;
-    }
-    
+    const level = this._determineLevel(finalScore);
+
     // La requête est critique si le niveau est CRITICAL ou HIGH avec score >= seuil
-    const isCritical = level === CriticalityLevel.CRITICAL || 
-                       (level === CriticalityLevel.HIGH && finalScore >= this.criticalThreshold);
-    
+    const isCritical =
+      level === CriticalityLevel.CRITICAL ||
+      (level === CriticalityLevel.HIGH && finalScore >= this.criticalThreshold);
+
     return {
       isCritical,
       level,
@@ -273,6 +247,59 @@ export class CriticalityClassifier {
     };
   }
   
+  /**
+   * Score de base par patterns critiques (poids max + type associé + patterns matchés).
+   * @private
+   */
+  _scoreBasePatterns(normalizedInput) {
+    let baseScore = 0;
+    let detectedType = CriticalityType.NORMAL;
+    const matchedPatterns = [];
+
+    for (const [category, config] of Object.entries(CRITICAL_PATTERNS)) {
+      for (const pattern of config.patterns) {
+        if (pattern.test(normalizedInput)) {
+          if (config.weight > baseScore) {
+            baseScore = config.weight;
+            detectedType = config.type;
+          }
+          matchedPatterns.push({
+            category,
+            pattern: pattern.toString(),
+            weight: config.weight,
+          });
+        }
+      }
+    }
+
+    return { baseScore, detectedType, matchedPatterns };
+  }
+
+  /**
+   * Bonus de contexte (0 si pas de messages précédents). Délègue à _analyzeContext.
+   * @private
+   */
+  _scoreContext(context, normalizedInput) {
+    if (context && context.previousMessages && context.previousMessages.length > 0) {
+      return this._analyzeContext(context.previousMessages, normalizedInput);
+    }
+    return 0;
+  }
+
+  /**
+   * Détermine le niveau de criticité depuis le score final.
+   * @private
+   */
+  _determineLevel(finalScore) {
+    if (finalScore >= this.criticalThreshold) {
+      return CriticalityLevel.CRITICAL;
+    }
+    if (finalScore >= this.highThreshold) {
+      return CriticalityLevel.HIGH;
+    }
+    return CriticalityLevel.NORMAL;
+  }
+
   /**
    * Analyse le contexte de conversation pour détecter des patterns critiques
    */
