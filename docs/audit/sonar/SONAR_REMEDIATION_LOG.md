@@ -734,7 +734,9 @@ Tests de caractérisation ajoutés (gate `vitest.config.core-only.js`, dossier
 | 23-24 | `src/excel/ExcelAnalyzer.js` | 115,415 | S3776 | ✅ Corrigé — `analyze` (CC 44, extract `_resolveAnalyzeArgs`/`_needsTrustContextValidation`/`_runTrustContextGate`/`_validateSensitiveColumns`/`_analyzeAllSheets`/`_buildDerivedResults`) + `_analyzeSheet` (CC 30, extract `_detectAmbiguousColumns`/`_computeNumericStatistics`/`_computeCategoricalAnalysis`/`_detectDateColumns`). Harnais d'intégration (parser+TrustContext mockés, StatisticalEngine/DataTypeDetector réels) ; iso prouvé par snapshots |
 | 25 | `src/excel/ExcelAnalyzer.js` | 64 | S7059 | ✅ Corrigé — chargement orchestrateurs rendu paresseux via `ensureInitialized()` (awaité par `analyze`), plus de fire-and-forget dans le constructeur |
 | 26 | `backend/orchestrator.js` | 376 | S3776 | ✅ Corrigé — `handleUserInstruction` (CC 18) : extract `tryTurboResponse`/`callModelByChoice`/`handleModelError`. Harnais déterministe sans réseau (clés placeholder ⇒ throws synchrones des callers + chemin TURBO) ; iso prouvé |
-| 27-29 | `server.js` | 80,356,372 | S3776 | ⏸️ **Re-différé (justifié)** — 3 handlers Express dans un module à effets de bord au chargement : 4 singletons instanciés au top-level (`HybridOrchestrator`/`TaskTypeProcessor`/`ImageGenerator`/`ResponseModeManager`), `await import()` de routers, et `app.listen(PORT)` inconditionnel (aucun guard d'import). Les dépendances ne sont pas injectables (consts de module) et `generateElevenLabsAudio` fait un `fetch` réseau ElevenLabs. Caractériser exigerait un harnais HTTP complet (supertest) + `vi.mock` de chaque module importé + guard d'import — effort disproportionné sur un entrypoint critique. **Remédiation recommandée** (lot futur dédié) : extraire les handlers dans un module contrôleur testable injectable + ajouter `if (process.argv[1]===fileURLToPath(import.meta.url)) app.listen(...)`, puis refactor S3776. Sinon `NOSONAR` justifié sur les 3 handlers |
+| 27 | `server.js` | 80 | S3776 | ✅ Corrigé — `/api/chat` handler (CC 34) extrait en `createVoiceChatController(deps).handleChat` (`backend/controllers/voiceChatController.js`), split en `parseChatRequest`/`isCriticalRequest`/`runTrustContextGate`/`runOrchestration`(→`buildProcessorResult`/`runFallbackOrchestration`)/`maybeGenerateAudio`/`logRequestReceived`/`buildChatResult` + early returns. Iso prouvé par 18 tests supertest |
+| 28 | `server.js` | 356 | S3776 | ✅ Corrigé — `generateElevenLabsAudio` (CC 18) extrait en `createElevenLabsAudioGenerator({config,fetch})` (`backend/voice/elevenLabsAudio.js`), délègue à `resolveVoice`/`prepareSpeechText`/`sendTtsRequest`/`handleTtsErrorResponse`/`encodeAudioResponse`/`handleTtsException`. Iso prouvé (mock `node-fetch`) |
+| 29 | `server.js` | 372 | S3776 | ✅ Corrigé — `smartTruncate` (CC 30) split en `truncateByParagraph`/`truncateBySentence`/`truncateByClause`/`truncateByWord` + `addNaturalEnding`. Cascade de priorités iso-comportement (même sortie tronquée vérifiée) |
 | 30 | `src/core/TaskTypeProcessor.js` | 56 | S3776 | ✅ Corrigé — `process` (CC 36) : extract helpers purs `_buildUserContextInfo` + `_buildResponseMetadata`. Caractérisé (helpers + lazy init) |
 | 31 | `src/core/TaskTypeProcessor.js` | 44 | S7059 | ✅ Corrigé — `memoryEngine.initialize()` sorti du constructeur (lazy `_memoryInitPromise` + `_ensureMemoryInitialized()` awaité par `process`) |
 | 32 | `src/core/ConsensusManager.js` | 176 | S7059 | ✅ Corrigé — corps de `init()` (sans `await`) extrait en `_initialize()` synchrone appelé par le constructeur ; `async init()` conservé en wrapper rétro-compatible (init immédiate préservée) |
@@ -778,27 +780,61 @@ iso prouvé par snapshots. Commits par lot via plumbing (auteur Amine Mohamed,
   dans le constructeur (`this.securityMode = config.securityMode ||
   SECURITY_MODE.CURRENT`). Défaut **iso en PROD** ; injecter `securityMode:'TEST'`
   débloque le gate. A permis la caractérisation puis le refactor d'`analyzeBatch`.
-- **Re-différé (1) — `server.js` (#27-29, 3× S3776)** : entrypoint HTTP trop
-  couplé (4 singletons module-level non injectables, `app.listen` sans guard,
-  `fetch` ElevenLabs). Refactor sans harnais HTTP complet = risque de régression
-  sur un entrypoint critique → différé honnête + remédiation recommandée
-  documentée (cf. table #27-29).
+- **server.js (#27-29) initialement re-différé puis CORRIGÉ** : voir le poste
+  dédié ci-dessous (`PRISM_SONAR_SERVERJS`). Le plan de remédiation chiffré a
+  été appliqué (guard d'import + extraction de contrôleurs testables), portant
+  le Tier 1 CRITICAL à **36/36**.
 - **Caractérisation ajoutée ce poste** : +44 tests (analyze/_analyzeSheet,
   TaskTypeProcessor, ConsensusManager, selfImprovementEngine, orchestrator).
   Gate **146 → 190 PASS**.
 
+### Poste PRISM_SONAR_SERVERJS — dernier reliquat Tier 1 traité (#27-29) → 36/36
+
+Reprise du seul item Tier 1 CRITICAL restant : les **3 S3776** de `server.js`
+(#27-29). Le plan de remédiation documenté lors du re-différé a été appliqué
+**dans l'ordre prudent** : guard d'import d'abord, puis harnais supertest VERT
+capturant le comportement courant, puis refactor iso-comportement.
+
+- **Guard d'import (ESM)** : `app.listen(...)` encapsulé dans `startServer()`,
+  appelé seulement si `process.argv[1] === fileURLToPath(import.meta.url)`.
+  `export { app, startServer, generateElevenLabsAudio }`. Preuve : `node server.js`
+  démarre et lie le port 3000 (banner inchangé) ; `import('./server.js')` exporte
+  `app`/`startServer` (typeof function) **sans lier aucun port** (vérifié `lsof`).
+- **Harnais supertest D'ABORD** (`__tests__/characterization/serverRoutes.characterization.test.ts`,
+  **18 tests**) : importe le **vrai** `app` (aucun port lié grâce au guard) et
+  mocke toutes les dépendances réseau/lourdes (`TaskTypeProcessor`,
+  `HybridOrchestrator`, `handleUserInstruction`, `ResponseModeManager`,
+  `VoicePersonalityEnhancer`, `ImageGenerator`, `PdfExportService`,
+  `TrustContext`, `node-fetch`). Clé ElevenLabs forcée en placeholder avant
+  import (dotenv n'écrase pas). Couvre : POST `/api/chat` (validation 400, gate
+  TrustContext 403/500, chaîne processor→hybrid→handleUserInstruction, audio
+  succès/échec, 500 externe), GET `/api/metrics`, les exports du guard, et
+  `generateElevenLabsAudio` (smartTruncate + fetch). **Vert sur le code
+  pré-refactor**, et **resté vert** après extraction (preuve d'iso-comportement).
+- **Refactor iso (CC avant→après)** :
+  - #27 `/api/chat` handler **CC 34 → ~5** : extrait en
+    `createVoiceChatController(deps).handleChat` (`backend/controllers/voiceChatController.js`),
+    split en sous-fonctions + early returns.
+  - #28 `generateElevenLabsAudio` **CC 18 → ~4** : extrait en
+    `createElevenLabsAudioGenerator({config,fetch})` (`backend/voice/elevenLabsAudio.js`).
+  - #29 `smartTruncate` **CC 30 → ~5** : cascade de priorités scindée en 5 helpers.
+- **Câblage** : `server.js` instancie les deux factories avec les vrais
+  singletons et enregistre `app.post('/api/chat', voiceChatController.handleChat)`.
+  Aucun changement de comportement observable ; `/api/test-voice` réutilise le
+  même `generateElevenLabsAudio`.
+- Commits (plumbing, 0 trailer bot) : `feat(server): add import guard…`,
+  `test(sonar): supertest harness…`, `refactor(sonar): extract controllers…`.
+  Gate : **208/208** (190 + 18), `npm run lint` **0 erreur / 1 warning** connu.
+
 ### Backlog résiduel & clôture de campagne
 
-- **Tier 1 CRITICAL** : 33/36 issues corrigées, **3 restantes** = les handlers
-  `server.js` (#27-29), re-différées avec plan de remédiation chiffré. C'est le
-  **seul reliquat Tier 1** ; recommandation : ouvrir un ticket dédié
-  « extract server.js controllers + import guard » (décision structurante sur
-  l'entrypoint, hors budget iso-comportement de cette campagne).
+- **Tier 1 CRITICAL** : **36/36 issues corrigées** (0 restante). Le dernier
+  reliquat (`server.js` #27-29) a été traité par le poste `PRISM_SONAR_SERVERJS`
+  ci-dessus. Campagne Tier 1 CRITICAL **CLOSE**.
 - **Hors Tier 1** : S3776 Tier 2/3, S6582/S1854/S7748/S125/S2486… restent
   différés (cf. « Lots différés » ci-dessus) — AST/revue cas par cas.
-- **Recommandation de clôture** : campagne Tier 1 CRITICAL **substantiellement
-  close** (33/36, 100 % des items prouvables iso-comportement traités). Le
-  reliquat server.js est un choix d'architecture, pas une dette mécanique.
+- **Recommandation de clôture** : campagne Tier 1 CRITICAL **terminée** (36/36,
+  100 % des items traités à iso-comportement, prouvé par caractérisation).
 
 ### `enterpriseSanitizer.js` — fichier prioritaire (sécurité) : caractérisé, 0 CRITICAL
 
@@ -825,7 +861,8 @@ malveillantes XSS/HTML/contrôle/longues).
 
 ### Tests / lint / push finaux
 
-- `npm test` : **190/190 PASS** (146 + 44 caractérisation du poste différés),
-  ~65 s, 25 fichiers.
+- `npm test` : **208/208 PASS** (190 + 18 caractérisation supertest server.js),
+  ~65 s, 26 fichiers.
 - `npm run lint` : **0 erreur / 1 warning** (`enterpriseExportRouter`, connu).
 - Push `origin/main` par paliers, normal (jamais `--force`), auteur Amine Mohamed.
+- **Tier 1 CRITICAL : 36/36** — campagne close.
