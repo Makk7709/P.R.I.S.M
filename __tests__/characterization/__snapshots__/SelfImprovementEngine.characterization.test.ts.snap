@@ -1,0 +1,93 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`SelfImprovementEngine.analyzeBatch — characterization > all non-critical adjustments auto-approved 1`] = `
+{
+  "adjustments": [
+    {
+      "area": "quality",
+      "type": "a",
+    },
+    {
+      "area": "cost",
+      "type": "b",
+    },
+  ],
+  "batchAnalysis": {
+    "averageResponseTime": 1234,
+    "errorRate": 0.05,
+    "modelDistribution": {
+      "claude": 1,
+      "gpt-4": 3,
+    },
+    "successRate": 0.95,
+    "timestamp": "<ts>",
+  },
+}
+`;
+
+exports[`SelfImprovementEngine.analyzeBatch — characterization > blocked by authorization gate 1`] = `
+{
+  "adjustments": [],
+  "batchAnalysis": {
+    "averageResponseTime": 1234,
+    "errorRate": 0.05,
+    "modelDistribution": {
+      "claude": 1,
+      "gpt-4": 3,
+    },
+    "successRate": 0.95,
+    "timestamp": "<ts>",
+  },
+  "blocked": true,
+  "reasons": [
+    "cooldown",
+    "limit",
+  ],
+}
+`;
+
+exports[`SelfImprovementEngine.analyzeBatch — characterization > critical adjustment approved with valid human token 1`] = `
+{
+  "adjustments": [
+    {
+      "area": "error_handling",
+      "type": "crit_ok",
+    },
+  ],
+  "batchAnalysis": {
+    "averageResponseTime": 1234,
+    "errorRate": 0.05,
+    "modelDistribution": {
+      "claude": 1,
+      "gpt-4": 3,
+    },
+    "successRate": 0.95,
+    "timestamp": "<ts>",
+  },
+}
+`;
+
+exports[`SelfImprovementEngine.analyzeBatch — characterization > critical adjustments: consensus-rejected, approved+no-token, approved+human-denied 1`] = `
+{
+  "adjustments": [
+    {
+      "area": "model_selection",
+      "type": "approved_no_token",
+    },
+    {
+      "area": "quality",
+      "type": "noncritical",
+    },
+  ],
+  "batchAnalysis": {
+    "averageResponseTime": 1234,
+    "errorRate": 0.05,
+    "modelDistribution": {
+      "claude": 1,
+      "gpt-4": 3,
+    },
+    "successRate": 0.95,
+    "timestamp": "<ts>",
+  },
+}
+`;

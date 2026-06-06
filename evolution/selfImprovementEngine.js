@@ -46,8 +46,14 @@ export class SelfImprovementEngine extends EventEmitter {
   constructor(config = {}) {
     super();
     
+    // Mode de sécurité résolu UNE fois à la construction. Par défaut identique
+    // à SECURITY_MODE.CURRENT (figé à l'import); peut être injecté via
+    // `config.securityMode` pour rendre le moteur testable de façon
+    // déterministe SANS altérer le comportement par défaut.
+    this.securityMode = config.securityMode || SECURITY_MODE.CURRENT;
+
     // Validate TEST mode for security
-    if (!SECURITY_CONFIG.SELF_IMPROVEMENT.ALLOWED_MODES.includes(SECURITY_MODE.CURRENT)) {
+    if (!SECURITY_CONFIG.SELF_IMPROVEMENT.ALLOWED_MODES.includes(this.securityMode)) {
       throw new Error(`SelfImprovementEngine can only be initialized in allowed modes: ${SECURITY_CONFIG.SELF_IMPROVEMENT.ALLOWED_MODES.join(', ')}`);
     }
     
@@ -91,14 +97,15 @@ export class SelfImprovementEngine extends EventEmitter {
       timeoutRequests: 0
     };
 
-    this.initializeSecurity();
+    // S7059: initialisation SYNCHRONE (le corps ne contient aucun await).
+    this._initializeSecurity();
   }
 
   /**
-   * Initialise le système de sécurité et de consensus
+   * Initialise le système de sécurité et de consensus (synchrone).
    * @private
    */
-  async initializeSecurity() {
+  _initializeSecurity() {
     try {
       this.trustContext = getTrustContext();
       logger.info('🔒 SelfImprovementEngine: TrustContext initialized');
@@ -460,8 +467,8 @@ export class SelfImprovementEngine extends EventEmitter {
 
   async analyzeRunResult(runResult) {
     // Validate security mode
-    if (!SECURITY_CONFIG.SELF_IMPROVEMENT.ALLOWED_MODES.includes(SECURITY_MODE.CURRENT)) {
-      logger.warn(`SelfImprovementEngine: analyzeRunResult called in unauthorized mode: ${SECURITY_MODE.CURRENT}`);
+    if (!SECURITY_CONFIG.SELF_IMPROVEMENT.ALLOWED_MODES.includes(this.securityMode)) {
+      logger.warn(`SelfImprovementEngine: analyzeRunResult called in unauthorized mode: ${this.securityMode}`);
       return null;
     }
 
@@ -486,8 +493,8 @@ export class SelfImprovementEngine extends EventEmitter {
 
   async analyzeBatch() {
     // Validate security mode
-    if (!SECURITY_CONFIG.SELF_IMPROVEMENT.ALLOWED_MODES.includes(SECURITY_MODE.CURRENT)) {
-      logger.warn(`SelfImprovementEngine: analyzeBatch called in unauthorized mode: ${SECURITY_MODE.CURRENT}`);
+    if (!SECURITY_CONFIG.SELF_IMPROVEMENT.ALLOWED_MODES.includes(this.securityMode)) {
+      logger.warn(`SelfImprovementEngine: analyzeBatch called in unauthorized mode: ${this.securityMode}`);
       return null;
     }
 
@@ -509,27 +516,7 @@ export class SelfImprovementEngine extends EventEmitter {
     }
 
     // Demander le consensus pour les ajustements critiques
-    const approvedAdjustments = [];
-    for (const adjustment of adjustments) {
-      if (this.isAdjustmentCritical(adjustment)) {
-        const consensusApproved = await this.requestConsensus(adjustment);
-        if (consensusApproved) {
-          // Demander l'approbation TrustContext si nécessaire
-          const approvalToken = await this.requestHumanApproval(adjustment);
-          if (!approvalToken || this.checkApproval(approvalToken).approved) {
-            approvedAdjustments.push(adjustment);
-            logger.info(`✅ Critical adjustment approved: ${adjustment.type}`);
-          } else {
-            logger.warn(`🚫 Critical adjustment requires human approval: ${adjustment.type}`);
-          }
-        } else {
-          logger.warn(`🚫 Critical adjustment rejected by consensus: ${adjustment.type}`);
-        }
-      } else {
-        // Ajustements non critiques approuvés automatiquement
-        approvedAdjustments.push(adjustment);
-      }
-    }
+    const approvedAdjustments = await this._collectApprovedAdjustments(adjustments);
 
     if (approvedAdjustments.length > 0) {
       await this.applyAdjustments(approvedAdjustments);
@@ -542,6 +529,51 @@ export class SelfImprovementEngine extends EventEmitter {
     
     this.currentBatch = [];
     return { batchAnalysis, adjustments: approvedAdjustments };
+  }
+
+  /**
+   * Filtre la liste d'ajustements pour ne garder que ceux approuvés
+   * (auto-approbation des non critiques, consensus + approbation humaine pour
+   * les critiques). Ordre préservé.
+   * @private
+   */
+  async _collectApprovedAdjustments(adjustments) {
+    const approvedAdjustments = [];
+    for (const adjustment of adjustments) {
+      if (await this._isAdjustmentApproved(adjustment)) {
+        approvedAdjustments.push(adjustment);
+      }
+    }
+    return approvedAdjustments;
+  }
+
+  /**
+   * Détermine si un ajustement est approuvé. Les non critiques le sont
+   * automatiquement; les critiques nécessitent consensus puis (le cas échéant)
+   * approbation humaine.
+   * @private
+   */
+  async _isAdjustmentApproved(adjustment) {
+    if (!this.isAdjustmentCritical(adjustment)) {
+      // Ajustements non critiques approuvés automatiquement
+      return true;
+    }
+
+    const consensusApproved = await this.requestConsensus(adjustment);
+    if (!consensusApproved) {
+      logger.warn(`🚫 Critical adjustment rejected by consensus: ${adjustment.type}`);
+      return false;
+    }
+
+    // Demander l'approbation TrustContext si nécessaire
+    const approvalToken = await this.requestHumanApproval(adjustment);
+    if (!approvalToken || this.checkApproval(approvalToken).approved) {
+      logger.info(`✅ Critical adjustment approved: ${adjustment.type}`);
+      return true;
+    }
+
+    logger.warn(`🚫 Critical adjustment requires human approval: ${adjustment.type}`);
+    return false;
   }
 
   /**
