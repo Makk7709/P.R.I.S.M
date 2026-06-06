@@ -71,59 +71,15 @@ export class HybridOrchestrator {
       const classification = this.classifier.classify(input, options.context);
       
       // Étape 2: Déterminer le mode d'orchestration
-      let mode = OrchestrationMode.ROUTED;
-      let forcedMode = false;
-      let autoDetected = false;
-      
-      if (options.forceConsensus) {
-        mode = OrchestrationMode.CONSENSUS;
-        forcedMode = true;
-      } else if (options.forceRouted) {
-        mode = OrchestrationMode.ROUTED;
-        forcedMode = true;
-      } else if (classification.isCritical || taskType === 'critical') {
-        mode = OrchestrationMode.CONSENSUS;
-        autoDetected = !options.forceConsensus && classification.isCritical;
-      }
+      const { mode, forcedMode, autoDetected } = this._determineMode(options, classification, taskType);
       
       // Étape 2.5: Validation TrustContext pour requêtes critiques/consensus
-      if (mode === OrchestrationMode.CONSENSUS || classification.isCritical || taskType === 'critical') {
-        try {
-          const approval = await this.trustContext.validateCriticalDecision({
-            action: 'consensus_request',
-            input: input,
-            taskType: taskType,
-            criticality: classification.isCritical 
-              ? TrustCriticalityLevel.CRITICAL 
-              : classification.score > 0.8 
-                ? TrustCriticalityLevel.HIGH 
-                : TrustCriticalityLevel.MEDIUM,
-            classification: classification
-          });
-          
-          if (!approval.approved) {
-            throw new Error(`Request rejected by TrustContext: ${approval.reason || 'Requires human approval'}`);
-          }
-        } catch (error) {
-          // Si erreur TrustContext, rejeter la requête
-          if (error.message.includes('rejected') || error.message.includes('approval')) {
-            throw error;
-          }
-          // Autres erreurs (unavailable, etc.) - logger et rejeter par sécurité
-          console.error('[HybridOrchestrator] TrustContext error:', error.message);
-          throw new Error('Security validation failed - request rejected');
-        }
+      if (this._requiresTrustValidation(mode, classification, taskType)) {
+        await this._enforceTrustGate(input, taskType, classification);
       }
       
       // Étape 3: Exécuter selon le mode
-      let result;
-      if (mode === OrchestrationMode.CONSENSUS) {
-        result = await this._processWithConsensus(input, taskType, classification);
-        this.metrics.consensusRequests++;
-      } else {
-        result = await this._processWithRouter(input, taskType);
-        this.metrics.routedRequests++;
-      }
+      const result = await this._executeMode(mode, input, taskType, classification);
       
       const responseTime = Date.now() - startTime;
       this.metrics.totalResponseTime += responseTime;
@@ -156,6 +112,84 @@ export class HybridOrchestrator {
         }
       };
     }
+  }
+
+  /**
+   * Détermine le mode d'orchestration et les drapeaux associés.
+   */
+  _determineMode(options, classification, taskType) {
+    if (options.forceConsensus) {
+      return { mode: OrchestrationMode.CONSENSUS, forcedMode: true, autoDetected: false };
+    }
+    if (options.forceRouted) {
+      return { mode: OrchestrationMode.ROUTED, forcedMode: true, autoDetected: false };
+    }
+    if (classification.isCritical || taskType === 'critical') {
+      return {
+        mode: OrchestrationMode.CONSENSUS,
+        forcedMode: false,
+        autoDetected: !options.forceConsensus && classification.isCritical
+      };
+    }
+    return { mode: OrchestrationMode.ROUTED, forcedMode: false, autoDetected: false };
+  }
+
+  /**
+   * Indique si la requête doit passer par la validation TrustContext.
+   */
+  _requiresTrustValidation(mode, classification, taskType) {
+    return mode === OrchestrationMode.CONSENSUS || classification.isCritical || taskType === 'critical';
+  }
+
+  /**
+   * Résout le niveau de criticité TrustContext à partir de la classification.
+   */
+  _resolveTrustCriticality(classification) {
+    if (classification.isCritical) {
+      return TrustCriticalityLevel.CRITICAL;
+    }
+    return classification.score > 0.8 ? TrustCriticalityLevel.HIGH : TrustCriticalityLevel.MEDIUM;
+  }
+
+  /**
+   * Applique la validation TrustContext ; lève une erreur si la requête est rejetée.
+   */
+  async _enforceTrustGate(input, taskType, classification) {
+    try {
+      const approval = await this.trustContext.validateCriticalDecision({
+        action: 'consensus_request',
+        input: input,
+        taskType: taskType,
+        criticality: this._resolveTrustCriticality(classification),
+        classification: classification
+      });
+      
+      if (!approval.approved) {
+        throw new Error(`Request rejected by TrustContext: ${approval.reason || 'Requires human approval'}`);
+      }
+    } catch (error) {
+      // Si erreur TrustContext, rejeter la requête
+      if (error.message.includes('rejected') || error.message.includes('approval')) {
+        throw error;
+      }
+      // Autres erreurs (unavailable, etc.) - logger et rejeter par sécurité
+      console.error('[HybridOrchestrator] TrustContext error:', error.message);
+      throw new Error('Security validation failed - request rejected');
+    }
+  }
+
+  /**
+   * Exécute le traitement selon le mode et met à jour les métriques.
+   */
+  async _executeMode(mode, input, taskType, classification) {
+    if (mode === OrchestrationMode.CONSENSUS) {
+      const result = await this._processWithConsensus(input, taskType, classification);
+      this.metrics.consensusRequests++;
+      return result;
+    }
+    const result = await this._processWithRouter(input, taskType);
+    this.metrics.routedRequests++;
+    return result;
   }
   
   /**
