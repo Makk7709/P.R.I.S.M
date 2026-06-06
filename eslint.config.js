@@ -4,6 +4,120 @@ import globals from 'globals';
 import tseslint from 'typescript-eslint';
 import unusedImports from 'eslint-plugin-unused-imports';
 
+// `globals@11` ships a browser key with trailing whitespace
+// (`'AudioWorkletGlobalScope '`) which ESLint 9 rejects. Trim keys defensively
+// so we can consume the canonical set without upgrading the dependency.
+const sanitizeGlobals = (set) =>
+  Object.fromEntries(Object.entries(set).map(([k, v]) => [k.trim(), v]));
+const browserGlobals = sanitizeGlobals(globals.browser);
+
+// PRISM in-house ambient globals. These are not standard JS/Web/Node globals
+// but PRISM singletons/classes that several modules reference without an
+// `import` (the historical browser <script> pattern: a module attaches e.g.
+// `prismBus`/`PrismMood` to the global scope and siblings consume it). They are
+// declared `readonly` so legitimate uses stop firing `no-undef` while a typo of
+// a STANDARD global (window/document/...) would still be reported. Declaring
+// only these PRISM-specific names — never `globals.browser` — on Node modules
+// keeps real Node `no-undef` dette visible.
+const prismAmbientGlobals = {
+  prismBus: 'readonly',
+  PrismBus: 'readonly',
+  PrismEvents: 'readonly',
+  prismGhost: 'readonly',
+  prismNotify: 'readonly',
+  PrismMood: 'readonly',
+  PrismVision: 'readonly',
+  PrismEnergy: 'readonly',
+  PrismChronicle: 'readonly',
+  PrismEthos: 'readonly',
+  PrismLegacyCore: 'readonly',
+  PrismSentinel: 'readonly',
+};
+
+// Files that run in (or are written against) a browser/DOM context and
+// legitimately use Web platform globals (window, document, localStorage,
+// navigator, CustomEvent, requestAnimationFrame, Audio, crypto, ...). The root
+// list is EXPLICIT (never a `prism*.js` glob) because the repository root also
+// contains pure Node modules (prismCore.js, prismBus.js, prismVitals.js, ...);
+// applying browser globals to them would mask real Node `no-undef`. `ui/**` and
+// `src/voice/**` are entire browser/voice trees and are matched by glob.
+const browserContextFiles = [
+  // --- root UI / DOM / voice runtime modules ---
+  'audio.js',
+  'particles.js',
+  'prismAPI.js',
+  'prismAudit.js',
+  'prismAwakening.js',
+  'prismAwakeningRitual.js',
+  'prismAwareness.js',
+  'prismCheck.js',
+  'prismChronicle.js',
+  'prismCodexAnalyzer.js',
+  'prismForecast.js',
+  'prismFusion.js',
+  'prismHarmony.js',
+  'prismHeartbeat.js',
+  'prismHyperConsciousness.js',
+  'prismInit.js',
+  'prismLegacy.js',
+  'prismLegacyCore.js',
+  'prismLoading.js',
+  'prismMemory.js',
+  'prismMeta.js',
+  'prismNotify.js',
+  'prismObserver.js',
+  'prismPerf.js',
+  'prismPersistence.js',
+  'prismReflex.js',
+  'prismSession.js',
+  'prismSleep.js',
+  'prismSovereignty.js',
+  'prismStorage.js',
+  'prismThink.js',
+  'prismTone.js',
+  'prismUI.js',
+  'prismUpdate.js',
+  'prismValidator.js',
+  'prismVision.js',
+  'prismVitals-original-buggy.js',
+  'prismWitness.js',
+  'test-voice-interruption-fix.cjs',
+  // --- browser modules living under subdirectories ---
+  'core/KernelBus.js',
+  'core/Resilience.js',
+  'memory/prismAdaptiveSeeds.js',
+  'memory/prismCodex.js',
+  'monitoring/prismBehaviorMap.js',
+  'monitoring/prismLogger.js',
+  'monitoring/prismSentientPulse.js',
+  'monitoring/prismSovereignCycle.js',
+  'regulation/prismElysiumMode.js',
+  'src/voice/**',
+  // --- entire browser UI tree + jsdom harnesses / mocks ---
+  'ui/**',
+  'tests/voice/setup.js',
+  'jest.setup.jsdom.js',
+  '__mocks__/insightCenter.js',
+];
+
+// Node modules that consume PRISM ambient globals (prismBus, PrismEvents, ...)
+// but NO browser DOM globals. They get ONLY the PRISM names — keeping standard
+// Node `no-undef` enforcement intact.
+const prismAmbientNodeFiles = [
+  'memory/prismCodexAnalyzer.js',
+  'monitoring/prismAuroraConsciousness.js',
+  'monitoring/prismBehavioralLearner.js',
+  'monitoring/prismPostStressAnalyzer.js',
+  'monitoring/prismReflection.js',
+  'monitoring/prismSystemMonitor.js',
+  'prismCleanup.js',
+  'prismGuardian.js',
+  'prismRetry.js',
+  'prismStrategicLayer.js',
+  'regulation/prismAdaptiveCycler.js',
+  'regulation/prismStrategicLayer.js',
+];
+
 export default [
   js.configs.recommended,
   {
@@ -54,6 +168,9 @@ export default [
       '**/tests/**',
       '**/simulation/**',
       '**/staging/**',
+      // Jest bootstrap files and manual mocks reference jest/afterEach globals.
+      'jest.setup.*.js',
+      '__mocks__/**',
     ],
     languageOptions: {
       globals: {
@@ -73,21 +190,28 @@ export default [
     },
   },
   {
-    // Browser-context files that legitimately use Web platform globals
-    // (window, CustomEvent, EventTarget, Event, Audio, ...). prismReflex.js is
-    // runtime code that dispatches DOM CustomEvents; tests/voice/setup.js is a
-    // jsdom test harness that polyfills the Audio/Event DOM API. Declaring the
-    // browser globals here resolves the no-undef reports without altering any
-    // runtime behaviour.
-    files: ['prismReflex.js', 'tests/voice/setup.js'],
+    // Browser-context files (UI, voice, DOM runtime, jsdom harnesses). They
+    // legitimately use the full Web platform surface, so we declare the
+    // canonical `globals.browser` set rather than hand-maintaining individual
+    // names. PRISM ambient globals are added too because many UI modules also
+    // consume the in-house singletons. This is a CONFIG change only — no runtime
+    // behaviour is altered. Scope is the explicit/glob allowlist above so Node
+    // modules never receive browser globals.
+    files: browserContextFiles,
     languageOptions: {
       globals: {
-        window: 'readonly',
-        document: 'readonly',
-        CustomEvent: 'readonly',
-        EventTarget: 'readonly',
-        Event: 'readonly',
-        Audio: 'readonly',
+        ...browserGlobals,
+        ...prismAmbientGlobals,
+      },
+    },
+  },
+  {
+    // Node modules that reference PRISM ambient globals only (no DOM). Declaring
+    // just the PRISM names keeps standard Node `no-undef` enforcement intact.
+    files: prismAmbientNodeFiles,
+    languageOptions: {
+      globals: {
+        ...prismAmbientGlobals,
       },
     },
   },

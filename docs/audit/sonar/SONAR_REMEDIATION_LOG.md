@@ -386,3 +386,142 @@ L'essentiel du backlog (`no-undef`, 541) provient de globals navigateur
 (`window`, `document`, `localStorage`, `CustomEvent`…) dans le code UI/voix
 écrit main : à traiter via déclarations `globals` ciblées (comme le bloc
 `prismReflex.js` existant), **pas** par exclusion de fichiers.
+
+---
+
+## Lot — `no-undef` / déclaration ciblée des globals d'environnement
+
+Objectif : ramener les **541 `no-undef`** (essentiellement des globals navigateur
+non déclarés) vers 0 par **configuration ciblée** dans `eslint.config.js`, sans
+activer `globals.browser` sur du code Node (ce qui masquerait de la dette).
+
+### Inventaire des globals manquants (avant)
+
+541 `no-undef` répartis par identifiant : `document` 207, `window` 119,
+`prismBus` 52, `jest` 39, `localStorage` 30, `CustomEvent` 30, `navigator` 11,
+`crypto` 6, `requestAnimationFrame` 6, `cancelAnimationFrame` 3, `alert` 3,
+`MouseEvent` 3, puis singletons PRISM (`PrismBus`, `PrismEvents`, `PrismMood`,
+`PrismVision`, `PrismEnergy`, `PrismChronicle`, `PrismEthos`, `PrismLegacyCore`,
+`PrismSentinel`, `prismGhost`, `prismNotify`), DOM divers (`MutationObserver`,
+`EventTarget`, `caches`, `Audio`, `HTMLCanvasElement`, `KeyboardEvent`,
+`afterEach`) et 6 identifiants isolés (vrais bugs, cf. plus bas).
+
+Par top-répertoire : `(root)` 296, `ui/` 140, `monitoring/` 48, `core/` 21,
+`memory/` 17, `regulation/` 9, `backend/` 3, `__mocks__/` 2, `scripts/` 2,
+`src/` 2, `orchestration/` 1.
+
+### Classification des fichiers par environnement
+
+- **BROWSER** (`...globals.browser` + globals PRISM ambiants) — liste racine
+  **explicite** (jamais un glob `prism*.js`, car la racine contient aussi du
+  Node pur : `prismCore.js`, `prismBus.js`, `prismVitals.js`…), + globs
+  `ui/**`, `src/voice/**` :
+  - racine : `audio.js`, `particles.js`, `prismAPI.js`, `prismAudit.js`,
+    `prismAwakening.js`, `prismAwakeningRitual.js`, `prismAwareness.js`,
+    `prismCheck.js`, `prismChronicle.js`, `prismCodexAnalyzer.js`,
+    `prismForecast.js`, `prismFusion.js`, `prismHarmony.js`, `prismHeartbeat.js`,
+    `prismHyperConsciousness.js`, `prismInit.js`, `prismLegacy.js`,
+    `prismLegacyCore.js`, `prismLoading.js`, `prismMemory.js`, `prismMeta.js`,
+    `prismNotify.js`, `prismObserver.js`, `prismPerf.js`, `prismPersistence.js`,
+    `prismReflex.js`, `prismSession.js`, `prismSleep.js`, `prismSovereignty.js`,
+    `prismStorage.js`, `prismThink.js`, `prismTone.js`, `prismUI.js`,
+    `prismUpdate.js`, `prismValidator.js`, `prismVision.js`,
+    `prismVitals-original-buggy.js`, `prismWitness.js`,
+    `test-voice-interruption-fix.cjs` ;
+  - sous-dossiers : `core/KernelBus.js`, `core/Resilience.js`,
+    `memory/prismAdaptiveSeeds.js`, `memory/prismCodex.js`,
+    `monitoring/prismBehaviorMap.js`, `monitoring/prismLogger.js`,
+    `monitoring/prismSentientPulse.js`, `monitoring/prismSovereignCycle.js`,
+    `regulation/prismElysiumMode.js`, `src/voice/**` ;
+  - arbre UI + harnais jsdom : `ui/**`, `tests/voice/setup.js`,
+    `jest.setup.jsdom.js`, `__mocks__/insightCenter.js`.
+- **NODE + globals PRISM ambiants seulement** (aucun global DOM) — modules Node
+  qui consomment les singletons PRISM sans `import` :
+  `memory/prismCodexAnalyzer.js`, `monitoring/prismAuroraConsciousness.js`,
+  `monitoring/prismBehavioralLearner.js`, `monitoring/prismPostStressAnalyzer.js`,
+  `monitoring/prismReflection.js`, `monitoring/prismSystemMonitor.js`,
+  `prismCleanup.js`, `prismGuardian.js`, `prismRetry.js`,
+  `prismStrategicLayer.js`, `regulation/prismAdaptiveCycler.js`,
+  `regulation/prismStrategicLayer.js`.
+- **TEST/JEST** : ajout de `jest.setup.*.js` et `__mocks__/**` au bloc des
+  globals de test existant (`jest`, `afterEach`…).
+- **NODE pur** : tout le reste — inchangé (pas de globals navigateur).
+- **WORKER/SERVICEWORKER** : aucun (`self`/`postMessage` absents de l'inventaire).
+  `THREE` également absent des `no-undef` (importé en module dans `particles.js`).
+
+### Blocs ajoutés à `eslint.config.js`
+
+1. Bloc `browserContextFiles` → `languageOptions.globals = { ...globals.browser,
+   ...prismAmbientGlobals }`. `globals.browser` est consommé via un
+   `sanitizeGlobals()` qui `.trim()` les clés, car `globals@11` expose
+   `'AudioWorkletGlobalScope '` (espace final) refusé par ESLint 9.
+2. Bloc `prismAmbientNodeFiles` → `globals = { ...prismAmbientGlobals }`
+   uniquement (pas de DOM).
+3. `prismAmbientGlobals` (constante) : `prismBus`, `PrismBus`, `PrismEvents`,
+   `prismGhost`, `prismNotify`, `PrismMood`, `PrismVision`, `PrismEnergy`,
+   `PrismChronicle`, `PrismEthos`, `PrismLegacyCore`, `PrismSentinel` — tous
+   `readonly`. Ce sont des singletons/classes PRISM référencés sans `import`
+   (motif `<script>` historique). Les déclarer `readonly` lève le `no-undef`
+   sans masquer un typo d'un global **standard** (qui resterait signalé).
+4. Extension du bloc « test runner globals » : `jest.setup.*.js`, `__mocks__/**`.
+
+L'ancien bloc minimal (`prismReflex.js`, `tests/voice/setup.js` + 6 globals
+manuels) est remplacé/absorbé par le bloc browser complet.
+
+### Résultats — `no-undef` avant/après
+
+| Mesure                | Avant | Après  |
+| --------------------- | ----- | ------ |
+| `no-undef`            | 541   | **4**  |
+| Total erreurs ESLint  | 579   | **42** |
+| Tests (`npm test`)    | 76/76 | 76/76  |
+
+- **533 `no-undef` résolus par configuration** (déclaration d'environnement).
+- **4 `no-undef` résolus par fix de code** (vrais bugs latents, cf. ci-dessous).
+- **4 `no-undef` résiduels** : vrais bugs nécessitant une décision produit
+  (remontés, non corrigés à l'aveugle).
+
+### Vrais bugs latents trouvés via `no-undef`
+
+Corrigés (fix minimal iso-comportement, hors fichiers des 76 tests core) :
+
+- `src/audit/index.js` — `export default TamperEvidentAuditLog` référençait un
+  binding local **inexistant** (un `export { X } from '…'` ne crée pas de liaison
+  locale) → ReferenceError à l'évaluation du module. Corrigé en
+  `export { default } from './TamperEvidentAuditLog.js'`.
+- `scripts/runStressTest.js` — `readFile` utilisé mais non importé (seul
+  `writeFile` l'était). Ajout de `readFile` à l'import `fs/promises`.
+- `scripts/runBatchSimulationBatch3.js` — `randomPrompt` déclaré (`const`) dans
+  le `try`, lu dans le `catch` (hors portée → ReferenceError au moindre échec).
+  Hoist `let randomPrompt;` au-dessus du `try`.
+- `test-memory-real-api.js` — `retrieved` (`const`) déclaré dans un bloc `if`,
+  lu dans le `return` extérieur. Hoist `let retrieved = null;` à la portée
+  fonction.
+
+Résiduels — **STOP / remontés** (bug réel mais correction = décision produit,
+pas de masquage) :
+
+- `backend/launchSelfEvolutionCycle.js` — `saveMemorySnapshot` (×2),
+  `fetchLatestSnapshots` (×1) : fonctions **appelées mais définies nulle part**
+  dans le repo (aucun export correspondant). Câblage jamais terminé (cf. corps
+  commentés `// await saveMemorySnapshot(...)`). Implémenter = décision.
+- `orchestration/agentRouter.js` — `Perplexity` : `new Perplexity(...)` sans
+  import ni package correspondant (deps = OpenAI/Anthropic uniquement) ; fichier
+  en `require` CommonJS dans un projet ESM (`"type":"module"`), probablement
+  mort. Choix du client = décision.
+
+### Backlog résiduel ESLint après cette passe (42 erreurs)
+
+| Règle                             | Erreurs |
+| --------------------------------- | ------- |
+| `prefer-const`                    | 23      |
+| `no-undef` (vrais bugs à décider) | 4       |
+| `no-dupe-class-members`           | 4       |
+| `no-prototype-builtins`           | 3       |
+| `no-empty`                        | 3       |
+| `no-unused-private-class-members` | 2       |
+| `no-control-regex`                | 1       |
+| (autre `no-undef` multi-ligne)    | 1       |
+
+Les 899 warnings (majoritairement `no-unused-vars` / `unused-imports`) sont
+inchangés et hors périmètre de cette passe.
