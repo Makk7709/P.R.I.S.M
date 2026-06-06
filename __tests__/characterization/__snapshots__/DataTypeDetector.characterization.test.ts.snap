@@ -1,0 +1,646 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`DataTypeDetector — characterization (string type dispatch) > detectType end-to-end on mixed columns is stable (golden master) 1`] = `
+[
+  {
+    "confidence": 1,
+    "type": "id",
+    "values": [
+      "10",
+      "20",
+      "30",
+      "40",
+    ],
+  },
+  {
+    "confidence": 0.6666666666666666,
+    "type": "mixed",
+    "values": [
+      "10.5",
+      "20.25",
+      "30",
+    ],
+  },
+  {
+    "confidence": 1,
+    "type": "boolean",
+    "values": [
+      "true",
+      "false",
+      "oui",
+    ],
+  },
+  {
+    "confidence": 1,
+    "type": "email",
+    "values": [
+      "a@b.com",
+      "c@d.com",
+    ],
+  },
+  {
+    "confidence": 1,
+    "type": "date",
+    "values": [
+      "2023-01-15",
+      "2024-12-31",
+    ],
+  },
+  {
+    "confidence": 1,
+    "type": "percentage",
+    "values": [
+      "50%",
+      "25%",
+      "75%",
+    ],
+  },
+  {
+    "confidence": 1,
+    "type": "currency",
+    "values": [
+      "1 234,56 €",
+      "999,00 €",
+    ],
+  },
+  {
+    "confidence": 1,
+    "type": "string",
+    "values": [
+      "hello",
+      "world",
+      "foo",
+    ],
+  },
+  {
+    "confidence": 1,
+    "type": "null",
+    "values": [],
+  },
+  {
+    "confidence": 1,
+    "type": "null",
+    "values": [
+      null,
+      undefined,
+    ],
+  },
+]
+`;
+
+exports[`DataTypeDetector — characterization (string type dispatch) > produces a stable numeric-string parse for each numeric candidate (golden master) 1`] = `
+[
+  {
+    "input": "1234",
+    "output": {
+      "format": "US",
+      "isInteger": true,
+      "isNumeric": true,
+      "value": 1234,
+    },
+  },
+  {
+    "input": "1234.56",
+    "output": {
+      "format": "US",
+      "isInteger": false,
+      "isNumeric": true,
+      "value": 1234.56,
+    },
+  },
+  {
+    "input": "1 234,56",
+    "output": {
+      "format": "FR",
+      "isInteger": false,
+      "isNumeric": true,
+      "value": 1234.56,
+    },
+  },
+  {
+    "input": "1.234,56",
+    "output": {
+      "format": "DE",
+      "isInteger": false,
+      "isNumeric": true,
+      "value": 1234.56,
+    },
+  },
+  {
+    "input": "1,234.56",
+    "output": {
+      "format": "US",
+      "isInteger": false,
+      "isNumeric": true,
+      "value": 1234.56,
+    },
+  },
+  {
+    "input": "-42",
+    "output": {
+      "format": "US",
+      "isInteger": true,
+      "isNumeric": true,
+      "value": -42,
+    },
+  },
+  {
+    "input": "1.5e10",
+    "output": {
+      "isInteger": false,
+      "isNumeric": true,
+      "scientific": true,
+      "value": 15000000000,
+    },
+  },
+  {
+    "input": "-3.2E-5",
+    "output": {
+      "isInteger": false,
+      "isNumeric": true,
+      "scientific": true,
+      "value": -0.000032,
+    },
+  },
+  {
+    "input": "1.00",
+    "output": {
+      "format": "US",
+      "isInteger": true,
+      "isNumeric": true,
+      "value": 1,
+    },
+  },
+  {
+    "input": "0",
+    "output": {
+      "format": "US",
+      "isInteger": true,
+      "isNumeric": true,
+      "value": 0,
+    },
+  },
+  {
+    "input": "not-a-number",
+    "output": {
+      "isNumeric": false,
+    },
+  },
+  {
+    "input": "12.34.56",
+    "output": {
+      "isNumeric": false,
+    },
+  },
+]
+`;
+
+exports[`DataTypeDetector — characterization (string type dispatch) > produces a stable type result for each representative string (golden master) 1`] = `
+[
+  {
+    "input": "true",
+    "output": {
+      "details": {
+        "booleanFormat": "true_false",
+      },
+      "type": "boolean",
+    },
+  },
+  {
+    "input": "false",
+    "output": {
+      "details": {
+        "booleanFormat": "true_false",
+      },
+      "type": "boolean",
+    },
+  },
+  {
+    "input": "oui",
+    "output": {
+      "details": {
+        "booleanFormat": "oui_non",
+      },
+      "type": "boolean",
+    },
+  },
+  {
+    "input": "non",
+    "output": {
+      "details": {
+        "booleanFormat": "oui_non",
+      },
+      "type": "boolean",
+    },
+  },
+  {
+    "input": "yes",
+    "output": {
+      "details": {
+        "booleanFormat": "yes_no",
+      },
+      "type": "boolean",
+    },
+  },
+  {
+    "input": "no",
+    "output": {
+      "details": {
+        "booleanFormat": "yes_no",
+      },
+      "type": "boolean",
+    },
+  },
+  {
+    "input": "TRUE",
+    "output": {
+      "details": {
+        "booleanFormat": "true_false",
+      },
+      "type": "boolean",
+    },
+  },
+  {
+    "input": "Vrai",
+    "output": {
+      "details": {
+        "booleanFormat": "true_false",
+      },
+      "type": "boolean",
+    },
+  },
+  {
+    "input": "550e8400-e29b-41d4-a716-446655440000",
+    "output": {
+      "type": "uuid",
+    },
+  },
+  {
+    "input": "jane.doe@example.com",
+    "output": {
+      "type": "email",
+    },
+  },
+  {
+    "input": "https://example.com/path?q=1",
+    "output": {
+      "type": "url",
+    },
+  },
+  {
+    "input": "http://test.org",
+    "output": {
+      "type": "url",
+    },
+  },
+  {
+    "input": "01 23 45 67 89",
+    "output": {
+      "details": {
+        "phoneFormat": "FR",
+      },
+      "type": "phone",
+    },
+  },
+  {
+    "input": "0123456789",
+    "output": {
+      "details": {
+        "phoneFormat": "FR",
+      },
+      "type": "phone",
+    },
+  },
+  {
+    "input": "+33 1 23 45 67 89",
+    "output": {
+      "details": {
+        "phoneFormat": "FR",
+      },
+      "type": "phone",
+    },
+  },
+  {
+    "input": "+14155552671",
+    "output": {
+      "details": {
+        "phoneFormat": "INTERNATIONAL",
+      },
+      "type": "phone",
+    },
+  },
+  {
+    "input": "75001",
+    "output": {
+      "details": {
+        "postalFormat": "FR",
+      },
+      "type": "postal_code",
+    },
+  },
+  {
+    "input": "2023-01-15T10:30:00",
+    "output": {
+      "details": {
+        "dateFormat": "ISO8601",
+        "hasTimeComponent": true,
+      },
+      "type": "datetime",
+    },
+  },
+  {
+    "input": "2023-01-15 10:30",
+    "output": {
+      "details": {
+        "dateFormat": "ISO8601",
+        "hasTimeComponent": true,
+      },
+      "type": "datetime",
+    },
+  },
+  {
+    "input": "2023-01-15",
+    "output": {
+      "details": {
+        "dateFormat": "ISO8601",
+      },
+      "type": "date",
+    },
+  },
+  {
+    "input": "15 janvier 2023",
+    "output": {
+      "details": {
+        "dateFormat": "DD_MONTH_YYYY_FR",
+      },
+      "type": "date",
+    },
+  },
+  {
+    "input": "13/05/2023",
+    "output": {
+      "details": {
+        "dateFormat": "DD/MM/YYYY",
+      },
+      "type": "date",
+    },
+  },
+  {
+    "input": "05/13/2023",
+    "output": {
+      "details": {
+        "dateFormat": "MM/DD/YYYY",
+      },
+      "type": "date",
+    },
+  },
+  {
+    "input": "05/06/2023",
+    "output": {
+      "details": {
+        "ambiguous": true,
+        "dateFormat": "DD/MM/YYYY",
+      },
+      "type": "date",
+    },
+  },
+  {
+    "input": "25-12-2024",
+    "output": {
+      "details": {
+        "dateFormat": "DD/MM/YYYY",
+      },
+      "type": "date",
+    },
+  },
+  {
+    "input": "10:30",
+    "output": {
+      "type": "time",
+    },
+  },
+  {
+    "input": "10:30:45",
+    "output": {
+      "type": "time",
+    },
+  },
+  {
+    "input": "1 234,56 €",
+    "output": {
+      "details": {
+        "currencyCode": "EUR",
+        "currencySymbol": "€",
+      },
+      "type": "currency",
+    },
+  },
+  {
+    "input": "€ 1234",
+    "output": {
+      "details": {
+        "currencyCode": "EUR",
+        "currencySymbol": "€",
+      },
+      "type": "currency",
+    },
+  },
+  {
+    "input": "$1,234.56",
+    "output": {
+      "details": {
+        "currencyCode": "USD",
+        "currencySymbol": "$",
+      },
+      "type": "currency",
+    },
+  },
+  {
+    "input": "£1234",
+    "output": {
+      "details": {
+        "currencyCode": "GBP",
+        "currencySymbol": "£",
+      },
+      "type": "currency",
+    },
+  },
+  {
+    "input": "100 EUR",
+    "output": {
+      "details": {
+        "currencyCode": "EUR",
+      },
+      "type": "currency",
+    },
+  },
+  {
+    "input": "USD 50",
+    "output": {
+      "type": "string",
+    },
+  },
+  {
+    "input": "50%",
+    "output": {
+      "type": "percentage",
+    },
+  },
+  {
+    "input": "12.5 %",
+    "output": {
+      "type": "percentage",
+    },
+  },
+  {
+    "input": "1234",
+    "output": {
+      "details": {
+        "hasNegatives": false,
+        "hasScientificNotation": undefined,
+        "numberFormat": "US",
+        "parsedAs": "string_to_number",
+      },
+      "type": "integer",
+    },
+  },
+  {
+    "input": "1234.56",
+    "output": {
+      "details": {
+        "hasNegatives": false,
+        "hasScientificNotation": undefined,
+        "numberFormat": "US",
+        "parsedAs": "string_to_number",
+      },
+      "type": "float",
+    },
+  },
+  {
+    "input": "1 234,56",
+    "output": {
+      "details": {
+        "hasNegatives": false,
+        "hasScientificNotation": undefined,
+        "numberFormat": "FR",
+        "parsedAs": "string_to_number",
+      },
+      "type": "float",
+    },
+  },
+  {
+    "input": "1.234,56",
+    "output": {
+      "details": {
+        "hasNegatives": false,
+        "hasScientificNotation": undefined,
+        "numberFormat": "DE",
+        "parsedAs": "string_to_number",
+      },
+      "type": "float",
+    },
+  },
+  {
+    "input": "1,234.56",
+    "output": {
+      "details": {
+        "hasNegatives": false,
+        "hasScientificNotation": undefined,
+        "numberFormat": "US",
+        "parsedAs": "string_to_number",
+      },
+      "type": "float",
+    },
+  },
+  {
+    "input": "-42",
+    "output": {
+      "details": {
+        "hasNegatives": true,
+        "hasScientificNotation": undefined,
+        "numberFormat": "US",
+        "parsedAs": "string_to_number",
+      },
+      "type": "integer",
+    },
+  },
+  {
+    "input": "1.5e10",
+    "output": {
+      "details": {
+        "hasNegatives": false,
+        "hasScientificNotation": true,
+        "numberFormat": undefined,
+        "parsedAs": "string_to_number",
+      },
+      "type": "float",
+    },
+  },
+  {
+    "input": "0",
+    "output": {
+      "details": {
+        "booleanFormat": "true_false",
+      },
+      "type": "boolean",
+    },
+  },
+  {
+    "input": "3.14",
+    "output": {
+      "details": {
+        "hasNegatives": false,
+        "hasScientificNotation": undefined,
+        "numberFormat": "US",
+        "parsedAs": "string_to_number",
+      },
+      "type": "float",
+    },
+  },
+  {
+    "input": "ABC123",
+    "output": {
+      "details": {
+        "idType": "alphanumeric",
+      },
+      "type": "id",
+    },
+  },
+  {
+    "input": "X1Y2Z3",
+    "output": {
+      "type": "string",
+    },
+  },
+  {
+    "input": "hello world",
+    "output": {
+      "type": "string",
+    },
+  },
+  {
+    "input": "",
+    "output": {
+      "type": "string",
+    },
+  },
+  {
+    "input": "   ",
+    "output": {
+      "type": "string",
+    },
+  },
+  {
+    "input": "café",
+    "output": {
+      "type": "string",
+    },
+  },
+  {
+    "input": "!!!",
+    "output": {
+      "type": "string",
+    },
+  },
+]
+`;

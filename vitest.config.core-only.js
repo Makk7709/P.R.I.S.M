@@ -31,6 +31,9 @@ export default defineConfig({
       // Security contracts tests (if any)
       '__tests__/fuzz/**/*.test.ts',
       '__tests__/fuzz/**/*.spec.ts',
+      // Characterization tests (capture actual behavior before/after Sonar refactors)
+      '__tests__/characterization/**/*.test.ts',
+      '__tests__/characterization/**/*.spec.ts',
     ],
     exclude: [
       'node_modules',
