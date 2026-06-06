@@ -8,6 +8,42 @@ import {
   createProviderResultError,
 } from '../../security/contracts/providerResult.js';
 
+const CORRELATION_ID_RE =
+  /^[0-9a-f]{8}-[0-9a-f]{4}-[1-8][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
+
+/**
+ * Renvoie le correlationId s'il est un UUID valide, sinon undefined (fonction pure).
+ * @param {string} [correlationId]
+ * @returns {string|undefined}
+ */
+function sanitizeCorrelationId(correlationId) {
+  return correlationId && CORRELATION_ID_RE.test(correlationId) ? correlationId : undefined;
+}
+
+/** @returns {boolean} true si objet non nul */
+function isNonNullObject(value) {
+  return typeof value === 'object' && value !== null;
+}
+
+/** @returns {boolean} true si wrapper d'erreur (objet avec .error sans .text) */
+function isErrorWrapperResponse(value) {
+  return isNonNullObject(value) && Boolean(value.error) && !value.text;
+}
+
+/** @returns {boolean} true si objet d'erreur (status/retryable/TimeoutError sans .text) */
+function isErrorLikeResponse(value) {
+  return (
+    isNonNullObject(value) &&
+    !value.text &&
+    (value.status !== undefined || value.retryable !== undefined || value.name === 'TimeoutError')
+  );
+}
+
+/** @returns {boolean} true si wrapper texte (objet avec .text) */
+function isTextWrapperResponse(value) {
+  return isNonNullObject(value) && Boolean(value.text);
+}
+
 /**
  * Normalise une réponse brute de provider en ProviderResult strict
  * @param {Object} params
@@ -41,12 +77,7 @@ export function normalizeProviderResponse({
   }
 
   // Cas 1b: Réponse est un objet avec propriété error (wrapper d'erreur)
-  if (
-    typeof rawResponse === 'object' &&
-    rawResponse !== null &&
-    rawResponse.error &&
-    !rawResponse.text
-  ) {
+  if (isErrorWrapperResponse(rawResponse)) {
     return normalizeError({
       provider,
       error: rawResponse.error instanceof Error ? rawResponse.error : rawResponse,
@@ -57,14 +88,7 @@ export function normalizeProviderResponse({
   }
 
   // Cas 1c: Réponse est un objet d'erreur (avec status/retryable/etc, mais pas text)
-  if (
-    typeof rawResponse === 'object' &&
-    rawResponse !== null &&
-    !rawResponse.text &&
-    (rawResponse.status !== undefined ||
-      rawResponse.retryable !== undefined ||
-      rawResponse.name === 'TimeoutError')
-  ) {
+  if (isErrorLikeResponse(rawResponse)) {
     return normalizeError({
       provider,
       error: rawResponse,
@@ -75,7 +99,7 @@ export function normalizeProviderResponse({
   }
 
   // Cas 2: Réponse est un objet avec propriété text (wrapper avec métadonnées)
-  if (typeof rawResponse === 'object' && rawResponse !== null && rawResponse.text) {
+  if (isTextWrapperResponse(rawResponse)) {
     return normalizeStringResponse({
       provider,
       rawText: rawResponse.text,
@@ -103,7 +127,7 @@ export function normalizeProviderResponse({
   }
 
   // Cas 4: Réponse est un objet (déjà parsé)
-  if (typeof rawResponse === 'object' && rawResponse !== null) {
+  if (isNonNullObject(rawResponse)) {
     return normalizeObjectResponse({
       provider,
       rawObject: rawResponse,
@@ -115,11 +139,7 @@ export function normalizeProviderResponse({
   }
 
   // Cas 5: Réponse inconnue => SCHEMA_INVALID
-  const validCorrelationId =
-    correlationId &&
-    /^[0-9a-f]{8}-[0-9a-f]{4}-[1-8][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(correlationId)
-      ? correlationId
-      : undefined;
+  const validCorrelationId = sanitizeCorrelationId(correlationId);
 
   return createProviderResultError({
     provider,
@@ -153,13 +173,7 @@ function normalizeStringResponse({ provider, rawText, latencyMs, correlationId, 
     parsed = JSON.parse(jsonStr);
   } catch (parseError) {
     // Ne pas passer correlationId s'il n'est pas un UUID valide
-    const validCorrelationId =
-      correlationId &&
-      /^[0-9a-f]{8}-[0-9a-f]{4}-[1-8][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(
-        correlationId
-      )
-        ? correlationId
-        : undefined;
+    const validCorrelationId = sanitizeCorrelationId(correlationId);
 
     return createProviderResultError({
       provider,
@@ -204,13 +218,7 @@ function normalizeObjectResponse({
   // Validation: decision doit être boolean
   if (typeof decision !== 'boolean') {
     // Ne pas passer correlationId s'il n'est pas un UUID valide
-    const validCorrelationId =
-      correlationId &&
-      /^[0-9a-f]{8}-[0-9a-f]{4}-[1-8][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(
-        correlationId
-      )
-        ? correlationId
-        : undefined;
+    const validCorrelationId = sanitizeCorrelationId(correlationId);
 
     return createProviderResultError({
       provider,
@@ -231,13 +239,7 @@ function normalizeObjectResponse({
   // Valider confidence si présente
   if (confidence !== undefined) {
     if (typeof confidence !== 'number' || confidence < 0 || confidence > 1) {
-      const validCorrelationId =
-        correlationId &&
-        /^[0-9a-f]{8}-[0-9a-f]{4}-[1-8][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(
-          correlationId
-        )
-          ? correlationId
-          : undefined;
+      const validCorrelationId = sanitizeCorrelationId(correlationId);
 
       return createProviderResultError({
         provider,
@@ -268,13 +270,7 @@ function normalizeObjectResponse({
     });
   } catch (validationError) {
     // Si la validation échoue, retourner SCHEMA_INVALID
-    const validCorrelationId =
-      correlationId &&
-      /^[0-9a-f]{8}-[0-9a-f]{4}-[1-8][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(
-        correlationId
-      )
-        ? correlationId
-        : undefined;
+    const validCorrelationId = sanitizeCorrelationId(correlationId);
 
     return createProviderResultError({
       provider,
@@ -330,11 +326,7 @@ function normalizeError({ provider, error, latencyMs, correlationId, requestId }
   }
 
   // Ne pas passer correlationId s'il n'est pas un UUID valide
-  const validCorrelationId =
-    correlationId &&
-    /^[0-9a-f]{8}-[0-9a-f]{4}-[1-8][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(correlationId)
-      ? correlationId
-      : undefined;
+  const validCorrelationId = sanitizeCorrelationId(correlationId);
 
   return createProviderResultError({
     provider,
