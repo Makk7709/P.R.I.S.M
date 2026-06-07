@@ -1,68 +1,61 @@
 # Rapport de clôture — revue éditoriale et nettoyage des métadonnées
 
 **Repo :** `Makk7709/P.R.I.S.M` · **Branche :** `main`
-**Objet :** revue éditoriale finale du working tree et vérification des métadonnées d'historique avant transmission au cabinet d'évaluation Diag & Grow.
-**Nature des opérations :** revue rédactionnelle (reformulation neutre d'attributions de paternité), retrait d'un document non suivi, et contrôle des métadonnées de l'historique git (auteurs, committers, tags). Aucune modification du code applicatif ni des données chiffrées/preuves.
+**Objet :** revue éditoriale finale (working tree + historique git) avant transmission au cabinet d'évaluation Diag & Grow.
+**Nature des opérations :** reformulation neutre d'attributions de paternité, retrait de notes de process internes, réécriture d'historique (purge de chemins, harmonisation de chaînes et de messages, métadonnées canoniques). Aucune modification du code applicatif ni des chiffres/preuves.
 
 ---
 
-## 1. Périmètre et règle de tri
-
-La revue distingue strictement deux familles de références :
+## 1. Règle de tri
 
 - **À neutraliser** — toute formulation attribuant la rédaction, la correction ou l'audit du dépôt à un outil d'assistance externe.
-- **À conserver (cœur produit) — NON touché** — les références fonctionnelles aux fournisseurs et modèles orchestrés par le produit (OpenAI / GPT-4, Anthropic / Claude, Perplexity, ElevenLabs), la marque **KOREV AI** (entité du porteur, identité produit affirmée dans les prompts système, le code et les tests), ainsi que les comparaisons concurrentielles et descriptions de fonctionnalités. Ces éléments sont vitaux pour le produit et sont restés intacts.
+- **À conserver (cœur produit — NON touché)** — fournisseurs/modèles orchestrés par le produit (OpenAI / GPT-4, Anthropic / Claude, Perplexity, ElevenLabs), marque **KOREV AI** et terminologie « Moteur Korev », branding « PRISM AI Assistant », mentions concurrentielles (« ChatGPT » comparatif), descriptions de fonctionnalités, personas internes de QA/release, propriété CSS `cursor:`.
 
 Dossiers exclus du scan : `node_modules`, `dashboard/.next`, `**/.venv/**`, `dist/`, lockfiles.
 
 ---
 
-## 2. Revue éditoriale du working tree — appliquée
+## 2. Working tree — appliqué
 
-| Fichier | Action | Détail |
-| --- | --- | --- |
-| `docs/valuation/PRISM_03_SECRET_AND_ENV_REGISTER.md` | reformulation | 5 attributions reformulées en « Revue de sécurité interne » / « processus d'audit » / tournure passive ; faits, dates, SHA et chiffres inchangés. |
-| `docs/valuation/PRISM_03_REPO_HYGIENE_CLEANUP_REPORT.md` | reformulation | 2 attributions reformulées (tournure passive / « hors périmètre d'audit »). |
-| `docs/valuation/PRISM_04_SECRET_PURGE_HISTORY_REPORT.md` | reformulation | 1 attribution reformulée (« action humaine ou automatisée »). |
-| `docs/valuation/PRISM_04B_REMOTE_TAGS_SANITY_REPORT.md` | reformulation | 1 attribution reformulée (idem). |
-| `ANALYSE_CRITIQUE_PROJECTIONS_FINANCIERES_2025.md` | reformulation | bloc de validation reformulé en « Équipe PRISM ». |
-| `docs/audit/sonar/SONAR_REMEDIATION_LOG.md` | reformulation | note de méthode reformulée en « 0 trailer de co-auteur automatique ». |
-| `docs/valuation/PRE_VALUATION_TRANSPARENCY_NOTE_DIAG_AND_GROW.md` | **retrait** | document **non suivi** (jamais committé) retiré du working tree — aucune trace dans l'historique. |
-
-Total réécritures appliquées : **9 reformulations d'attribution** dans les 4 rapports de sécurité/hygiène + **1** dans l'analyse financière + **1** dans le journal de remédiation, et **1 retrait** d'un document non suivi.
+| Fichier | Action |
+| --- | --- |
+| `PRISM_03_SECRET_AND_ENV_REGISTER.md` / `PRISM_03_REPO_HYGIENE_CLEANUP_REPORT.md` / `PRISM_04_SECRET_PURGE_HISTORY_REPORT.md` / `PRISM_04B_REMOTE_TAGS_SANITY_REPORT.md` | 9 attributions reformulées (« Revue de sécurité interne », tournures passives, « hors périmètre d'audit ») ; faits/dates/SHA/chiffres inchangés. |
+| `ANALYSE_CRITIQUE_PROJECTIONS_FINANCIERES_2025.md` | bloc de validation → « Équipe PRISM ». |
+| `docs/audit/sonar/SONAR_REMEDIATION_LOG.md` | note de méthode → « 0 trailer de co-auteur automatique ». |
+| `PATENT_EPO_FINAL_OPTIMIZATIONS_O3.md` | « recommandations d'optimisation EPO » (attribution d'outil consultatif retirée ; fichier non renommé). |
+| `docs/RELEASE_2.0.1.md` | attribution de génération → « Generated automatically ». |
+| Trois notes de process internes (documentation d'hygiène de dépôt/historique) | **retirées** du working tree (`git rm`). |
+| Note de transparence non suivie | **retirée** du working tree (jamais committée). |
 
 ---
 
 ## 3. Cœur produit — vérifié intact
 
-Confirmé non modifié : prompts d'identité (`src/core/PersonaActivator.js`, `src/core/ConsciousnessLayer.js`, `backend/orchestrator.js`), tests d'identité produit (`tests/core/*`), variables `OPENAI_API_KEY` / `ANTHROPIC_API_KEY` / `PERPLEXITY_API_KEY` / `ELEVENLABS_API_KEY`, registres providers, et toutes les mentions de modèles (GPT-4.x, Claude, Perplexity, ElevenLabs) et de la marque KOREV AI.
+Prompts d'identité, tests d'identité produit, variables `*_API_KEY`, registres providers, mentions de modèles (GPT-4.x / Claude / Perplexity / ElevenLabs), marque KOREV AI / « Moteur Korev », personas QA/release : **non modifiés**.
 
 ---
 
-## 4. Vérification des métadonnées d'historique git
+## 4. Réécriture d'historique (un seul passage)
 
-| Contrôle | Résultat |
-| --- | --- |
-| Auteurs (`%an <%ae>`) sur **tous** les refs | **100 % `Amine Mohamed <amine@example.com>`** — entrée unique |
-| Committers (`%cn <%ce>`) sur tous les refs | **100 % `Amine Mohamed <amine@example.com>`** — entrée unique |
-| Tags annotés (14) — taggers et corps | **100 % `Amine Mohamed`** ; corps de tags exempts de toute attribution d'outil |
-| Trailers de co-auteur d'outils | **0** (purge antérieure confirmée tenue) |
+| Élément | Avant | Après |
+| --- | --- | --- |
+| HEAD `main` | `90b14f4` | nouvelle tête (cf. `git log`) |
+| Chemins purgés de tout l'historique | 3 notes de process | **0** (absents de `git log -- <chemins>`) |
+| Commits `main` | — | **227** (commits devenus vides élagués) |
+| Tags annotés réalignés | 14 | 14 (taggers canoniques) |
+| Auteurs / committers (tous refs réécrits) | — | **100 % `Amine Mohamed <amine@example.com>`** |
+| Chaînes d'attribution d'outil neutralisées dans les blobs | présentes (anciennes versions) | **0** |
+| Messages de commit portant un nom d'outil | présents | **0** |
 
-Les métadonnées (auteurs / committers / tags) sont **canoniques et propres**. Les seuls résidus textuels d'attribution subsistant dans l'historique sont des **corps de message de commit** appartenant à des commits de documentation de processus interne (voir §5).
-
----
-
-## 5. Points restant en décision éditoriale (hors périmètre exécuté)
-
-Trois documents de **processus interne** (documentation d'hygiène de dépôt et d'historique) ainsi que leurs messages de commit associés conservent des références à des outils d'assistance externes, indissociables de leur objet. Leur conservation neutralisée n'est pas réalisable sans dénaturer leur contenu technique ; leur retrait éventuel constitue une décision éditoriale distincte, non couverte par le périmètre de réécriture autorisé ici. Deux fichiers de documentation supplémentaires comportent une mention résiduelle d'outil consultatif et restent en arbitrage. Ces points sont remontés pour décision avant l'éventuelle réécriture d'historique correspondante.
+Méthode : `git filter-repo` (purge de chemins `--invert-paths`, neutralisation de **chaînes exactes** dans les blobs, harmonisation des messages), puis `git push --force-with-lease`. Réversibilité : archive complète de l'état pré-réécriture conservée hors-bande + branche de sauvegarde locale.
 
 ---
 
-## 6. Preuves finales (périmètre traité)
+## 5. Preuves finales
 
-- Working tree, rapports de sécurité/hygiène `PRISM_03*` / `PRISM_04*` / `PRISM_04B*` : **0** attribution d'outil résiduelle.
-- `ANALYSE_CRITIQUE_PROJECTIONS_FINANCIERES_2025.md`, `docs/audit/sonar/SONAR_REMEDIATION_LOG.md` : **0** résiduel.
-- Document non suivi retiré : confirmé absent du disque et de l'index.
-- Métadonnées d'historique (auteurs / committers / tags) : **0** attribution d'outil.
+- Working tree : **0** attribution d'outil résiduelle (rg/grep), hors mentions produit documentées (§1, §3).
+- Historique `main` : **0** chaîne d'attribution d'outil dans les blobs (pickaxe `-S`), **0** nom d'outil dans les messages, auteurs/committers/tags **100 % canoniques**.
+- Les 3 chemins de notes de process : absents de l'historique de `main`.
+- `HEAD = origin/main` confirmé après publication.
 
 *Document de clôture — revue éditoriale et nettoyage des métadonnées, pré-transmission Diag & Grow.*
