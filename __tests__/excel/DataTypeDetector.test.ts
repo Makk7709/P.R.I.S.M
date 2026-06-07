@@ -76,7 +76,7 @@ describe('DataTypeDetector', () => {
       });
 
       it('should detect floats/decimals', () => {
-        const values = [1.5, 2.75, 3.14159, 100.00, -10.5];
+        const values = [1.5, 2.75, 3.14159, 100, -10.5];
         const result = detector.detectType(values);
         
         expect(result.type).toBe(DataType.FLOAT);
@@ -278,7 +278,7 @@ describe('DataTypeDetector', () => {
       const values = ['$1,500.00', '$2,300.50', '$500.75'];
       const result = detector.detectType(values);
       
-      expect(result.extractedValues).toEqual([1500.00, 2300.50, 500.75]);
+      expect(result.extractedValues).toEqual([1500, 2300.5, 500.75]);
     });
   });
 
@@ -303,7 +303,7 @@ describe('DataTypeDetector', () => {
     });
 
     it('should detect decimal percentages (0-1 range)', () => {
-      const values = [0.75, 0.50, 0.25, 0.10, 0.95];
+      const values = [0.75, 0.5, 0.25, 0.1, 0.95];
       const result = detector.detectType(values, { checkDecimalPercentage: true });
       
       expect(result.type).toBe(DataType.PERCENTAGE);
@@ -315,7 +315,7 @@ describe('DataTypeDetector', () => {
       const result = detector.detectType(values);
       
       expect(result.extractedValues).toEqual([75, 50, 25]);
-      expect(result.normalizedValues).toEqual([0.75, 0.50, 0.25]);
+      expect(result.normalizedValues).toEqual([0.75, 0.5, 0.25]);
     });
   });
 
@@ -461,7 +461,7 @@ describe('DataTypeDetector', () => {
     it('should analyze a complete column', () => {
       const column = {
         name: 'Revenue',
-        values: [1500.50, 2300.00, 1800.75, 3200.25, 2100.00]
+        values: [1500.5, 2300, 1800.75, 3200.25, 2100]
       };
       
       const result = detector.analyzeColumn(column);
@@ -469,7 +469,7 @@ describe('DataTypeDetector', () => {
       expect(result.columnName).toBe('Revenue');
       expect(result.type).toBe(DataType.FLOAT);
       expect(result.stats).toBeDefined();
-      expect(result.stats.min).toBe(1500.50);
+      expect(result.stats.min).toBe(1500.5);
       expect(result.stats.max).toBe(3200.25);
     });
 

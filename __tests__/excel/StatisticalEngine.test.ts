@@ -465,7 +465,7 @@ describe('StatisticalEngine', () => {
   describe('Regression Analysis', () => {
     it('should calculate linear regression', () => {
       const x = [1, 2, 3, 4, 5];
-      const y = [2.1, 3.9, 6.1, 8.0, 9.8];
+      const y = [2.1, 3.9, 6.1, 8, 9.8];
       const result = engine.linearRegression(x, y);
       
       expect(result.slope).toBeCloseTo(2, 1);
@@ -491,7 +491,7 @@ describe('StatisticalEngine', () => {
 
     it('should calculate prediction confidence interval', () => {
       const x = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
-      const y = [2.1, 3.9, 6.2, 7.8, 10.1, 12.0, 13.9, 16.1, 17.8, 20.2];
+      const y = [2.1, 3.9, 6.2, 7.8, 10.1, 12, 13.9, 16.1, 17.8, 20.2];
       const result = engine.linearRegression(x, y);
       
       const prediction = result.predictWithInterval(11, 0.95);
@@ -503,7 +503,7 @@ describe('StatisticalEngine', () => {
 
     it('should calculate residuals', () => {
       const x = [1, 2, 3, 4, 5];
-      const y = [2.1, 3.9, 6.1, 8.0, 9.8];
+      const y = [2.1, 3.9, 6.1, 8, 9.8];
       const result = engine.linearRegression(x, y);
       
       expect(result.residuals).toHaveLength(5);
@@ -569,8 +569,8 @@ describe('StatisticalEngine', () => {
       const data = [100, 110, 121, 133.1, 146.41];
       const result = engine.growthRate(data);
       
-      expect(result.averageGrowthRate).toBeCloseTo(0.10, 2); // 10%
-      expect(result.compoundGrowthRate).toBeCloseTo(0.10, 2);
+      expect(result.averageGrowthRate).toBeCloseTo(0.1, 2); // 10%
+      expect(result.compoundGrowthRate).toBeCloseTo(0.1, 2);
     });
 
     it('should detect seasonality', () => {

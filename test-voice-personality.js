@@ -71,7 +71,7 @@ function displayComparison(original, enhanced, context) {
   if (enhanced.voiceConfig.voice_settings.stability < 0.4) {
     improvements.push('✅ Plus de variabilité vocale');
   }
-  if (enhanced.voiceConfig.voice_settings.speaking_rate !== 1.0) {
+  if (enhanced.voiceConfig.voice_settings.speaking_rate !== 1) {
     improvements.push('✅ Rythme adapté au contexte');
   }
   

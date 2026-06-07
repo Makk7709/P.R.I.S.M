@@ -261,7 +261,7 @@ export default class PrismCodexAnalyzer {
       improvementRatio,
       isUnstable: anomalyRate > 0.15,
       isImproving: improvements > drifts,
-      isDrifting: drifts > improvements && anomalyRate > 0.10
+      isDrifting: drifts > improvements && anomalyRate > 0.1
     };
 
     const endTime = performance.now();
@@ -959,10 +959,10 @@ export default class PrismCodexAnalyzer {
    */
   _getLatencyBudget(segment) {
     const budgets = {
-      strategic: 2.0,
-      cycler: 1.0,
-      codex: 3.0
+      strategic: 2,
+      cycler: 1,
+      codex: 3
     };
-    return budgets[segment] || 1.0;
+    return budgets[segment] || 1;
   }
 } 

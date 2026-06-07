@@ -29,7 +29,7 @@ export const CONFIG = {
     API_KEY: 'test-api-key',
     VOICE_ID: 'test-voice-id',
     AGENT_ID: 'test-agent-id',
-    SPEAKING_RATE: 1.0,
+    SPEAKING_RATE: 1,
     STYLE: 'default',
     USE_SPEAKER_BOOST: true,
     RETRY_ATTEMPTS: 3,

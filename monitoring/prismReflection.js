@@ -147,7 +147,7 @@ export class PrismReflection {
       insights.push({
         type: 'stagnation',
         description: 'Période de stagnation détectée malgré des signaux de stress',
-        confidence: 0.70
+        confidence: 0.7
       });
     }
 

@@ -123,7 +123,7 @@ describe('PrismCore - Orchestration GREEN Tests', () => {
       expect(trusted).toBe(true);
       
       const metrics = await orchestrator.getOrchestratorMetrics();
-      expect(metrics.trustValidationRate).toBe(1.0);
+      expect(metrics.trustValidationRate).toBe(1);
     });
   });
 

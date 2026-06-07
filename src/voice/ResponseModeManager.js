@@ -481,7 +481,7 @@ export class ResponseModeManager {
         voice_settings: {
           stability: voiceConfig.stability || 0.5,
           similarity_boost: voiceConfig.similarityBoost || 0.75,
-          style: voiceConfig.style || 0.0,
+          style: voiceConfig.style || 0,
           use_speaker_boost: true
         }
       })

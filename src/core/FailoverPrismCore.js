@@ -449,7 +449,7 @@ export class FailoverPrismCore extends EventEmitter {
 
   _updateProviderErrorRate(providerId) {
     const currentRate = this.metrics.providerFailureRates.get(providerId) || 0;
-    this.metrics.providerFailureRates.set(providerId, Math.min(currentRate + 0.1, 1.0));
+    this.metrics.providerFailureRates.set(providerId, Math.min(currentRate + 0.1, 1));
   }
 
   _updateFailoverMetrics(result) {

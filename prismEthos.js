@@ -14,7 +14,7 @@ class PrismEthos {
   #initializeDefaultPrinciples() {
     this.definePrinciples({
       respect: {
-        weight: 1.0,
+        weight: 1,
         description: 'Respect user autonomy and dignity',
         evaluate: (action) => this.#evaluateRespect(action)
       },
@@ -24,7 +24,7 @@ class PrismEthos {
         evaluate: (action) => this.#evaluateTransparency(action)
       },
       safety: {
-        weight: 1.0,
+        weight: 1,
         description: 'Prioritize user safety and well-being',
         evaluate: (action) => this.#evaluateSafety(action)
       }
@@ -123,9 +123,9 @@ if (typeof process !== 'undefined' && process.env.NODE_ENV === 'test') {
   // Test principle definition
   const testPrinciples = {
     test: {
-      weight: 1.0,
+      weight: 1,
       description: 'Test principle',
-      evaluate: () => 1.0
+      evaluate: () => 1
     }
   };
   
@@ -153,7 +153,7 @@ if (typeof process !== 'undefined' && process.env.NODE_ENV === 'test') {
     'Perfect action should be approved'
   );
   console.assert(
-    result.score === 1.0,
+    result.score === 1,
     'Perfect action should score 1.0'
   );
 }

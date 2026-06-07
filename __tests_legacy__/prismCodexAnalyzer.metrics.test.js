@@ -125,7 +125,7 @@ prism_cycler_interval_ms 1000
       latencies: {
         strategic: 1.7, // 85% du budget de 2.0s
         cycler: 0.5, // 50% du budget de 1.0s
-        codex: 2.0 // 66% du budget de 3.0s
+        codex: 2 // 66% du budget de 3.0s
       },
       cyclerInterval: 1000
     };

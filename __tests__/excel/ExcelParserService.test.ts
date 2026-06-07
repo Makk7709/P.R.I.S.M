@@ -223,7 +223,7 @@ describe('ExcelParserService', () => {
       // Feuille 3: Statistiques
       const statsData = [
         ['Métrique', 'Valeur'],
-        ['CA Total', 5499.50],
+        ['CA Total', 5499.5],
         ['Marge', 0.35]
       ];
       const statsSheet = XLSX.utils.aoa_to_sheet(statsData);
@@ -491,9 +491,9 @@ describe('ExcelParserService', () => {
       const workbook = XLSX.utils.book_new();
       const data = [
         ['StringCol', 'NumberCol', 'DateCol', 'BoolCol', 'CurrencyCol', 'PercentCol'],
-        ['Hello', 42, new Date('2024-01-15'), true, 1500.50, 0.75],
-        ['World', 3.14, new Date('2024-06-20'), false, 2300.00, 0.25],
-        ['Test', -100, new Date('2024-12-01'), true, 500.75, 0.50]
+        ['Hello', 42, new Date('2024-01-15'), true, 1500.5, 0.75],
+        ['World', 3.14, new Date('2024-06-20'), false, 2300, 0.25],
+        ['Test', -100, new Date('2024-12-01'), true, 500.75, 0.5]
       ];
       
       const worksheet = XLSX.utils.aoa_to_sheet(data, { cellDates: true });

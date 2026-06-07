@@ -46,7 +46,7 @@ export class ASIInterface extends EventEmitter {
         totalInteractions: 0,
         averageResponseTime: 0,
         userSatisfaction: 0.8,
-        learningProgress: 0.0
+        learningProgress: 0
       }
     };
 
@@ -287,7 +287,7 @@ export class ASIInterface extends EventEmitter {
       priority += 0.1; // Utilisateur engagé
     }
     
-    return Math.min(priority, 1.0);
+    return Math.min(priority, 1);
   }
 
   /**
@@ -431,7 +431,7 @@ export class ASIInterface extends EventEmitter {
       duration: Math.ceil(text.length / 10), // Estimation
       style: {
         speed: style.verbosity > 0.7 ? 0.9 : 1.1,
-        pitch: 0.0,
+        pitch: 0,
         emotion: style.empathy > 0.7 ? 'warm' : 'neutral'
       }
     };
@@ -503,7 +503,7 @@ export class ASIInterface extends EventEmitter {
       if (!profile.expertise[domain]) {
         profile.expertise[domain] = 0.1;
       } else {
-        profile.expertise[domain] = Math.min(1.0, profile.expertise[domain] + 0.05);
+        profile.expertise[domain] = Math.min(1, profile.expertise[domain] + 0.05);
       }
     }
 

@@ -61,7 +61,7 @@ describe('PrismCore - Branches ≥95% FINAL Target', () => {
       const result = await orchestrator.handleTrustValidation(decision);
       
       expect(result).toBe(true); // Branche early return pour non-HIGH
-      expect(orchestrator.metrics.trustValidationRate).toBe(1.0);
+      expect(orchestrator.metrics.trustValidationRate).toBe(1);
     });
 
     it('BRANCHE: handleTrustValidation en mode non-TEST avec HIGH criticality', async () => {

@@ -74,7 +74,7 @@ describe('EconomicCalculator', () => {
     });
 
     // Record some production
-    calculator.recordProduction(new Date(), 10, 1.0); // 10 hours normal
+    calculator.recordProduction(new Date(), 10, 1); // 10 hours normal
     calculator.recordProduction(new Date(), 5, 0.9); // 5 hours reduced
 
     const metrics = calculator.calculateStrategyMetrics('BASELINE');
@@ -148,7 +148,7 @@ describe('EconomicCalculator', () => {
       strategy: 'PRISM_IND'
     });
 
-    calculator.recordProduction(new Date(), 5, 1.0);
+    calculator.recordProduction(new Date(), 5, 1);
 
     const cipEvents = calculator.getCIPEvents();
     const productionEvents = calculator.getProductionEvents();
@@ -171,7 +171,7 @@ describe('EconomicCalculator', () => {
       strategy: 'BASELINE'
     });
 
-    calculator.recordProduction(new Date(), 1, 1.0);
+    calculator.recordProduction(new Date(), 1, 1);
 
     expect(calculator.getCIPEvents()).toHaveLength(1);
     expect(calculator.getProductionEvents().length).toBeGreaterThan(0);
@@ -197,11 +197,11 @@ describe('EconomicCalculator', () => {
 
   it('should handle edge cases', () => {
     // Test with zero MHI
-    const roi1 = calculator.calculateActionROI(Recommendation.SCHEDULE_CIP, 0.0, 0);
+    const roi1 = calculator.calculateActionROI(Recommendation.SCHEDULE_CIP, 0, 0);
     expect(typeof roi1).toBe('number');
 
     // Test with perfect MHI
-    const roi2 = calculator.calculateActionROI(Recommendation.ADJUST_SETPOINTS, 1.0, 100);
+    const roi2 = calculator.calculateActionROI(Recommendation.ADJUST_SETPOINTS, 1, 100);
     expect(typeof roi2).toBe('number');
 
     // Test with negative time

@@ -85,10 +85,10 @@ export const config = {
       MODEL_ID: 'eleven_multilingual_v2', // ✨ CORRECTION: Revenir au modèle original
       STABILITY: 0.35, // ✨ CORRECTION: Paramètres originaux pour Jean
       SIMILARITY_BOOST: 0.85, // ✨ CORRECTION: Paramètres originaux
-      STYLE: 0.0, // ✨ Désactivé pour éviter les erreurs 500
+      STYLE: 0, // ✨ Désactivé pour éviter les erreurs 500
       USE_SPEAKER_BOOST: true,
-      SPEAKING_RATE: 1.0, // ✨ Vitesse normale pour Jean
-      PITCH: 0.0, // ✨ Pitch normal
+      SPEAKING_RATE: 1, // ✨ Vitesse normale pour Jean
+      PITCH: 0, // ✨ Pitch normal
       RETRY_ATTEMPTS: 3,
       TIMEOUT: 15000, // ✨ CORRECTION: Augmenté de 8s à 15s pour éviter les timeouts
       MAX_TEXT_LENGTH: 1000, // ✨ GARDER: Limite augmentée pour texte complet
@@ -108,7 +108,7 @@ export const config = {
       ADAPTIVE_SETTINGS: {
         ENERGETIC: { STABILITY: 0.25, STYLE: 0.85, SPEAKING_RATE: 1.25 },
         CONTEMPLATIVE: { STABILITY: 0.45, STYLE: 0.45, SPEAKING_RATE: 0.95 },
-        URGENT: { STABILITY: 0.20, STYLE: 0.90, SPEAKING_RATE: 1.35 }
+        URGENT: { STABILITY: 0.2, STYLE: 0.9, SPEAKING_RATE: 1.35 }
       },
       ERROR_HANDLING: {
         MAX_RETRIES: 3,
@@ -140,16 +140,16 @@ export const config = {
       },
       EFFECTS: {
         WAVE: {
-          AMPLITUDE: 1.0,
-          FREQUENCY: 1.0
+          AMPLITUDE: 1,
+          FREQUENCY: 1
         },
         PULSE: {
-          INTENSITY: 1.0,
-          SPEED: 1.0
+          INTENSITY: 1,
+          SPEED: 1
         },
         SPIRAL: {
-          RADIUS: 1.0,
-          SPEED: 1.0
+          RADIUS: 1,
+          SPEED: 1
         }
       }
     },
@@ -207,7 +207,7 @@ export const config = {
       SAMPLE_RATE: 44100,
       FFT_SIZE: 256,
       MIN_VOLUME: 0.1,
-      MAX_VOLUME: 1.0,
+      MAX_VOLUME: 1,
       PROCESSING: {
         NOISE_GATE: {
           THRESHOLD: -50,

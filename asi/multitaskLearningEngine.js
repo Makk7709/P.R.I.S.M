@@ -50,16 +50,16 @@ export class MultitaskLearningEngine extends EventEmitter {
     };
 
     this.domains = {
-      'language': { weight: 1.0, expertise: 0.5, tasks: [] },
-      'mathematics': { weight: 1.0, expertise: 0.3, tasks: [] },
-      'science': { weight: 1.0, expertise: 0.4, tasks: [] },
-      'logic': { weight: 1.0, expertise: 0.6, tasks: [] },
-      'creativity': { weight: 1.0, expertise: 0.2, tasks: [] },
-      'analysis': { weight: 1.0, expertise: 0.7, tasks: [] },
-      'synthesis': { weight: 1.0, expertise: 0.4, tasks: [] },
-      'problem_solving': { weight: 1.0, expertise: 0.5, tasks: [] },
-      'pattern_recognition': { weight: 1.0, expertise: 0.8, tasks: [] },
-      'decision_making': { weight: 1.0, expertise: 0.6, tasks: [] }
+      'language': { weight: 1, expertise: 0.5, tasks: [] },
+      'mathematics': { weight: 1, expertise: 0.3, tasks: [] },
+      'science': { weight: 1, expertise: 0.4, tasks: [] },
+      'logic': { weight: 1, expertise: 0.6, tasks: [] },
+      'creativity': { weight: 1, expertise: 0.2, tasks: [] },
+      'analysis': { weight: 1, expertise: 0.7, tasks: [] },
+      'synthesis': { weight: 1, expertise: 0.4, tasks: [] },
+      'problem_solving': { weight: 1, expertise: 0.5, tasks: [] },
+      'pattern_recognition': { weight: 1, expertise: 0.8, tasks: [] },
+      'decision_making': { weight: 1, expertise: 0.6, tasks: [] }
     };
 
     this.initializeDomainExperts();
@@ -874,7 +874,7 @@ export class MultitaskLearningEngine extends EventEmitter {
       }
       
       // Mise à jour de la spécialisation
-      this.domains[domain].expertise = Math.min(1.0, this.domains[domain].expertise + avgPerformance * 0.01);
+      this.domains[domain].expertise = Math.min(1, this.domains[domain].expertise + avgPerformance * 0.01);
     }
   }
 

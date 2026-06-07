@@ -281,7 +281,7 @@ const runTests = () => {
     vision: { active: true },
     chronicle: { events: [] },
     bond: { strength: 0.7 },
-    soul: { essence: 1.0 },
+    soul: { essence: 1 },
     memory: { capacity: 0.95 },
     ethos: { alignment: 'neutral' },
     think: { processing: false }

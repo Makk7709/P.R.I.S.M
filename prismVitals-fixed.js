@@ -117,7 +117,7 @@ export default class PrismVitals {
 
     // Consensus monitoring
     this.consensusMetrics = {
-      consensus_success_rate: 1.0, // Valeur par défaut optimiste
+      consensus_success_rate: 1, // Valeur par défaut optimiste
       totalConsensusRequests: 0,
       approvedConsensus: 0,
       rejectedConsensus: 0,
@@ -230,7 +230,7 @@ export default class PrismVitals {
     const totalDecisions = this.consensusMetrics.approvedConsensus + this.consensusMetrics.rejectedConsensus;
     this.consensusMetrics.consensus_success_rate = 
       this.consensusMetrics.totalConsensusRequests > 0 ? 
-        totalDecisions / this.consensusMetrics.totalConsensusRequests : 1.0;
+        totalDecisions / this.consensusMetrics.totalConsensusRequests : 1;
   }
 
   /**
@@ -348,7 +348,7 @@ export default class PrismVitals {
     return {
       ...this.selfImprovementMetrics,
       improvementRate: this.selfImprovementMetrics.totalImprovements > 0 ? 
-        this.selfImprovementMetrics.approvedImprovements / this.selfImprovementMetrics.totalImprovements : 1.0,
+        this.selfImprovementMetrics.approvedImprovements / this.selfImprovementMetrics.totalImprovements : 1,
       timestamp: Date.now()
     };
   }

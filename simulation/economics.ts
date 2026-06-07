@@ -94,7 +94,7 @@ export class EconomicCalculator {
   /**
    * Record production during normal operation
    */
-  recordProduction(timestamp: Date, duration: number, efficiency: number = 1.0): number {
+  recordProduction(timestamp: Date, duration: number, efficiency: number = 1): number {
     const nominalVolume = DEFAULT_SITE_CONFIG.flow_nominal_m3h * duration;
     const actualVolume = nominalVolume * efficiency;
     const value = actualVolume * this.params.production_value_EUR_per_m3;
@@ -187,7 +187,7 @@ export class EconomicCalculator {
 
     // Risk: potential membrane damage if MHI drops too low
     const membraneRisk = currentMHI < 0.3 ? 
-                        this.calculateMembraneLifeValue(-1.0) : 0; // 1% life risk
+                        this.calculateMembraneLifeValue(-1) : 0; // 1% life risk
 
     return continuedProduction - productionLossFromFouling - membraneRisk;
   }

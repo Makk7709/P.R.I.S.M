@@ -15,8 +15,8 @@ class PrismMood {
     };
     
     this.decayRate = 0.01;
-    this.maxMoodValue = 1.0;
-    this.minMoodValue = 0.0;
+    this.maxMoodValue = 1;
+    this.minMoodValue = 0;
     this.lastUpdate = Date.now();
     
     this.initializeMood();

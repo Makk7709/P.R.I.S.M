@@ -80,7 +80,7 @@ class PatentBenchmark {
       
       // Simuler performance baseline (fixe)
       const baselineLatency = 2500 + Math.random() * 500; // 2.5s ± 0.5s
-      const baselineCost = 0.020 + Math.random() * 0.005; // 2¢ ± 0.5¢
+      const baselineCost = 0.02 + Math.random() * 0.005; // 2¢ ± 0.5¢
       baselineLatencies.push(baselineLatency);
       baselineCosts.push(baselineCost);
       
@@ -386,7 +386,7 @@ class PatentBenchmark {
     console.log(`   • Disponibilité: ${this.results.dynamicConsensus.availability}% (revendication: 99.9%)`);
     console.log(`   • Tolérance pannes: 67% (revendication: 50%)`);
     console.log(`   • Temps décision: <1000ms (revendication: <1000ms)`);
-    console.log(`   • Conformité: ${this.validateClaim(this.results.dynamicConsensus.availability, 99.0, 'gte') ? '✅' : '❌'}`);
+    console.log(`   • Conformité: ${this.validateClaim(this.results.dynamicConsensus.availability, 99, 'gte') ? '✅' : '❌'}`);
 
     console.log('\n📝 ÉLÉMENT C - JOURNAL HMAC:');
     console.log(`   • Temps récupération: ${this.results.secureJournal.avgRecoveryTime}ms (revendication: <50ms)`);
@@ -467,7 +467,7 @@ class PatentBenchmark {
     return (
       this.validateClaim(this.results.adaptiveWeighting.latencyReduction, 35, 'gte') &&
       this.validateClaim(this.results.adaptiveWeighting.costReduction, 20, 'gte') &&
-      this.validateClaim(this.results.dynamicConsensus.availability, 99.0, 'gte') &&
+      this.validateClaim(this.results.dynamicConsensus.availability, 99, 'gte') &&
       this.validateClaim(this.results.secureJournal.avgRecoveryTime, 50, 'lte') &&
       this.results.secureJournal.integrityValid
     );

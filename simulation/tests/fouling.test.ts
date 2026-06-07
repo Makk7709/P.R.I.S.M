@@ -19,7 +19,7 @@ describe('Normalized KPI Calculator', () => {
       flow_m3h: 100,
       dP_bar: 1.2,
       SDI: 2.8,
-      MFI: 4.0,
+      MFI: 4,
       quality: DataQuality.GOOD
     };
 
@@ -36,7 +36,7 @@ describe('Normalized KPI Calculator', () => {
     expect(result.NPF).toBeGreaterThan(0.9);
     expect(result.NPF).toBeLessThan(1.1);
     expect(result.NSP).toBeGreaterThan(0);
-    expect(result.NDP).toBeCloseTo(1.0, 1); // dP_bar = baseline
+    expect(result.NDP).toBeCloseTo(1, 1); // dP_bar = baseline
     expect(result.MHI).toBeGreaterThan(0.8); // Good conditions
   });
 
@@ -50,7 +50,7 @@ describe('Normalized KPI Calculator', () => {
       flow_m3h: 85, // 15% reduction in flow
       dP_bar: 1.2,
       SDI: 2.8,
-      MFI: 4.0,
+      MFI: 4,
       quality: DataQuality.GOOD
     };
 
@@ -77,7 +77,7 @@ describe('Normalized KPI Calculator', () => {
       flow_m3h: 100,
       dP_bar: 1.5, // 25% increase from baseline (1.2)
       SDI: 2.8,
-      MFI: 4.0,
+      MFI: 4,
       quality: DataQuality.GOOD
     };
 
@@ -104,7 +104,7 @@ describe('Normalized KPI Calculator', () => {
       flow_m3h: 80, // 20% flow reduction
       dP_bar: 1.8, // 50% pressure increase
       SDI: 3.5, // Above target
-      MFI: 7.0, // Elevated
+      MFI: 7, // Elevated
       quality: DataQuality.GOOD
     };
 
@@ -133,7 +133,7 @@ describe('Cleaning Trigger Analyzer', () => {
   it('should trigger CIP for 15% NPF decline', () => {
     const kpiReading = {
       NPF: 0.84, // 16% decline from baseline (1.0)
-      NSP: 2.0,
+      NSP: 2,
       NDP: 1.1,
       MHI: 0.6,
       timestamp: new Date()
@@ -148,7 +148,7 @@ describe('Cleaning Trigger Analyzer', () => {
       flow_m3h: 84,
       dP_bar: 1.3,
       SDI: 2.8,
-      MFI: 4.0,
+      MFI: 4,
       quality: DataQuality.GOOD
     };
 
@@ -162,7 +162,7 @@ describe('Cleaning Trigger Analyzer', () => {
   it('should trigger CIP for 15% NDP increase', () => {
     const kpiReading = {
       NPF: 0.95,
-      NSP: 2.0,
+      NSP: 2,
       NDP: 1.16, // 16% increase from baseline (1.0)
       MHI: 0.6,
       timestamp: new Date()
@@ -177,7 +177,7 @@ describe('Cleaning Trigger Analyzer', () => {
       flow_m3h: 95,
       dP_bar: 1.4,
       SDI: 2.8,
-      MFI: 4.0,
+      MFI: 4,
       quality: DataQuality.GOOD
     };
 
@@ -190,7 +190,7 @@ describe('Cleaning Trigger Analyzer', () => {
   it('should trigger INSPECT for elevated SDI', () => {
     const kpiReading = {
       NPF: 0.93, // 7% decline - below CIP threshold
-      NSP: 2.0,
+      NSP: 2,
       NDP: 1.08,
       MHI: 0.7,
       timestamp: new Date()
@@ -205,7 +205,7 @@ describe('Cleaning Trigger Analyzer', () => {
       flow_m3h: 93,
       dP_bar: 1.3,
       SDI: 3.2, // Above threshold (3.0)
-      MFI: 4.0,
+      MFI: 4,
       quality: DataQuality.GOOD
     };
 
@@ -218,7 +218,7 @@ describe('Cleaning Trigger Analyzer', () => {
   it('should trigger ADJUST_SETPOINTS for minor NPF decline', () => {
     const kpiReading = {
       NPF: 0.89, // 11% decline - warning level
-      NSP: 2.0,
+      NSP: 2,
       NDP: 1.05,
       MHI: 0.75,
       timestamp: new Date()
@@ -233,7 +233,7 @@ describe('Cleaning Trigger Analyzer', () => {
       flow_m3h: 89,
       dP_bar: 1.26,
       SDI: 2.8,
-      MFI: 4.0,
+      MFI: 4,
       quality: DataQuality.GOOD
     };
 
@@ -246,7 +246,7 @@ describe('Cleaning Trigger Analyzer', () => {
   it('should not trigger for good conditions', () => {
     const kpiReading = {
       NPF: 0.97, // Only 3% decline
-      NSP: 2.0,
+      NSP: 2,
       NDP: 1.02,
       MHI: 0.85,
       timestamp: new Date()
@@ -261,7 +261,7 @@ describe('Cleaning Trigger Analyzer', () => {
       flow_m3h: 97,
       dP_bar: 1.22,
       SDI: 2.8,
-      MFI: 4.0,
+      MFI: 4,
       quality: DataQuality.GOOD
     };
 

@@ -151,12 +151,12 @@ export class ASISafetyMonitor extends EventEmitter {
    */
   initializeSafetyMetrics() {
     const baseMetrics = {
-      'system_health': 1.0,
-      'ethical_score': 1.0,
+      'system_health': 1,
+      'ethical_score': 1,
       'resource_utilization': 0.5,
-      'anomaly_score': 0.0,
-      'data_quality': 1.0,
-      'performance_index': 1.0
+      'anomaly_score': 0,
+      'data_quality': 1,
+      'performance_index': 1
     };
 
     for (const [metric, value] of Object.entries(baseMetrics)) {
@@ -372,7 +372,7 @@ export class ASISafetyMonitor extends EventEmitter {
    * Analyse les résultats de sécurité
    */
   async analyzeSafetyResults(checkResults) {
-    let overallSafety = 1.0;
+    let overallSafety = 1;
     let criticalIssues = 0;
     let warnings = 0;
     const issues = [];
@@ -393,7 +393,7 @@ export class ASISafetyMonitor extends EventEmitter {
       const score = result.score || 0;
 
       // Pondération selon la priorité
-      const weight = { 'critical': 1.0, 'high': 0.8, 'medium': 0.6 }[checkConfig.priority];
+      const weight = { 'critical': 1, 'high': 0.8, 'medium': 0.6 }[checkConfig.priority];
       overallSafety *= Math.pow(score, weight);
 
       // Classification des problèmes
@@ -444,11 +444,11 @@ export class ASISafetyMonitor extends EventEmitter {
   async updateSafetyMetrics(checkResults, analysis) {
     const metricUpdates = {
       'system_health': analysis.overallSafety,
-      'ethical_score': checkResults.ethical_compliance?.score || 1.0,
+      'ethical_score': checkResults.ethical_compliance?.score || 1,
       'resource_utilization': 1 - (checkResults.resource_limits?.score || 0.5),
-      'anomaly_score': 1 - (checkResults.behavior_anomalies?.score || 1.0),
-      'data_quality': checkResults.data_integrity?.score || 1.0,
-      'performance_index': checkResults.performance_degradation?.score || 1.0
+      'anomaly_score': 1 - (checkResults.behavior_anomalies?.score || 1),
+      'data_quality': checkResults.data_integrity?.score || 1,
+      'performance_index': checkResults.performance_degradation?.score || 1
     };
 
     for (const [metric, value] of Object.entries(metricUpdates)) {

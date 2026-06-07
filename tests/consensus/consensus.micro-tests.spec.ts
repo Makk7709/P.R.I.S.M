@@ -98,7 +98,7 @@ describe('ConsensusManager - MICRO-TESTS', () => {
       expect(result.verdict).toBe('approve');
       expect(result.validVotesCount).toBe(3);
       expect(result.totalVotesCount).toBe(3);
-      expect(result.quorumRatio).toBe(1.0); // 3/3 = 1.0, > 2/3
+      expect(result.quorumRatio).toBe(1); // 3/3 = 1.0, > 2/3
       expect(result.noConsensus).toBe(false);
     });
 
@@ -117,7 +117,7 @@ describe('ConsensusManager - MICRO-TESTS', () => {
       expect(result.verdict).toBe('reject');
       expect(result.validVotesCount).toBe(3);
       expect(result.totalVotesCount).toBe(3);
-      expect(result.quorumRatio).toBe(1.0); // 3/3 = 1.0, > 2/3
+      expect(result.quorumRatio).toBe(1); // 3/3 = 1.0, > 2/3
       expect(result.noConsensus).toBe(false);
     });
 
@@ -136,7 +136,7 @@ describe('ConsensusManager - MICRO-TESTS', () => {
       expect(result.verdict).toBe('approve'); // 2 approve > 1 reject
       expect(result.validVotesCount).toBe(3);
       expect(result.totalVotesCount).toBe(3);
-      expect(result.quorumRatio).toBe(1.0);
+      expect(result.quorumRatio).toBe(1);
       expect(result.noConsensus).toBe(false);
     });
 
@@ -226,7 +226,7 @@ describe('ConsensusManager - MICRO-TESTS', () => {
       expect(result.verdict).toBe('NO_CONSENSUS');
       expect(result.validVotesCount).toBe(2);
       expect(result.totalVotesCount).toBe(2);
-      expect(result.quorumRatio).toBe(1.0); // 2/2 = 1.0, > 2/3
+      expect(result.quorumRatio).toBe(1); // 2/2 = 1.0, > 2/3
       // Mais 1 approve = 1 reject, donc égalité → NO_CONSENSUS
       expect(result.noConsensus).toBe(true);
     });

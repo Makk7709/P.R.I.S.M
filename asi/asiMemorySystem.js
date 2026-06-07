@@ -54,7 +54,7 @@ export class ASIMemorySystem extends EventEmitter {
       semantic: { priority: 0.9, retention: 'high', compression: 'medium' },
       procedural: { priority: 0.7, retention: 'high', compression: 'low' },
       working: { priority: 0.6, retention: 'low', compression: 'none' },
-      meta: { priority: 1.0, retention: 'permanent', compression: 'medium' },
+      meta: { priority: 1, retention: 'permanent', compression: 'medium' },
     };
 
     this.storage = {
@@ -576,7 +576,7 @@ export class ASIMemorySystem extends EventEmitter {
     if (knowledge.novelty) importance += knowledge.novelty * 0.2;
     if (knowledge.type === 'meta_learning') importance += 0.3;
 
-    return Math.min(importance, 1.0);
+    return Math.min(importance, 1);
   }
 
   calculateSize(content) {

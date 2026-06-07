@@ -26,7 +26,7 @@ export class MetricsPrismCore extends EventEmitter {
     
     this.systemHealth = {
       uptime: Date.now(),
-      availability: 1.0,
+      availability: 1,
       responseTime: { mean: 0, p95: 0, p99: 0 },
       errorRate: 0,
       throughput: 0,

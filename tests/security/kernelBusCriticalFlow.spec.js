@@ -47,7 +47,7 @@ describe('KernelBus Critical Flow Security Verification', () => {
         totalDecisions: 0,
         approvedDecisions: 0,
         rejectedDecisions: 0,
-        humanApprovalRate: 1.0,
+        humanApprovalRate: 1,
         pendingDecisions: 0
       }))
     };

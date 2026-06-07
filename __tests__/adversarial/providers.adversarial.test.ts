@@ -294,8 +294,8 @@ describe('ProviderAdapters - Adversarial Tests (Fail-Closed)', () => {
       const extremeCases = [
         { decision: true, reasoning: 'x'.repeat(10000) }, // Très long
         { decision: true, reasoning: '' }, // Vide
-        { decision: false, confidence: 0.0 }, // Min
-        { decision: true, confidence: 1.0 }, // Max
+        { decision: false, confidence: 0 }, // Min
+        { decision: true, confidence: 1 }, // Max
         { decision: true, confidence: 0.5 } // Milieu
       ];
       

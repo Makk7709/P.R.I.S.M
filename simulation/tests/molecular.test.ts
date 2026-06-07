@@ -19,7 +19,7 @@ describe('MolecularSimulator', () => {
       flow_m3h: 100,
       dP_bar: 1.2,
       SDI: 2.8,
-      MFI: 4.0,
+      MFI: 4,
       quality: DataQuality.GOOD
     };
 
@@ -46,7 +46,7 @@ describe('MolecularSimulator', () => {
       flow_m3h: 100,
       dP_bar: 1.2,
       SDI: 2.8,
-      MFI: 4.0,
+      MFI: 4,
       quality: DataQuality.GOOD
     };
 
@@ -77,7 +77,7 @@ describe('MolecularSimulator', () => {
       flow_m3h: 100,
       dP_bar: 1.2,
       SDI: 2.8,
-      MFI: 4.0,
+      MFI: 4,
       quality: DataQuality.GOOD
     };
 
@@ -108,7 +108,7 @@ describe('MolecularSimulator', () => {
       flow_m3h: 100,
       dP_bar: 1.2,
       SDI: 3.5, // High SDI
-      MFI: 7.0, // High MFI
+      MFI: 7, // High MFI
       quality: DataQuality.GOOD
     };
 
@@ -136,7 +136,7 @@ describe('MolecularSimulator', () => {
       flow_m3h: 100,
       dP_bar: 1.2,
       SDI: 2.8,
-      MFI: 4.0,
+      MFI: 4,
       quality: DataQuality.GOOD
     };
 
@@ -164,7 +164,7 @@ describe('MolecularSimulator', () => {
       flow_m3h: 100,
       dP_bar: 1.2,
       SDI: 2.8,
-      MFI: 4.0,
+      MFI: 4,
       quality: DataQuality.GOOD
     };
 
@@ -192,7 +192,7 @@ describe('MolecularSimulator', () => {
       flow_m3h: 100,
       dP_bar: 1.2,
       SDI: 2.8,
-      MFI: 4.0,
+      MFI: 4,
       quality: DataQuality.GOOD
     };
 
@@ -214,12 +214,12 @@ describe('MolecularSimulator', () => {
 
   it('should calculate NSP correctly', () => {
     const testData = {
-      NO3_mgL: 2.0,
-      SO4_mgL: 5.0,
+      NO3_mgL: 2,
+      SO4_mgL: 5,
       TOC_mgL: 0.3
     };
 
-    const nsp = MolecularSimulator.calculateNSP(2000, testData, 2.0);
+    const nsp = MolecularSimulator.calculateNSP(2000, testData, 2);
     
     expect(nsp).toBeGreaterThan(0.1);
     expect(nsp).toBeLessThan(10); // Should be realistic range
@@ -244,7 +244,7 @@ describe('generateMolecularTimeSeries', () => {
       flow_m3h: 100,
       dP_bar: 1.2,
       SDI: 2.8,
-      MFI: 4.0,
+      MFI: 4,
       quality: DataQuality.GOOD
     }));
 
@@ -273,7 +273,7 @@ describe('generateMolecularTimeSeries', () => {
       flow_m3h: 100,
       dP_bar: 1.2,
       SDI: 2.8,
-      MFI: 4.0,
+      MFI: 4,
       quality: DataQuality.GOOD
     }));
 

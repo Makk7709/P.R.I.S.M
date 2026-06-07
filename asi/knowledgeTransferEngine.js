@@ -682,7 +682,7 @@ export class KnowledgeTransferEngine extends EventEmitter {
   assessTransferability(concept) {
     // Évaluation de la transférabilité basée sur l'abstraction
     const abstractionLevel = this.calculateAbstractionLevel(concept);
-    return Math.min(abstractionLevel * 1.2, 1.0);
+    return Math.min(abstractionLevel * 1.2, 1);
   }
 
   calculateAbstractionLevel(_item) {

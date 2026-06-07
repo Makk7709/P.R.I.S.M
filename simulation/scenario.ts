@@ -353,8 +353,8 @@ PRISM vs Baseline (${this.config.durationDays} days):
    */
   private calculateSummary(steps: SimulationStep[], cipEvents: CIPEvent[]): SimulationResults['summary'] {
     const mhiValues = steps.map(s => s.mhi);
-    const npfDeclines = steps.map(s => Math.max(0, (1.0 - s.normalizedKPI.NPF) * 100));
-    const ndpIncreases = steps.map(s => Math.max(0, (s.normalizedKPI.NDP - 1.0) * 100));
+    const npfDeclines = steps.map(s => Math.max(0, (1 - s.normalizedKPI.NPF) * 100));
+    const ndpIncreases = steps.map(s => Math.max(0, (s.normalizedKPI.NDP - 1) * 100));
     
     return {
       totalSteps: steps.length,

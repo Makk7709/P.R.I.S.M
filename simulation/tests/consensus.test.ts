@@ -19,13 +19,13 @@ describe('MembraneGuardian Agent', () => {
       flow_m3h: 100,
       dP_bar: 1.2,
       SDI: 2.8,
-      MFI: 4.0,
+      MFI: 4,
       quality: DataQuality.GOOD
     };
 
     const kpi = {
       NPF: 0.6,
-      NSP: 2.0,
+      NSP: 2,
       NDP: 1.8,
       MHI: 0.3, // Critical MHI
       timestamp: new Date()
@@ -49,13 +49,13 @@ describe('MembraneGuardian Agent', () => {
       flow_m3h: 100,
       dP_bar: 1.2,
       SDI: 2.8,
-      MFI: 4.0,
+      MFI: 4,
       quality: DataQuality.GOOD
     };
 
     const kpi = {
       NPF: 0.84, // 16% decline from baseline
-      NSP: 2.0,
+      NSP: 2,
       NDP: 1.1,
       MHI: 0.6,
       timestamp: new Date()
@@ -77,13 +77,13 @@ describe('MembraneGuardian Agent', () => {
       flow_m3h: 100,
       dP_bar: 1.2,
       SDI: 3.2, // Above threshold
-      MFI: 4.0,
+      MFI: 4,
       quality: DataQuality.GOOD
     };
 
     const kpi = {
       NPF: 0.93, // Minor decline
-      NSP: 2.0,
+      NSP: 2,
       NDP: 1.05,
       MHI: 0.7,
       timestamp: new Date()
@@ -105,13 +105,13 @@ describe('MembraneGuardian Agent', () => {
       flow_m3h: 100,
       dP_bar: 1.2,
       SDI: 2.8,
-      MFI: 4.0,
+      MFI: 4,
       quality: DataQuality.GOOD
     };
 
     const kpi = {
       NPF: 0.97,
-      NSP: 2.0,
+      NSP: 2,
       NDP: 1.02,
       MHI: 0.85,
       timestamp: new Date()
@@ -141,14 +141,14 @@ describe('EconomicOptimizer Agent', () => {
       flow_m3h: 100,
       dP_bar: 1.2,
       SDI: 2.8,
-      MFI: 4.0,
+      MFI: 4,
       quality: DataQuality.GOOD
     };
 
     const kpi = {
       NPF: 0.5,
-      NSP: 2.0,
-      NDP: 2.0,
+      NSP: 2,
+      NDP: 2,
       MHI: 0.2, // Severe condition
       timestamp: new Date()
     };
@@ -169,13 +169,13 @@ describe('EconomicOptimizer Agent', () => {
       flow_m3h: 100,
       dP_bar: 1.2,
       SDI: 2.8,
-      MFI: 4.0,
+      MFI: 4,
       quality: DataQuality.GOOD
     };
 
     const kpi = {
       NPF: 0.95,
-      NSP: 2.0,
+      NSP: 2,
       NDP: 1.05,
       MHI: 0.8,
       timestamp: new Date()
@@ -197,13 +197,13 @@ describe('EconomicOptimizer Agent', () => {
       flow_m3h: 100,
       dP_bar: 1.2,
       SDI: 2.8,
-      MFI: 4.0,
+      MFI: 4,
       quality: DataQuality.GOOD
     };
 
     const kpi = {
       NPF: 0.7,
-      NSP: 2.0,
+      NSP: 2,
       NDP: 1.3,
       MHI: 0.5, // Borderline condition
       timestamp: new Date()
@@ -233,13 +233,13 @@ describe('OperationalBalancer Agent', () => {
       flow_m3h: 100,
       dP_bar: 1.2,
       SDI: 2.8,
-      MFI: 4.0,
+      MFI: 4,
       quality: DataQuality.GOOD
     };
 
     const kpi = {
       NPF: 0.5,
-      NSP: 2.0,
+      NSP: 2,
       NDP: 1.8,
       MHI: 0.25, // Critical
       timestamp: new Date()
@@ -261,13 +261,13 @@ describe('OperationalBalancer Agent', () => {
       flow_m3h: 100,
       dP_bar: 1.2,
       SDI: 2.8,
-      MFI: 4.0,
+      MFI: 4,
       quality: DataQuality.GOOD
     };
 
     const kpi = {
       NPF: 0.8,
-      NSP: 2.0,
+      NSP: 2,
       NDP: 1.3,
       MHI: 0.6,
       timestamp: new Date()
@@ -296,7 +296,7 @@ describe('OperationalBalancer Agent', () => {
 
     const kpi = {
       NPF: 0.9,
-      NSP: 2.0,
+      NSP: 2,
       NDP: 1.1,
       MHI: 0.7,
       timestamp: new Date()
@@ -326,13 +326,13 @@ describe('ConsensusEngine', () => {
       flow_m3h: 100,
       dP_bar: 1.2,
       SDI: 2.8,
-      MFI: 4.0,
+      MFI: 4,
       quality: DataQuality.GOOD
     };
 
     const kpi = {
       NPF: 0.5,
-      NSP: 2.0,
+      NSP: 2,
       NDP: 1.8,
       MHI: 0.3, // Critical MHI below 0.35
       timestamp: new Date()
@@ -362,7 +362,7 @@ describe('ConsensusEngine', () => {
 
     const kpi = {
       NPF: 0.88,
-      NSP: 2.0,
+      NSP: 2,
       NDP: 1.17,
       MHI: 0.5, // Above critical
       timestamp: new Date()
@@ -402,7 +402,7 @@ describe('ConsensusEngine', () => {
 
     const kpi = {
       NPF: 0.92,
-      NSP: 2.0,
+      NSP: 2,
       NDP: 1.04,
       MHI: 0.75, // Good condition
       timestamp: new Date()
@@ -425,13 +425,13 @@ describe('ConsensusEngine', () => {
       flow_m3h: 100,
       dP_bar: 1.2,
       SDI: 2.8,
-      MFI: 4.0,
+      MFI: 4,
       quality: DataQuality.GOOD
     };
 
     const kpi = {
       NPF: 0.95,
-      NSP: 2.0,
+      NSP: 2,
       NDP: 1.02,
       MHI: 0.8,
       timestamp: new Date()
@@ -456,13 +456,13 @@ describe('ConsensusEngine', () => {
       flow_m3h: 100,
       dP_bar: 1.2,
       SDI: 2.8,
-      MFI: 4.0,
+      MFI: 4,
       quality: DataQuality.GOOD
     };
 
     const kpi = {
       NPF: 0.95,
-      NSP: 2.0,
+      NSP: 2,
       NDP: 1.02,
       MHI: 0.8,
       timestamp: new Date()

@@ -41,7 +41,7 @@ describe('ConsensusManager - INVARIANTS GELÉS', () => {
     expect(result.verdict).toBe('approve');
     expect(result.validVotesCount).toBe(2);
     expect(result.totalVotesCount).toBe(2);
-    expect(result.quorumRatio).toBe(1.0); // 2/2 = 1.0 (strictement > 2/3)
+    expect(result.quorumRatio).toBe(1); // 2/2 = 1.0 (strictement > 2/3)
     expect(result.decisionLatencyMs).toBeLessThanOrEqual(900);
     expect(result.noConsensus).toBe(false);
   });

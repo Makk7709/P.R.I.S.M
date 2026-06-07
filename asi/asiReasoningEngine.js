@@ -103,13 +103,13 @@ export class ASIReasoningEngine extends EventEmitter {
       {
         name: 'modus_ponens',
         pattern: 'if P then Q, P, therefore Q',
-        confidence: 1.0,
+        confidence: 1,
         type: 'deductive'
       },
       {
         name: 'modus_tollens',
         pattern: 'if P then Q, not Q, therefore not P',
-        confidence: 1.0,
+        confidence: 1,
         type: 'deductive'
       },
       {

@@ -19,9 +19,9 @@ export class PrismNoesis {
   #currentPulseCount = 0;
   #isActive = false;
   #perceptionCache = {
-    stability: 1.0,
-    tension: 0.0,
-    harmony: 1.0
+    stability: 1,
+    tension: 0,
+    harmony: 1
   };
 
   /**

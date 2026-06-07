@@ -277,7 +277,7 @@ export class SelfImprovementEngine extends EventEmitter {
       riskLevel += improvementData.impact.magnitude * 0.2;
     }
 
-    return Math.min(1.0, riskLevel);
+    return Math.min(1, riskLevel);
   }
 
   /**
@@ -303,7 +303,7 @@ export class SelfImprovementEngine extends EventEmitter {
       quality += 0.1;
     }
 
-    return Math.min(1.0, quality);
+    return Math.min(1, quality);
   }
 
   /**
@@ -806,7 +806,7 @@ export class SelfImprovementEngine extends EventEmitter {
     }
 
     return {
-      magnitude: Math.min(magnitude, 1.0), // Normaliser entre 0 et 1
+      magnitude: Math.min(magnitude, 1), // Normaliser entre 0 et 1
       riskLevel,
       changeCount: adjustments.changes.length
     };

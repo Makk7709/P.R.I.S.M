@@ -54,11 +54,11 @@ export class MembraneGuardian {
       justification = `Fouling indicators: SDI persistent=${triggerAnalysis.sdiPersistent}, MFI elevated=${triggerAnalysis.mfiElevated}`;
     } else if (triggerAnalysis.npfDeclinePercent >= 10) {
       recommendation = Recommendation.ADJUST_SETPOINTS;
-      score = 0.70;
+      score = 0.7;
       justification = `Early warning: NPF declining ${triggerAnalysis.npfDeclinePercent.toFixed(1)}%`;
     } else {
       recommendation = Recommendation.ADJUST_SETPOINTS;
-      score = 0.60;
+      score = 0.6;
       justification = `Proactive membrane preservation`;
     }
     
@@ -109,19 +109,19 @@ export class EconomicOptimizer {
     if (mhi < 0.25) {
       // Severe membrane damage risk outweighs economic concerns
       recommendation = Recommendation.SCHEDULE_CIP;
-      score = 0.80;
+      score = 0.8;
       justification = `Severe membrane damage risk outweighs ${totalCipCost}€ CIP cost`;
     } else if (delayValue > totalCipCost * 1.5) {
       // High value in delaying CIP
       recommendation = Recommendation.ADJUST_SETPOINTS;
       score = 0.85;
       justification = `Delay value ${delayValue.toFixed(0)}€ > CIP cost ${totalCipCost}€`;
-    } else if (kpi.NPF > 0.90 && kpi.NDP < 1.10) {
+    } else if (kpi.NPF > 0.9 && kpi.NDP < 1.1) {
       // Good performance, economically optimal to continue
       recommendation = Recommendation.ADJUST_SETPOINTS;
-      score = 0.80;
+      score = 0.8;
       justification = `Good performance (NPF ${(kpi.NPF * 100).toFixed(0)}%, NDP ${(kpi.NDP * 100).toFixed(0)}%) - optimize settings`;
-    } else if (mhi < 0.40) {
+    } else if (mhi < 0.4) {
       // Poor membrane health, CIP justified economically  
       recommendation = Recommendation.SCHEDULE_CIP;
       score = 0.75;
@@ -158,24 +158,24 @@ export class OperationalBalancer {
     let justification: string;
     
     // Operational stability logic
-    if (mhi < 0.30) {
+    if (mhi < 0.3) {
       recommendation = Recommendation.SCHEDULE_CIP;
-      score = 0.90;
+      score = 0.9;
       justification = `Critical MHI ${(mhi * 100).toFixed(1)}% requires immediate stabilization`;
     } else if (recentCIPCount >= 2) {
       // Too many recent CIPs, avoid membrane stress
       recommendation = Recommendation.ADJUST_SETPOINTS;
-      score = 0.80;
+      score = 0.8;
       justification = `${recentCIPCount} recent CIPs - avoid membrane stress, adjust operations`;
     } else if (kpi.NPF < 0.85 && kpi.NDP > 1.15) {
       // Performance degrading, needs intervention
       recommendation = Recommendation.SCHEDULE_CIP;
       score = 0.75;
       justification = `Performance degrading: NPF ${(kpi.NPF * 100).toFixed(0)}%, NDP ${(kpi.NDP * 100).toFixed(0)}%`;
-    } else if (sensorReading.SDI > 3.2 || sensorReading.MFI > 6.0) {
+    } else if (sensorReading.SDI > 3.2 || sensorReading.MFI > 6) {
       // Fouling indicators suggest investigation
       recommendation = Recommendation.INSPECT;
-      score = 0.70;
+      score = 0.7;
       justification = `Fouling indicators: SDI ${sensorReading.SDI.toFixed(1)}, MFI ${sensorReading.MFI.toFixed(1)}`;
     } else {
       // Stable operation, gradual optimization

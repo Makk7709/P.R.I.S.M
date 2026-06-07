@@ -139,7 +139,7 @@ export class PrismBehavioralLearner {
       this.recommendations.set('vital_signs', {
         type: 'reaction_time',
         action: 'decrease_analysis_cycle',
-        value: 0.20,
+        value: 0.2,
         duration: 300
       });
     }

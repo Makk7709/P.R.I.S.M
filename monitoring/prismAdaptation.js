@@ -214,9 +214,9 @@ class PrismAdaptation {
       };
     } else {
       parameters = {
-        sensitivityMultiplier: 1.0,
+        sensitivityMultiplier: 1,
         responseThreshold: 0.5,
-        recoveryRate: 1.0
+        recoveryRate: 1
       };
     }
 

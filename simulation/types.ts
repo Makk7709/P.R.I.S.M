@@ -236,7 +236,7 @@ export const SimulationConfigSchema = z.object({
     downtime_CIP_h: z.number().min(2.5).max(3.5),
     chemistry_cost_per_element_EUR: z.number().min(35).max(50),
     cip_energy_cost_EUR: z.number().positive(),
-    production_value_EUR_per_m3: z.number().min(0.5).max(2.0),
+    production_value_EUR_per_m3: z.number().min(0.5).max(2),
     membrane_8inch_cost_EUR: z.number().min(300).max(800),
     membrane_life_reduction_per_cip_pct: z.number().min(0.3).max(0.7)
   }),
@@ -261,10 +261,10 @@ export const DEFAULT_CONFIG: SimulationConfig = {
   timeStepMinutes: 5,
   seed: 42,
   economics: {
-    downtime_CIP_h: 3.0,
+    downtime_CIP_h: 3,
     chemistry_cost_per_element_EUR: 42, // ~42 elements total
     cip_energy_cost_EUR: 50,
-    production_value_EUR_per_m3: 1.0,
+    production_value_EUR_per_m3: 1,
     membrane_8inch_cost_EUR: 500,
     membrane_life_reduction_per_cip_pct: 0.5
   },
@@ -272,8 +272,8 @@ export const DEFAULT_CONFIG: SimulationConfig = {
     npf_warning_pct: 10,
     npf_cip_pct: 15,
     ndp_cip_pct: 15,
-    sdi_high_threshold: 3.0,
-    mfi_high_threshold: 6.0,
+    sdi_high_threshold: 3,
+    mfi_high_threshold: 6,
     mhi_critical: 0.35
   }
 };

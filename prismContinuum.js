@@ -9,9 +9,9 @@ class PrismContinuum {
     };
     this.reachedMilestones = new Set();
     this.adaptationParams = {
-      responseTime: 1.0,
-      complexity: 1.0,
-      engagement: 1.0
+      responseTime: 1,
+      complexity: 1,
+      engagement: 1
     };
     this.continuumInterval = null;
     this.eventListeners = new Map();
@@ -42,9 +42,9 @@ class PrismContinuum {
     this.startTime = null;
     this.reachedMilestones.clear();
     this.adaptationParams = {
-      responseTime: 1.0,
-      complexity: 1.0,
-      engagement: 1.0
+      responseTime: 1,
+      complexity: 1,
+      engagement: 1
     };
     this.emit('continuum:reset');
   }
@@ -74,9 +74,9 @@ class PrismContinuum {
     const hoursActive = duration / (60 * 60 * 1000);
     
     // Progressive adaptation based on time
-    this.adaptationParams.responseTime = Math.max(0.5, 1.0 - (hoursActive * 0.01));
-    this.adaptationParams.complexity = Math.min(2.0, 1.0 + (hoursActive * 0.005));
-    this.adaptationParams.engagement = Math.min(1.5, 1.0 + (hoursActive * 0.002));
+    this.adaptationParams.responseTime = Math.max(0.5, 1 - (hoursActive * 0.01));
+    this.adaptationParams.complexity = Math.min(2, 1 + (hoursActive * 0.005));
+    this.adaptationParams.engagement = Math.min(1.5, 1 + (hoursActive * 0.002));
   }
 
   on(event, callback) {
@@ -134,7 +134,7 @@ if (typeof process !== 'undefined' && process.env.NODE_ENV === 'test') {
     // Test adaptation
     continuum.startContinuum();
     const state = continuum.getContinuumState();
-    console.assert(state.adaptationParams.responseTime <= 1.0, 'Response time should adapt downward');
+    console.assert(state.adaptationParams.responseTime <= 1, 'Response time should adapt downward');
     
     return 'All tests passed';
   };

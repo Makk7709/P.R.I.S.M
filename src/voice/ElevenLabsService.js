@@ -66,7 +66,7 @@ export class ElevenLabsService {
           voice_settings: {
             stability: options.stability || 0.5,
             similarity_boost: options.similarityBoost || 0.75,
-            style: options.style || 0.0,
+            style: options.style || 0,
             use_speaker_boost: true
           }
         })

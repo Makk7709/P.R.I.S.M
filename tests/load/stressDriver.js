@@ -333,7 +333,7 @@ class StressTestDriver {
       this.testResults.consensusMetrics.totalRequests > 0
         ? this.testResults.consensusMetrics.approved /
           this.testResults.consensusMetrics.totalRequests
-        : 1.0;
+        : 1;
 
     const eventLossRate = this.testResults.failedEvents / this.testResults.totalEvents;
 

@@ -550,7 +550,7 @@ export default class PrismVitals {
   async getSecurityVitals() {
     const securityVitals = {
       trustLevel: 100,
-      approvalRate: 1.0,
+      approvalRate: 1,
       pendingDecisions: 0,
       securityChecks: 0,
       blockedEvents: 0
@@ -560,7 +560,7 @@ export default class PrismVitals {
       try {
         const metrics = this.trustContext.getSecurityMetrics();
         
-        securityVitals.approvalRate = metrics.humanApprovalRate || 1.0;
+        securityVitals.approvalRate = metrics.humanApprovalRate || 1;
         securityVitals.pendingDecisions = metrics.pendingDecisions || 0;
         securityVitals.securityChecks = this.securityMetrics.securityChecks || 0;
         securityVitals.blockedEvents = this.securityMetrics.blockedEvents || 0;

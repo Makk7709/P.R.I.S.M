@@ -148,8 +148,8 @@ class ControlPromptGenerator {
       factors: stability.factors,
       memoryUsage: {
         max: maxMemory,
-        target: 2.0, // 2GB
-        status: maxMemory <= 2.0 ? 'PASS' : 'FAIL'
+        target: 2, // 2GB
+        status: maxMemory <= 2 ? 'PASS' : 'FAIL'
       },
       duration: results.testResults.duration / 1000 / 60, // minutes
       uptime: results.testResults.duration

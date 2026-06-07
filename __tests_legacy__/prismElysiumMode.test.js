@@ -146,7 +146,7 @@ describe('PrismElysiumMode', () => {
       expect(mockBus.emit).toHaveBeenCalledWith(
         'prism:sovereignCycle:adjust',
         expect.objectContaining({
-          multiplier: 1.0
+          multiplier: 1
         })
       );
     });

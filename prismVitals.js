@@ -118,7 +118,7 @@ export default class PrismVitals {
 
     // Consensus monitoring
     this.consensusMetrics = {
-      consensus_success_rate: 1.0, // Valeur par défaut optimiste
+      consensus_success_rate: 1, // Valeur par défaut optimiste
       totalConsensusRequests: 0,
       approvedConsensus: 0,
       rejectedConsensus: 0,
@@ -141,7 +141,7 @@ export default class PrismVitals {
       prism_events_total: 0,
       prism_events_failed_total: 0,
       prism_latency_seconds: 0,
-      prism_consensus_success_rate: 1.0,
+      prism_consensus_success_rate: 1,
       prism_memory_usage_bytes: 0,
       prism_queue_size: 0,
       prism_cpu_usage_percent: 0,
@@ -435,7 +435,7 @@ prism_uptime_seconds ${process.uptime()} ${timestamp}
     this.consensusMetrics.consensus_success_rate =
       this.consensusMetrics.totalConsensusRequests > 0
         ? totalDecisions / this.consensusMetrics.totalConsensusRequests
-        : 1.0;
+        : 1;
   }
 
   /**
@@ -560,7 +560,7 @@ prism_uptime_seconds ${process.uptime()} ${timestamp}
         this.selfImprovementMetrics.totalImprovements > 0
           ? this.selfImprovementMetrics.approvedImprovements /
             this.selfImprovementMetrics.totalImprovements
-          : 1.0,
+          : 1,
       timestamp: Date.now(),
     };
   }

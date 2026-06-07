@@ -30,7 +30,7 @@ describe('MHICalculator', () => {
       const mhi = mhiCalculator.calculateMHI(baseSensorReading);
       
       expect(mhi.value).toBeGreaterThan(0.8);
-      expect(mhi.value).toBeLessThanOrEqual(1.0);
+      expect(mhi.value).toBeLessThanOrEqual(1);
       expect(mhi.timestamp).toEqual(baseSensorReading.timestamp);
       
       // All factors should be low for optimal conditions
@@ -90,7 +90,7 @@ describe('MHICalculator', () => {
     it('should apply pH risk assessment', () => {
       const extremePHReading: SensorReading = {
         ...baseSensorReading,
-        pH: 6.0 // Below optimal range
+        pH: 6 // Below optimal range
       };
 
       const mhi = mhiCalculator.calculateMHI(extremePHReading);
@@ -128,11 +128,11 @@ describe('MHICalculator', () => {
       // Test extreme conditions
       const extremeReading: SensorReading = {
         ...baseSensorReading,
-        deltaPressure: 5.0,    // Very high pressure
+        deltaPressure: 5,    // Very high pressure
         permeateFlux: 5,       // Very low flux
         turbidity: 10,         // Very high turbidity
         temperature: 50,       // Very high temperature
-        pH: 4.0               // Very acidic
+        pH: 4               // Very acidic
       };
 
       const mhi = mhiCalculator.calculateMHI(extremeReading);
@@ -241,7 +241,7 @@ describe('FoulingKineticsModel', () => {
   describe('Fouling Rate Prediction', () => {
     it('should predict higher fouling rate for high turbidity', () => {
       const lowTurbidityReading = { ...baseSensorReading, turbidity: 0.2 };
-      const highTurbidityReading = { ...baseSensorReading, turbidity: 2.0 };
+      const highTurbidityReading = { ...baseSensorReading, turbidity: 2 };
 
       const lowRate = foulingModel.predictFoulingRate(lowTurbidityReading);
       const highRate = foulingModel.predictFoulingRate(highTurbidityReading);
@@ -295,7 +295,7 @@ describe('FoulingKineticsModel', () => {
 
     it('should predict shorter time for worse conditions', () => {
       const goodConditions = { ...baseSensorReading, turbidity: 0.2 };
-      const badConditions = { ...baseSensorReading, turbidity: 3.0 };
+      const badConditions = { ...baseSensorReading, turbidity: 3 };
 
       const timeGoodConditions = foulingModel.predictTimeToThreshold(0.8, 0.3, goodConditions);
       const timeBadConditions = foulingModel.predictTimeToThreshold(0.8, 0.3, badConditions);
@@ -366,7 +366,7 @@ describe('MHI Time Series', () => {
       },
       {
         timestamp: new Date(Date.now() + 120000),
-        deltaPressure: 1.0,
+        deltaPressure: 1,
         permeateFlux: 40,
         turbidity: 0.8,
         conductivity: 1200,

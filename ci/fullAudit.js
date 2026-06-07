@@ -11,8 +11,8 @@ const sleep = promisify(setTimeout);
 const METRICS_PORT = 9100;
 const ALERT_PORT = 3001;
 const TIMEOUT = 180000; // 3 minutes
-const COVERAGE_THRESHOLD = 0.90;
-const _MUTATION_THRESHOLD = 0.90;
+const COVERAGE_THRESHOLD = 0.9;
+const _MUTATION_THRESHOLD = 0.9;
 const _OVERHEAD_THRESHOLD = 0.02;
 
 // Utility functions
@@ -173,14 +173,14 @@ async function runAudit() {
     const score = calculateScore(report);
     
     // 10. Publish result and exit
-    const event = score >= 0.90 ? 'prism:audit:RC_passed' : 'prism:audit:RC_failed';
+    const event = score >= 0.9 ? 'prism:audit:RC_passed' : 'prism:audit:RC_failed';
     execCommand(`node -e "require('./prismBus.js').publish('${event}', ${JSON.stringify(report)})"`);
     
     // Output final report
     console.log(JSON.stringify(report, null, 2));
     
     // Exit with appropriate code
-    process.exit(score >= 0.90 ? 0 : 1);
+    process.exit(score >= 0.9 ? 0 : 1);
 
   } catch (error) {
     console.error('Audit failed:', error.message);

@@ -49,15 +49,15 @@ export class NormalizedKPICalculator {
       baselineFlow: 100, // m³/h
       referenceTemp: 25, // °C
       baselineDeltaP: 1.2, // bar
-      baselineSaltPassage: 2.0, // %
+      baselineSaltPassage: 2, // %
       referenceConductivity: 2000 // µS/cm
     },
     weights: MHIWeights = {
       npf: 0.35,
       ndp: 0.25,
-      nsp: 0.20,
-      sdi: 0.10,
-      mfi: 0.10
+      nsp: 0.2,
+      sdi: 0.1,
+      mfi: 0.1
     }
   ) {
     this.baseline = baseline;
@@ -65,7 +65,7 @@ export class NormalizedKPICalculator {
     
     // Validate weights sum to 1.0
     const weightSum = Object.values(weights).reduce((sum, w) => sum + w, 0);
-    if (Math.abs(weightSum - 1.0) > 0.01) {
+    if (Math.abs(weightSum - 1) > 0.01) {
       throw new Error(`MHI weights must sum to 1.0, got ${weightSum}`);
     }
   }
@@ -118,7 +118,7 @@ export class NormalizedKPICalculator {
     // Estimate permeate conductivity from ionic species
     const permeateContribution = 
       molecular.permeate.NO3_mgL * 0.6 +  // NO3 conductivity factor
-      molecular.permeate.SO4_mgL * 1.0;   // SO4 conductivity factor
+      molecular.permeate.SO4_mgL * 1;   // SO4 conductivity factor
     
     // Simple estimation (in practice would measure directly)
     const estimatedPermeateConc = permeateContribution * 2; // µS/cm
@@ -141,22 +141,22 @@ export class NormalizedKPICalculator {
    */
   private calculateMHI(npf: number, ndp: number, nsp: number, reading: SensorReading): number {
     // NPF penalty (lower is worse)
-    const npfPenalty = Math.max(0, (1.0 - npf) * 2); // Penalty if NPF < 100%
+    const npfPenalty = Math.max(0, (1 - npf) * 2); // Penalty if NPF < 100%
     
     // NDP penalty (higher is worse)  
-    const ndpPenalty = Math.max(0, (ndp - 1.0) * 1.5); // Penalty if NDP > 100%
+    const ndpPenalty = Math.max(0, (ndp - 1) * 1.5); // Penalty if NDP > 100%
     
     // NSP penalty (higher is worse)
     const nspPenalty = Math.max(0, (nsp - this.baseline.baselineSaltPassage) * 0.1);
     
     // SDI penalty
-    const sdiPenalty = Math.max(0, (reading.SDI - 3.0) * 0.2); // Target SDI < 3
+    const sdiPenalty = Math.max(0, (reading.SDI - 3) * 0.2); // Target SDI < 3
     
     // MFI penalty
-    const mfiPenalty = Math.max(0, (reading.MFI - 5.0) * 0.1); // Target MFI < 5
+    const mfiPenalty = Math.max(0, (reading.MFI - 5) * 0.1); // Target MFI < 5
     
     // Calculate weighted MHI
-    const mhi = Math.max(0, 1.0 - (
+    const mhi = Math.max(0, 1 - (
       this.weights.npf * npfPenalty +
       this.weights.ndp * ndpPenalty +
       this.weights.nsp * nspPenalty +
@@ -164,7 +164,7 @@ export class NormalizedKPICalculator {
       this.weights.mfi * mfiPenalty
     ));
     
-    return Math.min(1.0, mhi);
+    return Math.min(1, mhi);
   }
 
   /**
@@ -261,7 +261,7 @@ export class CleaningTriggerAnalyzer {
     if (this.kpiHistory.length < 2) return 0;
     
     const current = this.kpiHistory[this.kpiHistory.length - 1];
-    const baseline = 1.0; // 100% baseline
+    const baseline = 1; // 100% baseline
     
     return Math.max(0, (baseline - current.NPF) * 100);
   }
@@ -273,7 +273,7 @@ export class CleaningTriggerAnalyzer {
     if (this.kpiHistory.length < 2) return 0;
     
     const current = this.kpiHistory[this.kpiHistory.length - 1];
-    const baseline = 1.0; // 100% baseline
+    const baseline = 1; // 100% baseline
     
     return Math.max(0, (current.NDP - baseline) * 100);
   }
@@ -353,15 +353,15 @@ export class MHICalculator {
   constructor(
     weights: MHIWeights = {
       pressure: 0.35,
-      flux: 0.30,
+      flux: 0.3,
       turbidity: 0.15,
-      temperature: 0.10,
-      pH: 0.10
+      temperature: 0.1,
+      pH: 0.1
     },
     references: ReferenceValues = {
       baselinePressure: 0.8,
       baselineFlux: 45,
-      maxTurbidity: 2.0,
+      maxTurbidity: 2,
       optimalTemperature: 20,
       optimalPH: { min: 6.8, max: 7.4 }
     }
@@ -371,7 +371,7 @@ export class MHICalculator {
     
     // Validate weights sum to 1.0
     const weightSum = Object.values(weights).reduce((sum, w) => sum + w, 0);
-    if (Math.abs(weightSum - 1.0) > 0.01) {
+    if (Math.abs(weightSum - 1) > 0.01) {
       throw new Error(`MHI weights must sum to 1.0, got ${weightSum}`);
     }
   }
@@ -397,14 +397,14 @@ export class MHICalculator {
 
     // Calculate weighted MHI score
     const mhiValue = this.clamp(
-      1.0 - 
+      1 - 
       (this.weights.pressure * pressurePenalty) -
       (this.weights.flux * fluxPenalty) -
       (this.weights.turbidity * turbidityPenalty) -
       (this.weights.temperature * temperatureCorrection) -
       (this.weights.pH * pHRisk),
-      0.0,
-      1.0
+      0,
+      1
     );
 
     return {
@@ -428,11 +428,11 @@ export class MHICalculator {
     const normalizedPressure = reading.deltaPressure / this.references.baselinePressure;
     
     // Penalty increases exponentially above baseline
-    if (normalizedPressure <= 1.0) {
-      return 0.0;
+    if (normalizedPressure <= 1) {
+      return 0;
     } else if (normalizedPressure <= 1.5) {
       // Linear increase for mild fouling
-      return (normalizedPressure - 1.0) * 0.4; // Max 0.2 penalty at 1.5x
+      return (normalizedPressure - 1) * 0.4; // Max 0.2 penalty at 1.5x
     } else {
       // Exponential increase for severe fouling
       const excessPressure = normalizedPressure - 1.5;
@@ -448,11 +448,11 @@ export class MHICalculator {
     const normalizedFlux = reading.permeateFlux / this.references.baselineFlux;
     
     // Penalty increases as flux drops below baseline
-    if (normalizedFlux >= 1.0) {
-      return 0.0;
+    if (normalizedFlux >= 1) {
+      return 0;
     } else if (normalizedFlux >= 0.8) {
       // Linear increase for mild flux reduction
-      return (1.0 - normalizedFlux) * 1.0; // Max 0.2 penalty at 80% flux
+      return (1 - normalizedFlux) * 1; // Max 0.2 penalty at 80% flux
     } else {
       // Exponential increase for severe flux reduction
       const fluxDeficit = 0.8 - normalizedFlux;
@@ -468,13 +468,13 @@ export class MHICalculator {
     const normalizedTurbidity = reading.turbidity / this.references.maxTurbidity;
     
     if (normalizedTurbidity <= 0.5) {
-      return 0.0; // Very low turbidity, no penalty
-    } else if (normalizedTurbidity <= 1.0) {
+      return 0; // Very low turbidity, no penalty
+    } else if (normalizedTurbidity <= 1) {
       // Linear increase for moderate turbidity
       return (normalizedTurbidity - 0.5) * 0.4; // Max 0.2 penalty at max turbidity
     } else {
       // Severe turbidity conditions
-      return 0.2 + Math.min(0.8, (normalizedTurbidity - 1.0) * 0.8);
+      return 0.2 + Math.min(0.8, (normalizedTurbidity - 1) * 0.8);
     }
   }
 
@@ -485,14 +485,14 @@ export class MHICalculator {
   private calculateTemperatureCorrection(reading: SensorReading): number {
     const tempDiff = Math.abs(reading.temperature - this.references.optimalTemperature);
     
-    if (tempDiff <= 2.0) {
-      return 0.0; // Within optimal range
-    } else if (tempDiff <= 5.0) {
+    if (tempDiff <= 2) {
+      return 0; // Within optimal range
+    } else if (tempDiff <= 5) {
       // Minor temperature deviation
-      return (tempDiff - 2.0) * 0.03; // Max 0.09 penalty at ±5°C
+      return (tempDiff - 2) * 0.03; // Max 0.09 penalty at ±5°C
     } else {
       // Significant temperature deviation
-      return 0.09 + Math.min(0.21, (tempDiff - 5.0) * 0.03);
+      return 0.09 + Math.min(0.21, (tempDiff - 5) * 0.03);
     }
   }
 
@@ -504,7 +504,7 @@ export class MHICalculator {
     const { min, max } = this.references.optimalPH;
     
     if (reading.pH >= min && reading.pH <= max) {
-      return 0.0; // Within optimal range
+      return 0; // Within optimal range
     }
     
     const deviation = Math.max(
@@ -527,13 +527,13 @@ export class MHICalculator {
    */
   getTrendAdjustment(): number {
     if (this.historicalReadings.length < 10) {
-      return 0.0; // Insufficient data for trend analysis
+      return 0; // Insufficient data for trend analysis
     }
 
     const recent = this.historicalReadings.slice(-10);
     const older = this.historicalReadings.slice(-20, -10);
     
-    if (older.length === 0) return 0.0;
+    if (older.length === 0) return 0;
 
     // Calculate average pressure and flux trends
     const recentAvgPressure = recent.reduce((sum, r) => sum + r.deltaPressure, 0) / recent.length;

@@ -28,7 +28,7 @@ class PrismElysiumMode {
         color: '#2196F3',
         threshold: 0.6,
         description: 'Mode adaptatif standard',
-        cycleMultiplier: 1.0,
+        cycleMultiplier: 1,
         reflectionEnabled: true
       },
       SURGE: {
@@ -44,9 +44,9 @@ class PrismElysiumMode {
         name: 'Elysium Nova',
         icon: '🌟',
         color: '#9C27B0',
-        threshold: 1.0,
+        threshold: 1,
         description: 'Mode d\'expansion exploratoire',
-        cycleMultiplier: 2.0,
+        cycleMultiplier: 2,
         reflectionEnabled: true
       }
     };

@@ -44,7 +44,7 @@ export class PrismCompression {
     // Simuler une compression simple
     return {
       data: data,
-      compressionRatio: 1.0
+      compressionRatio: 1
     };
   }
 

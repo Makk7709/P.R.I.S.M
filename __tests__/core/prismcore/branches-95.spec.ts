@@ -65,7 +65,7 @@ describe('PrismCore - Branches ≥95% Tests', () => {
       
       // Vérifier calcul errorIsolationEfficiency
       const _totalModules = orchestrator.modules.size + orchestrator.isolatedModules.size;
-      expect(orchestrator.metrics.errorIsolationEfficiency).toBeLessThan(1.0);
+      expect(orchestrator.metrics.errorIsolationEfficiency).toBeLessThan(1);
     });
 
     it('DOIT gérer orchestrateConsensus avec consensusManager présent', async () => {
@@ -123,7 +123,7 @@ describe('PrismCore - Branches ≥95% Tests', () => {
       const result = await orchestrator.handleTrustValidation(decision);
       
       expect(result).toBe(true);
-      expect(orchestrator.metrics.trustValidationRate).toBe(1.0);
+      expect(orchestrator.metrics.trustValidationRate).toBe(1);
     });
 
     it('DOIT gérer handleTrustValidation en mode non-TEST', async () => {
@@ -139,7 +139,7 @@ describe('PrismCore - Branches ≥95% Tests', () => {
       const result = await orchestrator.handleTrustValidation(decision);
       
       expect(result).toBe(true);
-      expect(orchestrator.metrics.trustValidationRate).toBe(1.0);
+      expect(orchestrator.metrics.trustValidationRate).toBe(1);
     });
   });
 

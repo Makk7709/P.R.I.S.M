@@ -6,7 +6,7 @@ export const createAudioManagerMock = () => {
 
   let voiceSettings = {
     voiceId: 'test-voice',
-    speakingRate: 1.0
+    speakingRate: 1
   };
 
   const mock = {

@@ -64,7 +64,7 @@ export class ASIMemorySystemFixed extends EventEmitter {
       'semantic': { priority: 0.9, retention: 'high', compression: 'medium' },
       'procedural': { priority: 0.7, retention: 'high', compression: 'low' },
       'working': { priority: 0.6, retention: 'low', compression: 'none' },
-      'meta': { priority: 1.0, retention: 'permanent', compression: 'medium' }
+      'meta': { priority: 1, retention: 'permanent', compression: 'medium' }
     };
 
     // Stockage hybride : RAM pour vitesse + fichier pour persistence
@@ -473,7 +473,7 @@ export class ASIMemorySystemFixed extends EventEmitter {
     
     const exactBonus = exactMatches / Object.keys(queryVector).length * 0.2;
     
-    return Math.min(1.0, similarity + exactBonus);
+    return Math.min(1, similarity + exactBonus);
   }
 
   /**
@@ -834,7 +834,7 @@ export class ASIMemorySystemFixed extends EventEmitter {
             id,
             entry: await this.decompressIfNeeded(entry),
             memoryType: type,
-            relevance: 1.0, // Match exact
+            relevance: 1, // Match exact
             matchType: 'exact'
           });
         }
@@ -903,12 +903,12 @@ export class ASIMemorySystemFixed extends EventEmitter {
         
         if (query.includes('récent') || query.includes('nouveau')) {
           if (entryDate > oneWeekAgo) {
-            temporalScore = 1.0 - (now - entryDate) / (7 * 24 * 60 * 60 * 1000);
+            temporalScore = 1 - (now - entryDate) / (7 * 24 * 60 * 60 * 1000);
           }
         } else if (query.includes('ancien') || query.includes('vieux')) {
           if (entryDate < oneWeekAgo) {
             temporalScore = (now - entryDate) / (30 * 24 * 60 * 60 * 1000);
-            temporalScore = Math.min(temporalScore, 1.0);
+            temporalScore = Math.min(temporalScore, 1);
           }
         }
         

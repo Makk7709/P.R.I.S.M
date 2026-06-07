@@ -37,10 +37,10 @@ describe('PrismPredictiveOptimization', () => {
         },
         errorRate: {
           warning: 0.05,
-          critical: 0.10
+          critical: 0.1
         },
         resourceUsage: {
-          warning: 0.70,
+          warning: 0.7,
           critical: 0.85
         }
       });

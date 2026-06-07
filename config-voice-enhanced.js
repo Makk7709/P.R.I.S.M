@@ -44,7 +44,7 @@ export const ENHANCED_VOICE_CONFIG = {
       // Configuration pour mode énergique
       ENERGETIC: {
         STABILITY: 0.25,
-        SIMILARITY_BOOST: 0.90,
+        SIMILARITY_BOOST: 0.9,
         STYLE: 0.85,
         USE_SPEAKER_BOOST: true,
         SPEAKING_RATE: 1.25,
@@ -54,7 +54,7 @@ export const ENHANCED_VOICE_CONFIG = {
       // Configuration pour mode calme/réfléchi
       CONTEMPLATIVE: {
         STABILITY: 0.45,
-        SIMILARITY_BOOST: 0.80,
+        SIMILARITY_BOOST: 0.8,
         STYLE: 0.45,
         USE_SPEAKER_BOOST: true,
         SPEAKING_RATE: 0.95,
@@ -63,12 +63,12 @@ export const ENHANCED_VOICE_CONFIG = {
 
       // Configuration pour mode urgent/important
       URGENT: {
-        STABILITY: 0.20,
+        STABILITY: 0.2,
         SIMILARITY_BOOST: 0.95,
-        STYLE: 0.90,
+        STYLE: 0.9,
         USE_SPEAKER_BOOST: true,
         SPEAKING_RATE: 1.35,
-        PITCH: 0.20
+        PITCH: 0.2
       }
     },
 

@@ -320,7 +320,7 @@ export class MemoryRetrievalEngine {
     // Longueur du contenu (plus long = plus d'info)
     if (content.length > 100) score += 0.1;
 
-    return Math.min(score, 1.0);
+    return Math.min(score, 1);
   }
 
   _calculateSimilarity(query, content) {

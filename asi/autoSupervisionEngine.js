@@ -44,7 +44,7 @@ export class AutoSupervisionEngine extends EventEmitter {
       adaptationMetrics: {
         learningRate: 0.1,
         adaptationSpeed: 0.5,
-        improvementTrend: 0.0
+        improvementTrend: 0
       },
       autonomousDecisions: []
     };

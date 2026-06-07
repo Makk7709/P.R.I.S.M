@@ -377,7 +377,7 @@ export class ConsciousnessLayer {
     // Consensus utilisé
     if (response.metadata?.consensusUsed) score += 0.1;
 
-    return Math.min(score, 1.0);
+    return Math.min(score, 1);
   }
 
   _assessRelevance(response, context) {
@@ -389,7 +389,7 @@ export class ConsciousnessLayer {
       responseWords.includes(word) && word.length > 3
     );
 
-    return Math.min(commonWords.length / Math.max(inputWords.length, 1), 1.0);
+    return Math.min(commonWords.length / Math.max(inputWords.length, 1), 1);
   }
 
   _identifyImprovements(response, context) {
@@ -426,7 +426,7 @@ export class ConsciousnessLayer {
       score += 0.1;
     }
 
-    return Math.min(score, 1.0);
+    return Math.min(score, 1);
   }
 
   _generateUsefulnessReasoning(score, _context) {

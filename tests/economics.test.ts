@@ -95,7 +95,7 @@ describe('EconomicCalculator', () => {
     });
 
     it('should handle production at different efficiency levels', () => {
-      const fullEfficiencyValue = economicCalculator.recordProduction(new Date(), 1, 1.0);
+      const fullEfficiencyValue = economicCalculator.recordProduction(new Date(), 1, 1);
       const reducedEfficiencyValue = economicCalculator.recordProduction(new Date(), 1, 0.8);
 
       expect(fullEfficiencyValue).toBe(economicParams.productionValue);
@@ -333,7 +333,7 @@ describe('EconomicCalculator', () => {
         strategy: 'BASELINE'
       };
       economicCalculator.recordCIPEvent(cipEvent);
-      economicCalculator.recordProduction(new Date(), 1, 1.0);
+      economicCalculator.recordProduction(new Date(), 1, 1);
 
       // Reset
       economicCalculator.reset();

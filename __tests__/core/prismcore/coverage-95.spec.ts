@@ -61,7 +61,7 @@ describe('PrismCore - Coverage ≥95% Tests', () => {
       // Cette ligne devrait déclencher le catch block (lignes 131-135)
       const result = await orchestrator.handleTrustValidation(decision);
       expect(result).toBe(false);
-      expect(orchestrator.metrics.trustValidationRate).toBe(0.0);
+      expect(orchestrator.metrics.trustValidationRate).toBe(0);
     });
 
     it('DOIT gérer orchestrateConsensus avec module isolé', async () => {

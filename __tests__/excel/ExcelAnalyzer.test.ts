@@ -36,11 +36,11 @@ describe('ExcelAnalyzer', () => {
     const workbook = XLSX.utils.book_new();
     const data = [
       ['Product', 'Category', 'Price', 'Quantity', 'Revenue', 'Date'],
-      ['Widget A', 'Electronics', 29.99, 100, 2999.00, '2024-01-15'],
+      ['Widget A', 'Electronics', 29.99, 100, 2999, '2024-01-15'],
       ['Widget B', 'Electronics', 49.99, 75, 3749.25, '2024-01-20'],
-      ['Gadget X', 'Home', 19.99, 200, 3998.00, '2024-02-10'],
-      ['Gadget Y', 'Home', 34.99, 150, 5248.50, '2024-02-15'],
-      ['Device Z', 'Electronics', 99.99, 50, 4999.50, '2024-03-01']
+      ['Gadget X', 'Home', 19.99, 200, 3998, '2024-02-10'],
+      ['Gadget Y', 'Home', 34.99, 150, 5248.5, '2024-02-15'],
+      ['Device Z', 'Electronics', 99.99, 50, 4999.5, '2024-03-01']
     ];
     
     const worksheet = XLSX.utils.aoa_to_sheet(data);

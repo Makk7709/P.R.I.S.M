@@ -47,16 +47,16 @@ function createTestExcelBuffer(data: Record<string, any>[], sheetName = 'Sheet1'
  * Données de test complexes simulant un fichier réel
  */
 const COMPLEX_SALES_DATA = [
-  { Date: '2024-01-15', Produit: 'Widget A', Catégorie: 'Electronics', Région: 'Nord', Quantité: 150, Prix_Unitaire: 29.99, CA: 4498.50, Remise: 0.10, CA_Net: 4048.65, Vendeur: 'Jean Martin', Note_Client: 4.5, Retours: 2 },
+  { Date: '2024-01-15', Produit: 'Widget A', Catégorie: 'Electronics', Région: 'Nord', Quantité: 150, Prix_Unitaire: 29.99, CA: 4498.5, Remise: 0.1, CA_Net: 4048.65, Vendeur: 'Jean Martin', Note_Client: 4.5, Retours: 2 },
   { Date: '2024-01-16', Produit: 'Widget B', Catégorie: 'Electronics', Région: 'Sud', Quantité: 85, Prix_Unitaire: 49.99, CA: 4249.15, Remise: 0.05, CA_Net: 4036.69, Vendeur: 'Marie Dupont', Note_Client: 4.8, Retours: 0 },
-  { Date: '2024-01-17', Produit: 'Gadget X', Catégorie: 'Accessoires', Région: 'Est', Quantité: 200, Prix_Unitaire: 15.99, CA: 3198.00, Remise: 0.15, CA_Net: 2718.30, Vendeur: 'Pierre Durand', Note_Client: 4.2, Retours: 5 },
-  { Date: '2024-01-18', Produit: 'Widget A', Catégorie: 'Electronics', Région: 'Ouest', Quantité: 120, Prix_Unitaire: 29.99, CA: 3598.80, Remise: 0.08, CA_Net: 3310.90, Vendeur: 'Sophie Bernard', Note_Client: 4.7, Retours: 1 },
-  { Date: '2024-01-19', Produit: 'Service Pro', Catégorie: 'Services', Région: 'Nord', Quantité: 50, Prix_Unitaire: 99.99, CA: 4999.50, Remise: 0.00, CA_Net: 4999.50, Vendeur: 'Jean Martin', Note_Client: 5.0, Retours: 0 },
-  { Date: '2024-01-20', Produit: 'Widget C', Catégorie: 'Electronics', Région: 'Sud', Quantité: 300, Prix_Unitaire: 19.99, CA: 5997.00, Remise: 0.20, CA_Net: 4797.60, Vendeur: 'Marie Dupont', Note_Client: 4.3, Retours: 8 },
+  { Date: '2024-01-17', Produit: 'Gadget X', Catégorie: 'Accessoires', Région: 'Est', Quantité: 200, Prix_Unitaire: 15.99, CA: 3198, Remise: 0.15, CA_Net: 2718.3, Vendeur: 'Pierre Durand', Note_Client: 4.2, Retours: 5 },
+  { Date: '2024-01-18', Produit: 'Widget A', Catégorie: 'Electronics', Région: 'Ouest', Quantité: 120, Prix_Unitaire: 29.99, CA: 3598.8, Remise: 0.08, CA_Net: 3310.9, Vendeur: 'Sophie Bernard', Note_Client: 4.7, Retours: 1 },
+  { Date: '2024-01-19', Produit: 'Service Pro', Catégorie: 'Services', Région: 'Nord', Quantité: 50, Prix_Unitaire: 99.99, CA: 4999.5, Remise: 0, CA_Net: 4999.5, Vendeur: 'Jean Martin', Note_Client: 5, Retours: 0 },
+  { Date: '2024-01-20', Produit: 'Widget C', Catégorie: 'Electronics', Région: 'Sud', Quantité: 300, Prix_Unitaire: 19.99, CA: 5997, Remise: 0.2, CA_Net: 4797.6, Vendeur: 'Marie Dupont', Note_Client: 4.3, Retours: 8 },
   { Date: '2024-01-21', Produit: 'Gadget Y', Catégorie: 'Accessoires', Région: 'Est', Quantité: 175, Prix_Unitaire: 24.99, CA: 4373.25, Remise: 0.12, CA_Net: 3848.46, Vendeur: 'Pierre Durand', Note_Client: 4.6, Retours: 3 },
   { Date: '2024-01-22', Produit: 'Widget B', Catégorie: 'Electronics', Région: 'Nord', Quantité: 95, Prix_Unitaire: 49.99, CA: 4749.05, Remise: 0.07, CA_Net: 4416.62, Vendeur: 'Jean Martin', Note_Client: 4.4, Retours: 2 },
-  { Date: '2024-01-23', Produit: 'Service Basic', Catégorie: 'Services', Région: 'Ouest', Quantité: 80, Prix_Unitaire: 49.99, CA: 3999.20, Remise: 0.00, CA_Net: 3999.20, Vendeur: 'Sophie Bernard', Note_Client: 4.9, Retours: 0 },
-  { Date: '2024-01-24', Produit: 'Widget A', Catégorie: 'Electronics', Région: 'Sud', Quantité: 180, Prix_Unitaire: 29.99, CA: 5398.20, Remise: 0.10, CA_Net: 4858.38, Vendeur: 'Marie Dupont', Note_Client: 4.1, Retours: 4 },
+  { Date: '2024-01-23', Produit: 'Service Basic', Catégorie: 'Services', Région: 'Ouest', Quantité: 80, Prix_Unitaire: 49.99, CA: 3999.2, Remise: 0, CA_Net: 3999.2, Vendeur: 'Sophie Bernard', Note_Client: 4.9, Retours: 0 },
+  { Date: '2024-01-24', Produit: 'Widget A', Catégorie: 'Electronics', Région: 'Sud', Quantité: 180, Prix_Unitaire: 29.99, CA: 5398.2, Remise: 0.1, CA_Net: 4858.38, Vendeur: 'Marie Dupont', Note_Client: 4.1, Retours: 4 },
 ];
 
 // ═══════════════════════════════════════════════════════════════════════════════

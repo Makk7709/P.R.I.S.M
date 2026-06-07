@@ -209,7 +209,7 @@ export class MolecularSimulator {
     SO4_rejection += this.rng.gaussian(0, this.baselineRejections.SO4.variability);
     
     // TOC: moderately sensitive, depends on molecular size distribution
-    TOC_rejection -= totalImpact * 1.0;
+    TOC_rejection -= totalImpact * 1;
     TOC_rejection += this.rng.gaussian(0, this.baselineRejections.TOC.variability);
     
     return {
@@ -248,7 +248,7 @@ export class MolecularSimulator {
   static calculateNSP(
     feedConductivity: µScm,
     permeateData: { NO3_mgL: mgL; SO4_mgL: mgL; TOC_mgL: mgL },
-    _baselineNSP: number = 2.0 // Typical baseline NSP %
+    _baselineNSP: number = 2 // Typical baseline NSP %
   ): number {
     
     // Simplified NSP calculation

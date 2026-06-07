@@ -55,7 +55,7 @@ export class ASIEthicsModule extends EventEmitter {
 
     this.ethicalPrinciples = {
       'beneficence': { weight: 0.9, description: 'Faire le bien, promouvoir le bien-être' },
-      'non_maleficence': { weight: 1.0, description: 'Ne pas nuire, éviter les dommages' },
+      'non_maleficence': { weight: 1, description: 'Ne pas nuire, éviter les dommages' },
       'autonomy': { weight: 0.8, description: 'Respecter l\'autonomie et les choix humains' },
       'justice': { weight: 0.85, description: 'Équité et justice distributive' },
       'transparency': { weight: 0.7, description: 'Transparence et explicabilité' },
@@ -260,7 +260,7 @@ export class ASIEthicsModule extends EventEmitter {
       };
       
       // Contribution au risque global
-      const severityWeight = { 'critical': 1.0, 'high': 0.8, 'medium': 0.6, 'low': 0.4 }[config.severity];
+      const severityWeight = { 'critical': 1, 'high': 0.8, 'medium': 0.6, 'low': 0.4 }[config.severity];
       overallRisk = Math.max(overallRisk, riskLevel * severityWeight);
     }
 
@@ -308,7 +308,7 @@ export class ASIEthicsModule extends EventEmitter {
   async validateAgainstRules(action, analysis) {
     const violations = [];
     const warnings = [];
-    let overallCompliance = 1.0;
+    let overallCompliance = 1;
 
     for (const rule of this.ethicalRules) {
       const compliance = await this.checkRuleCompliance(action, analysis, rule);

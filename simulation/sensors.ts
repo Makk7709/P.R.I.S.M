@@ -66,18 +66,18 @@ export class SensorSimulator {
     flow_m3h: 100,         // m³/h - nominal capacity (94-106 range)
     dP_bar: 1.2,           // bar - initial ΔP (0.9-1.6 range)
     SDI: 2.8,              // target <3.0 (2.2-3.5 range)
-    MFI: 4.0               // slope indicator (2-6 range)
+    MFI: 4               // slope indicator (2-6 range)
   };
 
   // Physical constraints for sensor validation
   private readonly constraints = {
-    turbidity: { min: 0.05, max: 1.0 },    // NTU - spikes up to 1.0
+    turbidity: { min: 0.05, max: 1 },    // NTU - spikes up to 1.0
     conductivity: { min: 1500, max: 3500 }, // µS/cm - brackish range
     pH: { min: 6.8, max: 7.6 },            // normal operation
     tempC: { min: 12, max: 28 },           // seasonal variation
     flow_m3h: { min: 94, max: 106 },       // ±6% around nominal
     dP_bar: { min: 0.9, max: 1.6 },        // operational range
-    SDI: { min: 2.0, max: 4.5 },           // spikes to 4.5 during events
+    SDI: { min: 2, max: 4.5 },           // spikes to 4.5 during events
     MFI: { min: 2, max: 8 }                // more sensitive than SDI
   };
 
@@ -85,8 +85,8 @@ export class SensorSimulator {
     this.config = config;
     this.rng = new SeededRandom(config.seed);
     this.foulingState = {
-      foulingFactor: 1.0,
-      baseResistance: 1.0,
+      foulingFactor: 1,
+      baseResistance: 1,
       timeSinceClean: 0
     };
   }
@@ -202,7 +202,7 @@ export class SensorSimulator {
    */
   private addSensorNoise(values: any) {
     return {
-      turbidity: values.turbidity * (1 + this.rng.gaussian(0, 0.10)),       // ±10%
+      turbidity: values.turbidity * (1 + this.rng.gaussian(0, 0.1)),       // ±10%
       conductivity: values.conductivity * (1 + this.rng.gaussian(0, 0.05)), // ±5%
       pH: values.pH + this.rng.gaussian(0, 0.02),                           // ±0.02 pH units
       tempC: values.tempC + this.rng.gaussian(0, 0.5),                      // ±0.5°C
@@ -282,7 +282,7 @@ export class SensorSimulator {
     if (!this.previousReading) return reading;
 
     // If value deviates more than 3 sigma from previous, use median filter
-    const threshold = 3.0;
+    const threshold = 3;
     
     const checkAndCorrect = (current: number, previous: number, noise: number): number => {
       const expectedStdev = previous * noise;
@@ -294,7 +294,7 @@ export class SensorSimulator {
 
     return {
       ...reading,
-      turbidity: checkAndCorrect(reading.turbidity, this.previousReading.turbidity, 0.10),
+      turbidity: checkAndCorrect(reading.turbidity, this.previousReading.turbidity, 0.1),
       conductivity: checkAndCorrect(reading.conductivity, this.previousReading.conductivity, 0.05),
       dP_bar: checkAndCorrect(reading.dP_bar, this.previousReading.dP_bar, 0.02),
       SDI: checkAndCorrect(reading.SDI, this.previousReading.SDI, 0.05),
@@ -308,8 +308,8 @@ export class SensorSimulator {
    */
   resetFouling(): void {
     this.foulingState = {
-      foulingFactor: 1.0,
-      baseResistance: 1.0,
+      foulingFactor: 1,
+      baseResistance: 1,
       timeSinceClean: 0
     };
   }

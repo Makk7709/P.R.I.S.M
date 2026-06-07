@@ -173,7 +173,7 @@ export class FastOrchestrator {
   async prepareVoiceSettings(userInput, analysis) {
     // Préparation rapide des paramètres vocaux
     return {
-      speed: analysis.priority === 'high' ? 1.1 : 1.0,
+      speed: analysis.priority === 'high' ? 1.1 : 1,
       emotion: this.detectEmotion(userInput),
       style: analysis.type === 'simple' ? 'casual' : 'professional'
     };

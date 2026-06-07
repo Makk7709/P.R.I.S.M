@@ -549,7 +549,7 @@ export class HybridLearningEngine extends EventEmitter {
         
         // Ajustement adaptatif du poids
         const adjustment = (avgPerformance - 0.8) * 0.1;
-        config.adaptiveWeight = Math.max(0.1, Math.min(1.0, config.adaptiveWeight + adjustment));
+        config.adaptiveWeight = Math.max(0.1, Math.min(1, config.adaptiveWeight + adjustment));
         
         logger.debug(`🔧 Poids source ${source} ajusté: ${config.adaptiveWeight.toFixed(3)}`);
       }

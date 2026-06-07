@@ -74,7 +74,7 @@ export class ProjectComplexityManager {
     project.lastUpdated = new Date().toISOString();
 
     // Mettre à jour le statut selon le progrès
-    if (progress >= 1.0) {
+    if (progress >= 1) {
       project.status = 'completed';
     } else if (progress > 0) {
       project.status = 'in_progress';
@@ -176,7 +176,7 @@ export class ProjectComplexityManager {
     // Innovation (0-0.15)
     if (indicators.innovative) score += 0.15;
 
-    return Math.min(score, 1.0);
+    return Math.min(score, 1);
   }
 
   _estimateDuration(complexityScore) {

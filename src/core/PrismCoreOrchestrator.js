@@ -24,8 +24,8 @@ export class PrismCoreOrchestrator extends EventEmitter {
       failedModules: 0,
       consensusLatency: 0,
       journalIntegrity: true,
-      trustValidationRate: 1.0,
-      errorIsolationEfficiency: 0.0
+      trustValidationRate: 1,
+      errorIsolationEfficiency: 0
     };
     
     this.emergencyThreshold = 2; // Max modules défaillants avant emergency
@@ -127,16 +127,16 @@ export class PrismCoreOrchestrator extends EventEmitter {
           // En mode TEST, approuver automatiquement pour éviter blocage tests
           const isTestMode = process.env.PRISM_MODE === 'TEST';
           if (isTestMode) {
-            this.metrics.trustValidationRate = 1.0;
+            this.metrics.trustValidationRate = 1;
             return true;
           }
         }
       }
 
-      this.metrics.trustValidationRate = 1.0;
+      this.metrics.trustValidationRate = 1;
       return true;
     } catch (error) {
-      this.metrics.trustValidationRate = 0.0;
+      this.metrics.trustValidationRate = 0;
       await this.propagateError(error, 'trust');
       return false;
     }

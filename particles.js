@@ -67,7 +67,7 @@ export class ParticleSystem {
       sizeArr[i] = 6;
       col[i3] = 0.2 + 0.8 * Math.random();
       col[i3 + 1] = 0.6 + 0.4 * Math.random();
-      col[i3 + 2] = 1.0;
+      col[i3 + 2] = 1;
     }
     console.log('Particle buffers created successfully');
     return { pos, sizeArr, col, idle };

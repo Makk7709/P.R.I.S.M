@@ -49,7 +49,7 @@ export class AdaptiveWeightingEngine extends EventEmitter {
     };
 
     this.minWeight = (config.minWeight ?? (config.adaptive ? config.adaptive.minWeight : undefined)) ?? 0.01;
-    this.maxWeight = (config.maxWeight ?? (config.adaptive ? config.adaptive.maxWeight : undefined)) ?? 0.50;
+    this.maxWeight = (config.maxWeight ?? (config.adaptive ? config.adaptive.maxWeight : undefined)) ?? 0.5;
 
     this.thresholds = {
       latencyMs: (config.thresholds && config.thresholds.latencyMs) ?? (config.adaptive && config.adaptive.thresholds ? config.adaptive.thresholds.latencyMs : 2000),
@@ -85,25 +85,25 @@ export class AdaptiveWeightingEngine extends EventEmitter {
     this.baseWeights = {
       [ContextType.FINANCE]: {
         [WeightCriteria.PERFORMANCE]: 0.35,
-        [WeightCriteria.COST]: 0.20,
+        [WeightCriteria.COST]: 0.2,
         [WeightCriteria.LATENCY]: 0.15,
         [WeightCriteria.AVAILABILITY]: 0.15,
-        [WeightCriteria.SPECIALIZATION]: 0.10,
+        [WeightCriteria.SPECIALIZATION]: 0.1,
         [WeightCriteria.ACCURACY]: 0.05
       },
       [ContextType.RESEARCH]: {
         [WeightCriteria.PERFORMANCE]: 0.25,
         [WeightCriteria.COST]: 0.15,
-        [WeightCriteria.LATENCY]: 0.20,
-        [WeightCriteria.AVAILABILITY]: 0.10,
+        [WeightCriteria.LATENCY]: 0.2,
+        [WeightCriteria.AVAILABILITY]: 0.1,
         [WeightCriteria.SPECIALIZATION]: 0.15,
         [WeightCriteria.ACCURACY]: 0.15
       },
       [ContextType.CREATIVE]: {
-        [WeightCriteria.PERFORMANCE]: 0.40,
-        [WeightCriteria.COST]: 0.10,
-        [WeightCriteria.LATENCY]: 0.20,
-        [WeightCriteria.AVAILABILITY]: 0.10,
+        [WeightCriteria.PERFORMANCE]: 0.4,
+        [WeightCriteria.COST]: 0.1,
+        [WeightCriteria.LATENCY]: 0.2,
+        [WeightCriteria.AVAILABILITY]: 0.1,
         [WeightCriteria.SPECIALIZATION]: 0.15,
         [WeightCriteria.ACCURACY]: 0.05
       }
