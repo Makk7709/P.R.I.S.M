@@ -866,3 +866,92 @@ malveillantes XSS/HTML/contrôle/longues).
 - `npm run lint` : **0 erreur / 1 warning** (`enterpriseExportRouter`, connu).
 - Push `origin/main` par paliers, normal (jamais `--force`), auteur Amine Mohamed.
 - **Tier 1 CRITICAL : 36/36** — campagne close.
+
+---
+
+## Campagne PRISM_SONAR_FULL_REMEDIATION (tous tiers / toutes sévérités)
+
+Objectif : étendre la résorption au-delà des Tier 1 CRITICAL déjà clos, sur
+l'ensemble des familles mécanisables et les refactors structurels prouvables à
+iso-comportement. Base de départ HEAD = `0119271`.
+
+### Méthode de mesure (ground-truth local)
+
+Le CSV initial (`sonar_issues.csv`) reflète un scan SonarQube serveur antérieur.
+Pour mesurer le résiduel **réel** post-correctifs, un harnais ESLint dédié a été
+ajouté : `docs/audit/sonar/eslint.sonar.config.mjs` (plugin `eslint-plugin-sonarjs`).
+⚠️ Ce harnais ne couvre **qu'un sous-ensemble** des règles SonarQube :
+- il **n'implémente pas** les familles `S77xx` récentes (S7772/S7773/S7748/S7723/
+  S7781…) — celles-ci ont été corrigées par codemods ciblés sur les sites du CSV ;
+- il **ajoute** des règles « Security Hotspot » (`pseudo-random`, `slow-regex`,
+  `os-command`…) qui **n'étaient pas** dans le CSV code-quality d'origine → comptées
+  séparément comme **hors périmètre**.
+
+### Lots mécanisés (codemods, multi-tiers, iso-comportement)
+
+| Règle | Transformation | Sites | Fichiers | Commit |
+|-------|----------------|-------|----------|--------|
+| S7772 | `'fs'` → `'node:fs'` | 310 | 123 | `c567427` |
+| S7773 | `parseFloat` → `Number.parseFloat` | 50 | 21 | `c567427` |
+| S7723 | `Array(...)` → `new Array(...)` | 23 | 14 | `e06b0e1` |
+| S7781 | `.replace(/…/g,…)` → `.replaceAll(/…/g,…)` (regex globale uniquement) | 149 | 29 | `e06b0e1` |
+| S7748 | normalisation littéraux `1.0`→`1` (AST) | 352 | 75 | `b18b4b1` |
+| S2486 | `catch (e) {}` → `catch {}` (binding non utilisé, AST) | 101 | 57 | `97ff907` |
+| S1128 | suppression imports ESM inutilisés (scope-aware, legacy) | 64→0 | 34 | `ce2dfea` |
+
+Codemods versionnés sous `docs/audit/sonar/codemods/`. Chaque lot validé par
+`npm test` (208/208) + `npm run lint` (0 erreur) avant commit plumbing.
+
+### Lots manuels (refactors ciblés, production prioritaire)
+
+| Règle | Action | Sites | Fichiers |
+|-------|--------|-------|----------|
+| S5869 | dédup classes de caractères regex (`[A-Za-zÀ-ÿ]`→`[A-ZÀ-ÿ]` sous `/i`) | 10 | `ServerMemoryStore.js`, `JarvisPersonality.js` |
+| S3358 | extraction ternaires imbriqués → `if/else if` ou helper | 12 | `orchestrator.js`, `ConsensusManager.js`, `InterDomainOrchestrator.js`, `DataTypeDetector.js`, `ExcelAnalyzer.js`, `PdfExportService.js` |
+| S3776 | réduction complexité cognitive (Extract Method) | 7 fonctions | `ServerMemoryStore.js`, `DataTypeDetector.js`, `ExcelAnalyzer.js`, `TaskTypeProcessor.js` |
+| S1481/S1854 | suppression déclarations locales mortes (calculs purs) | 9 | `ConsensusManager.js`, `ConsciousnessLayer.js`, `PdfExportService.js`, `HybridOrchestrator.js`, `selfImprovementEngine.js`, `economics.ts`, `index.ts` |
+| S6397 | simplification classes mono-caractère (`[!]{2,}`→`!{2,}`) | 4 | `prismDataAnalysis.cjs`, `enterpriseDetectionService.js`, `VoiceSentimentDetector.js` |
+| S6019/S4165 | regex/affectations redondantes | 3 | `elevenLabsAudio.js`, `AudioQueue.js` |
+
+Les refactors S3776/S3358 production s'appuient sur la suite de caractérisation
+existante (orchestrator, ExcelAnalyzer, DataTypeDetector) restée verte.
+
+### Résiduels DIFFÉRÉS — justifiés (in-scope T1+T2)
+
+| Règle | Vol. | Justification |
+|-------|------|---------------|
+| `no-unused-vars` (`_`-préfixés) | 120 | **Convention d'équipe** : le préfixe `_` documente un binding volontairement conservé (paramètres de signature, valeurs intermédiaires de lisibilité). Non supprimables sans changer des signatures publiques. |
+| `no-commented-code` | 46 | **Squelettes TDD** dans les specs : blocs commentés = cas de test à activer (intention pédagogique du dossier). Suppression = perte d'information. |
+| `cognitive-complexity` (prod) | 26 | Refactors structurels nécessitant un **harnais de caractérisation disproportionné** par fonction (règle STOP de la mission). Les 7 fonctions les plus critiques ont été traitées ; le reste est documenté en backlog. |
+| `no-nested-conditional` (prod) | 26 | Idem : extraction sûre exige caractérisation dédiée ; lot prioritaire traité, reliquat en backlog. |
+| `no-invariant-returns` | 12 | Helpers de test renvoyant volontairement une constante (stubs/mocks). Faux positifs en contexte test. |
+| `redundant-type-aliases` | 6 | **Modélisation de domaine** TypeScript intentionnelle (alias nominal pour la lisibilité métier). |
+| `todo-tag` / `no-nested-template-literals` / `no-nested-functions` / `no-identical-functions` | ~25 | Refactors cosmétiques ou TODO de roadmap ; faible valeur / risque > bénéfice à iso. |
+
+### Résiduels NON-ISO (à ne PAS mécaniser — changeraient le comportement)
+
+- `reduce-initial-value` : ajouter une valeur initiale change le comportement sur
+  tableau vide (throw → valeur) — c'est un **bug latent signalé**, pas une correction iso.
+- `no-inverted-boolean-check` : `!(a > b)` → `a <= b` diverge sur `NaN`.
+- `no-extra-arguments` : retrait d'argument iso seulement si la fonction l'ignore
+  réellement — non prouvable sans revue cas par cas.
+- `enterpriseSanitizer.js` S7781 : déjà différé (changerait le message d'erreur
+  capturé par caractérisation) — **maintenu différé**.
+
+### Hors périmètre
+
+- **Security Hotspots** (~353 findings ESLint : `pseudo-random`, `slow-regex`,
+  `os-command`, `clear-text-protocols`, `x-powered-by`, `hashing`…) : **absents du
+  CSV code-quality** d'origine — relèvent d'une revue sécurité dédiée.
+- **Tier 3 legacy** (~52 findings) : `__tests_legacy__/`, `legacy_tests/` —
+  exclus de `sonar-project.properties`. Imports inutilisés nettoyés malgré tout.
+- `npm run typecheck` (511 erreurs TS) : hors périmètre Sonar (consigne).
+
+### Gates & commits
+
+- `npm test` : **208/208 PASS** (~65 s). `npm run lint` : **0 erreur / 1 warning** connu.
+- 10 commits plumbing (`33aa431` → `77ea898`), auteur+committer
+  `Amine Mohamed <amine@example.com>`, **0 trailer bot / 0 mention IA**.
+- HEAD = `origin/main` = `77ea898`. Push normal par paliers.
+- Mentions PRODUIT (KOREV AI, Astraea, PRISM AI Assistant, modèles GPT-4/Claude/
+  Perplexity/ElevenLabs) **intactes** ; aucun rapport supprimé réintroduit.
