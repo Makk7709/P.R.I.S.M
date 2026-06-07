@@ -39,7 +39,7 @@ L'hygiène PRISM_03 originale a été **intégralement réappliquée** après qu
 
 ### Note historique — pourquoi PRISM_03 avait été halté
 
-PRISM_03 initial (mission lancée le 2026-05-15 sur HEAD `4a05a4f`) avait été **halté avant commit** lorsque le scan secrets de Phase 2 a détecté 6 clés API réelles trackées (5 dans `SESSION_AUDIT_API_KEYS_02_SEPTEMBRE_2025.md` + 1 ligne 101 de `.gitignore`). Conformément à la consigne « ne pas continuer vers commit sans décision humaine » dès qu'un secret réel est tracké, le processus d'audit avait laisse l'index local en l'état et émis le rapport halté.
+PRISM_03 initial (mission lancée le 2026-05-15 sur HEAD `4a05a4f`) avait été **halté avant commit** lorsque le scan secrets de Phase 2 a détecté 6 clés API réelles trackées (5 dans `SESSION_AUDIT_API_KEYS_02_SEPTEMBRE_2025.md` + 1 ligne 101 de `.gitignore`). Conformément à la consigne « ne pas continuer vers commit sans décision humaine » dès qu'un secret réel est tracké, le processus d'audit avait laissé l'index local en l'état et émis le rapport halté.
 
 La séquence subséquente a été :
 
@@ -93,7 +93,7 @@ La séquence subséquente a été :
 | `.env` réel tracké ?                                    | ❌ Non                                                                                                                                                                                                                                                                 |
 | Fichiers `.env*` config tracké ?                        | ✅ Plus aucun (4 retirés du tracking en PRISM_03B, fichiers conservés sur disque, ignorés par le nouveau `.gitignore`)                                                                                                                                                 |
 | Clé privée Ed25519 / RSA / OpenSSH trackée ?            | ❌ Non (uniquement clé publique de test `test-audit-manual/keys/test-key.pub`)                                                                                                                                                                                         |
-| Rotation humaine providers (action hors perimetre d'audit)         | ✅ Confirmée par l'humain au lancement de `PRISM_04` Phase 1 — OpenAI, Anthropic, Supabase, Perplexity, ElevenLabs                                                                                                                                                     |
+| Rotation humaine providers (action hors périmètre d'audit) | ✅ Confirmée par l'humain au lancement de `PRISM_04` Phase 1 — OpenAI, Anthropic, Supabase, Perplexity, ElevenLabs                                                                                                                                                     |
 | Satellite `prism-lite-DICA-ui-ux-design`                | ⚠ Toujours hors périmètre — rotation OpenAI/ElevenLabs + purge à traiter via mission dédiée multi-repo (cf. `PRISM_01`)                                                                                                                                                |
 
 **Historique des secrets concernés (masqués)** — détail intégral dans `PRISM_03_SECRET_AND_ENV_REGISTER.md` (mis à jour) :

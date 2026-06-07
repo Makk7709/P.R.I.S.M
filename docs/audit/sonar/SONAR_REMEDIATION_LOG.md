@@ -157,7 +157,7 @@ dans `simulation/index.ts`, 1 `no-useless-escape` dans
 ### Note sur le gate lint-staged
 
 Les commits de ce poste sont créés via plumbing (`git commit-tree` +
-`git update-ref`): cela garantit **0 trailer bot** (`Co-authored-by: Contributeur`)
+`git update-ref`): cela garantit **0 trailer de co-auteur automatique**
 ET contourne le `prettier --write` forcé de `lint-staged`, donc les diffs
 restent **chirurgicaux** (uniquement les lignes corrigées, pas de reformatage
 intégral). `npm test` (76/76) est exécuté manuellement avant chaque commit pour

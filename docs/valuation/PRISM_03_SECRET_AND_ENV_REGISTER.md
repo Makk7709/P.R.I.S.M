@@ -4,7 +4,7 @@
 **Date de revue post-purge (PRISM_03B) :** 2026-05-15 (sur HEAD post-purge `fdc3aa7`)
 **Repo audité :** `Makk7709/P.R.I.S.M`
 **Branche :** `main`
-**Auditeur :** Revue de securite interne (CTO sécurité + auditeur hygiène Git + commissaire aux apports prudent)
+**Auditeur :** Revue de sécurité interne (rôle CTO sécurité + auditeur hygiène Git + commissaire aux apports prudent)
 
 ---
 
@@ -140,7 +140,7 @@ Action requise **hors périmètre PRISM_03** :
 2. **Purge historique Git** ✅ Effectuée par `PRISM_04` via `git filter-repo`.
 3. **Re-scan post-purge** ✅ Confirmé : 0 hit sur `refs/heads/main` (`PRISM_04`) et 0 hit sur `refs/tags/*` (`PRISM_04B`).
 
-### 5.2 Actions résiduelles (à effectuer hors perimetre d'audit)
+### 5.2 Actions résiduelles (à effectuer hors périmètre d'audit)
 
 1. **Surveillance dashboards providers** pendant 30 jours suivant `PRISM_04` (2026-05-15) : tracer toute tentative d'usage des anciennes clés sur OpenAI, Anthropic, Supabase, Perplexity, ElevenLabs.
 2. **Communication aux contributeurs** : tout clone local antérieur au `2026-05-15 21:32` (heure du force-push PRISM_04) doit être ré-cloné ou réinitialisé strictement (`git fetch origin && git reset --hard origin/main && git fetch origin --tags --prune --prune-tags`).
@@ -166,9 +166,9 @@ Variables d'infrastructure : `PORT`, `NODE_ENV`, `DATABASE_PATH`, `METRICS_PORT`
 
 ### 7.1 Décision initiale PRISM_03 (historique)
 
-> **la phase avait ete haltee la phase 11 (commit) de la mission `PRISM_03_REPO_HYGIENE_CLEANUP` initiale conformément à la consigne « ne pas continuer vers commit sans décision humaine » dès qu'un secret réel est tracké.**
+> **La phase 11 (commit) de la mission `PRISM_03_REPO_HYGIENE_CLEANUP` initiale avait été haltée conformément à la consigne « ne pas continuer vers commit sans décision humaine » dès qu'un secret réel est tracké.**
 >
-> les phases avaient neanmoins ete exécuté les phases 2 à 10 (durcissement `.gitignore`, retrait du tracking des artefacts non valorisables, création de `.env.example`, tentative `npm ci`, constat typecheck, tests, contrôles finaux). Le résultat était laissé en index local et sauvegardé dans `/tmp/prism_03_hygiene_backup/` pour usage ultérieur post-purge.
+> Les phases 2 à 10 avaient néanmoins été exécutées (durcissement `.gitignore`, retrait du tracking des artefacts non valorisables, création de `.env.example`, tentative `npm ci`, constat typecheck, tests, contrôles finaux). Le résultat était laissé en index local et sauvegardé dans `/tmp/prism_03_hygiene_backup/` pour usage ultérieur post-purge.
 
 ### 7.2 Décision courante PRISM_03B (committed)
 
