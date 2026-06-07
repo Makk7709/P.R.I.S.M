@@ -7,8 +7,8 @@
  */
 
 import { ConsensusManager, DecisionType, AIProvider } from './src/core/ConsensusManager.js';
-import { EventEmitter } from 'events';
-import readline from 'readline';
+import { EventEmitter } from 'node:events';
+import readline from 'node:readline';
 import chalk from 'chalk';
 
 class ConsensusDemoLive extends EventEmitter {
@@ -307,7 +307,7 @@ class ConsensusDemoLive extends EventEmitter {
 
   async generateQuestionHash(question) {
     // Générer un hash simple basé sur la question et timestamp
-    const crypto = await import('crypto');
+    const crypto = await import('node:crypto');
     return crypto.createHash('sha256')
       .update(question + Date.now())
       .digest('hex')

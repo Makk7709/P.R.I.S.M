@@ -1,4 +1,4 @@
-const path = require('path');
+const path = require('node:path');
 const NodePolyfillPlugin = require('node-polyfill-webpack-plugin');
 const { BundleAnalyzerPlugin } = require('webpack-bundle-analyzer');
 

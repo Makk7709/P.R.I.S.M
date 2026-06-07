@@ -5,8 +5,8 @@
  * Analyse directe des fichiers pour éviter les blocages
  */
 
-import fs from 'fs';
-import path from 'path';
+import fs from 'node:fs';
+import path from 'node:path';
 
 console.log('📊 ANALYSE STATIQUE COUVERTURE CODE SYSTÈME MÉMOIRE');
 console.log('══════════════════════════════════════════════════════');

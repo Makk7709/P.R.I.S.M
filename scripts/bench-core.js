@@ -1,8 +1,8 @@
 #!/usr/bin/env node
 
-const { performance } = require('perf_hooks');
-const fs = require('fs');
-const path = require('path');
+const { performance } = require('node:perf_hooks');
+const fs = require('node:fs');
+const path = require('node:path');
 
 // Configuration
 const ITERATIONS = 1000;

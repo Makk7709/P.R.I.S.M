@@ -1,5 +1,5 @@
 import { defineConfig } from 'vitest/config';
-import path from 'path';
+import path from 'node:path';
 
 /**
  * Vitest config for CORE tests only (stable, reliable, CI-blocking)

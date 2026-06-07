@@ -5,14 +5,14 @@
  * Lance Backend + Frontend Corporate + Prometheus + Grafana en parallèle
  */
 
-import { spawn, exec } from 'child_process';
+import { spawn, exec } from 'node:child_process';
 import express from 'express';
-import path from 'path';
-import { fileURLToPath } from 'url';
-import { dirname } from 'path';
-import fs from 'fs';
+import path from 'node:path';
+import { fileURLToPath } from 'node:url';
+import { dirname } from 'node:path';
+import fs from 'node:fs';
 import chalk from 'chalk';
-import { createServer } from 'net';
+import { createServer } from 'node:net';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);

@@ -4,7 +4,7 @@
  * @description Interface utilisateur intuitive pour interaction avec l'ASI
  */
 
-import { EventEmitter } from 'events';
+import { EventEmitter } from 'node:events';
 import winston from 'winston';
 import ASICore from './asiCore.js';
 

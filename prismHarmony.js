@@ -51,7 +51,7 @@ class PrismHarmony {
   getModuleValue(module) {
     // Integration with existing modules
     const moduleElement = document.querySelector(`#${module}-value`);
-    return moduleElement ? parseFloat(moduleElement.dataset.value) || 0.5 : 0.5;
+    return moduleElement ? Number.parseFloat(moduleElement.dataset.value) || 0.5 : 0.5;
   }
 
   calculateAdjustments(state) {

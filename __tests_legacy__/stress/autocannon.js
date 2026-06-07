@@ -1,6 +1,6 @@
 import autocannon from 'autocannon';
-import { writeFileSync } from 'fs';
-import { join } from 'path';
+import { writeFileSync } from 'node:fs';
+import { join } from 'node:path';
 
 const DURATION = 300; // 5 minutes
 const CONNECTIONS = [100, 1000, 10000, 50000, 100000];

@@ -5,7 +5,7 @@
 
 import PrismStateStore from '../persistence/prismStateStore.js';
 import { PrismProfiler } from '../perf/prismProfiler.js';
-import http from 'http';
+import http from 'node:http';
 
 const stateStore = new PrismStateStore();
 
@@ -861,7 +861,7 @@ export default class PrismCodexAnalyzer {
       if (line.includes('prism_efficiency_percent')) {
         const match = line.match(/prism_efficiency_percent\s+(\d+\.?\d*)/);
         if (match) {
-          metrics.efficiency = parseFloat(match[1]);
+          metrics.efficiency = Number.parseFloat(match[1]);
         }
       }
 
@@ -869,14 +869,14 @@ export default class PrismCodexAnalyzer {
         const match = line.match(/prism_latency_seconds_sum{segment="(\w+)"}\s+(\d+\.?\d*)/);
         if (match) {
           const [, segment, value] = match;
-          metrics.latencies[segment] = parseFloat(value);
+          metrics.latencies[segment] = Number.parseFloat(value);
         }
       }
 
       if (line.includes('prism_cycler_interval_ms')) {
         const match = line.match(/prism_cycler_interval_ms\s+(\d+\.?\d*)/);
         if (match) {
-          metrics.cyclerInterval = parseFloat(match[1]);
+          metrics.cyclerInterval = Number.parseFloat(match[1]);
         }
       }
     }

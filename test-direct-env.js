@@ -4,7 +4,7 @@
  * Test direct avec lecture forcée du fichier .env
  */
 
-import fs from 'fs';
+import fs from 'node:fs';
 import OpenAI from 'openai';
 
 console.log('🔍 TEST DIRECT AVEC LECTURE FORCÉE DU .env');

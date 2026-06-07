@@ -6,7 +6,7 @@
  */
 
 import { ASIMemorySystem } from './asi/asiMemorySystem.js';
-import fs from 'fs';
+import fs from 'node:fs';
 import 'dotenv/config';
 
 console.log('🔬 TEST PERSISTENCE MÉMOIRE PRISM');

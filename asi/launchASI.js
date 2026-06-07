@@ -9,9 +9,9 @@
 import dotenv from 'dotenv';
 import winston from 'winston';
 import { ASIInterface } from './asiInterface.js';
-import { fileURLToPath } from 'url';
-import { dirname, join } from 'path';
-import fs from 'fs';
+import { fileURLToPath } from 'node:url';
+import { dirname, join } from 'node:path';
+import fs from 'node:fs';
 
 // Configuration de l'environnement
 const __filename = fileURLToPath(import.meta.url);
@@ -52,13 +52,13 @@ class ASILauncher {
     this.healthCheckInterval = null;
     
     this.config = {
-      port: parseInt(process.env.PORT) || 3001,
+      port: Number.parseInt(process.env.PORT) || 3001,
       enableVoice: process.env.ASI_VOICE_ENABLED !== 'false',
       enableMetrics: process.env.ASI_METRICS_ENABLED !== 'false',
       safetyMode: process.env.ASI_SAFETY_MODE === 'enabled',
       humanOversight: process.env.ASI_HUMAN_OVERSIGHT === 'required',
       autoRestart: process.env.ASI_AUTO_RESTART !== 'false',
-      healthCheckInterval: parseInt(process.env.ASI_HEALTH_CHECK_INTERVAL) || 30000
+      healthCheckInterval: Number.parseInt(process.env.ASI_HEALTH_CHECK_INTERVAL) || 30000
     };
 
     this.setupSignalHandlers();
@@ -177,7 +177,7 @@ class ASILauncher {
    */
   checkNodeVersion() {
     const nodeVersion = process.version;
-    const majorVersion = parseInt(nodeVersion.slice(1).split('.')[0]);
+    const majorVersion = Number.parseInt(nodeVersion.slice(1).split('.')[0]);
     
     if (majorVersion < 18) {
       throw new Error(`Node.js 18+ requis, version actuelle: ${nodeVersion}`);

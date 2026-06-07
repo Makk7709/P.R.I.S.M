@@ -1,16 +1,16 @@
 import winston from 'winston';
-import { EventEmitter } from 'events';
+import { EventEmitter } from 'node:events';
 import { DynamicProfileManager } from './dynamicProfileManager.js';
 import natural from 'natural';
-import fs from 'fs';
-import path from 'path';
-import { fileURLToPath } from 'url';
+import fs from 'node:fs';
+import path from 'node:path';
+import { fileURLToPath } from 'node:url';
 
 // Import TrustContext and security config
 import { getTrustContext, CriticalityLevel } from '../src/core/TrustContext.js';
 import { SECURITY_CONFIG, SECURITY_MODE } from '../config/security.js';
 import ConsensusManager, { DecisionType, ConsensusStatus } from '../src/core/ConsensusManager.js';
-import crypto from 'crypto';
+import crypto from 'node:crypto';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);

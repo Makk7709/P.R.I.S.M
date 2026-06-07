@@ -8,8 +8,8 @@ import { OPENAI_MODEL } from '../backend/setupEnv.js';
 import { AIProvider } from '../src/core/ConsensusManager.js';
 import { jest } from '@jest/globals';
 import dotenv from 'dotenv';
-import path from 'path';
-import fs from 'fs';
+import path from 'node:path';
+import fs from 'node:fs';
 
 describe('🚀 Migration GPT-4.1 - Tests de Validation', () => {
   

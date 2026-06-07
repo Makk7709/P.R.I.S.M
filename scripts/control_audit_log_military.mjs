@@ -5,9 +5,9 @@
  */
 
 import { TamperEvidentAuditLog } from '../src/audit/TamperEvidentAuditLog.js';
-import fs from 'fs/promises';
-import path from 'path';
-import crypto from 'crypto';
+import fs from 'node:fs/promises';
+import path from 'node:path';
+import crypto from 'node:crypto';
 
 const TEST_DIR = path.join(process.cwd(), 'test-control-audit');
 

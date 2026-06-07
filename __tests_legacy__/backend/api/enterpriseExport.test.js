@@ -28,8 +28,8 @@ import {
 } from '../../../backend/middleware/validation.js';
 
 // Import only the generate function, not the full router with security middleware
-import path from 'path';
-import crypto from 'crypto';
+import path from 'node:path';
+import crypto from 'node:crypto';
 
 describe('Enterprise Export API', () => {
   let app;

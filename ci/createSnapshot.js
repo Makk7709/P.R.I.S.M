@@ -1,6 +1,6 @@
-const { execSync } = require('child_process');
-const path = require('path');
-const fs = require('fs');
+const { execSync } = require('node:child_process');
+const path = require('node:path');
+const fs = require('node:fs');
 
 // Constants
 const SNAPSHOT_DIR = '.prism-snapshots';

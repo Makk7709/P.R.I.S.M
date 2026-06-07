@@ -2,9 +2,9 @@
  * Plugin Vite pour corriger les problèmes de résolution de chemins avec espaces
  * Transforme les imports relatifs en chemins absolus pour éviter les problèmes Vitest
  */
-import path from 'path';
-import { fileURLToPath } from 'url';
-import { existsSync } from 'fs';
+import path from 'node:path';
+import { fileURLToPath } from 'node:url';
+import { existsSync } from 'node:fs';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);

@@ -145,7 +145,7 @@ const monitor = new PrismHealthMonitor();
 
 const args = process.argv.slice(2);
 if (args.includes('--continuous')) {
-    const interval = parseInt(args.find(arg => arg.startsWith('--interval='))?.split('=')[1]) || 5;
+    const interval = Number.parseInt(args.find(arg => arg.startsWith('--interval='))?.split('=')[1]) || 5;
     monitor.runContinuousMonitoring(interval);
 } else {
     monitor.runFullCheck().then(score => {

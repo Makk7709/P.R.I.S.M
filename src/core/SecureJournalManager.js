@@ -4,10 +4,10 @@
  * Élément technique brevetable C : Journal HMAC signé + reprise crash ≤ 50 ms
  */
 
-import { EventEmitter } from 'events';
-import crypto from 'crypto';
-import fs from 'fs/promises';
-import path from 'path';
+import { EventEmitter } from 'node:events';
+import crypto from 'node:crypto';
+import fs from 'node:fs/promises';
+import path from 'node:path';
 import {
   validateJournalEntryInput,
   validateJournalEntryOutput

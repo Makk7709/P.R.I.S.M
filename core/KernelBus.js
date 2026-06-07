@@ -11,7 +11,7 @@ import { getTrustContext } from '../src/core/TrustContext.js';
 import { SECURITY_CONFIG, SECURITY_UTILS } from '../config/security.js';
 import PriorityQueue, { Priority } from '../src/core/PriorityQueue.js';
 import ConsensusManager, { DecisionType, ConsensusStatus } from '../src/core/ConsensusManager.js';
-import crypto from 'crypto';
+import crypto from 'node:crypto';
 
 // Implémentation d'EventEmitter compatible avec le navigateur
 class EventEmitter {

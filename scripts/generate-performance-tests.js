@@ -1,8 +1,8 @@
 #!/usr/bin/env node
 
-const fs = require('fs');
-const path = require('path');
-const { _execSync } = require('child_process');
+const fs = require('node:fs');
+const path = require('node:path');
+const { _execSync } = require('node:child_process');
 
 // Configuration
 const SRC_DIR = path.join(__dirname, '../src');
@@ -46,7 +46,7 @@ function generatePerformanceTest(modulePath) {
   
   // Template de test de performance
   const testTemplate = `const { expect } = require('chai');
-const { performance } = require('perf_hooks');
+const { performance } = require('node:perf_hooks');
 const module = require('../../src/core/${moduleName}');
 
 describe('${moduleName} Performance Tests', () => {

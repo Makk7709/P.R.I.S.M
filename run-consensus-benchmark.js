@@ -17,8 +17,8 @@
 import { ConsensusBenchmark } from './perf/benchmark.js';
 import { BENCHMARK_CONFIG } from './perf/benchmark.js';
 import dotenv from 'dotenv';
-import { fileURLToPath } from 'url';
-import { dirname } from 'path';
+import { fileURLToPath } from 'node:url';
+import { dirname } from 'node:path';
 
 // Load environment variables
 dotenv.config();
@@ -45,11 +45,11 @@ function parseArgs() {
     } else if (arg === '--dry-run') {
       options.dryRun = true;
     } else if (arg.startsWith('--scenarios=')) {
-      options.scenarios = parseInt(arg.split('=')[1]);
+      options.scenarios = Number.parseInt(arg.split('=')[1]);
     } else if (arg.startsWith('--runs=')) {
-      options.runs = parseInt(arg.split('=')[1]);
+      options.runs = Number.parseInt(arg.split('=')[1]);
     } else if (arg.startsWith('--timeout=')) {
-      options.timeout = parseInt(arg.split('=')[1]);
+      options.timeout = Number.parseInt(arg.split('=')[1]);
     }
   }
 

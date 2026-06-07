@@ -3,7 +3,7 @@ import { PrismCore } from '../../prismCore.js';
 import { PrismStrategy } from '../../core/PrismStrategy.js';
 import { PrismSelfOptimization } from '../../core/PrismSelfOptimization.js';
 import { PrismPerformanceMonitor } from '../../monitoring/PrismPerformanceMonitor.js';
-import { performance } from 'perf_hooks';
+import { performance } from 'node:perf_hooks';
 
 describe('PRISM Core Predictive Optimization Tests', () => {
   let prismCore;

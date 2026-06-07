@@ -5,7 +5,7 @@
  * Garantit mêmes inputs = mêmes outputs avec réinitialisation déterministe
  */
 
-import crypto from 'crypto';
+import crypto from 'node:crypto';
 
 export class IdempotentPrismCore {
   constructor() {

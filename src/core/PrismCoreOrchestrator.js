@@ -5,8 +5,8 @@
  * Gestion robuste Consensus + Journal + TrustContext + Enterprise
  */
 
-import { EventEmitter } from 'events';
-import crypto from 'crypto';
+import { EventEmitter } from 'node:events';
+import crypto from 'node:crypto';
 
 export class PrismCoreOrchestrator extends EventEmitter {
   constructor(dependencies = {}) {

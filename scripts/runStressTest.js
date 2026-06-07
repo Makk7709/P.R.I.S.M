@@ -1,9 +1,9 @@
 #!/usr/bin/env node
 
-import { exec } from 'child_process';
-import { promisify } from 'util';
-import { writeFile, readFile } from 'fs/promises';
-import path from 'path';
+import { exec } from 'node:child_process';
+import { promisify } from 'node:util';
+import { writeFile, readFile } from 'node:fs/promises';
+import path from 'node:path';
 
 const execAsync = promisify(exec);
 

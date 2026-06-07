@@ -8,7 +8,7 @@
 import { config } from './config.js';
 import { VoicePersonalityEnhancer } from './backend/voicePersonalityEnhancer.js';
 import { PRISMVoiceEnhancer } from './config-voice-enhanced.js';
-import fs from 'fs';
+import fs from 'node:fs';
 
 console.log('🔍 VALIDATION DÉPLOIEMENT VOCAL PRISM');
 console.log('=====================================\n');

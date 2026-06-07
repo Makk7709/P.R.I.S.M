@@ -1,5 +1,5 @@
 const { register, metrics } = require('./prismMetrics');
-const http = require('http');
+const http = require('node:http');
 
 // Ensure metrics are initialized with some values
 metrics.efficiency.set(45); // Set initial efficiency

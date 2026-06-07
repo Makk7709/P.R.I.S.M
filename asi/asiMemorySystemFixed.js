@@ -4,11 +4,11 @@
  * @description Gère le stockage, la récupération et l'organisation des connaissances RÉELLEMENT
  */
 
-import { EventEmitter } from 'events';
+import { EventEmitter } from 'node:events';
 import winston from 'winston';
-import fs from 'fs';
-import path from 'path';
-import crypto from 'crypto';
+import fs from 'node:fs';
+import path from 'node:path';
+import crypto from 'node:crypto';
 
 const logger = winston.createLogger({
   level: 'info',

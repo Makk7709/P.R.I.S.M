@@ -4,7 +4,7 @@
  * @description Gère les processus de raisonnement logique, analogique et créatif
  */
 
-import { EventEmitter } from 'events';
+import { EventEmitter } from 'node:events';
 import winston from 'winston';
 
 const logger = winston.createLogger({

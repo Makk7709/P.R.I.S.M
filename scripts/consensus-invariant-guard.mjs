@@ -10,10 +10,10 @@
  * Usage: node scripts/consensus-invariant-guard.mjs
  */
 
-import { createHash } from 'crypto';
-import { readFileSync, existsSync, statSync } from 'fs';
-import { join, dirname } from 'path';
-import { fileURLToPath } from 'url';
+import { createHash } from 'node:crypto';
+import { readFileSync, existsSync, statSync } from 'node:fs';
+import { join, dirname } from 'node:path';
+import { fileURLToPath } from 'node:url';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
@@ -162,7 +162,7 @@ async function updateFreezeManifest() {
   const manifest = generateFreezeManifest();
   
   try {
-    const fs = await import('fs');
+    const fs = await import('node:fs');
     await fs.promises.writeFile(
       FREEZE_MANIFEST_PATH, 
       JSON.stringify(manifest, null, 2)

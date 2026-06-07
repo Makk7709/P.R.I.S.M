@@ -5,8 +5,8 @@
  * Logs JSON structurés, métriques temps réel, observabilité
  */
 
-import { EventEmitter } from 'events';
-import crypto from 'crypto';
+import { EventEmitter } from 'node:events';
+import crypto from 'node:crypto';
 
 export class MetricsPrismCore extends EventEmitter {
   constructor() {

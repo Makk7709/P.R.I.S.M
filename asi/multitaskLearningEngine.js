@@ -4,7 +4,7 @@
  * @description Gère l'apprentissage simultané sur plusieurs domaines et tâches
  */
 
-import { EventEmitter } from 'events';
+import { EventEmitter } from 'node:events';
 import winston from 'winston';
 import natural from 'natural';
 

@@ -4,7 +4,7 @@
  * @description Combine sources éducatives externes et apprentissage autonome
  */
 
-import { EventEmitter } from 'events';
+import { EventEmitter } from 'node:events';
 import winston from 'winston';
 
 const logger = winston.createLogger({

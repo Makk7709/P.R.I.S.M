@@ -4,7 +4,7 @@
  * @description Orchestrateur central pour l'intelligence artificielle superintelligente
  */
 
-import { EventEmitter } from 'events';
+import { EventEmitter } from 'node:events';
 import winston from 'winston';
 import { MultitaskLearningEngine } from './multitaskLearningEngine.js';
 import { AutoSupervisionEngine } from './autoSupervisionEngine.js';
@@ -41,12 +41,12 @@ export class ASICore extends EventEmitter {
     super();
     
     this.config = {
-      learningRate: parseFloat(process.env.ASI_LEARNING_RATE) || 0.1,
-      adaptationThreshold: parseFloat(process.env.ASI_ADAPTATION_THRESHOLD) || 0.8,
-      multitaskCapacity: parseInt(process.env.ASI_MULTITASK_CAPACITY) || 10,
-      maxConcurrentTasks: parseInt(process.env.ASI_MAX_CONCURRENT_TASKS) || 50,
-      memoryLimit: parseInt(process.env.ASI_MEMORY_LIMIT) || 8192,
-      processingTimeout: parseInt(process.env.ASI_PROCESSING_TIMEOUT) || 60000,
+      learningRate: Number.parseFloat(process.env.ASI_LEARNING_RATE) || 0.1,
+      adaptationThreshold: Number.parseFloat(process.env.ASI_ADAPTATION_THRESHOLD) || 0.8,
+      multitaskCapacity: Number.parseInt(process.env.ASI_MULTITASK_CAPACITY) || 10,
+      maxConcurrentTasks: Number.parseInt(process.env.ASI_MAX_CONCURRENT_TASKS) || 50,
+      memoryLimit: Number.parseInt(process.env.ASI_MEMORY_LIMIT) || 8192,
+      processingTimeout: Number.parseInt(process.env.ASI_PROCESSING_TIMEOUT) || 60000,
       safetyMode: process.env.ASI_SAFETY_MODE === 'enabled',
       ethicalConstraints: process.env.ASI_ETHICAL_CONSTRAINTS || 'strict',
       humanOversight: process.env.ASI_HUMAN_OVERSIGHT === 'required',

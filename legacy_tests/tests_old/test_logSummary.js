@@ -1,6 +1,6 @@
 const LogSummary = require('../evolution/logSummary');
-const fs = require('fs');
-const path = require('path');
+const fs = require('node:fs');
+const path = require('node:path');
 
 jest.mock('fs');
 jest.mock('path');

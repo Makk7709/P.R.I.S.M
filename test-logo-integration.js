@@ -4,8 +4,8 @@
  */
 
 import fetch from 'node-fetch';
-import fs from 'fs';
-import path from 'path';
+import fs from 'node:fs';
+import path from 'node:path';
 
 const BASE_URL = 'http://localhost:3000';
 

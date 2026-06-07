@@ -7,9 +7,9 @@
  * à partir des résultats de coverage et mutation testing.
  */
 
-import { readFileSync, writeFileSync, existsSync } from 'fs';
-import { join, dirname } from 'path';
-import { fileURLToPath } from 'url';
+import { readFileSync, writeFileSync, existsSync } from 'node:fs';
+import { join, dirname } from 'node:path';
+import { fileURLToPath } from 'node:url';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
@@ -180,7 +180,7 @@ async function buildValidationSummary(module = 'ConsensusManager') {
     // S'assurer que le dossier reports existe
     const reportsDir = join(projectRoot, 'reports');
     if (!existsSync(reportsDir)) {
-      const { mkdir } = await import('fs/promises');
+      const { mkdir } = await import('node:fs/promises');
       await mkdir(reportsDir, { recursive: true });
     }
     

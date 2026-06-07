@@ -7,10 +7,10 @@
  * avec les hash SHA-256 des rapports de validation.
  */
 
-import { createHash } from 'crypto';
-import { readFileSync, writeFileSync, existsSync } from 'fs';
-import { join, dirname } from 'path';
-import { fileURLToPath } from 'url';
+import { createHash } from 'node:crypto';
+import { readFileSync, writeFileSync, existsSync } from 'node:fs';
+import { join, dirname } from 'node:path';
+import { fileURLToPath } from 'node:url';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
@@ -86,7 +86,7 @@ async function buildIntegrity() {
     // S'assurer que le dossier reports existe
     const reportsDir = join(projectRoot, 'reports');
     if (!existsSync(reportsDir)) {
-      const fs = await import('fs');
+      const fs = await import('node:fs');
       await fs.promises.mkdir(reportsDir, { recursive: true });
     }
     

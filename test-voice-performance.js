@@ -183,7 +183,7 @@ async function main() {
   // Option monitoring continu
   const args = process.argv.slice(2);
   if (args.includes('--monitor')) {
-    const iterations = parseInt(args.find(arg => arg.startsWith('--iterations='))?.split('=')[1]) || 10;
+    const iterations = Number.parseInt(args.find(arg => arg.startsWith('--iterations='))?.split('=')[1]) || 10;
     await tester.runContinuousMonitoring(iterations);
   }
 

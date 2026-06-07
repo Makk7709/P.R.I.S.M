@@ -7,9 +7,9 @@
  */
 
 import Joi from 'joi';
-import fs from 'fs';
-import path from 'path';
-import { fileURLToPath } from 'url';
+import fs from 'node:fs';
+import path from 'node:path';
+import { fileURLToPath } from 'node:url';
 import SwaggerParser from '@apidevtools/swagger-parser';
 
 const __filename = fileURLToPath(import.meta.url);

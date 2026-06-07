@@ -9,7 +9,7 @@
 import { AdaptiveWeightingEngine, ContextType } from '../src/core/AdaptiveWeightingEngine.js';
 import { ConsensusManager, DecisionType, VoteType } from '../src/core/ConsensusManager.js';
 import { SecureJournalManager, JournalEventType } from '../src/core/SecureJournalManager.js';
-import { performance } from 'perf_hooks';
+import { performance } from 'node:perf_hooks';
 
 class PatentBenchmark {
   constructor() {
@@ -456,9 +456,9 @@ class PatentBenchmark {
 
   validateClaim(actual, target, operator) {
     switch (operator) {
-      case 'gte': return parseFloat(actual) >= target;
-      case 'lte': return parseFloat(actual) <= target;
-      case 'eq': return parseFloat(actual) === target;
+      case 'gte': return Number.parseFloat(actual) >= target;
+      case 'lte': return Number.parseFloat(actual) <= target;
+      case 'eq': return Number.parseFloat(actual) === target;
       default: return false;
     }
   }

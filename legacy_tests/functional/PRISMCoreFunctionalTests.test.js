@@ -16,7 +16,7 @@ import { InsightCenter } from '../../ui/InsightCenter.js';
 import { AudioManager } from '../../audio.js';
 import { PrismCore } from '../../prismCore.js';
 import { config } from '../../config.js';
-import { TextEncoder, TextDecoder } from 'util';
+import { TextEncoder, TextDecoder } from 'node:util';
 
 global.TextEncoder = TextEncoder;
 global.TextDecoder = TextDecoder;

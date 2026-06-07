@@ -4,11 +4,11 @@
  * @module security-verification-final
  */
 
-import { createRequire } from 'module';
-import { execSync } from 'child_process';
+import { createRequire } from 'node:module';
+import { execSync } from 'node:child_process';
 const require = createRequire(import.meta.url);
-const fs = require('fs');
-const _path = require('path');
+const fs = require('node:fs');
+const _path = require('node:path');
 
 console.log('🔒 PRISM Security Verification - Final Report');
 console.log('==============================================\n');

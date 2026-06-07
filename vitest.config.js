@@ -1,6 +1,6 @@
 import { defineConfig } from 'vitest/config';
-import path from 'path';
-import { fileURLToPath } from 'url';
+import path from 'node:path';
+import { fileURLToPath } from 'node:url';
 import fixPathsPlugin from './vite-plugin-fix-paths.mjs';
 
 const __filename = fileURLToPath(import.meta.url);

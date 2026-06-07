@@ -156,7 +156,7 @@ class PrismNotifier {
     if (!notification) return;
     
     if (notification.dataset.timeout) {
-      clearTimeout(parseInt(notification.dataset.timeout));
+      clearTimeout(Number.parseInt(notification.dataset.timeout));
     }
     
     notification.classList.remove('opacity-100', 'translate-y-0');

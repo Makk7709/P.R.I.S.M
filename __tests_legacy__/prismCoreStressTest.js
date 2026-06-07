@@ -1,8 +1,8 @@
 import { jest } from '@jest/globals';
-import { performance } from 'perf_hooks';
+import { performance } from 'node:perf_hooks';
 import kernelBus from '../core/KernelBus.js';
 import performanceMonitor from '../monitoring/prismPerformanceMonitor.js';
-import { writeFile } from 'fs/promises';
+import { writeFile } from 'node:fs/promises';
 import { PrismCore } from '../../prismCore.js';
 import PrismPerformanceMonitor from '../../monitoring/PrismPerformanceMonitor.js';
 

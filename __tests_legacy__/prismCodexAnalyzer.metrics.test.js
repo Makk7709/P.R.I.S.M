@@ -1,6 +1,6 @@
 import PrismCodexAnalyzer from '../memory/prismCodexAnalyzer.js';
 import kernelBus from '../core/KernelBus.js';
-import http from 'http';
+import http from 'node:http';
 
 describe('PrismCodexAnalyzer - Metrics Integration', () => {
   let analyzer;

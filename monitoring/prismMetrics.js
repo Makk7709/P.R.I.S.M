@@ -1,5 +1,5 @@
 import { Counter, Gauge, Histogram, Registry } from 'prom-client';
-import http from 'http';
+import http from 'node:http';
 
 class PrismMetrics {
   constructor() {

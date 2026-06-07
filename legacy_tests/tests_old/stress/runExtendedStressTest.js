@@ -3,12 +3,12 @@
  */
 
 import PrismCoreExtendedStressTest from './prismCoreExtendedStressTest.js';
-import path from 'path';
-import fs from 'fs';
-import { fileURLToPath } from 'url';
-import { dirname } from 'path';
-import { performance } from 'perf_hooks';
-import os from 'os';
+import path from 'node:path';
+import fs from 'node:fs';
+import { fileURLToPath } from 'node:url';
+import { dirname } from 'node:path';
+import { performance } from 'node:perf_hooks';
+import os from 'node:os';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);

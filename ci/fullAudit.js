@@ -1,10 +1,10 @@
 #!/usr/bin/env node
 
-const { execSync } = require('child_process');
-const fs = require('fs');
-const path = require('path');
-const http = require('http');
-const { promisify } = require('util');
+const { execSync } = require('node:child_process');
+const fs = require('node:fs');
+const path = require('node:path');
+const http = require('node:http');
+const { promisify } = require('node:util');
 const sleep = promisify(setTimeout);
 
 // Configuration
@@ -73,7 +73,7 @@ async function runAudit() {
     console.log('Running tests...');
     const testOutput = execCommand('npm test --silent');
     const coverageMatch = testOutput.match(/All files\s+\|\s+(\d+\.\d+)%/);
-    report.tests.coverage = parseFloat(coverageMatch[1]) / 100;
+    report.tests.coverage = Number.parseFloat(coverageMatch[1]) / 100;
     report.tests.pass = report.tests.coverage >= COVERAGE_THRESHOLD;
 
     // Performance tests
@@ -81,9 +81,9 @@ async function runAudit() {
     const perfOutput = execCommand('npm run perf');
     const perfMatch = perfOutput.match(/strategic:(\d+\.\d+).*cycler:(\d+\.\d+).*codex:(\d+\.\d+)/);
     report.perf = {
-      strategic: parseFloat(perfMatch[1]),
-      cycler: parseFloat(perfMatch[2]),
-      codex: parseFloat(perfMatch[3])
+      strategic: Number.parseFloat(perfMatch[1]),
+      cycler: Number.parseFloat(perfMatch[2]),
+      codex: Number.parseFloat(perfMatch[3])
     };
 
     // 4. Mutation testing
@@ -91,9 +91,9 @@ async function runAudit() {
     const mutationOutput = execCommand('npm run mutation');
     const mutationMatch = mutationOutput.match(/Killed: (\d+)\/(\d+)/);
     report.mutation = {
-      killed: parseInt(mutationMatch[1]),
-      total: parseInt(mutationMatch[2]),
-      rate: parseInt(mutationMatch[1]) / parseInt(mutationMatch[2])
+      killed: Number.parseInt(mutationMatch[1]),
+      total: Number.parseInt(mutationMatch[2]),
+      rate: Number.parseInt(mutationMatch[1]) / Number.parseInt(mutationMatch[2])
     };
 
     // 5. Metrics and alerting
@@ -167,7 +167,7 @@ async function runAudit() {
     console.log('Running metrics overhead benchmark...');
     const overheadOutput = execCommand('npm run bench:metrics');
     const overheadMatch = overheadOutput.match(/overhead: (\d+\.\d+)/);
-    report.overhead = parseFloat(overheadMatch[1]);
+    report.overhead = Number.parseFloat(overheadMatch[1]);
 
     // 9. Calculate final score
     const score = calculateScore(report);

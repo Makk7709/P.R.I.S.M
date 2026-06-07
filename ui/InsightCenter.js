@@ -566,7 +566,7 @@ export class InsightCenter {
     // Écouteur pour le seuil d'efficacité
     const efficiencyThreshold = this.container.querySelector('.efficiency-threshold');
     efficiencyThreshold.addEventListener('input', (e) => {
-      this.filterState.efficiencyThreshold = parseInt(e.target.value);
+      this.filterState.efficiencyThreshold = Number.parseInt(e.target.value);
       this.applyFilters();
     });
   }

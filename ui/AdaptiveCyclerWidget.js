@@ -198,7 +198,7 @@ export class AdaptiveCyclerWidget {
 
     const speakingRate = this.voiceSettingsModal.querySelector('.speaking-rate');
     speakingRate.addEventListener('input', (e) => {
-      const value = parseFloat(e.target.value);
+      const value = Number.parseFloat(e.target.value);
       this.voiceSettings.speakingRate = value;
       this.voiceSettingsModal.querySelector('.speaking-rate-value').textContent = `${value.toFixed(1)}x`;
       this.updateVoiceSettings();

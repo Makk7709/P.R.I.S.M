@@ -4,7 +4,7 @@
  * Vérifie que tous les invariants sont prouvés et stables
  */
 
-import { execSync } from 'child_process';
+import { execSync } from 'node:child_process';
 
 console.log('🎯 PROMPT DE CONTRÔLE - ProviderAdapters Hardening (VAGUE 1.4)');
 console.log('='.repeat(80));
@@ -34,9 +34,9 @@ function runCommand(cmd, description) {
     const durationMatch = output.match(/Duration\s+([\d.]+)s/);
     
     if (testFilesMatch && testsMatch) {
-      const testFiles = parseInt(testFilesMatch[1]);
-      const tests = parseInt(testsMatch[1]);
-      const duration = durationMatch ? parseFloat(durationMatch[1]) : null;
+      const testFiles = Number.parseInt(testFilesMatch[1]);
+      const tests = Number.parseInt(testsMatch[1]);
+      const duration = durationMatch ? Number.parseFloat(durationMatch[1]) : null;
       
       console.log(`✅ Succès: ${testFiles} fichier(s) de test, ${tests} test(s) passé(s)`);
       if (duration) {
@@ -101,9 +101,9 @@ for (let i = 1; i <= 5; i++) {
     const durationMatch = output.match(/Duration\s+([\d.]+)s/);
     
     if (testFilesMatch && testsMatch) {
-      const testFiles = parseInt(testFilesMatch[1]);
-      const tests = parseInt(testsMatch[1]);
-      const duration = durationMatch ? parseFloat(durationMatch[1]) : null;
+      const testFiles = Number.parseInt(testFilesMatch[1]);
+      const tests = Number.parseInt(testsMatch[1]);
+      const duration = durationMatch ? Number.parseFloat(durationMatch[1]) : null;
       
       if (testFiles === 2 && tests === 16) {
         console.log(`  ✅ Run ${i}: ${testFiles} fichiers, ${tests} tests`);

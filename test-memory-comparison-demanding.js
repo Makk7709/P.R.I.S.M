@@ -8,7 +8,7 @@
 import { ASIMemorySystem } from './asi/asiMemorySystem.js';
 import { ASIMemorySystemFixed } from './asi/asiMemorySystemFixed.js';
 import OpenAI from 'openai';
-import fs from 'fs';
+import fs from 'node:fs';
 import 'dotenv/config';
 
 console.log('🔬 TEST EXIGEANT - COMPARAISON SYSTÈMES MÉMOIRE');

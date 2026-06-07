@@ -7,9 +7,9 @@
 import { ConsensusTimer } from './timer.js';
 import { ConsensusManager } from '../src/core/ConsensusManager.js';
 import { BenchmarkAnalyzer } from './analysis.js';
-import fs from 'fs/promises';
-import path from 'path';
-import crypto from 'crypto';
+import fs from 'node:fs/promises';
+import path from 'node:path';
+import crypto from 'node:crypto';
 
 /**
  * Benchmark configuration
@@ -215,7 +215,7 @@ export class ConsensusBenchmark {
 
     // Check Node.js version
     const nodeVersion = process.version;
-    if (parseInt(nodeVersion.substring(1)) < 18) {
+    if (Number.parseInt(nodeVersion.substring(1)) < 18) {
       throw new Error(`❌ Node.js version ${nodeVersion} is too old. Required: >=18.0.0`);
     }
 

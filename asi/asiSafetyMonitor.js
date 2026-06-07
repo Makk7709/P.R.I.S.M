@@ -4,7 +4,7 @@
  * @description Surveille en continu la sécurité et déclenche des mesures de protection
  */
 
-import { EventEmitter } from 'events';
+import { EventEmitter } from 'node:events';
 import winston from 'winston';
 
 const logger = winston.createLogger({

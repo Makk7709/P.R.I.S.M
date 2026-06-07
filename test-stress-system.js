@@ -5,8 +5,8 @@
 
 import { StressTestDriver } from './tests/load/stressDriver.js';
 import { ControlPromptGenerator } from './generate-control-prompt.js';
-import fs from 'fs';
-import path from 'path';
+import fs from 'node:fs';
+import path from 'node:path';
 
 class StressSystemTester {
   constructor() {

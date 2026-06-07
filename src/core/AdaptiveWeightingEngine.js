@@ -4,7 +4,7 @@
  * Élément technique brevetable A : Pondération adaptative temps réel
  */
 
-import { EventEmitter } from 'events';
+import { EventEmitter } from 'node:events';
 import SecureJournalManager from './SecureJournalManager.js';
 import { registerMetrics as registerWeightingEngineMetrics } from '../metrics/weightingEngineMetrics.js';
 

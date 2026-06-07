@@ -4,7 +4,7 @@
  * @description Gère les contraintes éthiques, la validation morale et la sécurité
  */
 
-import { EventEmitter } from 'events';
+import { EventEmitter } from 'node:events';
 import winston from 'winston';
 
 const logger = winston.createLogger({

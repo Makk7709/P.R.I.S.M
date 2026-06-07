@@ -5,9 +5,9 @@
  * Validation chirurgicale avec couverture >95%
  */
 
-const { exec } = require('child_process');
-const fs = require('fs');
-const path = require('path');
+const { exec } = require('node:child_process');
+const fs = require('node:fs');
+const path = require('node:path');
 
 console.log('🔬 VALIDATION MICRO-ÉTAPE 0.1 - Analyse des Données PRISM');
 console.log('=' .repeat(70));

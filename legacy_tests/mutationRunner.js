@@ -1,7 +1,7 @@
-const fs = require('fs');
-const path = require('path');
-const { execSync } = require('child_process');
-const EventEmitter = require('events');
+const fs = require('node:fs');
+const path = require('node:path');
+const { execSync } = require('node:child_process');
+const EventEmitter = require('node:events');
 
 class MutationRunner extends EventEmitter {
   constructor() {

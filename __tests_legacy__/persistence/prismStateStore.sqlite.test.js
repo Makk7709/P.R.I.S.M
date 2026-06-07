@@ -1,7 +1,7 @@
 import PrismStateStore from '../../persistence/prismStateStore.js';
 import db from '../../backend/database.js';
-import fs from 'fs';
-import path from 'path';
+import fs from 'node:fs';
+import path from 'node:path';
 
 /**
  * @fileoverview Test suite for PrismStateStore with a real SQLite database.

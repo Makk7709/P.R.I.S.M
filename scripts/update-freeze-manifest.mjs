@@ -7,8 +7,8 @@
  * Utilisé par pnpm freeze:consensus
  */
 
-import { join, dirname } from 'path';
-import { fileURLToPath } from 'url';
+import { join, dirname } from 'node:path';
+import { fileURLToPath } from 'node:url';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
@@ -23,7 +23,7 @@ console.log(`🔄 Mise à jour manifest de freeze pour ${module}...`);
 const guardScript = join(projectRoot, 'scripts', 'consensus-invariant-guard.mjs');
 
 try {
-  const { spawn } = await import('child_process');
+  const { spawn } = await import('node:child_process');
   
   const child = spawn('node', [guardScript, 'update'], {
     stdio: 'inherit',

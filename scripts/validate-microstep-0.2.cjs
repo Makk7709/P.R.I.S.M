@@ -6,9 +6,9 @@
  * Validation chirurgicale avec couverture >95%
  */
 
-const { exec } = require('child_process');
-const fs = require('fs');
-const _path = require('path');
+const { exec } = require('node:child_process');
+const fs = require('node:fs');
+const _path = require('node:path');
 
 console.log('🔬 VALIDATION MICRO-ÉTAPE 0.2 - Contrat API Enterprise Export');
 console.log('=' .repeat(70));

@@ -4,7 +4,7 @@
  * @description Collecte, analyse et surveille les métriques de performance de l'ASI
  */
 
-import { EventEmitter } from 'events';
+import { EventEmitter } from 'node:events';
 import winston from 'winston';
 
 const logger = winston.createLogger({
@@ -646,7 +646,7 @@ export class ASIMetricsCollector extends EventEmitter {
   parsePeriod(period) {
     const units = { 'h': 60 * 60 * 1000, 'd': 24 * 60 * 60 * 1000, 'w': 7 * 24 * 60 * 60 * 1000 };
     const match = period.match(/^(\d+)([hdw])$/);
-    return match ? parseInt(match[1]) * units[match[2]] : 60 * 60 * 1000;
+    return match ? Number.parseInt(match[1]) * units[match[2]] : 60 * 60 * 1000;
   }
 
   calculateTrend(values) {

@@ -3,17 +3,17 @@
  * Test de 100 000 événements avec métriques détaillées par module
  */
 
-import fs from 'fs';
-import path from 'path';
-import os from 'os';
-import { EventEmitter } from 'events';
-import { performance } from 'perf_hooks';
-import { fileURLToPath } from 'url';
-import { dirname } from 'path';
+import fs from 'node:fs';
+import path from 'node:path';
+import os from 'node:os';
+import { EventEmitter } from 'node:events';
+import { performance } from 'node:perf_hooks';
+import { fileURLToPath } from 'node:url';
+import { dirname } from 'node:path';
 import { prismBus } from '../../prismBus.js';
 import kernelBus from '../../core/KernelBus.js';
 import performanceMonitor from '../../monitoring/prismPerformanceMonitor.js';
-import fsPromises from 'fs/promises';
+import fsPromises from 'node:fs/promises';
 import { PrismCore } from '../../core/prismCore.js';
 import { PrismLogger } from '../../monitoring/prismLogger.js';
 

@@ -10,8 +10,8 @@
  * 5. Métriques et audit trail
  */
 
-import { fileURLToPath } from 'url';
-import path from 'path';
+import { fileURLToPath } from 'node:url';
+import path from 'node:path';
 import { TrustContext, CriticalityLevel } from '../src/core/TrustContext.js';
 import { HybridOrchestrator } from '../src/orchestrator/HybridOrchestrator.js';
 import { ExcelAnalyzer } from '../src/excel/ExcelAnalyzer.js';

@@ -1,5 +1,5 @@
-const _fs = require('fs');
-const _path = require('path');
+const _fs = require('node:fs');
+const _path = require('node:path');
 
 const LOG_LEVELS = {
     DEBUG: 0,

@@ -4,7 +4,7 @@
  * @description Gère l'amélioration autonome sans intervention humaine
  */
 
-import { EventEmitter } from 'events';
+import { EventEmitter } from 'node:events';
 import winston from 'winston';
 
 const logger = winston.createLogger({

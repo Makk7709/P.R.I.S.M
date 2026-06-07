@@ -5,7 +5,7 @@
  * Corrections critiques pour réduire latence de 70%
  */
 
-import fs from 'fs/promises';
+import fs from 'node:fs/promises';
 
 class VoicePerformanceFixer {
   constructor() {

@@ -1,9 +1,9 @@
 #!/usr/bin/env node
 
 import PRISM from '../prismCore.js';
-import path from 'path';
-import fs from 'fs';
-import { fileURLToPath } from 'url';
+import path from 'node:path';
+import fs from 'node:fs';
+import { fileURLToPath } from 'node:url';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -14,7 +14,7 @@ const MAX_RETRIES = 3;
 const RETRY_DELAY = 1000; // ms
 
 // Get number of runs from command line argument
-const numRuns = parseInt(process.argv[2]) || 50;
+const numRuns = Number.parseInt(process.argv[2]) || 50;
 
 // Ensure we're in TEST mode
 if (process.env.PRISM_MODE !== 'TEST') {

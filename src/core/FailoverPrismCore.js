@@ -5,7 +5,7 @@
  * Gestion robuste API providers, timeouts, circuit breakers
  */
 
-import { EventEmitter } from 'events';
+import { EventEmitter } from 'node:events';
 
 export class FailoverPrismCore extends EventEmitter {
   constructor() {

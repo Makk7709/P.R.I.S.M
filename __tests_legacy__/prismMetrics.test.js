@@ -1,5 +1,5 @@
 import PrismMetrics from '../monitoring/prismMetrics';
-import http from 'http';
+import http from 'node:http';
 
 describe('PrismMetrics', () => {
   let metrics;

@@ -5,9 +5,9 @@
  * Vérifie que tous les composants de démo fonctionnent
  */
 
-import fs from 'fs';
-import path from 'path';
-import { fileURLToPath } from 'url';
+import fs from 'node:fs';
+import path from 'node:path';
+import { fileURLToPath } from 'node:url';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -70,7 +70,7 @@ async function testDependencies() {
   for (const dep of deps) {
     try {
       if (dep === 'crypto') {
-        const _crypto = await import('crypto');
+        const _crypto = await import('node:crypto');
         console.log(`✅ ${dep} (built-in)`);
       } else {
         await import(dep);

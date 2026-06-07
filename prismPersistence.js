@@ -191,7 +191,7 @@ class PrismPersistence {
    * @returns {Promise<string>}
    */
   async _loadStateFromChunks() {
-    const chunksCount = parseInt(localStorage.getItem(`${PRISM_PERSISTENCE_KEY}_chunks`), 10);
+    const chunksCount = Number.parseInt(localStorage.getItem(`${PRISM_PERSISTENCE_KEY}_chunks`), 10);
     if (!chunksCount) return null;
 
     let encodedState = '';

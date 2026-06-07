@@ -372,7 +372,7 @@ const sanitizeInput = (req, res, next) => {
 const checkPayloadSize = (req, res, next) => {
   const maxSize = 10 * 1024 * 1024; // 10MB max
   
-  const contentLength = parseInt(req.get('Content-Length') || '0');
+  const contentLength = Number.parseInt(req.get('Content-Length') || '0');
   
   if (contentLength > maxSize) {
     console.log('[SECURITY] Payload too large', {

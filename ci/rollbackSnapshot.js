@@ -1,6 +1,6 @@
-const { execSync } = require('child_process');
-const path = require('path');
-const fs = require('fs');
+const { execSync } = require('node:child_process');
+const path = require('node:path');
+const fs = require('node:fs');
 
 // Constants
 const SNAPSHOT_DIR = '.prism-snapshots';
@@ -8,7 +8,7 @@ const SNAPSHOT_DIR = '.prism-snapshots';
 // Get the most recent snapshot
 const snapshots = fs.readdirSync(SNAPSHOT_DIR)
   .filter(dir => fs.statSync(path.join(SNAPSHOT_DIR, dir)).isDirectory())
-  .sort((a, b) => parseInt(b) - parseInt(a));
+  .sort((a, b) => Number.parseInt(b) - Number.parseInt(a));
 
 if (snapshots.length === 0) {
   console.error('❌ No snapshots found to rollback to');

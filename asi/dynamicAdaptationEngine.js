@@ -4,7 +4,7 @@
  * @description Gère l'adaptation en temps réel selon les interactions et le contexte
  */
 
-import { EventEmitter } from 'events';
+import { EventEmitter } from 'node:events';
 import winston from 'winston';
 
 const logger = winston.createLogger({

@@ -1,6 +1,6 @@
 import { jest } from '@jest/globals';
-import path from 'path';
-import fs from 'fs/promises';
+import path from 'node:path';
+import fs from 'node:fs/promises';
 import PRISM from '../../prismCore.js';
 import { KernelBus } from '../../core/KernelBus.js';
 import PrismMood from '../../prismMood.js';
@@ -8,7 +8,7 @@ import PrismSoul from '../../prismSoul.js';
 import PrismPerformanceMonitor from '../../monitoring/PrismPerformanceMonitor.js';
 import PrismCoreMetrics from '../../monitoring/coreMetrics.js';
 import { PrismCore } from '../../prismCore.js';
-import { performance } from 'perf_hooks';
+import { performance } from 'node:perf_hooks';
 import { PrismStrategy } from '../../core/PrismStrategy.js';
 import { PrismSelfOptimization } from '../../core/PrismSelfOptimization.js';
 
