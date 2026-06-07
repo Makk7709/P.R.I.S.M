@@ -2,12 +2,6 @@
  * @fileoverview Tests pour le module PrismStrategyExecutor
  */
 
-import planner from '@core/Planner.js';
-import { PrismSovereignCycle } from '../monitoring/prismSovereignCycle.js';
-import { PrismElysiumMode } from '../regulation/prismElysiumMode.js';
-import { PrismSelfHeal } from '../prismSelfHeal.js';
-import kernelBus from '../core/KernelBus.js';
-import { Resilience } from '@core/Resilience.js';
 
 describe('PrismStrategyExecutor', () => {
   let executor;

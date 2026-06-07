@@ -5,7 +5,6 @@
 
 import dotenv from 'dotenv';
 import fs from 'node:fs';
-import { CONFIG } from '../config.js';
 import { handleUserInstruction } from '../prismModelRouter.js';
 // import prismLogger from '../monitoring/prismLogger.js';
 

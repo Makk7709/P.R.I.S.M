@@ -7,7 +7,6 @@
 import { jest } from '@jest/globals';
 import { JSDOM } from 'jsdom';
 import fs from 'node:fs';
-import path from 'node:path';
 
 // Mock du DOM pour les tests
 const createMockDOM = () => {

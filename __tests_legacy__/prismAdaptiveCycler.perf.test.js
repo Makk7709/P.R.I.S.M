@@ -3,7 +3,6 @@
  */
 
 import { PrismAdaptiveCycler } from '../regulation/prismAdaptiveCycler.js';
-import { jest } from '@jest/globals';
 
 describe('PrismAdaptiveCycler Performance Tests', () => {
   let cycler;

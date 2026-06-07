@@ -1,6 +1,4 @@
 import { PrismCoreStressTest } from './prismCoreStressTest.js';
-import { MetricsCollector } from './metricsCollector.js';
-import { TestEventGenerator } from './testEventGenerator.js';
 
 const scenarios = [
   {

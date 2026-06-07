@@ -1,6 +1,5 @@
 import { PrismAdaptiveCycler } from '../regulation/prismAdaptiveCycler.js';
 import { jest } from '@jest/globals';
-import kernelBus from '../core/KernelBus.js';
 
 // Mock prismBus
 jest.mock('../prismBus.js', () => ({

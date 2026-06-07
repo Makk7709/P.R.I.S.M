@@ -1,4 +1,3 @@
-import { jest } from '@jest/globals';
 import { PrismCore } from '../../prismCore.js';
 import { PrismStrategy } from '../../core/PrismStrategy.js';
 import { PrismSelfOptimization } from '../../core/PrismSelfOptimization.js';

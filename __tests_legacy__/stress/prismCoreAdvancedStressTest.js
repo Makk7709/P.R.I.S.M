@@ -7,10 +7,6 @@ import PrismMood from '../../prismMood.js';
 import PrismSoul from '../../prismSoul.js';
 import PrismPerformanceMonitor from '../../monitoring/PrismPerformanceMonitor.js';
 import PrismCoreMetrics from '../../monitoring/coreMetrics.js';
-import { PrismCore } from '../../prismCore.js';
-import { performance } from 'node:perf_hooks';
-import { PrismStrategy } from '../../core/PrismStrategy.js';
-import { PrismSelfOptimization } from '../../core/PrismSelfOptimization.js';
 
 // Mock session management
 jest.mock('../../prismSession.js', () => ({

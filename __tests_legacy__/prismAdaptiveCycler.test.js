@@ -1,7 +1,4 @@
 import { PrismAdaptiveCycler } from '../regulation/prismAdaptiveCycler.js';
-import { CircularDeque } from '../regulation/CircularDeque.js';
-import PrismStorage from '../prismStorage.js';
-import kernelBus from '../core/KernelBus.js';
 import { jest } from '@jest/globals';
 
 // Mock prismBus

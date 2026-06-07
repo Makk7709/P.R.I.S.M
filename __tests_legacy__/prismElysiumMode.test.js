@@ -1,6 +1,5 @@
 import { PrismElysiumMode } from '../modes/prismElysiumMode.js';
 import { jest } from '@jest/globals';
-import kernelBus from '../core/KernelBus.js';
 
 // Mock PrismBus
 jest.mock('../prismBus.js', () => {

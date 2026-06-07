@@ -12,7 +12,6 @@
  */
 
 import request from 'supertest';
-import { jest } from '@jest/globals';
 import express from 'express';
 
 // Import real services for test optimization
@@ -28,8 +27,6 @@ import {
 } from '../../../backend/middleware/validation.js';
 
 // Import only the generate function, not the full router with security middleware
-import path from 'node:path';
-import crypto from 'node:crypto';
 
 describe('Enterprise Export API', () => {
   let app;

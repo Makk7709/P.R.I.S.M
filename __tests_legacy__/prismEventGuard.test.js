@@ -2,8 +2,6 @@
  * @fileoverview Tests unitaires pour le module prismEventGuard
  */
 
-import prismEventGuard from '../security/prismEventGuard.js';
-import { PrismHMAC } from '../security/prismHMAC.js';
 
 // Mock crypto.subtle
 const mockCrypto = {

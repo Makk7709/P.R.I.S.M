@@ -7,7 +7,6 @@ import path from 'node:path';
 import fs from 'node:fs';
 import { fileURLToPath } from 'node:url';
 import { dirname } from 'node:path';
-import { performance } from 'node:perf_hooks';
 import os from 'node:os';
 
 const __filename = fileURLToPath(import.meta.url);

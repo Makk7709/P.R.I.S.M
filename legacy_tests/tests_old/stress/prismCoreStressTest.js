@@ -2,14 +2,10 @@
  * @fileoverview Stress test pour PRISM Core v1.0.0
  */
 
-import fs from 'node:fs';
 import path from 'node:path';
-import os from 'node:os';
-import { EventEmitter } from 'node:events';
 import { performance } from 'node:perf_hooks';
 import { fileURLToPath } from 'node:url';
 import { dirname } from 'node:path';
-import { prismBus } from '../../prismBus.js';
 import { jest } from '@jest/globals';
 import kernelBus from '../../core/KernelBus.js';
 import performanceMonitor from '../../monitoring/prismPerformanceMonitor.js';

@@ -1,4 +1,4 @@
-import { metrics, recordLatency } from '../telemetry/prismMetrics.js';
+import { recordLatency } from '../telemetry/prismMetrics.js';
 
 describe('Metrics Overhead Benchmark', () => {
   const ITERATIONS = 10000;

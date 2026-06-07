@@ -5,15 +5,10 @@
 
 import fs from 'node:fs';
 import path from 'node:path';
-import os from 'node:os';
-import { EventEmitter } from 'node:events';
 import { performance } from 'node:perf_hooks';
 import { fileURLToPath } from 'node:url';
 import { dirname } from 'node:path';
-import { prismBus } from '../../prismBus.js';
 import kernelBus from '../../core/KernelBus.js';
-import performanceMonitor from '../../monitoring/prismPerformanceMonitor.js';
-import fsPromises from 'node:fs/promises';
 import { PrismCore } from '../../core/prismCore.js';
 import { PrismLogger } from '../../monitoring/prismLogger.js';
 

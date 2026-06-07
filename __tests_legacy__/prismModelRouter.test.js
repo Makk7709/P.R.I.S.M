@@ -1,6 +1,4 @@
 import { chooseModel, handleUserInstruction } from '../prismModelRouter.js';
-import { PrismModelRouter } from '../prismModelRouter.js';
-import { config as CONFIG } from '../config.js';
 import { jest } from '@jest/globals';
 
 // Mock fetch

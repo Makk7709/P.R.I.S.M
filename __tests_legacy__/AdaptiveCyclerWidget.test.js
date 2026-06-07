@@ -5,7 +5,6 @@
 import { jest } from '@jest/globals';
 import { AdaptiveCyclerWidget } from '../ui/AdaptiveCyclerWidget.js';
 import { config } from '../config.js';
-import { PrismPurgeScheduler } from '../regulation/PrismPurgeScheduler.js';
 import 'jest-canvas-mock';
 
 // Mock DOM elements

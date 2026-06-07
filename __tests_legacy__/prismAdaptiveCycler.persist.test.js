@@ -1,5 +1,4 @@
 import { PrismAdaptiveCycler } from '../regulation/prismAdaptiveCycler.js';
-import kernelBus from '../core/KernelBus.js';
 import PrismStorage from '../prismStorage.js';
 import { jest } from '@jest/globals';
 

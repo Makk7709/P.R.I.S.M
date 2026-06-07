@@ -38,9 +38,6 @@ jest.mock('../../ui/InsightCenter.js', () => ({
 global.CONFIG = CONFIG;
 
 // Import components
-import { AdaptiveCyclerWidget } from '../../ui/AdaptiveCyclerWidget.js';
-import { InsightCenter } from '../../ui/InsightCenter.js';
-import { AudioManager } from '../../audio.js';
 
 // Configuration des tests
 const TEST_CONFIG = {

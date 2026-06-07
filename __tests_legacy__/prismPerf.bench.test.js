@@ -3,7 +3,6 @@
  */
 
 import { PrismAdaptiveCycler } from '../regulation/prismAdaptiveCycler.js';
-import { PrismHMAC } from '../security/prismHMAC.js';
 import { PrismProfiler } from '../perf/prismProfiler.js';
 import PrismStrategicLayer from '../regulation/prismStrategicLayer.js';
 import { PrismCodexAnalyzer } from '../memory/prismCodexAnalyzer.js';

@@ -1,6 +1,5 @@
 import { PrismBehavioralLearner } from '../monitoring/prismBehavioralLearner.js';
 import { jest } from '@jest/globals';
-import kernelBus from '../core/KernelBus.js';
 
 jest.mock('../prismBus.js', () => ({
   prismBus: {

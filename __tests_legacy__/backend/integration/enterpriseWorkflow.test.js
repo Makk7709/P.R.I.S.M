@@ -9,7 +9,6 @@
 
 import { EnterpriseDetectionService } from '../../../backend/services/enterpriseDetectionService.js';
 import { EnterpriseSanitizer } from '../../../backend/services/enterpriseSanitizer.js';
-import { EnterprisePDFService } from '../../../backend/services/enterprisePDFService.js';
 
 describe('Enterprise Workflow Integration', () => {
   let detectionService;

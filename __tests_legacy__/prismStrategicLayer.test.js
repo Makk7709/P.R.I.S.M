@@ -2,7 +2,7 @@
  * @fileoverview Tests unitaires pour prismStrategicLayer
  */
 
-import { generateDirectives, CONSTANTS } from '../prismStrategicLayer.js';
+import { generateDirectives } from '../prismStrategicLayer.js';
 import kernelBus from '../core/KernelBus.js';
 import { jest } from '@jest/globals';
 

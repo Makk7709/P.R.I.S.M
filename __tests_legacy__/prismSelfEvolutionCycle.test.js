@@ -29,10 +29,7 @@ import { generateSelfInstruction } from '../backend/selfOptimizer.js';
 import { evaluateSuggestion } from '../backend/decisionFirewall.js';
 import { executeSelfOptimizationCycle } from '../backend/selfApplicationEngine.js';
 import { analyzeMemoryPerformance } from '../backend/memoryAnalyzer.js';
-import { prismStateStore } from '../persistence/prismStateStore.js';
 // import { saveMemorySnapshot, fetchLatestSnapshots } from '../backend/database.js';
-import { SelfImprovementEngine } from '../evolution/selfImprovementEngine.js';
-import { logger } from '../utils/logger.js';
 import * as perplexity from '../integration/perplexity.js';
 
 describe('PRISM Self Evolution Cycle', () => {

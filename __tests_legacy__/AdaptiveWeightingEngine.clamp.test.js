@@ -5,7 +5,6 @@ import { jest } from '@jest/globals';
 
 // Force l'utilisation du vrai module 'crypto' de Node.js pour ce test
 jest.unmock('crypto');
-import crypto from 'node:crypto';
 
 import { AdaptiveWeightingEngine, WeightCriteria } from '../src/core/AdaptiveWeightingEngine.js';
 import fs from 'node:fs/promises';

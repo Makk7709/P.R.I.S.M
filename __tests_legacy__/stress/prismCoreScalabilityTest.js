@@ -1,9 +1,7 @@
-import { jest } from '@jest/globals';
 import { PrismCore } from '../../prismCore.js';
 import { PrismStrategy } from '../../core/PrismStrategy.js';
 import { PrismSelfOptimization } from '../../core/PrismSelfOptimization.js';
 import { PrismPerformanceMonitor } from '../../monitoring/PrismPerformanceMonitor.js';
-import { performance } from 'node:perf_hooks';
 
 describe('PRISM Core Scalability Tests', () => {
   let prismCore;

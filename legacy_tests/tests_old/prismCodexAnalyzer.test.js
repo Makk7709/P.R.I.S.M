@@ -3,7 +3,6 @@
  */
 
 import { PrismCodexAnalyzer } from '../../../memory/prismCodexAnalyzer.js';
-import kernelBus from '../core/KernelBus.js';
 import { jest } from '@jest/globals';
 
 describe('PrismCodexAnalyzer', () => {

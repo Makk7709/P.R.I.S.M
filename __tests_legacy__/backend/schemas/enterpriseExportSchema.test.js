@@ -6,7 +6,6 @@
  * Méthodologie: TDD strict, >95% coverage
  */
 
-import Joi from 'joi';
 import fs from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
