@@ -20,7 +20,7 @@ async function loadSecurityConfig() {
   try {
     const securityModule = await import('./config/security.js');
     SECURITY_CONFIG = securityModule.SECURITY_CONFIG || SECURITY_CONFIG;
-  } catch (_error) {
+  } catch {
     console.warn('Security config not found, using defaults');
   }
 }

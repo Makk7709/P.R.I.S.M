@@ -103,7 +103,7 @@ describe('PrismCore - Idempotence Stricte', () => {
     try {
       const { IdempotentPrismCore } = await import('../../../src/core/IdempotentPrismCore.js');
       core = new IdempotentPrismCore();
-    } catch (_error) {
+    } catch {
       // Attendu en Phase RED
       console.log('IdempotentPrismCore non implémenté - Phase RED OK');
     }

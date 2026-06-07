@@ -23,7 +23,7 @@ const metadataPath = path.join(snapshotPath, '.prism-snapshot-meta.json');
 let metadata = {};
 try {
   metadata = JSON.parse(fs.readFileSync(metadataPath, 'utf8'));
-} catch (_error) {
+} catch {
   console.warn('⚠️ Could not read snapshot metadata');
 }
 

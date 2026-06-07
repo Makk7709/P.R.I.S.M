@@ -60,7 +60,7 @@ describe('PrismCircuitBreaker', () => {
         await prismCircuitBreaker.execute('test', () => {
           throw new Error('Test failure');
         });
-      } catch (error) {
+      } catch {
         // Ignorer l'erreur
       }
     }
@@ -80,7 +80,7 @@ describe('PrismCircuitBreaker', () => {
         await prismCircuitBreaker.execute('test', () => {
           throw new Error('Test failure');
         });
-      } catch (error) {
+      } catch {
         // Ignorer l'erreur
       }
     }

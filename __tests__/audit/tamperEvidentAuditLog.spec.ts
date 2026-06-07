@@ -41,7 +41,7 @@ describe('TamperEvidentAuditLog - Tamper Detection', () => {
     try {
       await fs.rm(testLogDir, { recursive: true, force: true });
       await fs.rm(testKeyDir, { recursive: true, force: true });
-    } catch (_error) {
+    } catch {
       // Ignorer erreurs de nettoyage
     }
   });

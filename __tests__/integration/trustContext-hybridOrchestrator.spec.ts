@@ -282,7 +282,7 @@ describe('HybridOrchestrator + TrustContext Integration', () => {
       try {
         await orchestrator.process('Test', 'critical');
         expect.fail('Should have thrown an error');
-      } catch (_e) {
+      } catch {
         // Expected
       }
 
@@ -389,7 +389,7 @@ describe('HybridOrchestrator + TrustContext Integration', () => {
 
       try {
         await orchestrator.process('Test', 'critical');
-      } catch (_e) {
+      } catch {
         // Expected rejection
       }
 
@@ -419,7 +419,7 @@ describe('HybridOrchestrator + TrustContext Integration', () => {
       // Même en cas d'erreur, si taskType='critical', TrustContext devrait être appelé
       try {
         await orchestrator.process('Test', 'critical');
-      } catch (_e) {
+      } catch {
         // Erreur attendue
       }
 

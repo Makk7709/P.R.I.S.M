@@ -89,7 +89,7 @@ describe('TrustContext - Property-Based Tests (Invariants Critiques)', () => {
     // Nettoyer
     try {
       await fs.rm(path.dirname(testKeyDir), { recursive: true, force: true });
-    } catch (_error) {
+    } catch {
       // Ignorer erreurs de nettoyage
     }
   });

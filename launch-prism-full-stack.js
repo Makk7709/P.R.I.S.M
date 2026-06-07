@@ -356,7 +356,7 @@ async function main() {
       });
     });
     logService('🐳 Docker', 'Disponible', 'success');
-  } catch (_error) {
+  } catch {
     logService('🐳 Docker', 'Non disponible - Services Docker désactivés', 'warning');
   }
   

@@ -63,7 +63,7 @@ describe('TrustContext E2E Workflow - TRL 5', () => {
     // WIPE répertoire de test au complet pour éviter pollution
     try {
       await fs.rm(testBase, { recursive: true, force: true });
-    } catch (_error) {
+    } catch {
       // Ignorer si répertoire n'existe pas
     }
     await fs.mkdir(testKeyDir, { recursive: true });
@@ -117,7 +117,7 @@ describe('TrustContext E2E Workflow - TRL 5', () => {
       if (testKeyDir) {
         await fs.rm(path.dirname(testKeyDir), { recursive: true, force: true });
       }
-    } catch (_error) {
+    } catch {
       // Ignorer
     }
   });

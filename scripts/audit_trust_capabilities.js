@@ -183,7 +183,7 @@ function analyzeCapabilitiesUsage() {
             usageMap[capability].usedIn.push(path.relative(PRISM_ROOT, file));
             usageMap[capability].totalReferences += matches.length;
           }
-        } catch (_err) {
+        } catch {
           // Ignorer les erreurs de lecture
         }
       }

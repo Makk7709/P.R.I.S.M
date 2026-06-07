@@ -243,7 +243,7 @@ export class HybridOrchestrator {
           setTimeout(() => reject(new Error('Consensus timeout')), this.consensusTimeout)
         )
       ]);
-    } catch (_error) {
+    } catch {
       // Timeout ou erreur - générer des votes simulés et utiliser fallback
       consensusResult = await this._generateFallbackConsensus(input, taskType, classification);
     }
@@ -293,7 +293,7 @@ export class HybridOrchestrator {
       if (result && result.votes && result.votes.length >= 2) {
         return result;
       }
-    } catch (_e) {
+    } catch {
       // Ignorer les erreurs du ConsensusManager réel
     }
     

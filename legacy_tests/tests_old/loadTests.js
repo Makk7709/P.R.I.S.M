@@ -162,7 +162,7 @@ class PrismLoadTester {
         });
         
         this.metrics.throughput.push(Date.now());
-      } catch (error) {
+      } catch {
         this.metrics.errorCount++;
       }
       

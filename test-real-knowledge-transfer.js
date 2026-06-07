@@ -117,7 +117,7 @@ class RealKnowledgeTransferTest {
         bioData = JSON.parse(bioAnalysis.choices[0].message.content);
         mappingData = JSON.parse(conceptMapping.content[0].text);
         synthesisData = JSON.parse(synthesis.choices[0].message.content);
-      } catch (_e) {
+      } catch {
         console.log('⚠️ Données non-JSON reçues, utilisation de valeurs par défaut');
         bioData = { mechanisms: ['selection'], patterns: ['optimization'], transferable_concepts: ['adaptation'] };
         mappingData = { mappings: [{ bio_concept: 'evolution', cs_equivalent: 'genetic_algorithm' }] };

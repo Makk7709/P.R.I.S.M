@@ -610,7 +610,7 @@ class ConsensusTestSuite {
             timestamp: Date.now()
           });
         }
-      } catch (_) {
+      } catch {
         // Ignore and proceed with event listeners
       }
       const timeout = setTimeout(() => {

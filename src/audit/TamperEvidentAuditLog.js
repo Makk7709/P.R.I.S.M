@@ -110,7 +110,7 @@ export class TamperEvidentAuditLog extends EventEmitter {
       this.privateKey = privateKeyPem;
       this.publicKey = publicKeyPem;
       
-    } catch (_error) {
+    } catch {
       // Générer nouvelles clés Ed25519
       console.log('[TamperEvidentAuditLog] Generating new Ed25519 keypair...');
       
@@ -198,7 +198,7 @@ export class TamperEvidentAuditLog extends EventEmitter {
       return files
         .filter(f => f.startsWith('audit-') && f.endsWith('.jsonl'))
         .sort();
-    } catch (_error) {
+    } catch {
       return [];
     }
   }
@@ -320,7 +320,7 @@ export class TamperEvidentAuditLog extends EventEmitter {
           // NOTE: Ne PAS réinitialiser lastHash à 'GENESIS' ici
           // Le premier record du nouveau fichier doit continuer la chaîne avec prevHash = this.lastHash
         }
-      } catch (_error) {
+      } catch {
         // Fichier n'existe pas encore, c'est OK - currentFile sera utilisé pour le premier append
       }
     }
@@ -421,7 +421,7 @@ export class TamperEvidentAuditLog extends EventEmitter {
       let publicKey;
       try {
         publicKey = await fs.readFile(publicKeyPath, 'utf8');
-      } catch (_error) {
+      } catch {
         return {
           ok: false,
           failure: {

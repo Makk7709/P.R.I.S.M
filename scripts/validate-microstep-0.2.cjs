@@ -200,7 +200,7 @@ async function validateTypeScriptTypes() {
       const compileCommand = `npx tsc --noEmit --skipLibCheck ${typesPath}`;
       await runCommand(compileCommand, 'Compilation TypeScript');
       console.log('✅ Types TypeScript compilent sans erreur');
-    } catch (_error) {
+    } catch {
       // Fallback: vérifier la syntaxe basique
       console.log('⚠️  TSC non disponible, vérification syntaxe basique...');
       

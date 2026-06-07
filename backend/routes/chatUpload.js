@@ -321,7 +321,7 @@ router.get('/stats', (req, res) => {
       success: true,
       data: stats,
     });
-  } catch (_error) {
+  } catch {
     res.status(500).json({
       success: false,
       error: {

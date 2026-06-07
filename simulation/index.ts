@@ -119,7 +119,7 @@ OUTPUTS:
 function ensureOutputDir(outputDir: string): void {
   try {
     mkdirSync(outputDir, { recursive: true });
-  } catch (_error) {
+  } catch {
     console.error(`❌ Failed to create output directory: ${outputDir}`);
     process.exit(1);
   }

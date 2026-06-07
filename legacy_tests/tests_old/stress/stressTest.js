@@ -32,7 +32,7 @@ class StressTest {
       const latency = Date.now() - startTime;
       this.metrics.recordEvent(latency);
       
-    } catch (error) {
+    } catch {
       this.metrics.recordFailure();
     }
   }

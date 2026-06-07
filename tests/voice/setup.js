@@ -151,7 +151,7 @@ URL.createObjectURL = (blob) => {
   if (originalCreateObjectURL && blob instanceof Blob) {
     try {
       return originalCreateObjectURL(blob);
-    } catch (_e) {
+    } catch {
       // Fallback si échoue
     }
   }
@@ -163,7 +163,7 @@ URL.revokeObjectURL = (url) => {
   if (originalRevokeObjectURL) {
     try {
       return originalRevokeObjectURL(url);
-    } catch (_e) {
+    } catch {
       // Ignore
     }
   }

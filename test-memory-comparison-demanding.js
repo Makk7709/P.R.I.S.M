@@ -19,7 +19,7 @@ let openai = null;
 try {
   openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
   console.log('✅ OpenAI configuré pour test intelligence');
-} catch (_error) {
+} catch {
   console.warn('⚠️ OpenAI non configuré - Tests limités');
 }
 
@@ -741,7 +741,7 @@ class DemandingMemoryTest {
       if (fs.existsSync('./data/test-ai-integration.json')) {
         fs.unlinkSync('./data/test-ai-integration.json');
       }
-    } catch (_error) {
+    } catch {
       // Ignorer erreurs nettoyage
     }
     

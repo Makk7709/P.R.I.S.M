@@ -23,7 +23,7 @@ describe('TrustContext Security Verification - Simplified', () => {
       TrustContext = trustModule.TrustContext;
       CriticalityLevel = trustModule.CriticalityLevel;
       _ApprovalStatus = trustModule.ApprovalStatus;
-    } catch (_error) {
+    } catch {
       console.warn('Could not import TrustContext, using mock');
       // Mock TrustContext pour les tests
       TrustContext = class MockTrustContext {

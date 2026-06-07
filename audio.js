@@ -90,7 +90,7 @@ export class AudioManager {
   async initializeAudioContext() {
     try {
       this.audioContext = new (window.AudioContext || window.webkitAudioContext)();
-    } catch (_error) {
+    } catch {
       throw new Error('Web Audio API not supported');
     }
   }
@@ -99,7 +99,7 @@ export class AudioManager {
     try {
       const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
       stream.getTracks().forEach(track => track.stop()); // Stop the stream after getting permission
-    } catch (_error) {
+    } catch {
       throw new Error(config.MESSAGES.ERROR.MICROPHONE);
     }
   }

@@ -277,7 +277,7 @@ describe('PRISM Core Advanced Stress Test', () => {
           try {
             await Promise.all(eventBatch.map(event => PRISM.processEvent(event)));
             eventsProcessed += eventBatch.length;
-          } catch (error) {
+          } catch {
             failuresDetected++;
           }
           

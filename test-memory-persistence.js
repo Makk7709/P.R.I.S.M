@@ -106,7 +106,7 @@ class PersistenceTest {
             memoryFiles.push(...memFiles.map(f => `${path}${f}`));
           }
         }
-      } catch (_error) {
+      } catch {
         // Ignorer les erreurs d'accès
       }
     }

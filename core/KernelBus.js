@@ -459,7 +459,7 @@ export class KernelBus extends EventEmitter {
             timestamp: Date.now()
           });
         }
-      } catch (_) {
+      } catch {
         // Ignore and fall back to event-based wait
       }
       const timeout = setTimeout(() => {

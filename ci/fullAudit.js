@@ -53,7 +53,7 @@ async function runAudit() {
     
     try {
       execCommand('npm ci --no-audit --no-progress');
-    } catch (_error) {
+    } catch {
       console.log('npm ci failed, trying npm install...');
       execCommand('npm install --no-audit --no-progress');
     }
@@ -190,7 +190,7 @@ async function runAudit() {
     try {
       execCommand('pkill -f "node telemetry/prismMetrics.js"');
       execCommand('pkill -f "http-echo"');
-    } catch (_error) {
+    } catch {
       // Ignore cleanup errors
     }
   }

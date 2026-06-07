@@ -171,7 +171,7 @@ describe('PrismCore - Failover et Dépendances Externes', () => {
     try {
       const { FailoverPrismCore } = await import('../../../src/core/FailoverPrismCore.js');
       core = new FailoverPrismCore();
-    } catch (_error) {
+    } catch {
       // Attendu en Phase RED
       console.log('FailoverPrismCore non implémenté - Phase RED OK');
     }

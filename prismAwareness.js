@@ -329,7 +329,7 @@ export default class PrismAwareness {
     try {
       const vitals = await this._gatherSystemVitals();
       await this.adjustBehaviorBasedOnVitals(vitals);
-    } catch (_error) {
+    } catch {
       this._logSystemEvent('Adaptive analysis failed', 'error');
     }
   }

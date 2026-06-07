@@ -262,7 +262,7 @@ describe('PrismCore - Métriques et Logs', () => {
     try {
       const { MetricsPrismCore } = await import('../../../src/core/MetricsPrismCore.js');
       core = new MetricsPrismCore();
-    } catch (_error) {
+    } catch {
       // Attendu en Phase RED
       console.log('MetricsPrismCore non implémenté - Phase RED OK');
     }

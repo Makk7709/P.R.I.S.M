@@ -98,7 +98,7 @@ class MutationRunner extends EventEmitter {
         console.log('🧪 Running tests...');
         execSync('npm test --silent', { stdio: 'ignore' });
         console.log(`❌ Mutant ${total} survived`);
-      } catch (error) {
+      } catch {
         killed++;
         console.log(`✅ Mutant ${total} killed`);
       }

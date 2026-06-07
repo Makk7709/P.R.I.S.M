@@ -76,7 +76,7 @@ async function testDependencies() {
         await import(dep);
         console.log(`✅ ${dep}`);
       }
-    } catch (_error) {
+    } catch {
       console.log(`❌ ${dep} - MANQUANT`);
       allOk = false;
     }

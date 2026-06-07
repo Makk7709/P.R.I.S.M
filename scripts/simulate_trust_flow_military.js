@@ -107,7 +107,7 @@ async function testHybridOrchestratorTrustContext() {
     try {
       await orchestrator.process('DELETE ALL DATA', 'critical');
       assert(trustContextCalled, 'TrustContext a été appelé pour requête CRITICAL');
-    } catch (_e) {
+    } catch {
       // Peut échouer sur autre chose, mais TrustContext doit avoir été appelé
       assert(trustContextCalled, 'TrustContext a été appelé même en cas d\'erreur');
     }
@@ -189,7 +189,7 @@ async function testExcelAnalyzerTrustContext() {
     try {
       await analyzer.analyze(largeFile, { filename: 'large.xlsx' });
       assert(trustContextCalled, 'TrustContext a été appelé pour fichier > 10MB');
-    } catch (_e) {
+    } catch {
       // Peut échouer sur parsing, mais TrustContext doit avoir été appelé
       assert(trustContextCalled, 'TrustContext a été appelé même si parsing échoue');
     }
@@ -212,7 +212,7 @@ async function testExcelAnalyzerTrustContext() {
     try {
       await analyzer.analyze(smallFile, 'Analyze confidential data');
       assert(trustContextCalled, 'TrustContext a été appelé pour mot-clé sensible');
-    } catch (_e) {
+    } catch {
       assert(trustContextCalled, 'TrustContext a été appelé même en cas d\'erreur');
     }
     

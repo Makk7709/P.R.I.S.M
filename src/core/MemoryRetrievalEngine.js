@@ -228,7 +228,7 @@ export class MemoryRetrievalEngine {
     if (typeof window !== 'undefined' && prismMemory && prismMemory.appendMemoryEntry) {
       try {
         prismMemory.appendMemoryEntry(memoryEntry);
-      } catch (_error) {
+      } catch {
         // Ignorer si localStorage non disponible (côté serveur)
       }
     }

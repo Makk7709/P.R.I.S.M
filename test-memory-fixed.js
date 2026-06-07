@@ -17,7 +17,7 @@ console.log('══════════════════════�
 let openai = null;
 try {
   openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
-} catch (_error) {
+} catch {
   console.warn('⚠️ OpenAI non configuré, certains tests seront ignorés');
 }
 

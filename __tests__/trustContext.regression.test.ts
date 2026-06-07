@@ -68,7 +68,7 @@ describe('TrustContext - Tests de Régression', () => {
   afterEach(async () => {
     try {
       await fs.rm(path.dirname(testKeyDir), { recursive: true, force: true });
-    } catch (_error) {
+    } catch {
       // Ignorer
     }
   });

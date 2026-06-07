@@ -54,7 +54,7 @@ describe('ExcelAnalyzer + TrustContext Integration', () => {
 
       try {
         await analyzer.analyze(largeFile as any, 'Analyze this file');
-      } catch (_e) {
+      } catch {
         // Peut échouer sur parsing, mais TrustContext doit être appelé
       }
 
@@ -135,7 +135,7 @@ describe('ExcelAnalyzer + TrustContext Integration', () => {
 
       try {
         await analyzer.analyze(smallFile as any, 'Analyze');
-      } catch (_e) {
+      } catch {
         // Ignorer erreurs parsing
       }
 
@@ -186,7 +186,7 @@ describe('ExcelAnalyzer + TrustContext Integration', () => {
 
         try {
           await analyzer.analyze(file as any, userQuery);
-        } catch (_e) {
+        } catch {
           // Ignorer erreurs parsing
         }
 
@@ -240,7 +240,7 @@ describe('ExcelAnalyzer + TrustContext Integration', () => {
 
         try {
           await analyzer.analyze(file as any, query);
-        } catch (_e) {
+        } catch {
           // Ignorer erreurs
         }
       }
@@ -278,7 +278,7 @@ describe('ExcelAnalyzer + TrustContext Integration', () => {
 
       try {
         await analyzer.analyze(file as any, 'Analyze contacts');
-      } catch (_e) {
+      } catch {
         // Ignorer erreurs
       }
 
@@ -322,7 +322,7 @@ describe('ExcelAnalyzer + TrustContext Integration', () => {
 
       try {
         await analyzer.analyze(file as any, 'Analyze confidential');
-      } catch (_e) {
+      } catch {
         // Expected
       }
 
@@ -342,7 +342,7 @@ describe('ExcelAnalyzer + TrustContext Integration', () => {
 
       try {
         await analyzer.analyze(emptyFile as any, 'Analyze');
-      } catch (_e) {
+      } catch {
         // Expected error
       }
 
@@ -368,7 +368,7 @@ describe('ExcelAnalyzer + TrustContext Integration', () => {
 
       try {
         await analyzer.analyze(exactSizeFile as any, 'Analyze');
-      } catch (_e) {
+      } catch {
         // Ignorer erreurs
       }
 
@@ -394,7 +394,7 @@ describe('ExcelAnalyzer + TrustContext Integration', () => {
 
       try {
         await analyzer.analyze(largeFile as any, '');
-      } catch (_e) {
+      } catch {
         // Ignorer erreurs
       }
 
@@ -429,7 +429,7 @@ describe('ExcelAnalyzer + TrustContext Integration', () => {
 
       try {
         await analyzer.analyze(largeFile as any, 'Analyze');
-      } catch (_e) {
+      } catch {
         // Ignorer erreurs
       }
 

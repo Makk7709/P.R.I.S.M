@@ -463,7 +463,7 @@ async function checkServerAvailability() {
             timeout: 5000 
         });
         return response.ok;
-    } catch (_error) {
+    } catch {
         return false;
     }
 }

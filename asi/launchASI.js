@@ -213,7 +213,7 @@ class ASILauncher {
       const _stats = fs.statSync('.');
       // Vérification basique - dans un vrai système, utiliser une bibliothèque dédiée
       logger.info('✅ Espace disque suffisant');
-    } catch (_error) {
+    } catch {
       throw new Error('Impossible de vérifier l\'espace disque');
     }
   }
