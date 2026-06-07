@@ -99,7 +99,7 @@ describe('PrismStateStore', () => {
   describe('Performance', () => {
     it('should handle large state data within 50ms', async () => {
       const largeData = {
-        array: Array(1000).fill(0).map((_, i) => ({ id: i, value: Math.random() })),
+        array: new Array(1000).fill(0).map((_, i) => ({ id: i, value: Math.random() })),
         timestamp: Date.now()
       };
 

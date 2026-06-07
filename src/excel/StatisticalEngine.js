@@ -446,7 +446,7 @@ export class StatisticalEngine {
     const max = Math.max(...validData);
     const binWidth = (max - min) / bins;
     
-    const histogram = Array(bins).fill(0).map((_, i) => ({
+    const histogram = new Array(bins).fill(0).map((_, i) => ({
       binStart: min + i * binWidth,
       binEnd: min + (i + 1) * binWidth,
       count: 0,

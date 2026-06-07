@@ -566,7 +566,7 @@ describe('DataTypeDetector', () => {
     it('should sample large columns for performance', () => {
       const largeColumn = {
         name: 'LargeData',
-        values: Array(10000).fill(0).map((_, i) => i)
+        values: new Array(10000).fill(0).map((_, i) => i)
       };
       
       const detector50 = new DataTypeDetector({ sampleSize: 50 });
@@ -579,7 +579,7 @@ describe('DataTypeDetector', () => {
     it('should maintain accuracy with sampling', () => {
       const largeColumn = {
         name: 'Amounts',
-        values: Array(10000).fill(0).map((_, i) => (i * 1.5).toFixed(2))
+        values: new Array(10000).fill(0).map((_, i) => (i * 1.5).toFixed(2))
       };
       
       const result = detector.analyzeColumn(largeColumn);

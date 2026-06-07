@@ -126,7 +126,7 @@ class MutationRunner extends EventEmitter {
     console.log(`📋 Target functions: ${module.targetFunctions.join(', ')}`);
 
     // Remove comments and strings to avoid mutating them
-    const codeWithoutComments = sourceCode.replace(/\/\/.*|\/\*[^]*?\*\/|"(?:[^"\\]|\\.)*"|'(?:[^'\\]|\\.)*'/g, ' ');
+    const codeWithoutComments = sourceCode.replaceAll(/\/\/.*|\/\*[^]*?\*\/|"(?:[^"\\]|\\.)*"|'(?:[^'\\]|\\.)*'/g, ' ');
 
     // First try targeted function mutations
     let foundFunctions = false;

@@ -227,7 +227,7 @@ async function main() {
     }
     
     // Save results
-    const timestamp = new Date().toISOString().replace(/[:.]/g, '-');
+    const timestamp = new Date().toISOString().replaceAll(/[:.]/g, '-');
     const resultsFile = path.join(resultsDir, `batch_results_${timestamp}.json`);
     fs.writeFileSync(resultsFile, JSON.stringify({ results, summary }, null, 2));
     

@@ -408,13 +408,13 @@ export class ASIInterface extends EventEmitter {
   adjustResponseStyle(response, style) {
     // Ajustement de la formalité
     if (style.formality < 0.3) {
-      response = response.replace(/vous/g, 'tu').replace(/Vous/g, 'Tu');
+      response = response.replaceAll(/vous/g, 'tu').replaceAll(/Vous/g, 'Tu');
     }
 
     // Ajustement de la verbosité
     if (style.verbosity < 0.3) {
       // Simplification (implémentation basique)
-      response = response.replace(/superintelligente/g, 'avancée');
+      response = response.replaceAll(/superintelligente/g, 'avancée');
     }
 
     return response;

@@ -135,9 +135,9 @@ export class ChatFileProcessor {
 
     // Supprimer les caractères dangereux
     return fileName
-      .replace(/\.\./g, '')
+      .replaceAll(/\.\./g, '')
       .replace(/[/\\]/g, '_')
-      .replace(/[<>:"|?*]/g, '_')
+      .replaceAll(/[<>:"|?*]/g, '_')
       .substring(0, 255);
   }
 

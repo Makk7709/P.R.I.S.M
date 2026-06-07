@@ -26,7 +26,7 @@ class PrismAuroraConsciousness {
     prismBus.subscribe('prism:reflection:insightGenerated', this.handleInsightGenerated.bind(this));
     
     // Initialiser l'historique
-    this.historicalData = Array(this.maxHistoryLength).fill(0);
+    this.historicalData = new Array(this.maxHistoryLength).fill(0);
     
     // Émettre l'état initial
     this.emitAwakeningState();

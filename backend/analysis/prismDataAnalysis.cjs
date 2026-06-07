@@ -266,7 +266,7 @@ class PrismDataAnalyzer {
     // Générer un ID unique basé sur le contenu et timestamp
     const content = response.content || '';
     const timestamp = response.metadata?.timestamp || Date.now();
-    return `resp_${content.substring(0, 10).replace(/\W/g, '')}_${timestamp}`.substring(0, 32);
+    return `resp_${content.substring(0, 10).replaceAll(/\W/g, '')}_${timestamp}`.substring(0, 32);
   }
 
   _storePattern(analysis) {

@@ -125,7 +125,7 @@ export class MultitaskLearningEngine extends EventEmitter {
    */
   initializeBiases() {
     return [256, 128, 64].map(size => 
-      Array(size).fill(0).map(() => (Math.random() - 0.5) * 0.1)
+      new Array(size).fill(0).map(() => (Math.random() - 0.5) * 0.1)
     );
   }
 

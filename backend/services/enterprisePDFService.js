@@ -331,20 +331,20 @@ class EnterprisePDFService {
   formatContent(content) {
     return content
       // Headers
-      .replace(/^### (.+)$/gm, '<h3>$1</h3>')
-      .replace(/^## (.+)$/gm, '<h2>$1</h2>')
-      .replace(/^# (.+)$/gm, '<h1>$1</h1>')
+      .replaceAll(/^### (.+)$/gm, '<h3>$1</h3>')
+      .replaceAll(/^## (.+)$/gm, '<h2>$1</h2>')
+      .replaceAll(/^# (.+)$/gm, '<h1>$1</h1>')
       
       // Bold/Italic
-      .replace(/\*\*([^*]+)\*\*/g, '<strong>$1</strong>')
-      .replace(/\*([^*]+)\*/g, '<em>$1</em>')
+      .replaceAll(/\*\*([^*]+)\*\*/g, '<strong>$1</strong>')
+      .replaceAll(/\*([^*]+)\*/g, '<em>$1</em>')
       
       // Lists
-      .replace(/^• (.+)$/gm, '<li>$1</li>')
+      .replaceAll(/^• (.+)$/gm, '<li>$1</li>')
       .replace(/(<li>.*<\/li>)/s, '<ul>$1</ul>')
       
       // Paragraphs
-      .replace(/\n\n/g, '</p><p>')
+      .replaceAll(/\n\n/g, '</p><p>')
       .replace(/^/, '<p>')
       .replace(/$/, '</p>');
   }

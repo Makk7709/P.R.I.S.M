@@ -428,7 +428,7 @@ export class ConsensusBenchmark {
    * Save raw results to JSONL
    */
   async saveRawResults() {
-    const timestamp = new Date().toISOString().replace(/[:.]/g, '-');
+    const timestamp = new Date().toISOString().replaceAll(/[:.]/g, '-');
     const filename = `consensus_runs_${timestamp}.jsonl`;
     const filepath = path.join(BENCHMARK_CONFIG.RESULTS_DIR, filename);
     
@@ -442,7 +442,7 @@ export class ConsensusBenchmark {
    * Generate CSV export
    */
   async generateCSVExport() {
-    const timestamp = new Date().toISOString().replace(/[:.]/g, '-');
+    const timestamp = new Date().toISOString().replaceAll(/[:.]/g, '-');
     const filename = `consensus_summary_${timestamp}.csv`;
     const filepath = path.join(BENCHMARK_CONFIG.EXPORTS_DIR, filename);
     
@@ -491,7 +491,7 @@ export class ConsensusBenchmark {
    * Generate analysis report
    */
   async generateAnalysisReport() {
-    const timestamp = new Date().toISOString().replace(/[:.]/g, '-');
+    const timestamp = new Date().toISOString().replaceAll(/[:.]/g, '-');
     const filename = `CONSENSUS_LATENCY_REPORT_${timestamp}.md`;
     const filepath = path.join(BENCHMARK_CONFIG.REPORTS_DIR, filename);
     
@@ -580,7 +580,7 @@ ${recommendations.map(rec =>
    * Generate control prompt
    */
   async generateControlPrompt() {
-    const timestamp = new Date().toISOString().replace(/[:.]/g, '-');
+    const timestamp = new Date().toISOString().replaceAll(/[:.]/g, '-');
     const filename = `CONTROL_PROMPT_${timestamp}.md`;
     const filepath = path.join(BENCHMARK_CONFIG.REPORTS_DIR, filename);
     

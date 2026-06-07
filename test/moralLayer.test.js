@@ -233,7 +233,7 @@ describe('MoralLayer', () => {
     });
 
     test('devrait être thread-safe', () => {
-      const promises = Array(10)
+      const promises = new Array(10)
         .fill()
         .map(() => Promise.resolve(moralLayer.analyzeContent('test')));
       return Promise.all(promises).then((results) => {

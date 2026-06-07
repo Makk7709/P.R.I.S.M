@@ -139,7 +139,7 @@ class SelfMonitor {
     }
 
     generateReport(analysis) {
-        const reportPath = path.join(this.batchLogDir, `batch_analysis_${new Date().toISOString().replace(/[:.]/g, '-')}.json`);
+        const reportPath = path.join(this.batchLogDir, `batch_analysis_${new Date().toISOString().replaceAll(/[:.]/g, '-')}.json`);
         fs.writeFileSync(reportPath, JSON.stringify(analysis, null, 2));
     }
 

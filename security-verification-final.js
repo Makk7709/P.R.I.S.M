@@ -285,7 +285,7 @@ function displaySummary(report) {
   console.log('\n🛡️ Security Verification:');
   Object.entries(report.security_verification).forEach(([key, value]) => {
     const status = value.status === 'PASS' ? '✅' : '❌';
-    console.log(`  ${key.replace(/_/g, ' ')}: ${status}`);
+    console.log(`  ${key.replaceAll(/_/g, ' ')}: ${status}`);
   });
   
   console.log('\n📈 Coverage Analysis:');

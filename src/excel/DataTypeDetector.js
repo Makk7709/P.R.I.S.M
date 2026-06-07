@@ -517,7 +517,7 @@ export class DataTypeDetector {
     // Format français (espace comme séparateur milliers, virgule décimale)
     const frenchMatch = str.match(/^-?([\d\s]+),(\d+)$/);
     if (frenchMatch) {
-      const val = Number.parseFloat(str.replace(/\s/g, '').replace(',', '.'));
+      const val = Number.parseFloat(str.replaceAll(/\s/g, '').replace(',', '.'));
       return {
         isNumeric: !isNaN(val),
         value: val,
@@ -529,7 +529,7 @@ export class DataTypeDetector {
     // Format allemand (point séparateur milliers, virgule décimale)
     const germanMatch = str.match(/^-?([\d.]+),(\d+)$/);
     if (germanMatch) {
-      const val = Number.parseFloat(str.replace(/\./g, '').replace(',', '.'));
+      const val = Number.parseFloat(str.replaceAll(/\./g, '').replace(',', '.'));
       return {
         isNumeric: !isNaN(val),
         value: val,
@@ -541,7 +541,7 @@ export class DataTypeDetector {
     // Format standard (virgule séparateur milliers, point décimal)
     const standardMatch = str.match(/^-?([\d,]+)\.?(\d*)$/);
     if (standardMatch) {
-      const val = Number.parseFloat(str.replace(/,/g, ''));
+      const val = Number.parseFloat(str.replaceAll(/,/g, ''));
       const isInteger = !str.includes('.') || str.endsWith('.00');
       return {
         isNumeric: !isNaN(val),
@@ -640,11 +640,11 @@ export class DataTypeDetector {
 
         // Nettoyer selon le type
         if (type === DataType.CURRENCY) {
-          cleaned = v.replace(/[€$£\s]/g, '').replace(',', '.');
+          cleaned = v.replaceAll(/[€$£\s]/g, '').replace(',', '.');
         } else if (type === DataType.PERCENTAGE) {
-          cleaned = v.replace(/%\s*/g, '').replace(',', '.');
+          cleaned = v.replaceAll(/%\s*/g, '').replace(',', '.');
         } else {
-          cleaned = v.replace(/\s/g, '').replace(',', '.');
+          cleaned = v.replaceAll(/\s/g, '').replace(',', '.');
         }
 
         const num = Number.parseFloat(cleaned);

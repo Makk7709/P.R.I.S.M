@@ -409,7 +409,7 @@ export class ASIMemorySystemFixed extends EventEmitter {
     
     // Tokenisation simple mais réelle
     const words = query.toLowerCase()
-      .replace(/[^\w\s]/g, ' ')
+      .replaceAll(/[^\w\s]/g, ' ')
       .split(/\s+/)
       .filter(word => word.length > 2);
     
@@ -499,7 +499,7 @@ export class ASIMemorySystemFixed extends EventEmitter {
     if (!entry.content) return;
     
     const words = entry.content.toLowerCase()
-      .replace(/[^\w\s]/g, ' ')
+      .replaceAll(/[^\w\s]/g, ' ')
       .split(/\s+/)
       .filter(word => word.length > 2);
     

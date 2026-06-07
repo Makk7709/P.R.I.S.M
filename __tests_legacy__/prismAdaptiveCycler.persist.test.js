@@ -34,7 +34,7 @@ describe('PrismAdaptiveCycler Persistence', () => {
     it('should save and restore state with identical interval and efficiency', async () => {
       // Setup initial state
       const testInterval = 8000;
-      const testOutcomes = Array(200).fill(1); // 100% efficiency
+      const testOutcomes = new Array(200).fill(1); // 100% efficiency
       
       cycler.currentCycleInterval = testInterval;
       testOutcomes.forEach(outcome => {
@@ -86,7 +86,7 @@ describe('PrismAdaptiveCycler Persistence', () => {
       // Setup test data
       const testData = {
         currentInterval: 10000,
-        deque: Array(200).fill(1)
+        deque: new Array(200).fill(1)
       };
       
       // Measure save operation

@@ -208,7 +208,7 @@ export class TamperEvidentAuditLog extends EventEmitter {
    * @private
    */
   _getCurrentLogFilePath() {
-    const timestamp = new Date().toISOString().replace(/:/g, '-').split('.')[0];
+    const timestamp = new Date().toISOString().replaceAll(/:/g, '-').split('.')[0];
     const filename = `audit-${timestamp}.jsonl`;
     return path.join(this.config.logDir, filename);
   }

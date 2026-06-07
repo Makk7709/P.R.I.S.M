@@ -261,10 +261,10 @@ class PrismPersistence {
   }
 
   _compressString(str) {
-    return str.replace(/\s+/g, '')
-      .replace(/"([^"]+)":/g, '$1:')
-      .replace(/,}/g, '}')
-      .replace(/,]/g, ']');
+    return str.replaceAll(/\s+/g, '')
+      .replaceAll(/"([^"]+)":/g, '$1:')
+      .replaceAll(/,}/g, '}')
+      .replaceAll(/,]/g, ']');
   }
 
   _decompressString(str) {

@@ -51,23 +51,23 @@ export class VoiceOptimizer {
     let result = text;
     
     // 1. Supprimer le markdown bold/italic
-    result = result.replace(/\*\*([^*]+)\*\*/g, '$1');
-    result = result.replace(/\*([^*]+)\*/g, '$1');
-    result = result.replace(/__([^_]+)__/g, '$1');
-    result = result.replace(/_([^_]+)_/g, '$1');
+    result = result.replaceAll(/\*\*([^*]+)\*\*/g, '$1');
+    result = result.replaceAll(/\*([^*]+)\*/g, '$1');
+    result = result.replaceAll(/__([^_]+)__/g, '$1');
+    result = result.replaceAll(/_([^_]+)_/g, '$1');
     
     // 2. Supprimer les headers markdown
-    result = result.replace(/^#{1,6}\s+/gm, '');
+    result = result.replaceAll(/^#{1,6}\s+/gm, '');
     
     // 3. Supprimer les emojis tout en gardant le texte
-    result = result.replace(/[\u{1F300}-\u{1F9FF}]|[\u{2600}-\u{26FF}]|[\u{2700}-\u{27BF}]/gu, '');
+    result = result.replaceAll(/[\u{1F300}-\u{1F9FF}]|[\u{2600}-\u{26FF}]|[\u{2700}-\u{27BF}]/gu, '');
     
     // 4. Convertir les listes à puces en texte naturel
     const bulletMatches = result.match(/^[•\-*]\s+(.+)$/gm);
     if (bulletMatches) {
       const ordinals = ['Premièrement', 'Deuxièmement', 'Troisièmement', 'Quatrièmement', 'Cinquièmement'];
       let bulletIndex = 0;
-      result = result.replace(/^[•\-*]\s+(.+)$/gm, (match, content) => {
+      result = result.replaceAll(/^[•\-*]\s+(.+)$/gm, (match, content) => {
         const ordinal = ordinals[bulletIndex] || `Point ${bulletIndex + 1}`;
         bulletIndex++;
         return `${ordinal}, ${content}.`;
@@ -80,20 +80,20 @@ export class VoiceOptimizer {
     }
     
     // 6. Supprimer les liens markdown
-    result = result.replace(/\[([^\]]+)\]\([^)]+\)/g, '$1');
+    result = result.replaceAll(/\[([^\]]+)\]\([^)]+\)/g, '$1');
     
     // 7. Supprimer les backticks de code
-    result = result.replace(/`([^`]+)`/g, '$1');
-    result = result.replace(/```[\s\S]*?```/g, '');
+    result = result.replaceAll(/`([^`]+)`/g, '$1');
+    result = result.replaceAll(/```[\s\S]*?```/g, '');
     
     // 8. Nettoyer les espaces multiples
-    result = result.replace(/\s+/g, ' ');
-    result = result.replace(/\n{3,}/g, '\n\n');
+    result = result.replaceAll(/\s+/g, ' ');
+    result = result.replaceAll(/\n{3,}/g, '\n\n');
     
     // 9. Ajouter des pauses naturelles si demandé
     if (options.addPauses) {
-      result = result.replace(/\.\s+/g, '... ');
-      result = result.replace(/:\s+/g, '... ');
+      result = result.replaceAll(/\.\s+/g, '... ');
+      result = result.replaceAll(/:\s+/g, '... ');
     }
     
     return result.trim();

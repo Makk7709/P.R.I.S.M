@@ -137,7 +137,7 @@ describe('PrismEventGuard', () => {
 
   describe('Performance', () => {
     test('traite 1000 validations en moins de 100ms', async () => {
-      const events = Array(1000).fill(null).map(() => ({
+      const events = new Array(1000).fill(null).map(() => ({
         ...validEvent,
         sig: 'test-signature'
       }));

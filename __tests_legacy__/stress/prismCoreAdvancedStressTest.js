@@ -213,7 +213,7 @@ describe('PRISM Core Advanced Stress Test', () => {
     // Process events in batches
     for (let i = 0; i < NUM_EVENTS; i += BATCH_SIZE) {
       const batchStart = Date.now();
-      const eventBatch = Array(BATCH_SIZE).fill(null).map(generateRandomEvent);
+      const eventBatch = new Array(BATCH_SIZE).fill(null).map(generateRandomEvent);
       
       try {
         await Promise.all(eventBatch.map(event => PRISM.processEvent(event)));
@@ -269,10 +269,10 @@ describe('PRISM Core Advanced Stress Test', () => {
       const eventsPerInstance = Math.floor(NUM_EVENTS / numInstances);
 
       // Process events in parallel across simulated instances
-      const instancePromises = Array(numInstances).fill(null).map(async () => {
+      const instancePromises = new Array(numInstances).fill(null).map(async () => {
         for (let j = 0; j < eventsPerInstance; j += BATCH_SIZE) {
           const batchStart = Date.now();
-          const eventBatch = Array(BATCH_SIZE).fill(null).map(generateRandomEvent);
+          const eventBatch = new Array(BATCH_SIZE).fill(null).map(generateRandomEvent);
           
           try {
             await Promise.all(eventBatch.map(event => PRISM.processEvent(event)));

@@ -170,7 +170,7 @@ describe('Dashboard', () => {
       for (let i = 0; i < maxEntries + 100; i++) {
         dashboard.metrics.prompts.push({ timestamp: new Date() });
         dashboard.metrics.executionTimes.push({ timestamp: new Date() });
-        dashboard.metrics.qualityScores.openai = Array(maxEntries + 100).fill(0);
+        dashboard.metrics.qualityScores.openai = new Array(maxEntries + 100).fill(0);
         dashboard.metrics.alerts.push({ timestamp: new Date() });
       }
 

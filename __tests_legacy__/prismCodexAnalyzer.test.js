@@ -166,7 +166,7 @@ describe('PrismCodexAnalyzer', () => {
 
     test('détecte un pattern de dérive', async () => {
       // Génération d'une séquence de 5 dérives
-      const driftEvents = Array(5).fill().map((_, i) => ({
+      const driftEvents = new Array(5).fill().map((_, i) => ({
         id: `drift-${i}`,
         timestamp: Date.now() - (5 - i) * 1000,
         type: 'drift',
@@ -188,7 +188,7 @@ describe('PrismCodexAnalyzer', () => {
 
     test('ne détecte pas de pattern si insuffisant d\'événements', async () => {
       // Génération de seulement 2 dérives
-      const driftEvents = Array(2).fill().map((_, i) => ({
+      const driftEvents = new Array(2).fill().map((_, i) => ({
         id: `drift-${i}`,
         timestamp: Date.now() - (2 - i) * 1000,
         type: 'drift',
@@ -208,7 +208,7 @@ describe('PrismCodexAnalyzer', () => {
       customAnalyzer.eventBuffer = [];
 
       // Génération de 3 dérives (insuffisant pour la sensibilité de 4)
-      const driftEvents = Array(3).fill().map((_, i) => ({
+      const driftEvents = new Array(3).fill().map((_, i) => ({
         id: `drift-${i}`,
         timestamp: Date.now() - (3 - i) * 1000,
         type: 'drift',
@@ -267,7 +267,7 @@ describe('PrismCodexAnalyzer', () => {
 
     test('applique correctement la pondération temporelle exponentielle', async () => {
       // Génération d'événements avec des types variés
-      const events = Array(100).fill().map((_, i) => ({
+      const events = new Array(100).fill().map((_, i) => ({
         id: `event-${i}`,
         timestamp: Date.now() - (100 - i) * 1000,
         type: i % 3 === 0 ? 'improvement' : i % 3 === 1 ? 'drift' : 'stagnation',
@@ -297,7 +297,7 @@ describe('PrismCodexAnalyzer', () => {
 
     test('détecte correctement un effondrement latent', async () => {
       // Génération d'événements avec une forte stagnation récente
-      const events = Array(100).fill().map((_, i) => ({
+      const events = new Array(100).fill().map((_, i) => ({
         id: `event-${i}`,
         timestamp: Date.now() - (100 - i) * 1000,
         type: i < 70 ? 'stagnation' : 'improvement',
@@ -315,7 +315,7 @@ describe('PrismCodexAnalyzer', () => {
     });
 
     test('émet correctement l\'événement de prédiction', async () => {
-      const events = Array(100).fill().map((_, i) => ({
+      const events = new Array(100).fill().map((_, i) => ({
         id: `event-${i}`,
         timestamp: Date.now() - (100 - i) * 1000,
         type: 'improvement',

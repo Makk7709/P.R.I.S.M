@@ -10,17 +10,17 @@ const sanitizeText = (input) => {
   // Intentional: this sanitizer must match raw control characters (null bytes,
   // C0/C1 controls) in order to strip them — matching them is the goal.
   // eslint-disable-next-line no-control-regex
-  let sanitized = input.replace(/[\0-\x1F\x7F-\x9F]/g, '');
+  let sanitized = input.replaceAll(/[\0-\x1F\x7F-\x9F]/g, '');
   
   // Remove potential script tags and their content
-  sanitized = sanitized.replace(/<script\b[^<]*(?:(?!<\/script>)<[^<]*)*<\/script>/gi, '');
+  sanitized = sanitized.replaceAll(/<script\b[^<]*(?:(?!<\/script>)<[^<]*)*<\/script>/gi, '');
   
   // Remove other potentially dangerous HTML tags
-  sanitized = sanitized.replace(/<(?:javascript|vbscript|expression|iframe|object|embed|style|link|meta)[^>]*>/gi, '');
+  sanitized = sanitized.replaceAll(/<(?:javascript|vbscript|expression|iframe|object|embed|style|link|meta)[^>]*>/gi, '');
   
   // Remove inline event handlers
-  sanitized = sanitized.replace(/on\w+="[^"]*"/g, '');
-  sanitized = sanitized.replace(/on\w+='[^']*'/g, '');
+  sanitized = sanitized.replaceAll(/on\w+="[^"]*"/g, '');
+  sanitized = sanitized.replaceAll(/on\w+='[^']*'/g, '');
   
   return sanitized.trim();
 };

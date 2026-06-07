@@ -319,16 +319,16 @@ const sanitizeInput = (req, res, next) => {
     data.content = data.content
       // Intentional: strip raw control characters from user content.
       // eslint-disable-next-line no-control-regex
-      .replace(/[\x00-\x08\x0B\x0C\x0E-\x1F\x7F]/g, '') // Supprime caractères de contrôle
-      .replace(/\s+/g, ' ') // Normalise les espaces
+      .replaceAll(/[\x00-\x08\x0B\x0C\x0E-\x1F\x7F]/g, '') // Supprime caractères de contrôle
+      .replaceAll(/\s+/g, ' ') // Normalise les espaces
       .trim();
     
     // Sanitisation du titre - replace control chars with space, then normalize spaces
     data.metadata.title = data.metadata.title
       // Intentional: replace raw control characters in the title with spaces.
       // eslint-disable-next-line no-control-regex
-      .replace(/[\x00-\x08\x0B\x0C\x0E-\x1F\x7F]/g, ' ') // Replace control chars with space
-      .replace(/\s+/g, ' ') // Normalize multiple spaces to single space
+      .replaceAll(/[\x00-\x08\x0B\x0C\x0E-\x1F\x7F]/g, ' ') // Replace control chars with space
+      .replaceAll(/\s+/g, ' ') // Normalize multiple spaces to single space
       .trim();
     
     const sanitizationTime = Number(process.hrtime.bigint() - startTime) / 1000000;

@@ -84,7 +84,7 @@ async function runBatch3(nbRuns = 50) {
   const archiveDir = path.join(process.cwd(), 'archives');
   await fs.mkdir(archiveDir, { recursive: true });
   
-  const timestamp = new Date().toISOString().replace(/[:.]/g, '-');
+  const timestamp = new Date().toISOString().replaceAll(/[:.]/g, '-');
   const resultsFile = path.join(archiveDir, `observation_batch3_adaptive_${timestamp}.json`);
   
   await fs.writeFile(resultsFile, JSON.stringify({

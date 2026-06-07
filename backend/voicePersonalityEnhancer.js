@@ -113,8 +113,8 @@ Réponds avec l'énergie d'un chercheur passionné qui vient de faire une décou
     // Adaptation selon la complexité
     if (complexity === 'high') {
       // Ajouter plus de pauses pour la réflexion
-      enhancedText = enhancedText.replace(/\. /g, '. ... ');
-      enhancedText = enhancedText.replace(/: /g, ': .. ');
+      enhancedText = enhancedText.replaceAll(/\. /g, '. ... ');
+      enhancedText = enhancedText.replaceAll(/: /g, ': .. ');
     }
 
     // Adaptation émotionnelle
@@ -138,10 +138,10 @@ Réponds avec l'énergie d'un chercheur passionné qui vient de faire une décou
    */
   addExcitement(text) {
     let excited = text;
-    excited = excited.replace(/!/g, ' ! ✨');
-    excited = excited.replace(/excellent/gi, '**excellent**');
-    excited = excited.replace(/fantastique/gi, '**fantastique**');
-    excited = excited.replace(/parfait/gi, '**parfait**');
+    excited = excited.replaceAll(/!/g, ' ! ✨');
+    excited = excited.replaceAll(/excellent/gi, '**excellent**');
+    excited = excited.replaceAll(/fantastique/gi, '**fantastique**');
+    excited = excited.replaceAll(/parfait/gi, '**parfait**');
     return `🎉 ${excited}`;
   }
 
@@ -150,9 +150,9 @@ Réponds avec l'énergie d'un chercheur passionné qui vient de faire une décou
    */
   addConcern(text) {
     let concerned = text;
-    concerned = concerned.replace(/problème/gi, '*problème*');
-    concerned = concerned.replace(/attention/gi, '**attention**');
-    concerned = concerned.replace(/important/gi, '**important**');
+    concerned = concerned.replaceAll(/problème/gi, '*problème*');
+    concerned = concerned.replaceAll(/attention/gi, '**attention**');
+    concerned = concerned.replaceAll(/important/gi, '**important**');
     return `⚠️ ${concerned}`;
   }
 
@@ -161,9 +161,9 @@ Réponds avec l'énergie d'un chercheur passionné qui vient de faire une décou
    */
   addConfidence(text) {
     let confident = text;
-    confident = confident.replace(/certain/gi, '**certain**');
-    confident = confident.replace(/efficace/gi, '**efficace**');
-    confident = confident.replace(/optimal/gi, '**optimal**');
+    confident = confident.replaceAll(/certain/gi, '**certain**');
+    confident = confident.replaceAll(/efficace/gi, '**efficace**');
+    confident = confident.replaceAll(/optimal/gi, '**optimal**');
     return `💪 ${confident}`;
   }
 

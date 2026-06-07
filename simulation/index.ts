@@ -133,7 +133,7 @@ async function writeResults(
   results: any, 
   scenario: string
 ): Promise<void> {
-  const _timestamp = new Date().toISOString().replace(/[:.]/g, '-');
+  const _timestamp = new Date().toISOString().replaceAll(/[:.]/g, '-');
   
   try {
     // Write CSV data

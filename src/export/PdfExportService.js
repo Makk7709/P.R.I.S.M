@@ -1072,19 +1072,19 @@ export class PdfExportService {
       const formatting = [];
 
       // Bold
-      text = text.replace(/\*\*(.*?)\*\*/g, (_, match) => {
+      text = text.replaceAll(/\*\*(.*?)\*\*/g, (_, match) => {
         formatting.push({ type: 'bold', text: match });
         return match;
       });
 
       // Italic
-      text = text.replace(/\*(.*?)\*/g, (_, match) => {
+      text = text.replaceAll(/\*(.*?)\*/g, (_, match) => {
         formatting.push({ type: 'italic', text: match });
         return match;
       });
 
       // Code
-      text = text.replace(/`(.*?)`/g, (_, match) => {
+      text = text.replaceAll(/`(.*?)`/g, (_, match) => {
         formatting.push({ type: 'code', text: match });
         return match;
       });

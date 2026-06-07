@@ -66,8 +66,8 @@ class VoicePerformanceFixer {
     
     // Enrichissement minimal pour requêtes complexes
     const quickEnhanced = content
-      .replace(/\n/g, ' ... ')  // Pauses naturelles
-      .replace(/\b(important|crucial|essentiel)\b/gi, '**$1**'); // Emphase
+      .replaceAll(/\n/g, ' ... ')  // Pauses naturelles
+      .replaceAll(/\b(important|crucial|essentiel)\b/gi, '**$1**'); // Emphase
     
     return {
       text: quickEnhanced,
@@ -179,9 +179,9 @@ class VoicePerformanceFixer {
 
     // Réduire maxTokens par défaut
     const updatedContent = content
-      .replace(/max_tokens: skipContext \? 500 : 1000/g, 'max_tokens: skipContext ? 300 : 600')
-      .replace(/temperature: 0\.3/g, 'temperature: 0.1')
-      .replace(/const snapshots = await loadContextSnapshots\(3\)/g, 'const snapshots = await loadContextSnapshots(1)');
+      .replaceAll(/max_tokens: skipContext \? 500 : 1000/g, 'max_tokens: skipContext ? 300 : 600')
+      .replaceAll(/temperature: 0\.3/g, 'temperature: 0.1')
+      .replaceAll(/const snapshots = await loadContextSnapshots\(3\)/g, 'const snapshots = await loadContextSnapshots(1)');
 
     await fs.writeFile(orchestratorPath, updatedContent);
     console.log('   ✅ Configuration API optimisée');

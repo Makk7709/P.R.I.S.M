@@ -52,8 +52,8 @@ const _filesToUpdate = [
 async function updateImports(filePath) {
   try {
     const content = await fs.readFile(filePath, 'utf8');
-    const relativePath = path.relative(path.dirname(filePath), path.join(__dirname, '../core')).replace(/\\/g, '/');
-    const updatedContent = content.replace(
+    const relativePath = path.relative(path.dirname(filePath), path.join(__dirname, '../core')).replaceAll(/\\/g, '/');
+    const updatedContent = content.replaceAll(
       /import\s+(\w+)\s+from\s+['"]@core\/KernelBus\.js['"]/g,
       `import $1 from '${relativePath}/KernelBus.js'`
     );

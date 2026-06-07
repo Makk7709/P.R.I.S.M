@@ -594,7 +594,7 @@ describe('EnterprisePDFService', () => {
         }
       };
 
-      const promises = Array(5).fill(null).map(() => 
+      const promises = new Array(5).fill(null).map(() => 
         pdfService.generateExecutiveReport(sanitizedData)
       );
 

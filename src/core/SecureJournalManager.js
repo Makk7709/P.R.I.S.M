@@ -438,7 +438,7 @@ export class SecureJournalManager extends EventEmitter {
    * Crée un nouveau fichier de journal
    */
   async createNewJournalFile() {
-    const timestamp = new Date().toISOString().replace(/[:.]/g, '-');
+    const timestamp = new Date().toISOString().replaceAll(/[:.]/g, '-');
     const filename = `journal-${timestamp}.log`;
     this.currentFile = path.join(this.config.journalPath, filename);
     this.currentFileSize = 0;

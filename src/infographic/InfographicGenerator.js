@@ -316,7 +316,7 @@ STYLE VISUEL:
 - Layout: ${template.layout}
 
 ÉLÉMENTS À INCLURE:
-${template.elements.map((el) => `- ${el.replace(/_/g, ' ')}`).join('\n')}
+${template.elements.map((el) => `- ${el.replaceAll(/_/g, ' ')}`).join('\n')}
 
 `;
 

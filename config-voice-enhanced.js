@@ -200,14 +200,14 @@ export class PRISMVoiceEnhancer {
     enhancedText = modeConfig.prefix + enhancedText;
 
     // Ajouter des pauses naturelles
-    enhancedText = enhancedText.replace(/\. /g, '. ... ');
-    enhancedText = enhancedText.replace(/! /g, '! .. ');
-    enhancedText = enhancedText.replace(/\? /g, '? .. ');
+    enhancedText = enhancedText.replaceAll(/\. /g, '. ... ');
+    enhancedText = enhancedText.replaceAll(/! /g, '! .. ');
+    enhancedText = enhancedText.replaceAll(/\? /g, '? .. ');
 
     // Ajouter de l'emphase pour les mots importants
-    enhancedText = enhancedText.replace(/PRISM/g, '**PRISM**');
-    enhancedText = enhancedText.replace(/important/gi, '**important**');
-    enhancedText = enhancedText.replace(/critiq/gi, '**critiq**');
+    enhancedText = enhancedText.replaceAll(/PRISM/g, '**PRISM**');
+    enhancedText = enhancedText.replaceAll(/important/gi, '**important**');
+    enhancedText = enhancedText.replaceAll(/critiq/gi, '**critiq**');
 
     return {
       text: enhancedText,

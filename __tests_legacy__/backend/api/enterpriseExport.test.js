@@ -313,7 +313,7 @@ describe('Enterprise Export API', () => {
         const concurrentRequests = 3;
         const startTime = Date.now();
 
-        const requests = Array(concurrentRequests).fill().map((_, i) =>
+        const requests = new Array(concurrentRequests).fill().map((_, i) =>
           request(app)
             .post('/api/export/enterprise-report')
             .send({

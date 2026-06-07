@@ -319,7 +319,7 @@ describe('InfographicGenerator - Tests de Performance', () => {
   });
 
   it('DOIT extraire les données du chat en moins de 50ms', () => {
-    const messages = Array(20).fill({
+    const messages = new Array(20).fill({
       role: 'assistant',
       content: 'Contenu avec des métriques: 150K€, +12%, 45 unités vendues'
     });

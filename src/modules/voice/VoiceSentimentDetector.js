@@ -200,7 +200,7 @@ export class VoiceSentimentDetector {
     }
     
     words.forEach(word => {
-      const cleanWord = word.replace(/[^\w]/g, '');
+      const cleanWord = word.replaceAll(/[^\w]/g, '');
       if (this.emotionLexicon[cleanWord]) {
         const emotionData = this.emotionLexicon[cleanWord];
         scores[emotionData.emotion] += emotionData.intensity;

@@ -128,17 +128,17 @@ export class ElevenLabsClient {
     
     let cleanText = text
       // Supprimer les émojis
-      .replace(/[\u{1F600}-\u{1F64F}]|[\u{1F300}-\u{1F5FF}]|[\u{1F680}-\u{1F6FF}]|[\u{1F1E0}-\u{1F1FF}]|[\u{2600}-\u{26FF}]|[\u{2700}-\u{27BF}]/gu, '')
+      .replaceAll(/[\u{1F600}-\u{1F64F}]|[\u{1F300}-\u{1F5FF}]|[\u{1F680}-\u{1F6FF}]|[\u{1F1E0}-\u{1F1FF}]|[\u{2600}-\u{26FF}]|[\u{2700}-\u{27BF}]/gu, '')
       // Supprimer les caractères de contrôle (sanitization intentionnelle avant TTS)
       // eslint-disable-next-line no-control-regex -- suppression volontaire des caractères de contrôle du texte TTS
-      .replace(/[\u0000-\u001F\u007F-\u009F]/g, '')
+      .replaceAll(/[\u0000-\u001F\u007F-\u009F]/g, '')
       // Nettoyer markdown
-      .replace(/\*\*(.*?)\*\*/g, '$1')
-      .replace(/\*(.*?)\*/g, '$1')
-      .replace(/#{1,6}\s*/g, '')
+      .replaceAll(/\*\*(.*?)\*\*/g, '$1')
+      .replaceAll(/\*(.*?)\*/g, '$1')
+      .replaceAll(/#{1,6}\s*/g, '')
       // Normaliser les espaces
-      .replace(/\n+/g, ' ')
-      .replace(/\s+/g, ' ')
+      .replaceAll(/\n+/g, ' ')
+      .replaceAll(/\s+/g, ' ')
       .trim();
     
     // Tronquer si nécessaire
