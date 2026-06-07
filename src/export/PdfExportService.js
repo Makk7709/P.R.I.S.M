@@ -752,16 +752,12 @@ export class PdfExportService {
       : this.config.layout.margins.left;
 
     // Couleurs
-    const bgColor = isUser
-      ? theme.userBubbleColor
-      : isSystem
-        ? '#F3F4F6'
-        : theme.assistantBubbleColor;
-    const textColor = isUser
-      ? theme.userTextColor
-      : isSystem
-        ? '#6B7280'
-        : theme.assistantTextColor;
+    let bgColor = theme.assistantBubbleColor;
+    if (isUser) bgColor = theme.userBubbleColor;
+    else if (isSystem) bgColor = '#F3F4F6';
+    let textColor = theme.assistantTextColor;
+    if (isUser) textColor = theme.userTextColor;
+    else if (isSystem) textColor = '#6B7280';
 
     // ✅ CORRECTION: Sauvegarder la position Y de départ
     const startY = doc.y;
@@ -779,9 +775,12 @@ export class PdfExportService {
     doc.roundedRect(x, startY, bubbleWidth, bubbleHeight, borderRadius).fill(bgColor);
 
     // ✅ Header du message - position absolue depuis startY
+    let headerColor = theme.accentColor;
+    if (isUser) headerColor = '#6B7280';
+    else if (isSystem) headerColor = '#9CA3AF';
     doc
       .fontSize(9)
-      .fillColor(isUser ? '#6B7280' : isSystem ? '#9CA3AF' : theme.accentColor)
+      .fillColor(headerColor)
       .font('Helvetica-Bold')
       .text(formatted.displayName, x + bubblePadding, startY + bubblePadding, {
         width: bubbleWidth - bubblePadding * 2 - 80,

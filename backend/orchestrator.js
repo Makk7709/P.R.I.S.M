@@ -118,9 +118,10 @@ async function callOpenAI(userInput, skipContext = false, customSystemPrompt = n
   // ✨ PROMPT PRISM ENRICHI POUR PLUS D'EXPRESSIVITÉ
   // Si un prompt personnalisé est fourni (avec mémoire utilisateur), l'utiliser
   const enhancedPrompts = voiceEnhancer.enhanceSystemPrompts();
-  const basePrompt = customSystemPrompt || (skipContext ? 
-    `Tu es PRISM, un système d'intelligence artificielle avancé développé par KOREV AI. Tu n'es PAS un produit OpenAI. Réponds de manière concise et professionnelle avec personnalité.` :
-    enhancedPrompts.openai + (contextSummary ? `\n\n## 📊 CONTEXTE RÉCENT\n${contextSummary}` : ''));
+  const contextSuffix = contextSummary ? `\n\n## 📊 CONTEXTE RÉCENT\n${contextSummary}` : '';
+  const basePrompt = customSystemPrompt || (skipContext
+    ? `Tu es PRISM, un système d'intelligence artificielle avancé développé par KOREV AI. Tu n'es PAS un produit OpenAI. Réponds de manière concise et professionnelle avec personnalité.`
+    : enhancedPrompts.openai + contextSuffix);
   
   // ✨ DEBUG: Log pour vérifier le prompt utilisé
   if (customSystemPrompt) {
@@ -268,9 +269,10 @@ async function callClaude(userInput, skipContext = false) {
   
   // ✨ PROMPT CLAUDE ENRICHI POUR PLUS D'EXPRESSIVITÉ
   const enhancedPrompts = voiceEnhancer.enhanceSystemPrompts();
-  const prismClaudePrompt = skipContext ?
-    `Tu es PRISM-Claude, spécialisé en analyse stratégique avec personnalité expressive.` :
-    enhancedPrompts.claude + (contextSummary ? `\n\n## 📊 CONTEXTE RÉCENT\n${contextSummary}` : '');
+  const contextSuffix = contextSummary ? `\n\n## 📊 CONTEXTE RÉCENT\n${contextSummary}` : '';
+  const prismClaudePrompt = skipContext
+    ? `Tu es PRISM-Claude, spécialisé en analyse stratégique avec personnalité expressive.`
+    : enhancedPrompts.claude + contextSuffix;
 
   const response = await fetch("https://api.anthropic.com/v1/messages", {
     method: "POST",
@@ -312,9 +314,10 @@ export async function callPerplexity(userInput, skipContext = false) {
   
   // ✨ PROMPT PERPLEXITY ENRICHI POUR PLUS D'EXPRESSIVITÉ
   const enhancedPrompts = voiceEnhancer.enhanceSystemPrompts();
-  const systemPrompt = skipContext ?
-    'Tu es un assistant de recherche rapide pour PRISM avec personnalité engageante.' :
-    enhancedPrompts.perplexity + (contextSummary ? `\n\n## 📊 CONTEXTE RÉCENT\n${contextSummary}` : '');
+  const contextSuffix = contextSummary ? `\n\n## 📊 CONTEXTE RÉCENT\n${contextSummary}` : '';
+  const systemPrompt = skipContext
+    ? 'Tu es un assistant de recherche rapide pour PRISM avec personnalité engageante.'
+    : enhancedPrompts.perplexity + contextSuffix;
   
   const response = await fetch("https://api.perplexity.ai/chat/completions", {
     method: "POST",

@@ -17,18 +17,18 @@ const MEMORY_DIR = path.dirname(MEMORY_FILE);
 // Patterns d'extraction d'informations personnelles (extraits de _extractPersonalInfo,
 // iso-comportement : mêmes littéraux, même ordre).
 const PRENOM_INPUT_PATTERNS = [
-  /mon prénom est ([A-Za-zÀ-ÿ]+)/i,
-  /je m'appelle ([A-Za-zÀ-ÿ]+)/i,
-  /appelle-moi ([A-Za-zÀ-ÿ]+)/i,
-  /mon nom est ([A-Za-zÀ-ÿ]+)/i,
-  /je suis ([A-Za-zÀ-ÿ]+)/i,
-  /prénom[:\s]+([A-Za-zÀ-ÿ]+)/i,
+  /mon prénom est ([A-ZÀ-ÿ]+)/i,
+  /je m'appelle ([A-ZÀ-ÿ]+)/i,
+  /appelle-moi ([A-ZÀ-ÿ]+)/i,
+  /mon nom est ([A-ZÀ-ÿ]+)/i,
+  /je suis ([A-ZÀ-ÿ]+)/i,
+  /prénom[:\s]+([A-ZÀ-ÿ]+)/i,
 ];
 
 const PRENOM_RESPONSE_PATTERNS = [
-  /(?:votre|ton) prénom est ([A-Za-zÀ-ÿ]+)/i,
-  /(?:vous vous appelez|tu t'appelles) ([A-Za-zÀ-ÿ]+)/i,
-  /(?:prénom|appelle)[\s:]+([A-Za-zÀ-ÿ]+)/i,
+  /(?:votre|ton) prénom est ([A-ZÀ-ÿ]+)/i,
+  /(?:vous vous appelez|tu t'appelles) ([A-ZÀ-ÿ]+)/i,
+  /(?:prénom|appelle)[\s:]+([A-ZÀ-ÿ]+)/i,
 ];
 
 const ROLE_PATTERNS = [

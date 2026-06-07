@@ -387,12 +387,9 @@ export class ConsensusManager extends EventEmitter {
       // Si status !== OK, jamais APPROVE (abstain ou unavailable)
       if (providerResult.status === 'OK' && providerResult.verdict) {
         // Succès: mapper verdict directement
-        const voteType =
-          providerResult.verdict === 'approve'
-            ? VoteType.APPROVE
-            : providerResult.verdict === 'reject'
-              ? VoteType.REJECT
-              : VoteType.ABSTAIN;
+        let voteType = VoteType.ABSTAIN;
+        if (providerResult.verdict === 'approve') voteType = VoteType.APPROVE;
+        else if (providerResult.verdict === 'reject') voteType = VoteType.REJECT;
         this.submitVote(proposal.id, provider, voteType, providerResult.rationale || '');
       } else {
         // Échec provider: abstain (jamais approve) - No False-Approve

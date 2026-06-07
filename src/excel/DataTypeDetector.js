@@ -128,6 +128,21 @@ const PERCENTAGE_STRING_RULES = [
 ];
 
 /**
+ * Résout le format booléen à partir de la valeur normalisée. Pur. Même cascade
+ * de priorité que les ternaires d'origine (oui/non → oui_non, yes/no → yes_no,
+ * sinon true_false).
+ * @param {string} lower valeur en minuscules
+ * @param {string} ouiNonWord mot déclenchant le format oui_non
+ * @param {string} yesNoWord mot déclenchant le format yes_no
+ * @returns {string}
+ */
+function resolveBooleanFormat(lower, ouiNonWord, yesNoWord) {
+  if (lower === ouiNonWord) return 'oui_non';
+  if (lower === yesNoWord) return 'yes_no';
+  return 'true_false';
+}
+
+/**
  * Détecte un boolean (true/false) avec format (oui_non/yes_no/true_false). Pur.
  * @param {string} trimmed
  * @returns {Object|null}
@@ -135,12 +150,12 @@ const PERCENTAGE_STRING_RULES = [
 function detectBooleanStringType(trimmed) {
   if (PATTERNS.BOOLEAN_TRUE.test(trimmed)) {
     const lower = trimmed.toLowerCase();
-    const format = lower === 'oui' ? 'oui_non' : lower === 'yes' ? 'yes_no' : 'true_false';
+    const format = resolveBooleanFormat(lower, 'oui', 'yes');
     return { type: DataType.BOOLEAN, details: { booleanFormat: format } };
   }
   if (PATTERNS.BOOLEAN_FALSE.test(trimmed)) {
     const lower = trimmed.toLowerCase();
-    const format = lower === 'non' ? 'oui_non' : lower === 'no' ? 'yes_no' : 'true_false';
+    const format = resolveBooleanFormat(lower, 'non', 'no');
     return { type: DataType.BOOLEAN, details: { booleanFormat: format } };
   }
   return null;

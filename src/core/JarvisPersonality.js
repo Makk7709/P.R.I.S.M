@@ -376,7 +376,7 @@ Tu es l'assistant personnel intelligent de confiance. Tu combines expertise tech
     this.conversationHistory.push(conversation);
     
     // Extraire le prénom si mentionné
-    const prenomMatch = conversation.input.match(/(?:mon prénom est|je m'appelle|je suis) ([A-Za-zÀ-ÿ]+)/i);
+    const prenomMatch = conversation.input.match(/(?:mon prénom est|je m'appelle|je suis) ([A-ZÀ-ÿ]+)/i);
     if (prenomMatch) {
       this.conversationContext.userName = prenomMatch[1];
     }

@@ -2085,12 +2085,10 @@ IMPORTANT: Réponds en utilisant UNIQUEMENT les données ci-dessus. Ne jamais in
     text += `| Colonne 1 | Colonne 2 | Corrélation | Force |\n|---|---|---|---|\n`;
 
     for (const corr of analysis.strongCorrelations.slice(0, 10)) {
-      const strength =
-        Math.abs(corr.correlation) > 0.8
-          ? '🔴 Très forte'
-          : Math.abs(corr.correlation) > 0.6
-            ? '🟠 Forte'
-            : '🟡 Modérée';
+      const absCorr = Math.abs(corr.correlation);
+      let strength = '🟡 Modérée';
+      if (absCorr > 0.8) strength = '🔴 Très forte';
+      else if (absCorr > 0.6) strength = '🟠 Forte';
       text += `| ${corr.column1} | ${corr.column2} | ${corr.correlation.toFixed(3)} | ${strength} |\n`;
     }
     text += `\n`;
@@ -2143,8 +2141,9 @@ IMPORTANT: Réponds en utilisant UNIQUEMENT les données ci-dessus. Ne jamais in
     let text = `## ✅ Qualité des Données\n\n`;
 
     if (dataQuality.completeness !== undefined) {
-      const qualityIcon =
-        dataQuality.completeness >= 95 ? '🟢' : dataQuality.completeness >= 80 ? '🟡' : '🔴';
+      let qualityIcon = '🔴';
+      if (dataQuality.completeness >= 95) qualityIcon = '🟢';
+      else if (dataQuality.completeness >= 80) qualityIcon = '🟡';
       text += `- **Complétude globale**: ${qualityIcon} ${dataQuality.completeness.toFixed(1)}%\n`;
     }
 

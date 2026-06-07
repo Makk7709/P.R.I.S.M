@@ -170,10 +170,13 @@ export class InterDomainOrchestrator {
     
     // Collaboration si 2+ domaines identifiés
     if (domains.length >= 2) {
+      let complexity = 'low';
+      if (domains.length >= 4) complexity = 'high';
+      else if (domains.length >= 3) complexity = 'medium';
       return {
         shouldCollaborate: true,
         domains,
-        complexity: domains.length >= 4 ? 'high' : domains.length >= 3 ? 'medium' : 'low'
+        complexity
       };
     }
 
