@@ -227,7 +227,7 @@ export class VoiceSentimentDetector {
     let intensity = 0;
     
     // Ponctuation forte
-    const strongPunctuation = /[!]{2,}|[?]{2,}/g;
+    const strongPunctuation = /!{2,}|\?{2,}/g;
     const strongMatches = text.match(strongPunctuation);
     if (strongMatches) intensity += strongMatches.length * 0.1;
     

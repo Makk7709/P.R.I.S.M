@@ -155,7 +155,7 @@ export function cleanTextForVoice(text) {
       .replace(/\n+/g, ' ')
       .replace(/\s+/g, ' ')
       // ✅ Préserver les accents français, supprimer le reste
-      .replace(/[^\x20-\x7E\u00C0-\u017F\u0152\u0153\u0178]/g, '')
+      .replace(/[^\x20-\x7E\u00C0-\u017F]/g, '')
       .trim()
   );
 }

@@ -207,7 +207,7 @@ class PrismDataAnalyzer {
     // Indicateurs de familiarité (-)
     const casualIndicators = [
       /\b(super|cool|génial|ok|sympa)\b/gi,
-      /[!]{2,}/g,
+      /!{2,}/g,
       /\b(salut|hey|coucou)\b/gi
     ];
     
@@ -254,7 +254,7 @@ class PrismDataAnalyzer {
   _isCasualLanguage(content) {
     const casualPatterns = [
       /\b(super|cool|génial|sympa)\b/gi,
-      /[!]{2,}/g,
+      /!{2,}/g,
       /😀|😊|👍|🎉|🚀/g,
       /\b(salut|hey|coucou)\b/gi
     ];

@@ -247,8 +247,7 @@ export class AudioQueue {
       case 'lowest-priority': {
         // Trouver l'élément avec la plus basse priorité
         let lowestPriority = this._items[0].priority;
-        indexToRemove = 0;
-        
+
         for (let i = 1; i < this._items.length; i++) {
           if (this._items[i].priority < lowestPriority) {
             lowestPriority = this._items[i].priority;
@@ -260,8 +259,7 @@ export class AudioQueue {
         
       case 'oldest':
       default:
-        // Supprimer le plus ancien (premier)
-        indexToRemove = 0;
+        // Supprimer le plus ancien (premier) — indexToRemove est déjà 0
         break;
     }
     
