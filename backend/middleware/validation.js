@@ -243,6 +243,42 @@ const validateEnterpriseExportRequest = (req, res, next) => {
 };
 
 /**
+ * Détecte la présence d'une balise <script>…</script> embarquée (insensible à
+ * la casse). Implémentation linéaire O(n) remplaçant la regex
+ * /<script[\s\S]*?>[\s\S]*?<\/script>/gi qui provoquait un ReDoS catastrophique
+ * sur des payloads du type '<script>x'.repeat(N) (double quantifieur lazy).
+ * Sémantique préservée : exige un '>' de fermeture d'ouverture ET un '</script>'.
+ */
+function containsEmbeddedScriptTag(content) {
+  const lower = content.toLowerCase();
+  let searchFrom = 0;
+
+  while (searchFrom < content.length) {
+    const openIdx = lower.indexOf('<script', searchFrom);
+    if (openIdx === -1) {
+      return false;
+    }
+
+    let tagEnd = openIdx + 7;
+    while (tagEnd < content.length && content[tagEnd] !== '>') {
+      tagEnd++;
+    }
+    if (tagEnd >= content.length) {
+      searchFrom = openIdx + 1;
+      continue;
+    }
+
+    if (lower.indexOf('</script>', tagEnd + 1) !== -1) {
+      return true;
+    }
+
+    searchFrom = openIdx + 1;
+  }
+
+  return false;
+}
+
+/**
  * Vérifications de sécurité supplémentaires
  */
 function performSecurityChecks(data) {
@@ -252,9 +288,22 @@ function performSecurityChecks(data) {
     suggestions: []
   };
 
-  // Vérification de contenu malveillant (specific dangerous patterns)
+  const contentToCheck = data.content + (data.metadata?.title || '');
+
+  // Script embarqué : scanner linéaire (ReDoS-safe, remplace l'ancienne regex)
+  if (containsEmbeddedScriptTag(contentToCheck)) {
+    checks.passed = false;
+    checks.reason = 'Potentially malicious content detected';
+    checks.suggestions = [
+      'Remove script tags and event handlers',
+      'Use plain text or safe markdown formatting',
+      'Avoid HTML and JavaScript code'
+    ];
+    return checks;
+  }
+
+  // Autres motifs dangereux (patterns linéaires, pas de backtracking catastrophique)
   const maliciousPatterns = [
-    /<script[\s\S]*?>[\s\S]*?<\/script>/gi,
     /javascript:/gi,
     /on\w+\s*=/gi,
     /data:text\/html/gi,
@@ -262,8 +311,6 @@ function performSecurityChecks(data) {
     /<img[^>]+onerror/gi // Catch malicious img tags with onerror
   ];
 
-  const contentToCheck = data.content + (data.metadata?.title || '');
-  
   for (const pattern of maliciousPatterns) {
     if (pattern.test(contentToCheck)) {
       checks.passed = false;
