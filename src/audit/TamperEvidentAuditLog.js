@@ -395,148 +395,47 @@ export class TamperEvidentAuditLog extends EventEmitter {
    */
   async verifyAuditLog(options = {}) {
     const { from, to } = options;
-    
+
     try {
       const files = await this._getLogFiles();
       if (files.length === 0) {
-        return {
-          ok: true,
-          stats: {
-            checked: 0,
-            firstTs: null,
-            lastTs: null
-          }
-        };
+        return { ok: true, stats: { checked: 0, firstTs: null, lastTs: null } };
       }
-      
-      let checked = 0;
-      let firstTs = null;
-      let lastTs = null;
-      let previousHash = 'GENESIS';
-      let previousSeq = 0;
-      const _currentPubKeyId = null;
-      
-      // Charger la clé publique (format PEM)
-      const publicKeyPath = path.join(this.config.keyDir, `${this.pubKeyId}.pub`);
-      let publicKey;
-      try {
-        publicKey = await fs.readFile(publicKeyPath, 'utf8');
-      } catch {
+
+      const keyResult = await this._loadVerificationKey();
+      if (keyResult.failure) {
         return {
           ok: false,
-          failure: {
-            type: 'PUBKEY_NOT_FOUND',
-            seq: null,
-            reason: `Public key not found: ${publicKeyPath}`
-          },
-          stats: { checked, firstTs, lastTs }
+          failure: keyResult.failure,
+          stats: { checked: 0, firstTs: null, lastTs: null }
         };
       }
-      
+
+      const state = {
+        checked: 0,
+        firstTs: null,
+        lastTs: null,
+        previousHash: 'GENESIS',
+        previousSeq: 0
+      };
+
       // Lire tous les fichiers dans l'ordre
       for (const file of files) {
-        const filePath = path.join(this.config.logDir, file);
-        const content = await fs.readFile(filePath, 'utf8');
-        const lines = content.split('\n').filter(line => line.trim());
-        
-        for (const line of lines) {
-          let record;
-          try {
-            record = JSON.parse(line);
-          } catch (error) {
-            return {
-              ok: false,
-              failure: {
-                type: 'INVALID_JSON',
-                seq: null,
-                reason: `Invalid JSON in file ${file}: ${error.message}`
-              },
-              stats: { checked, firstTs, lastTs }
-            };
-          }
-          
-          // Filtrer par range si spécifié
-          if (from !== undefined && record.seq < from) continue;
-          if (to !== undefined && record.seq > to) break;
-          
-          checked++;
-          
-          // Vérifier séquence monotone
-          if (record.seq !== previousSeq + 1 && previousSeq > 0) {
-            return {
-              ok: false,
-              failure: {
-                type: 'SEQ_GAP',
-                seq: record.seq,
-                reason: `Sequence gap detected: expected ${previousSeq + 1}, got ${record.seq}`
-              },
-              stats: { checked, firstTs, lastTs }
-            };
-          }
-          
-          // Vérifier prevHash (sauf si GENESIS ou nouveau segment)
-          if (record.prevHash !== 'GENESIS' && record.prevHash !== previousHash) {
-            return {
-              ok: false,
-              failure: {
-                type: 'PREVHASH_MISMATCH',
-                seq: record.seq,
-                reason: `Previous hash mismatch: expected ${previousHash}, got ${record.prevHash}`
-              },
-              stats: { checked, firstTs, lastTs }
-            };
-          }
-          
-          // Vérifier le hash recalculé
-          const canonicalRecord = this._canonicalizeRecord(record);
-          const expectedHash = this._calculateHash(canonicalRecord);
-          if (record.hash !== expectedHash) {
-            return {
-              ok: false,
-              failure: {
-                type: 'HASH_MISMATCH',
-                seq: record.seq,
-                reason: `Hash mismatch: expected ${expectedHash}, got ${record.hash}`
-              },
-              stats: { checked, firstTs, lastTs }
-            };
-          }
-          
-          // Vérifier la signature
-          const messageToVerify = canonicalRecord;
-          const signatureValid = this._verify(messageToVerify, record.sig, publicKey);
-          if (!signatureValid) {
-            return {
-              ok: false,
-              failure: {
-                type: 'SIG_INVALID',
-                seq: record.seq,
-                reason: `Signature verification failed for record ${record.seq}`
-              },
-              stats: { checked, firstTs, lastTs }
-            };
-          }
-          
-          // Mettre à jour l'état
-          previousHash = record.hash;
-          previousSeq = record.seq;
-          if (!firstTs) firstTs = record.ts;
-          lastTs = record.ts;
+        const fileResult = await this._verifyLogFile(
+          file,
+          state,
+          keyResult.publicKey,
+          { from, to }
+        );
+        if (fileResult.failure) {
+          return { ok: false, failure: fileResult.failure, stats: this._verifyStats(state) };
         }
-        
         // Si on a atteint la fin du range, sortir
-        if (to !== undefined && previousSeq >= to) break;
+        if (to !== undefined && state.previousSeq >= to) break;
       }
-      
-      return {
-        ok: true,
-        stats: {
-          checked,
-          firstTs,
-          lastTs
-        }
-      };
-      
+
+      return { ok: true, stats: this._verifyStats(state) };
+
     } catch (error) {
       return {
         ok: false,
@@ -548,6 +447,119 @@ export class TamperEvidentAuditLog extends EventEmitter {
         stats: { checked: 0, firstTs: null, lastTs: null }
       };
     }
+  }
+
+  /** Snapshot des compteurs de vérification exposés dans `stats`. */
+  _verifyStats(state) {
+    return { checked: state.checked, firstTs: state.firstTs, lastTs: state.lastTs };
+  }
+
+  /**
+   * Charge la clé publique (format PEM) utilisée pour vérifier les signatures.
+   * @returns {Promise<{publicKey: string}|{failure: Object}>}
+   */
+  async _loadVerificationKey() {
+    const publicKeyPath = path.join(this.config.keyDir, `${this.pubKeyId}.pub`);
+    try {
+      const publicKey = await fs.readFile(publicKeyPath, 'utf8');
+      return { publicKey };
+    } catch {
+      return {
+        failure: {
+          type: 'PUBKEY_NOT_FOUND',
+          seq: null,
+          reason: `Public key not found: ${publicKeyPath}`
+        }
+      };
+    }
+  }
+
+  /**
+   * Vérifie tous les enregistrements d'un fichier de log, en mettant à jour
+   * `state` au fur et à mesure. Renvoie `{failure}` au premier échec, sinon `{}`.
+   */
+  async _verifyLogFile(file, state, publicKey, range) {
+    const filePath = path.join(this.config.logDir, file);
+    const content = await fs.readFile(filePath, 'utf8');
+    const lines = content.split('\n').filter(line => line.trim());
+
+    for (const line of lines) {
+      let record;
+      try {
+        record = JSON.parse(line);
+      } catch (error) {
+        return {
+          failure: {
+            type: 'INVALID_JSON',
+            seq: null,
+            reason: `Invalid JSON in file ${file}: ${error.message}`
+          }
+        };
+      }
+
+      // Filtrer par range si spécifié
+      if (range.from !== undefined && record.seq < range.from) continue;
+      if (range.to !== undefined && record.seq > range.to) break;
+
+      state.checked++;
+
+      const failure = this._verifyRecord(record, state, publicKey);
+      if (failure) return { failure };
+
+      // Mettre à jour l'état
+      state.previousHash = record.hash;
+      state.previousSeq = record.seq;
+      if (!state.firstTs) state.firstTs = record.ts;
+      state.lastTs = record.ts;
+    }
+
+    return {};
+  }
+
+  /**
+   * Vérifie un enregistrement (séquence, chaînage, hash, signature) au regard
+   * de l'état courant. Renvoie l'objet `failure` au premier problème, sinon null.
+   */
+  _verifyRecord(record, state, publicKey) {
+    // Vérifier séquence monotone
+    if (record.seq !== state.previousSeq + 1 && state.previousSeq > 0) {
+      return {
+        type: 'SEQ_GAP',
+        seq: record.seq,
+        reason: `Sequence gap detected: expected ${state.previousSeq + 1}, got ${record.seq}`
+      };
+    }
+
+    // Vérifier prevHash (sauf si GENESIS ou nouveau segment)
+    if (record.prevHash !== 'GENESIS' && record.prevHash !== state.previousHash) {
+      return {
+        type: 'PREVHASH_MISMATCH',
+        seq: record.seq,
+        reason: `Previous hash mismatch: expected ${state.previousHash}, got ${record.prevHash}`
+      };
+    }
+
+    // Vérifier le hash recalculé
+    const canonicalRecord = this._canonicalizeRecord(record);
+    const expectedHash = this._calculateHash(canonicalRecord);
+    if (record.hash !== expectedHash) {
+      return {
+        type: 'HASH_MISMATCH',
+        seq: record.seq,
+        reason: `Hash mismatch: expected ${expectedHash}, got ${record.hash}`
+      };
+    }
+
+    // Vérifier la signature
+    if (!this._verify(canonicalRecord, record.sig, publicKey)) {
+      return {
+        type: 'SIG_INVALID',
+        seq: record.seq,
+        reason: `Signature verification failed for record ${record.seq}`
+      };
+    }
+
+    return null;
   }
 }
 
