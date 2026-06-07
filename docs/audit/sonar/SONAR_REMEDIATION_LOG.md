@@ -1010,3 +1010,49 @@ niveau de l'agrégation. `MEASURE_RAW=1` désactive le filtre pour audit.
 
 Les −172 = 120 (`^_`) + 46 (TDD/S125) + 6 (alias/S6564). Aucun vrai défaut
 masqué. `npm test` **208/208**, `npm run lint` **0 erreur / 1 warning** connu.
+
+### PHASE 2 — Backlog structurel production (refactors caractérisés, iso prouvé)
+
+Cibles : `cognitive-complexity` (S3776) résiduelle + `no-nested-conditional`
+restantes, **en production prioritaire src/ / backend/ / orchestration/**.
+
+**Constat de périmètre (vérifié)** : après la campagne FULL_REMEDIATION, le
+résiduel structurel **dans le périmètre Sonar maintenu** (clôture d'import de
+`server.js` définie par `sonar-project.properties`) se réduit à **2 fonctions**,
+toutes deux dans `src/` ; `backend/` et `orchestration/` n'en portent **aucune**
+(déjà nettes). Le reste des findings S3776/nested-conditional vit dans des
+modules **explicitement exclus** du périmètre (`asi/`, `core/`, `memory/`,
+`monitoring/`, `scripts/`, orphelins racine `prism*.js`, démos `*-test.js`,
+legacy) — hors surface de production maintenue.
+
+#### Fonctions refactorées (2), iso-comportement PROUVÉ
+
+| # | Fichier · fonction | Règle | Méthode | Preuve iso |
+|---|--------------------|-------|---------|-----------|
+| 1 | `src/audit/TamperEvidentAuditLog.js` · `verifyAuditLog` | S3776 (cognitive-complexity) | Extract Method : `_loadVerificationKey`, `_verifyLogFile`, `_verifyRecord`, `_verifyStats` (état mutable partagé, early returns) | Suite EXISTANTE `__tests__/audit/tamperEvidentAuditLog.spec.ts` (7) + `journal.properties.test.ts` (4), toutes dans le gate : couvrent happy-path, HASH_MISMATCH, SEQ_GAP, insertion, reorder, SIG_INVALID, rotation. **VERT avant ET après.** |
+| 2 | `src/core/MetricsPrismCore.js` · `_updateSystemHealth` | no-nested-conditional (S3358) | Extract du ternaire imbriqué `score>80?…:score>50?…:…` en helper pur `_healthStatusFromScore` (frontières `>` strictes préservées) | **Caractérisation ajoutée** `__tests__/characterization/metricsPrismCoreHealth.characterization.test.ts` (5 tests, frontières 80/50 incluses). Écrite contre le code AVANT (ternaire), VERTE avant, VERTE après. |
+
+> `MetricsPrismCore` n'était pas exercé par le gate (les specs prismcore sont des
+> squelettes TDD) → caractérisation neuve, end-to-end via `_updateSystemHealth`
+> (pilotage des gauges + errorRate), indépendante du nom du helper introduit.
+
+Gate : `npm test` **213/213** (208 + 5 caractérisation), `npm run lint`
+**0 erreur / 1 warning** connu. Mesure harnais : cognitive-complexity 27 → **26**,
+no-nested-conditional 36 → **35** ; code-quality 178 → **176**.
+
+#### Items DIFFÉRÉS (règle STOP appliquée — non prouvables iso sans harnais disproportionné)
+
+| Zone | Findings | Raison du report |
+|------|---------:|------------------|
+| `ui/js/prism-pdf-export.js:669` (nested-conditional) | 1 | Ternaire cosmétique `isUser?…:(isSystem?…:…)` dans une fonction de **scraping DOM** (browser). Hors gate Node ; caractériser exige un harnais jsdom **disproportionné** pour un mapping de 2 booléens. Hors priorité src/backend/orchestration. |
+| `asi/` (S3776 ×3, nested-cond ×8) | ~11 | Module **exclu du périmètre Sonar** (`asi/**`, orphelin hors clôture server.js). Non couvert par le gate. |
+| `core/` (`Resilience.js`, `KernelBus.js`) | ~1 | **Exclu** (`core/**`). |
+| `memory/`, `monitoring/` (S3776) | ~2 | **Exclus** (`memory/**`, `monitoring/**`). |
+| `scripts/`, `staging/generate-report.mjs`, root `prism*.js` orphelins, démos `*-test.js`, `analyze-*.js`, `validate-*.js`, `security-verification-*.js` | reste | Tooling/démos/orphelins **exclus** du périmètre ; aucun n'est dans la clôture de production. |
+| `legacy_tests/`, `__tests_legacy__/`, tests `tests/security/manual-*` | reste | Tier 3 / code de test — hors priorité, faible valeur. |
+
+Justification de fond : refactorer du code **hors périmètre Sonar maintenu** ne
+réduit pas le décompte officiel, ajoute du risque, et exigerait pour chaque
+fonction un harnais de caractérisation dédié (la plupart ne sont pas dans le
+gate). Conformément à la **règle STOP** de la mission, ces items sont **différés
+et documentés** plutôt que forcés.

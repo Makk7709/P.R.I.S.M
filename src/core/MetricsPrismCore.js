@@ -774,8 +774,18 @@ export class MetricsPrismCore extends EventEmitter {
     }
     
     this.systemHealth.score = Math.max(0, score);
-    this.systemHealth.status = score > 80 ? 'healthy' : score > 50 ? 'degraded' : 'critical';
+    this.systemHealth.status = this._healthStatusFromScore(score);
     this.systemHealth.criticalIssues = issues;
+  }
+
+  /**
+   * Mappe un score de santé brut vers son statut. Frontières strictes (`>`)
+   * préservées à l'identique de l'ancien ternaire imbriqué.
+   */
+  _healthStatusFromScore(score) {
+    if (score > 80) return 'healthy';
+    if (score > 50) return 'degraded';
+    return 'critical';
   }
 
   _getLatestMetricValue(metricName) {
