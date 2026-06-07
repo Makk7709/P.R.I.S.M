@@ -266,7 +266,6 @@ export class EconomicCalculator {
     const lostProduction = strategyProduction
       .filter(e => e.value < 0)
       .reduce((sum, e) => sum + Math.abs(e.value), 0);
-    const _productionImpact = totalProduction - lostProduction;
 
     // Calculate remaining membrane life
     const cipCount = strategyEvents.length;

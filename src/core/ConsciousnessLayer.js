@@ -228,7 +228,6 @@ export class ConsciousnessLayer {
 
     // Ajout de l'historique d'apprentissage
     if (this.reflectionHistory.length > 0) {
-      const _recentReflections = this.reflectionHistory.slice(-5);
       enriched += `\n\n## 📚 APPRENTISSAGE CONTINU\n`;
       enriched += `J'ai appris de ${this.reflectionHistory.length} interactions précédentes. `;
       enriched += `Je m'améliore continuellement grâce à la réflexion sur mes réponses. `;

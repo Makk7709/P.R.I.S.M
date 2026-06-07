@@ -133,8 +133,6 @@ async function writeResults(
   results: any, 
   scenario: string
 ): Promise<void> {
-  const _timestamp = new Date().toISOString().replaceAll(/[:.]/g, '-');
-  
   try {
     // Write CSV data
     if (results.baseline || results.prism) {

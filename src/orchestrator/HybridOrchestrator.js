@@ -344,15 +344,6 @@ export class HybridOrchestrator {
    * Obtient le vote d'un provider
    */
   async _getProviderVote(provider, input, proposal) {
-    // Utiliser le router pour obtenir une évaluation de la décision
-    const _evaluationPrompt = `Évalue cette action critique et réponds uniquement par JSON: {"approve": true/false, "reasoning": "explication courte"}
-    
-Action demandée: "${input}"
-Type de criticité: ${proposal.type}
-Score de criticité: ${proposal.criticalityScore}
-
-Dois-tu approuver cette action ?`;
-
     try {
       // Simuler une évaluation basée sur le score de criticité
       // En production, ceci appellerait vraiment chaque provider

@@ -735,7 +735,6 @@ export class SelfImprovementEngine extends EventEmitter {
     for (const change of adjustments.changes) {
       try {
         // Vérifier le timeout
-        const _startTime = Date.now();
         const timeoutPromise = new Promise((_, reject) => {
           setTimeout(() => reject(new Error('Improvement timeout')), 
                     SECURITY_CONFIG.SELF_IMPROVEMENT.IMPROVEMENT_TIMEOUT_MS);
