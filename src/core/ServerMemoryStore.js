@@ -271,19 +271,25 @@ export class ServerMemoryStore {
         const context = match && match[1] ? match[1].trim() : '';
         // Réduire le minimum de 20 à 10 caractères pour capturer plus de contextes
         if (context.length >= 10 && context.length < 500) {
-          if (!this.memory.userInfo.context) {
-            this.memory.userInfo.context = [];
-          }
-          const contextLower = context.toLowerCase();
-          const exists = this.memory.userInfo.context.some((c) => c.toLowerCase() === contextLower);
-          if (!exists) {
-            this.memory.userInfo.context.push(context);
-            console.log(
-              `[ServerMemoryStore] Contexte important détecté: ${context.substring(0, 50)}...`
-            );
-          }
+          this._recordContext(context);
         }
       }
+    }
+  }
+
+  /** Enregistre un contexte important s'il n'existe pas déjà (dedup insensible à
+   * la casse). Iso-comportement : logique extraite de `_extractContext`. @private */
+  _recordContext(context) {
+    if (!this.memory.userInfo.context) {
+      this.memory.userInfo.context = [];
+    }
+    const contextLower = context.toLowerCase();
+    const exists = this.memory.userInfo.context.some((c) => c.toLowerCase() === contextLower);
+    if (!exists) {
+      this.memory.userInfo.context.push(context);
+      console.log(
+        `[ServerMemoryStore] Contexte important détecté: ${context.substring(0, 50)}...`
+      );
     }
   }
 

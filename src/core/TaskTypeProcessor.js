@@ -210,40 +210,16 @@ export class TaskTypeProcessor {
       }
 
       // ✨ ÉTAPE 7: Orchestration (Consensus si critique, Multi-Domain si collaboration, Router sinon)
-      let response;
-      if (collaboration) {
-        // ✨ Collaboration multi-domaines
-        response = await this.interDomainOrchestrator.coordinateMultiDomainResponse(
-          userInput,
-          collaboration,
-          researchData
-        );
-
-        // Convertir en format standard
-        response = {
-          content: response.synthesized,
-          metadata: {
-            multiDomain: true,
-            collaborationId: response.collaborationId,
-            domains: response.domains,
-            individualPerspectives: response.individualPerspectives,
-          },
-        };
-      } else if (criticality.isCritical || taskType === 'critical') {
-        // Utiliser Consensus pour décisions critiques
-        response = await this._processWithConsensus(userInput, taskType, persona, {
-          ...researchData,
-          memoryContext: memoryContext.enrichedContext,
-          enrichedPrompt,
-        });
-      } else {
-        // Router optimisé pour réponses rapides
-        response = await this._processWithRouter(userInput, taskType, persona, {
-          ...researchData,
-          memoryContext: memoryContext.enrichedContext,
-          enrichedPrompt,
-        });
-      }
+      const response = await this._orchestrateResponse({
+        collaboration,
+        criticality,
+        taskType,
+        userInput,
+        researchData,
+        memoryContext,
+        enrichedPrompt,
+        persona,
+      });
 
       // Étape 8: Validation éthique (MoralLayer)
       const ethicalCheck = this.moralLayer.analyzeContent(response.content);
@@ -328,6 +304,56 @@ export class TaskTypeProcessor {
 
       throw error;
     }
+  }
+
+  /**
+   * Orchestration de la réponse (étape 7) : collaboration multi-domaines,
+   * consensus (critique) ou router rapide. Iso-comportement : cascade extraite
+   * de `process`.
+   * @private
+   */
+  async _orchestrateResponse({
+    collaboration,
+    criticality,
+    taskType,
+    userInput,
+    researchData,
+    memoryContext,
+    enrichedPrompt,
+    persona,
+  }) {
+    if (collaboration) {
+      // ✨ Collaboration multi-domaines
+      const multi = await this.interDomainOrchestrator.coordinateMultiDomainResponse(
+        userInput,
+        collaboration,
+        researchData
+      );
+      // Convertir en format standard
+      return {
+        content: multi.synthesized,
+        metadata: {
+          multiDomain: true,
+          collaborationId: multi.collaborationId,
+          domains: multi.domains,
+          individualPerspectives: multi.individualPerspectives,
+        },
+      };
+    }
+    if (criticality.isCritical || taskType === 'critical') {
+      // Utiliser Consensus pour décisions critiques
+      return await this._processWithConsensus(userInput, taskType, persona, {
+        ...researchData,
+        memoryContext: memoryContext.enrichedContext,
+        enrichedPrompt,
+      });
+    }
+    // Router optimisé pour réponses rapides
+    return await this._processWithRouter(userInput, taskType, persona, {
+      ...researchData,
+      memoryContext: memoryContext.enrichedContext,
+      enrichedPrompt,
+    });
   }
 
   /**

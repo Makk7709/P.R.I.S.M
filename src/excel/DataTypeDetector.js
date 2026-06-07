@@ -434,26 +434,7 @@ export class DataTypeDetector {
 
     // Nombre natif
     if (typeof value === 'number') {
-      if (!isFinite(value)) {
-        return { type: DataType.UNKNOWN };
-      }
-
-      // Vérifier si c'est une date Excel
-      if (options.checkExcelDates && value > 25569 && value < 60000) {
-        return { type: DataType.DATE, details: { dateFormat: 'EXCEL_SERIAL' } };
-      }
-
-      // Vérifier si c'est un pourcentage décimal
-      if (options.checkDecimalPercentage && value >= 0 && value <= 1) {
-        return { type: DataType.PERCENTAGE, details: { percentageFormat: 'decimal' } };
-      }
-
-      // Vérifier si c'est un boolean binaire
-      if (options.checkBinaryBoolean && (value === 0 || value === 1)) {
-        return { type: DataType.BOOLEAN, details: { booleanFormat: 'binary' } };
-      }
-
-      return { type: Number.isInteger(value) ? DataType.INTEGER : DataType.FLOAT };
+      return this._detectNumberType(value, options);
     }
 
     // Date native
@@ -467,6 +448,31 @@ export class DataTypeDetector {
     }
 
     return { type: DataType.UNKNOWN };
+  }
+
+  /**
+   * Détecte le sous-type d'une valeur numérique native (date Excel, pourcentage
+   * décimal, boolean binaire, entier/flottant). Iso-comportement : logique
+   * extraite de `_detectSingleValue`.
+   * @private
+   */
+  _detectNumberType(value, options) {
+    if (!isFinite(value)) {
+      return { type: DataType.UNKNOWN };
+    }
+    // Vérifier si c'est une date Excel
+    if (options.checkExcelDates && value > 25569 && value < 60000) {
+      return { type: DataType.DATE, details: { dateFormat: 'EXCEL_SERIAL' } };
+    }
+    // Vérifier si c'est un pourcentage décimal
+    if (options.checkDecimalPercentage && value >= 0 && value <= 1) {
+      return { type: DataType.PERCENTAGE, details: { percentageFormat: 'decimal' } };
+    }
+    // Vérifier si c'est un boolean binaire
+    if (options.checkBinaryBoolean && (value === 0 || value === 1)) {
+      return { type: DataType.BOOLEAN, details: { booleanFormat: 'binary' } };
+    }
+    return { type: Number.isInteger(value) ? DataType.INTEGER : DataType.FLOAT };
   }
 
   /**

@@ -866,26 +866,32 @@ ACTION_RECOMMANDÉE: [conversion/filtrage/aucune]
 
     for (const col1 of Object.keys(correlations)) {
       for (const col2 of Object.keys(correlations[col1])) {
-        if (col1 === col2) continue;
-
-        const key = [col1, col2].sort().join('|');
-        if (seen.has(key)) continue;
-        seen.add(key);
-
-        const corr = correlations[col1][col2];
-        if (Math.abs(corr) >= threshold) {
-          strong.push({
-            column1: col1,
-            column2: col2,
-            correlation: corr,
-            strength: Math.abs(corr) >= 0.9 ? 'very_strong' : 'strong',
-            direction: corr > 0 ? 'positive' : 'negative',
-          });
-        }
+        this._collectStrongCorrelation(correlations, col1, col2, threshold, seen, strong);
       }
     }
 
     return strong.sort((a, b) => Math.abs(b.correlation) - Math.abs(a.correlation));
+  }
+
+  /** Collecte une paire de corrélation forte (dedup, seuil). Iso-comportement :
+   * logique extraite de `_findStrongCorrelations`. @private */
+  _collectStrongCorrelation(correlations, col1, col2, threshold, seen, strong) {
+    if (col1 === col2) return;
+
+    const key = [col1, col2].sort().join('|');
+    if (seen.has(key)) return;
+    seen.add(key);
+
+    const corr = correlations[col1][col2];
+    if (Math.abs(corr) >= threshold) {
+      strong.push({
+        column1: col1,
+        column2: col2,
+        correlation: corr,
+        strength: Math.abs(corr) >= 0.9 ? 'very_strong' : 'strong',
+        direction: corr > 0 ? 'positive' : 'negative',
+      });
+    }
   }
 
   /**
@@ -1051,26 +1057,32 @@ ACTION_RECOMMANDÉE: [conversion/filtrage/aucune]
   _statisticsInsights(sheet) {
     const insights = [];
     for (const [col, stats] of Object.entries(sheet.statistics || {})) {
-      if (stats.skewness && Math.abs(stats.skewness) > 1) {
-        insights.push(
-          `La colonne "${col}" montre une asymétrie ${stats.skewness > 0 ? 'à droite (queue longue vers les hautes valeurs)' : 'à gauche (queue longue vers les basses valeurs)'}`
-        );
-      }
-      if (stats.coefficientOfVariation && stats.coefficientOfVariation > 100) {
-        insights.push(
-          `La colonne "${col}" présente une forte variabilité (CV: ${stats.coefficientOfVariation.toFixed(1)}%)`
-        );
-      }
-      if (stats.mean && stats.median) {
-        const ratio = stats.mean / stats.median;
-        if (ratio > 1.5) {
-          insights.push(
-            `La colonne "${col}" a une moyenne significativement supérieure à la médiane, suggérant des valeurs extrêmes hautes`
-          );
-        }
-      }
+      this._collectColumnStatInsights(col, stats, insights);
     }
     return insights;
+  }
+
+  /** Insights statistiques pour une colonne (asymétrie, variabilité, moyenne vs
+   * médiane). Iso-comportement : logique extraite de `_statisticsInsights`. @private */
+  _collectColumnStatInsights(col, stats, insights) {
+    if (stats.skewness && Math.abs(stats.skewness) > 1) {
+      insights.push(
+        `La colonne "${col}" montre une asymétrie ${stats.skewness > 0 ? 'à droite (queue longue vers les hautes valeurs)' : 'à gauche (queue longue vers les basses valeurs)'}`
+      );
+    }
+    if (stats.coefficientOfVariation && stats.coefficientOfVariation > 100) {
+      insights.push(
+        `La colonne "${col}" présente une forte variabilité (CV: ${stats.coefficientOfVariation.toFixed(1)}%)`
+      );
+    }
+    if (stats.mean && stats.median) {
+      const ratio = stats.mean / stats.median;
+      if (ratio > 1.5) {
+        insights.push(
+          `La colonne "${col}" a une moyenne significativement supérieure à la médiane, suggérant des valeurs extrêmes hautes`
+        );
+      }
+    }
   }
 
   /**
@@ -1174,27 +1186,34 @@ ACTION_RECOMMANDÉE: [conversion/filtrage/aucune]
     const topPerformers = [];
 
     for (const sheet of sheets) {
-      // Top par valeur max dans colonnes numériques
-      for (const [col, stats] of Object.entries(sheet.statistics || {})) {
-        if (stats.max !== undefined && stats.mean !== undefined) {
-          if (stats.max > stats.mean * 2) {
-            topPerformers.push(
-              `Valeur maximale exceptionnelle dans "${col}": ${this._formatNumber(stats.max)} (2x la moyenne)`
-            );
-          }
-        }
-      }
-
-      // Top catégories
-      for (const [col, catData] of Object.entries(sheet.categoricalAnalysis || {})) {
-        const topVals = catData.topValues || [];
-        if (topVals.length > 0 && topVals[0]?.count > 0) {
-          topPerformers.push(`Top "${col}": ${topVals[0].value} (${topVals[0].count} occurrences)`);
-        }
-      }
+      this._collectNumericTopPerformers(sheet, topPerformers);
+      this._collectCategoricalTopPerformers(sheet, topPerformers);
     }
 
     return topPerformers.slice(0, 10);
+  }
+
+  /** Top performers numériques (max ≫ moyenne). Iso : extrait de
+   * `_identifyTopPerformers`. @private */
+  _collectNumericTopPerformers(sheet, topPerformers) {
+    for (const [col, stats] of Object.entries(sheet.statistics || {})) {
+      if (stats.max !== undefined && stats.mean !== undefined && stats.max > stats.mean * 2) {
+        topPerformers.push(
+          `Valeur maximale exceptionnelle dans "${col}": ${this._formatNumber(stats.max)} (2x la moyenne)`
+        );
+      }
+    }
+  }
+
+  /** Top performers catégoriels (valeur la plus fréquente). Iso : extrait de
+   * `_identifyTopPerformers`. @private */
+  _collectCategoricalTopPerformers(sheet, topPerformers) {
+    for (const [col, catData] of Object.entries(sheet.categoricalAnalysis || {})) {
+      const topVals = catData.topValues || [];
+      if (topVals.length > 0 && topVals[0]?.count > 0) {
+        topPerformers.push(`Top "${col}": ${topVals[0].value} (${topVals[0].count} occurrences)`);
+      }
+    }
   }
 
   /**
@@ -2147,30 +2166,35 @@ IMPORTANT: Réponds en utilisant UNIQUEMENT les données ci-dessus. Ne jamais in
       text += `- **Complétude globale**: ${qualityIcon} ${dataQuality.completeness.toFixed(1)}%\n`;
     }
 
-    if (dataQuality.missingValues) {
-      const missingCols = Object.entries(dataQuality.missingValues).filter(
-        ([_, count]) => Number(count) > 0
-      );
-
-      if (missingCols.length > 0) {
-        text += `- **Valeurs manquantes**:\n`;
-        for (const [col, count] of missingCols) {
-          text += `  - ${col}: ${count} valeurs manquantes\n`;
-        }
-      } else {
-        text += `- **Valeurs manquantes**: Aucune ✓\n`;
-      }
-    }
-
-    if (dataQuality.duplicates) {
-      if (dataQuality.duplicates.count > 0) {
-        text += `- **Doublons détectés**: ${dataQuality.duplicates.count} lignes\n`;
-      } else {
-        text += `- **Doublons**: Aucun ✓\n`;
-      }
-    }
+    text += this._chatMissingValuesLine(dataQuality);
+    text += this._chatDuplicatesLine(dataQuality);
     text += `\n`;
     return text;
+  }
+
+  /** Ligne « valeurs manquantes » de la section qualité. Iso : extrait de
+   * `_chatDataQualitySection`. @private */
+  _chatMissingValuesLine(dataQuality) {
+    if (!dataQuality.missingValues) return '';
+    const missingCols = Object.entries(dataQuality.missingValues).filter(
+      ([_, count]) => Number(count) > 0
+    );
+    if (missingCols.length === 0) return `- **Valeurs manquantes**: Aucune ✓\n`;
+    let text = `- **Valeurs manquantes**:\n`;
+    for (const [col, count] of missingCols) {
+      text += `  - ${col}: ${count} valeurs manquantes\n`;
+    }
+    return text;
+  }
+
+  /** Ligne « doublons » de la section qualité. Iso : extrait de
+   * `_chatDataQualitySection`. @private */
+  _chatDuplicatesLine(dataQuality) {
+    if (!dataQuality.duplicates) return '';
+    if (dataQuality.duplicates.count > 0) {
+      return `- **Doublons détectés**: ${dataQuality.duplicates.count} lignes\n`;
+    }
+    return `- **Doublons**: Aucun ✓\n`;
   }
 
   /**
