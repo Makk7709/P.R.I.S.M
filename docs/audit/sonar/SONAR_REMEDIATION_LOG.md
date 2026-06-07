@@ -955,3 +955,58 @@ existante (orchestrator, ExcelAnalyzer, DataTypeDetector) restée verte.
 - HEAD = `origin/main` = `77ea898`. Push normal par paliers.
 - Mentions PRODUIT (KOREV AI, Astraea, PRISM AI Assistant, modèles GPT-4/Claude/
   Perplexity/ElevenLabs) **intactes** ; aucun rapport supprimé réintroduit.
+
+---
+
+## Campagne PRISM_SONAR_CLOSEOUT (3 chantiers de finalisation)
+
+Base de départ HEAD = `434fd1f` (= `origin/main`). Mesure locale reproductible
+via `docs/audit/sonar/eslint.sonar.config.mjs` + agrégateur
+`docs/audit/sonar/measure.mjs` (ajouté ce poste ; décompose par règle, catégorie
+code-quality vs Security Hotspot, et tier in-scope vs Tier 3 legacy).
+
+### Mesure de départ (harnais, commit `434fd1f`)
+
+| Axe | Valeur |
+|-----|-------:|
+| **Total findings** (brut) | 702 |
+| dont code-quality | 350 |
+| dont Security Hotspots | 352 |
+| dont in-scope (T1+T2) | 587 |
+| dont Tier 3 legacy | 115 |
+
+> Légère dérive vs le §2 de l'audit hostile (696/353) : drift de scan attendu
+> (mesure refaite ce jour ; le harnais a aussi 1 erreur de parse + 6 `(no-rule)`
+> constants avant/après). Ce qui compte est le **delta avant/après mesuré ici**.
+
+### PHASE 1 — Entérinement des conventions intentionnelles (config, 0 code touché)
+
+Objectif : supprimer proprement les **faux positifs de convention** sans masquer
+aucun vrai défaut. Trois conventions, vérifiées site par site :
+
+| Convention | Règle | Faux positifs retirés | Encodage | Vérif anti-masquage |
+|-----------|-------|----------------------:|----------|---------------------|
+| Variable intentionnellement inutilisée (`^_`) | `no-unused-vars` | **120** | `measure.mjs` (bucket `conventionSuppressed`, filtre `^_`) ; règle laissée ACTIVE/non masquée dans le harnais | Les **14** unused NON préfixés (tous `__tests_legacy__/`, Tier 3) **restent comptés** |
+| Squelettes TDD (contrats commentés) | `no-commented-code` / S125 | **46** | `eslint.sonar.config.mjs` (off scopé `**/*.spec\|test.{ts,js}`) + `sonar-project.properties` e2 (`typescript:S125` sur `__tests__/core/prismcore/**`) | Les 46 sont tous des blocs `/* ... */` de contrats d'API non implémentés, marqués `// ÉCHEC ATTENDU` ; vérifiés lus |
+| Alias de domaine nominaux (unités métier) | `redundant-type-aliases` / S6564 | **6** | `eslint.sonar.config.mjs` (off scopé `simulation/**/*.ts`) + `sonar-project.properties` e3 (`typescript:S6564` sur `simulation/**`) | Tous dans `simulation/types.ts` + `molecular.ts` : `export type NTU/µScm/Celsius/Bar/mgL = number` |
+
+**Justification du choix pour `^_`** : la règle OSS `sonarjs/no-unused-vars`
+n'accepte AUCUNE option (schéma vide) — le pattern ne peut pas y être encodé
+comme dans SonarQube serveur. Plutôt que de **swapper** la règle pour
+`@typescript-eslint/no-unused-vars` (testé : introduit ~118 findings d'imports
+inutilisés non comparables au décompte historique → pollue le delta), la règle
+Sonar est **laissée active et non masquée** (un `eslint` brut affiche bien les
+134) et la convention `^_` est appliquée, **transparente et documentée**, au
+niveau de l'agrégation. `MEASURE_RAW=1` désactive le filtre pour audit.
+
+#### Mesure après Phase 1
+
+| Axe | Avant (`434fd1f`) | Après Phase 1 | Δ |
+|-----|------------------:|--------------:|---:|
+| Total (officiel, convention `^_` appliquée) | 702 | **530** | **−172** |
+| Total (brut harnais, règle active) | 702 | 650 | −52 |
+| **Code-quality** (officiel) | 350 | **178** | **−172** |
+| Security Hotspots | 352 | 352 | 0 |
+
+Les −172 = 120 (`^_`) + 46 (TDD/S125) + 6 (alias/S6564). Aucun vrai défaut
+masqué. `npm test` **208/208**, `npm run lint` **0 erreur / 1 warning** connu.
