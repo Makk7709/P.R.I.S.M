@@ -1,0 +1,3 @@
+sonar_live_*.json
+sonar_live_*.err
+*.sonarlog
