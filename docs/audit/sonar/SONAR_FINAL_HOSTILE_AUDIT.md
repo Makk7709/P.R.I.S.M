@@ -175,3 +175,22 @@ grep -rIl -E 'KOREV|Astraea|PRISM AI Assistant' --include='*.js' --include='*.ts
 que de viser un « 0 » cosmétique en mécanisant des règles non-iso (risque de
 régression), **acter les conventions dans la configuration Sonar** et **traiter le
 backlog structurel par petites PR caractérisées**. C'est la voie défendable en audit.
+
+---
+
+## Addendum — PRISM_SONAR_CLOSEOUT (post `434fd1f`)
+
+Campagne de clôture en 3 phases sérialisées. HEAD final = voir
+`SONAR_REMEDIATION_LOG.md` § PRISM_SONAR_CLOSEOUT.
+
+| Phase | Résultat |
+|-------|----------|
+| **1 — Conventions config** | −172 faux positifs (120 `_`, 46 TDD/S125, 6 alias/S6564). Aucun vrai défaut masqué. |
+| **2 — Structure prod** | 2 fonctions refactorées (`verifyAuditLog`, `_updateSystemHealth`). Backlog prod structurel **épuisé** ; reste hors périmètre Sonar (asi/, demos, legacy). |
+| **3 — Security Hotspots** | 352 triés : 346 SAFE, **2 corrigés** (ReDoS validation.js, x-powered-by server.js), **4 à arbitrer**. Rapport : `SONAR_SECURITY_HOTSPOTS_REVIEW.md`. |
+
+**Mesure globale** (harnais local, convention `^_` appliquée) : **702 → 526**
+(−176), dont code-quality **350 → 176**, hotspots **352 → 350**.
+
+**Gates finaux** : 219/219 tests, 0 erreur lint. Commits plumbing, auteur Amine
+Mohamed, 0 trailer bot. Mentions produit intactes.

@@ -1056,3 +1056,44 @@ réduit pas le décompte officiel, ajoute du risque, et exigerait pour chaque
 fonction un harnais de caractérisation dédié (la plupart ne sont pas dans le
 gate). Conformément à la **règle STOP** de la mission, ces items sont **différés
 et documentés** plutôt que forcés.
+
+### PHASE 3 — Revue Security Hotspots (352 → 350 après correctifs)
+
+Rapport détaillé : `docs/audit/sonar/SONAR_SECURITY_HOTSPOTS_REVIEW.md`.
+
+Triage complet par catégorie (harnais + revue manuelle in-scope prod) :
+
+| Catégorie | Nb | SAFE | Corrigé | Arbitrer |
+|-----------|---:|-----:|--------:|---------:|
+| pseudo-random | 249 | 249 | 0 | 0 |
+| slow-regex | 61 | 57 | **1** | 3 |
+| os-command / no-os-command-from-path | 29 | 29 | 0 | 0 |
+| no-clear-text-protocols | 7 | 7 | 0 | 0 |
+| x-powered-by | 3 | 1 | **1** | 0 |
+| hashing (MD5 cache) | 2 | 2 | 0 | 0 |
+| no-hardcoded-ip | 1 | 1 | 0 | 0 |
+| **Total** | **352** | **346** | **2** | **4** |
+
+#### Correctifs appliqués (vrais risques production)
+
+1. **ReDoS** — `backend/middleware/validation.js` : regex script tag remplacée
+   par scanner linéaire O(n) `containsEmbeddedScriptTag()`. Exploit confirmé
+   (`'<script>x'.repeat(2000)` hang infini → ~8 ms). Iso : 0 mismatch sur 8 cas.
+   Caractérisation : `validationSecurityChecks.characterization.test.ts` (6 tests).
+2. **x-powered-by** — `server.js` : `app.disable('x-powered-by')` (fingerprinting
+   Express supprimé sur le serveur de production).
+
+#### Items À ARBITRER (4, non masqués)
+
+- `enterpriseSanitizer.js:261,:287` — ReDoS latent sur code mort non câblé HTTP.
+- `RealTimeResearchEngine.js:92` — regex sur réponse Perplexity (taille incertaine).
+- *(Phase 2)* `ui/js/prism-pdf-export.js:669` — nested-conditional cosmétique DOM.
+
+Gate post-Phase 3 : `npm test` **219/219**, `npm run lint` **0 erreur / 1 warning**.
+Mesure harnais (convention `^_` appliquée) :
+
+| Axe | Baseline `434fd1f` | Post Phase 1 | Post Phase 2 | Post Phase 3 |
+|-----|-------------------:|-------------:|-------------:|-------------:|
+| Total officiel | 702 | 530 | 528 | **526** |
+| Code-quality | 350 | 178 | 176 | **176** |
+| Security Hotspots | 352 | 352 | 352 | **350** |
