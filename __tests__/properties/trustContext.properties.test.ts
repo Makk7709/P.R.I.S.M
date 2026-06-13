@@ -21,14 +21,15 @@ const __dirname = path.dirname(__filename);
 
 describe('TrustContext - Property-Based Tests (Invariants Critiques)', () => {
   let trustContext: TrustContext;
+  let testBase: string;
   let testKeyDir: string;
   let approverPrivateKey: string;
   let approverPublicKey: string;
   let approverKeyId: string;
 
   beforeEach(async () => {
-    // Créer répertoire de test pour clés
-    const testBase = path.join(__dirname, '../../test-trustcontext-temp');
+    // Répertoire isolé par test (évite races sur key-registry.json en parallèle)
+    testBase = path.join(__dirname, '../../test-trustcontext-temp', crypto.randomUUID());
     testKeyDir = path.join(testBase, 'keys', 'approvers');
     await fs.mkdir(testKeyDir, { recursive: true });
 
@@ -55,15 +56,8 @@ describe('TrustContext - Property-Based Tests (Invariants Critiques)', () => {
       { mode: 0o644 }
     );
 
-    // Setup KeyRegistry
+    // Setup KeyRegistry (fichier dans répertoire temporaire unique)
     const registryPath = path.join(testBase, 'key-registry.json');
-    // Wipe registry pour test isolé
-    try {
-      await fs.unlink(registryPath);
-    } catch (error) {
-      if (error.code !== 'ENOENT') throw error;
-    }
-    
     const keyRegistry = new KeyRegistryClass({ registryPath });
     await keyRegistry.initialize();
     await keyRegistry.registerKey(approverKeyId, approverPublicKey, ['owner', 'security'], approverPrivateKey);
@@ -86,9 +80,8 @@ describe('TrustContext - Property-Based Tests (Invariants Critiques)', () => {
   });
 
   afterEach(async () => {
-    // Nettoyer
     try {
-      await fs.rm(path.dirname(testKeyDir), { recursive: true, force: true });
+      await fs.rm(testBase, { recursive: true, force: true });
     } catch {
       // Ignorer erreurs de nettoyage
     }

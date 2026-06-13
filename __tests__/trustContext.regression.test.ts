@@ -16,13 +16,14 @@ const __dirname = path.dirname(__filename);
 
 describe('TrustContext - Tests de Régression', () => {
   let trustContext: TrustContext;
+  let testBase: string;
   let testKeyDir: string;
   let approverPrivateKey: string;
   let approverPublicKey: string;
   let approverKeyId: string;
 
   beforeEach(async () => {
-    const testBase = path.join(__dirname, '../test-trustcontext-temp');
+    testBase = path.join(__dirname, '../test-trustcontext-temp', crypto.randomUUID());
     testKeyDir = path.join(testBase, 'keys', 'approvers');
     await fs.mkdir(testKeyDir, { recursive: true });
 
@@ -37,14 +38,7 @@ describe('TrustContext - Tests de Régression', () => {
 
     await fs.writeFile(path.join(testKeyDir, `${approverKeyId}.pub`), publicKey, { mode: 0o644 });
 
-    // Setup KeyRegistry
     const registryPath = path.join(testBase, 'key-registry.json');
-    try {
-      await fs.unlink(registryPath);
-    } catch (error) {
-      if (error.code !== 'ENOENT') throw error;
-    }
-    
     const keyRegistry = new KeyRegistryClass({ registryPath });
     await keyRegistry.initialize();
     await keyRegistry.registerKey(approverKeyId, approverPublicKey, ['owner', 'security'], approverPrivateKey);
@@ -67,7 +61,7 @@ describe('TrustContext - Tests de Régression', () => {
 
   afterEach(async () => {
     try {
-      await fs.rm(path.dirname(testKeyDir), { recursive: true, force: true });
+      await fs.rm(testBase, { recursive: true, force: true });
     } catch {
       // Ignorer
     }
