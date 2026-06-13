@@ -129,6 +129,12 @@ npm run start:monitoring
 
 ---
 
+## 📚 Documentation
+
+La documentation produit est structurée par public (utilisateur, architecture, développeur) dans [`docs/README.md`](./docs/README.md) — index des guides, modules cœur, sécurité, API et procédures de contribution.
+
+---
+
 ## 👨‍💻 Development
 
 ### Quality Standards
