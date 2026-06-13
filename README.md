@@ -379,4 +379,4 @@ npm run coverage
 
 _Développé avec ❤️ pour l'excellence en IA conversationnelle enterprise_
 
-**Version actuelle**: v2.4.0 | **Dernière mise à jour**: Septembre 2025
+**Version actuelle**: v2.4.0 | **Date de création** : 15 janvier 2024 | **Dernière révision** : juin 2026

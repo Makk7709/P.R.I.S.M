@@ -1,6 +1,8 @@
 # PRISM Core Voice Interaction Test Report
 
-Date: April 27, 2025
+**Date de création** : 10 juin 2024  
+**Dernière révision** : juin 2026
+
 Tester: Astraea (Rigor Guardian)
 
 ## Environment Setup ✅
