@@ -139,7 +139,7 @@ git push --force-with-lease="refs/tags/<TAG>:<OLD_REMOTE_SHA>" \
 | --- | ------------------------------------------------------------------------------------------------------------------------ | -------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | R1  | **Forks GitHub publics** existant avant Phase 4 contiennent toujours les anciens tags pointant vers la chaîne contaminée | Faible (les 5 clés ont été rotées dans `PRISM_04`) | Auditer la liste des forks publics du repo via GitHub API ; demander rotation/recloning aux propriétaires si critique. Hors périmètre `PRISM_04B`.                                                                           |
 | R2  | **Clones locaux** chez d'éventuels collaborateurs détiennent les anciennes refs (tags) en cache                          | Moyen                                              | Voir `PRISM_04_SECRET_PURGE_HISTORY_REPORT.md` §6 : reset hard ou reclone obligatoire. Inclure également les tags : `git fetch origin --tags --prune --prune-tags` ou `git tag -d $(git tag -l) && git fetch origin --tags`. |
-| R3  | **Wayback Machine / scrapers IA** qui ont collecté les tags avant `2026-05-15 21:51`                                     | Faible (clés déjà rotées)                          | Aucune action humaine ou automatisée possible sur ces caches externes.                                                                                                                                                            |
+| R3  | **Wayback Machine / scrapers IA** qui ont collecté les tags avant `2026-05-15 21:51`                                     | Faible (clés déjà rotées)                          | Aucune action humaine ou automatisée possible sur ces caches externes.                                                                                                                                                       |
 | R4  | **Repos satellites** (`prism-lite-DICA-ui-ux-design`) restent contaminés                                                 | Critique                                           | Mission dédiée `PRISM_04C_SATELLITE_PURGE` (à enchaîner).                                                                                                                                                                    |
 | R5  | **Réintroduction** lors de la réapplication `PRISM_03`                                                                   | Faible                                             | Backup `/tmp/prism_03_hygiene_backup/` déjà sanitisé (cf. `PRISM_04` §3.3) ; scan additionnel obligatoire dans `PRISM_03B`.                                                                                                  |
 | R6  | **Dashboards fournisseurs** : surveiller les logs pendant 30 j pour usage de l'ancienne clé OpenAI complète              | Modéré                                             | Action humaine côté OpenAI / Anthropic / Supabase / Perplexity / ElevenLabs.                                                                                                                                                 |
@@ -198,3 +198,59 @@ done
 ---
 
 **Fin du rapport `PRISM_04B_REMOTE_TAGS_SANITY_AFTER_SECRET_PURGE`.**
+
+---
+
+## 8. Addendum post-réalignement des tags — 2026-06-13
+
+Suite à une investigation ultérieure, les 14 tags annotés pointaient vers un
+graphe de commits **orphelin** (résidu d'anciennes opérations `filter-repo`),
+détaché de `main` : aucun n'était ancêtre de `main`. Le build ne dépend
+d'aucun tag (vérifié : `npm test` 219/219, lint OK, aucun `git describe` /
+`git tag` en CI). Les corrections suivantes ont été appliquées.
+
+### 8.1 Suppression des 3 tags v1.x orphelins
+
+Les tags `v1.0.0`, `v1.0.0-final` et `v1.1.1` étaient des instantanés d'avril
+2025 **sans équivalent** sur la lignée actuelle de `main`. Ils ont été
+**supprimés** en local et sur `origin`.
+
+| Tag supprimé | Ancien objet tag (origin) | Motif                                        |
+| ------------ | ------------------------- | -------------------------------------------- |
+| v1.0.0       | `f5d13f03ad...`           | Instantané avril-2025, aucun équivalent main |
+| v1.0.0-final | `8c0ea72bc5...`           | Instantané avril-2025, aucun équivalent main |
+| v1.1.1       | `e7de1e90c5...`           | Instantané avril-2025, aucun équivalent main |
+
+### 8.2 Réalignement des 11 tags content-identiques sur `main`
+
+Les 11 tags restants ont été **réalignés** sur leurs commits content-identiques
+présents sur `main` (arbre `tree` strictement identique vérifié pour chacun).
+Ils sont désormais **ancêtres de `main`**. Le message annoté et la ligne
+`tagger` (donc la **date du tag**) d'origine ont été **préservés à
+l'identique** ; seul le pointeur `object` du tag a été repointé.
+
+| Tag                       | Commit cible sur `main` (nouveau)          | Ancêtre de `main` |
+| ------------------------- | ------------------------------------------ | ----------------- |
+| v0.1.0-quality-baseline   | `b8e84171aa8e3c743b4be2fe4a6489bc2e17decf` | ✅                |
+| v0.2.0-trl5-proof-pack    | `61174c66deef460f06a5e737a66c7029542473bc` | ✅                |
+| v2.0.1                    | `533d10bc9e3971fed6f15e64959dd179e240857a` | ✅                |
+| v2.1-rc1                  | `c5ff8a3df967270ecedd6cae1ab33378c4f0ae96` | ✅                |
+| v2.3.0-final              | `2a547487f837caaa7012b9178d6b355185fbac38` | ✅                |
+| v2.3.0-stress-system      | `2a1f03c83bbda9662bf5e163b223bce005b261b5` | ✅                |
+| v2.3.1                    | `9091283d0b11c6db31062316f25a416fb4767ec7` | ✅                |
+| v2.4.0                    | `ee2e5213ae32e044e11d6f6af9018fdf438ddc92` | ✅                |
+| v2.4.0-tdd-prismcore      | `d8056d3c3a4911efb7ee711dc7f246ae37cf84f9` | ✅                |
+| v2.4.1-tdd-enterprise-api | `e2c247a27dfe44f21d36b42c0f93873a69d0b0d4` | ✅                |
+| v3.0.0                    | `71055beaf9f17747cfc72d75a101a11c23d69a64` | ✅                |
+
+### 8.3 Nettoyage et garanties
+
+- `git gc --prune=now` a consolidé le dépôt (3 packs → 1 pack, objets
+  in-pack 14354 → 7229, taille 58,51 MiB → 28,90 MiB) en élaguant les objets
+  orphelins. Un bundle de sauvegarde complet (`--all`) a été créé au préalable
+  pour la récupérabilité ; les branches `backup/*` ne sont pas supprimées.
+- **Aucune date de commit ni de tag n'a été modifiée.** Les dates `tagger`
+  d'origine ont été conservées telles quelles ; l'historique de `main` n'a pas
+  été réécrit (seul ce commit de documentation est ajouté).
+- État final : **11 tags**, tous ancêtres de `main`, `origin` synchronisé
+  (objets tag locaux == distants).
